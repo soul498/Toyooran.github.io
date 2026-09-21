@@ -73,6 +73,12 @@ export function changePassword(req: AdminRequest, oldPassword: string, newPasswo
 export function listSessions(req: AdminRequest) { return db.prepare('SELECT created_at, expires_at FROM sessions WHERE admin_id=? ORDER BY created_at DESC').all(req.admin?.id); }
 export function revokeAllSessions(req: AdminRequest) { db.prepare('DELETE FROM sessions WHERE admin_id=?').run(req.admin?.id); }
 export function getAdminState(key: string) { const row = db.prepare('SELECT state_json FROM admin_state WHERE state_key=?').get(key) as any; return row ? JSON.parse(row.state_json) : null; }
+export function getAdminStateUpdatedAt(key: string): string | null {
+  const row = db.prepare('SELECT updated_at FROM admin_state WHERE state_key=?').get(key) as { updated_at?: string } | undefined;
+  const stamp = row?.updated_at;
+  if (!stamp) return null;
+  return stamp.slice(0, 10);
+}
 export function setAdminState(req: AdminRequest, key: string, value: unknown) { db.prepare('INSERT INTO admin_state(state_key,state_json,updated_at) VALUES(?,?,?) ON CONFLICT(state_key) DO UPDATE SET state_json=excluded.state_json, updated_at=excluded.updated_at').run(key, JSON.stringify(value), new Date().toISOString()); audit(req, 'state_update', key); }
 export function startMfaSetup(adminId: number) {
   const secret = generateSecret();

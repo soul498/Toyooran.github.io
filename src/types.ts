@@ -99,6 +99,11 @@ export interface Service {
   faqs: { q: string; a: string }[];
 }
 
+export interface ArticleSource {
+  name: string;
+  url?: string;
+}
+
 export interface Article {
   id: string;
   title: string;
@@ -106,12 +111,19 @@ export interface Article {
   categoryLabel: string;
   readTime: string;
   date: string;
+  datePublishedIso?: string;
+  dateModifiedIso?: string;
   summary: string;
   content: string[];
   image?: string;
   tags?: string[];
   relatedProductIds: string[];
   relatedServiceId?: string;
+  authorName?: string;
+  authorRole?: string;
+  reviewerName?: string;
+  reviewerRole?: string;
+  sources?: ArticleSource[];
 }
 
 export interface CompanyInfo {
@@ -128,7 +140,7 @@ export interface CompanyInfo {
   directSalesPhone?: string;
   supportPhone?: string;
   technicalSupportPhone?: string;
-  email: string;
+  email?: string;
   website?: string;
   address: string;
   rdAddress?: string;

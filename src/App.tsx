@@ -42,18 +42,17 @@ import { AiEngineerAssistantModal } from './components/AiEngineerAssistantModal'
 
 import { useParams } from 'react-router-dom';
 
-import { SEO } from "./components/SEO";
+import { SeoHead } from "./components/SEO";
 
-const SEORoute = ({ title, description, children }: { title: string, description: string, children: React.ReactNode }) => {
+const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: any) => {
+  const { articleId } = useParams();
+  const article = articles.find((a: any) => a.id === articleId);
+  if (!article) return <NotFoundPage />;
   return (
-    <>
-      <SEO title={title} description={description} />
-      {children}
-    </>
+    <MagazineArticle article={article} onBack={onBack} onSelectProductById={onSelectProductById} />
   );
 };
 
-// Component to scroll to top on route change
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -64,17 +63,6 @@ const ScrollToTop = () => {
     }
   }, [pathname]);
   return null;
-};
-
-const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: any) => {
-  const { articleId } = useParams();
-  const article = articles.find((a: any) => a.id === articleId);
-  if (!article) return <NotFoundPage />;
-  return (
-    <SEORoute title={`${article.title} | مجله طیوران صنعت پویا`} description={article.excerpt}>
-      <MagazineArticle article={article} onBack={onBack} onSelectProductById={onSelectProductById} />
-    </SEORoute>
-  );
 };
 
 const MainAppInner: React.FC = () => {
@@ -216,6 +204,7 @@ const MainAppInner: React.FC = () => {
   return (
     <div className="min-h-screen bg-blueprint-light text-[#333132] font-['Estedad',sans-serif] flex flex-col selection:bg-amber-400 selection:text-slate-950" dir="rtl">
       <ScrollToTop />
+      <SeoHead />
       <CustomCursor />
       <ScrollProgress />
       
@@ -233,69 +222,59 @@ const MainAppInner: React.FC = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={
-            <SEORoute title="تجهیز و نوسازی سالن مرغداری | طیوران صنعت پویا" description="طراحی، تأمین تجهیزات و اجرای نوسازی سالن مرغداری: تهویه، گرمایش، دانخوری و آبخوری. استعلام فنی از طیوران صنعت پویا.">
-              <Hero
-                cmsHero={heroCms}
+            <Hero
+              cmsHero={heroCms}
+              onNavigate={handleNavigateSection}
+              onSelectCategory={handleSelectCategory}
+              onOpenConsultation={() => handleOpenUnifiedConsultation()}
+              onOpenQuote={() => handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور')}
+              onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
+            >
+              <CompactShowcase 
+                products={products}
+                articles={articles}
                 onNavigate={handleNavigateSection}
-                onSelectCategory={handleSelectCategory}
-                onOpenConsultation={() => handleOpenUnifiedConsultation()}
-                onOpenQuote={() => handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور')}
-                onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
-              >
-                <CompactShowcase 
-                  products={products}
-                  articles={articles}
-                  onNavigate={handleNavigateSection}
-                  onSelectProduct={handleSelectProductById}
-                  onSelectArticle={(articleId) => navigate(`/magazine/${articleId}`)}
-                />
-                <AboutContactUnifiedSection />
-              </Hero>
-            </SEORoute>
+                onSelectProduct={handleSelectProductById}
+                onSelectArticle={(articleId) => navigate(`/magazine/${articleId}`)}
+              />
+              <AboutContactUnifiedSection />
+            </Hero>
           } />
           <Route path="/products/:productId" element={<ProductPage />} />
           <Route path="/products" element={
-            <SEORoute title="تجهیزات مرغداری: تهویه، هیتر، دانخوری، آبخوری | طیوران صنعت پویا" description="کاتالوگ هواکش، جت‌هیتر، دانخوری پروانه‌ای و آبخوری نیپل. استعلام قیمت.">
-              <ProductCatalogSection
-                products={products}
-                selectedCategory={selectedCategory}
-                onSelectCategory={handleSelectCategory}
-                onSelectProduct={handleSelectProduct}
-                onRequestQuoteForProduct={handleRequestQuoteForProduct}
-              />
-            </SEORoute>
+            <ProductCatalogSection
+              products={products}
+              selectedCategory={selectedCategory}
+              onSelectCategory={handleSelectCategory}
+              onSelectProduct={handleSelectProduct}
+              onRequestQuoteForProduct={handleRequestQuoteForProduct}
+            />
           } />
           <Route path="/services/:serviceId" element={<ServicePage onOpenConsultation={(title) => handleOpenUnifiedConsultation(title, undefined, `مشاوره درباره خدمت: ${title}`)} />} />
           <Route path="/services" element={
-            <SEORoute title="خدمات طراحی و تجهیز مرغداری | طیوران صنعت پویا" description="از طراحی سالن تا نصب تهویه، گرمایش و سیستم دان. درخواست مشاوره فنی.">
-              <ServicesSection
-                services={services}
-                onSelectService={setSelectedService}
-                onSelectCategory={handleSelectCategory}
-                onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی')}
-              />
-            </SEORoute>
+            <ServicesSection
+              services={services}
+              onSelectService={setSelectedService}
+              onSelectCategory={handleSelectCategory}
+              onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی')}
+            />
           } />
           <Route path="/projects/:projectId" element={<ProjectPage onOpenConsultation={(title) => handleOpenUnifiedConsultation('سوله و سالن صنعتی', undefined, `مشاوره درباره پروژه: ${title}`)} />} />
           <Route path="/projects" element={
-            <SEORoute title="پروژه‌های تجهیز مرغداری | طیوران صنعت پویا" description="نمونه کارهای اجرایی طیوران صنعت پویا در سالن مرغداری و کارخانه خوراک.">
-              <FeaturedProjectsSection
-                projects={projects}
-                onSelectProject={setSelectedProject}
-                onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی')}
-              />
-            </SEORoute>
+            <FeaturedProjectsSection
+              projects={projects}
+              onSelectProject={setSelectedProject}
+              onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی')}
+            />
           } />
           <Route path="/magazine" element={
-            <SEORoute title="مجله تخصصی و مقالات مرغداری | Toyooran" description="دانش‌نامه و مجله تخصصی صنعت مرغداری. مقالات آموزشی پرورش طیور، تجهیزات و جدیدترین اخبار.">
-              <MagazineFeed
-                articles={articles}
-                onSelectArticle={(article) => {
-                  setSelectedArticle(article);
-                  navigate(`/magazine/${article.id}`);
-                }}
-              />
-            </SEORoute>
+            <MagazineFeed
+              articles={articles}
+              onSelectArticle={(article) => {
+                setSelectedArticle(article);
+                navigate(`/magazine/${article.id}`);
+              }}
+            />
           } />
           <Route path="/magazine/:articleId" element={
             <MagazineArticleWrapper
@@ -304,24 +283,14 @@ const MainAppInner: React.FC = () => {
                onSelectProductById={handleSelectProductById}
             />
           } />
-          <Route path="/about" element={
-            <SEORoute title="درباره ما | شرکت طیوران صنعت پویا" description="معرفی شرکت طیوران صنعت پویا، تاریخچه، گواهینامه‌ها و چشم‌انداز فعالیت در حوزه تجهیزات مدرن مرغداری.">
-              <AboutPage />
-            </SEORoute>
-          } />
-          <Route path="/rnd" element={
-            <SEORoute title="تحقیق و توسعه | شرکت طیوران صنعت پویا" description="واحد تحقیق و توسعه شرکت طیوران صنعت پویا.">
-              <RnDPage />
-            </SEORoute>
-          } />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/rnd" element={<RnDPage />} />
           <Route path="/contact" element={
-            <SEORoute title="تماس با ما و مشاوره | Toyooran" description="ارتباط با کارشناسان فروش، پشتیبانی فنی و ثبت درخواست مشاوره برای راه‌اندازی و تجهیز مرغداری.">
-              <ContactPage 
-                initialSubject={consultationSubject}
-                initialProduct={consultationProduct}
-                initialMessage={consultationMessage}
-              />
-            </SEORoute>
+            <ContactPage 
+              initialSubject={consultationSubject}
+              initialProduct={consultationProduct}
+              initialMessage={consultationMessage}
+            />
           } />
           {/* Catch-all for unknown routes */}
           <Route path="*" element={<NotFoundPage />} />

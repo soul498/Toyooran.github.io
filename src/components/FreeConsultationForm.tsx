@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Send, User, Phone, FileText, Layers, CheckCircle2 } from 'lucide-react';
 import { sendNotificationToBale } from '../utils/sendToBale';
 
@@ -15,6 +16,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
   initialMessage = '',
   className = ''
 }) => {
+  const location = useLocation();
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -31,6 +33,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const conversionEvent = 'organic_consultation_submit';
+    const pagePath = location.pathname + location.search;
     await sendNotificationToBale({
       fullName: formData.fullName,
       phoneNumber: formData.phoneNumber,
@@ -42,7 +46,19 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
       source: 'contact-form',
       isDecisionMaker: formData.isDecisionMaker,
       timing: formData.timing,
+      pagePath,
+      conversionEvent,
     });
+    if (typeof window !== 'undefined') {
+      const w = window as Window & { dataLayer?: Record<string, unknown>[] };
+      w.dataLayer = w.dataLayer || [];
+      w.dataLayer.push({
+        event: conversionEvent,
+        page_path: pagePath,
+        lead_subject: formData.subject,
+        product_name: initialProduct || undefined,
+      });
+    }
     setLoading(false);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 4000);

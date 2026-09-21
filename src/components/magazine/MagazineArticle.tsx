@@ -2,8 +2,9 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Clock, Calendar, Share2, Tag, Link as LinkIcon, CheckCircle2, Image as ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { PRODUCTS } from '../../data/mockData';
+import { useData } from '../../context/DataContext';
 import { LazyImage } from '../LazyImage';
+import type { Article } from '../../types';
 
 const IMAGES = [
   '/images/poultry-1.jpg',
@@ -22,11 +23,11 @@ interface MagazineArticleProps {
 }
 
 export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBack, onSelectProductById }) => {
-  // Use a hash of the id to pick a pseudo-random stable image
+  const { products } = useData();
   const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const heroImage = article.image || IMAGES[hash % IMAGES.length];
   
-  const linkedProducts = PRODUCTS.filter((p) => article.relatedProductIds.includes(p.id));
+  const linkedProducts = products.filter((p) => article.relatedProductIds.includes(p.id));
 
   return (
     <motion.div 
@@ -199,14 +200,22 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
           )}
           
           <div className="mt-10 pt-8 border-t border-slate-200 text-sm text-slate-600 space-y-2">
-            <p>نویسنده/بازبین فنی: واحد مهندسی طیوران صنعت پویا</p>
-            <p>تاریخ انتشار: {article.date}</p>
+            <p>نویسنده: {article.authorName || 'نام نویسنده پس از Brief فنی تکمیل می‌شود'}{article.authorRole ? ` — ${article.authorRole}` : ''}</p>
+            <p>بازبین فنی: {article.reviewerName || 'در انتظار بازبین نام‌دار واحد مهندسی'}</p>
+            <p>تاریخ انتشار: {article.datePublishedIso || article.date}</p>
+            {article.sources?.length ? (
+              <ul className="list-disc mr-5">
+                {article.sources.map((source) => (
+                  <li key={source.name}>{source.url ? <a className="text-[#003F86] font-bold" href={source.url}>{source.name}</a> : source.name}</li>
+                ))}
+              </ul>
+            ) : null}
             <p>
               <Link className="text-[#003F86] font-bold" to="/products/ventilation">تهویه و هواکش</Link>
               {' · '}
               <Link className="text-[#003F86] font-bold" to="/services/poultry-hall-fitout">تجهیز و نوسازی سالن</Link>
               {' · '}
-              <Link className="text-[#003F86] font-bold" to="/contact">درخواست مشاوره</Link>
+              <Link className="text-[#003F86] font-bold" to="/contact?cta=article-consult">درخواست مشاوره</Link>
             </p>
           </div>
           <div className="mt-16 pt-8 flex flex-wrap items-center gap-2">

@@ -15,6 +15,8 @@ export type LeadInput = {
   source?: string;
   isDecisionMaker?: boolean;
   timing?: string;
+  pagePath?: string;
+  conversionEvent?: string;
 };
 
 function qualify(lead: LeadInput) {
@@ -45,7 +47,7 @@ export function leadsToCsv(): string {
     return "id,createdAt,fullName,phone,location,capacity,subject,qualified,score\n";
   }
   const lines = fs.readFileSync(LEADS_FILE, "utf8").trim().split("\n").filter(Boolean);
-  const header = "id,createdAt,fullName,phone,location,capacity,subject,qualified,score,source";
+  const header = "id,createdAt,fullName,phone,location,capacity,subject,qualified,score,source,pagePath,conversionEvent";
   const rows = lines.map((line) => {
     const item = JSON.parse(line);
     const cells = [
@@ -59,6 +61,8 @@ export function leadsToCsv(): string {
       item.qualification?.qualified,
       item.qualification?.score,
       item.source,
+      item.pagePath,
+      item.conversionEvent,
     ].map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`);
     return cells.join(",");
   });

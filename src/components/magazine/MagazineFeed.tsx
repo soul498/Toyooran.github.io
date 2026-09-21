@@ -4,6 +4,7 @@ import { Clock, Calendar, ArrowLeft, ChevronLeft, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom';
 import { InnerScrollIndicator } from '../InnerScrollIndicator';
 import { LazyImage } from '../LazyImage';
+import type { Article } from '../../types';
 
 const IMAGES = [
   '/images/poultry-1.jpg',

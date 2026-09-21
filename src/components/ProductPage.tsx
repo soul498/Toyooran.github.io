@@ -4,7 +4,6 @@ import { useData } from '../context/DataContext';
 import { ArrowRight, PhoneCall, Sparkles, Layers, Package, Zap, Settings } from 'lucide-react';
 import { LazyImage } from './LazyImage';
 import { NotFoundPage } from './NotFoundPage';
-import { SEO } from './SEO';
 import { ProductCatalogSection } from './ProductCatalogSection';
 import { ProductCategory } from '../types';
 
@@ -35,11 +34,6 @@ export const ProductPage: React.FC = () => {
 
   return (
     <div className="pt-32 pb-24 bg-slate-50 min-h-screen">
-      <SEO 
-        title={`${product.name} | Toyooran`}
-        description={product.shortDescription || product.fullDescription}
-        ogType="product"
-      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Breadcrumb / Back button */}
         <Link

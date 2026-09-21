@@ -6,7 +6,7 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
-import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, robotsTxt, sitemapXml, stripQuery } from "./server/seo";
+import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, robotsTxt, SEO_REDIRECTS, sitemapXml, stripQuery } from "./server/seo";
 import { appendLead, leadsToCsv } from "./server/leads";
 
 dotenv.config();
@@ -19,6 +19,14 @@ async function startServer() {
     const host = (req.hostname || "").toLowerCase();
     if (host === "toyooran.com") {
       return res.redirect(301, `${CANONICAL_ORIGIN}${req.originalUrl}`);
+    }
+    next();
+  });
+  app.use((req, res, next) => {
+    const pathOnly = stripQuery(req.path);
+    const dest = SEO_REDIRECTS[pathOnly];
+    if (dest) {
+      return res.redirect(301, `${CANONICAL_ORIGIN}${dest}`);
     }
     next();
   });
@@ -104,7 +112,9 @@ async function startServer() {
         source,
         timestamp,
         isDecisionMaker,
-        timing
+        timing,
+        pagePath,
+        conversionEvent
       } = req.body;
       appendLead({
         fullName,
@@ -118,6 +128,8 @@ async function startServer() {
         source,
         isDecisionMaker: Boolean(isDecisionMaker),
         timing,
+        pagePath,
+        conversionEvent,
       });
 
       const baleToken = process.env.BALE_BOT_TOKEN === 'AI_STUDIO_PREVIEW_DISABLED' ? '' : process.env.BALE_BOT_TOKEN;
