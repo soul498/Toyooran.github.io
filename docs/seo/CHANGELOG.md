@@ -15,7 +15,15 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
-## 2026-09-21 — اصلاح قرارداد SEO روی کد زنده
+## 2026-09-21 — بستن آیتم‌های باز ACTION-PLAN
+
+- مالک: توسعه
+- فایل‌ها: `src/seo/resolveSeo.ts`, `server.ts`, `server/seo.ts`, `vite.config.ts`, `deploy/nginx-toyooran.conf`, صفحات خدمت/کاتالوگ/هیرو، تصاویر webp
+- URLها: عمومی، `/llms.txt`، `/products/{slug}`، fitout، feeding/inlet
+- تغییر: prerender غنی‌تر، حذف prerender بعد از hydrate، H1 هیرو بدون opacity 0، LocalBusiness از قبل، Product image+Offer بدون قیمت جعلی، lastmod/llms.txt، FAQ/HowTo مرئی، CSP font-src، کش HTML، اسلاگ فارسی محصول با 301 از کد، code-split، preload WebP، nginx بدون Connection:upgrade دائمی
+- Verify: lint + check:seo پس از دیپلوی
+
+
 
 - مالک: توسعه + SEO
 - فایل‌ها: `src/seo/resolveSeo.ts`, `server/catalog.ts`, `server/seo.ts`, `server.ts`, `src/components/SEO.tsx`, `src/App.tsx`, صفحات خدمت/محصول/پروژه/مجله، `src/data/mockData.ts`, `scripts/check-seo-contract.sh`

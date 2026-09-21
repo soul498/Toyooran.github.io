@@ -8,38 +8,54 @@ export const SEO_REDIRECTS: Record<string, string> = {
   [`/services/${FITOUT_SERVICE_ID}`]: `/services/${FITOUT_SLUG}`,
 };
 
-const CATEGORY_SEO: Record<string, { title: string; h1: string; description: string }> = {
+const CATEGORY_SEO: Record<string, { title: string; h1: string; description: string; body: string }> = {
   ventilation: {
     title: "هواکش و تهویه سالن مرغداری | طیوران صنعت پویا",
     h1: "هواکش و سیستم تهویه سالن مرغداری",
     description: "فن ۱۰۰ و ۱۴۰، اینلت و محاسبه تعداد هواکش بر اساس سطح مقطع سالن. استعلام فنی از طیوران صنعت پویا.",
+    body: "انتخاب فن بر اساس سطح مقطع سالن، سرعت هوای تونلی و ظرفیت در فشار استاتیک واقعی است نه ظرفیت اسمی کاتالوگ. اینلت، پد و کنترلر باید با همان محاسبه هماهنگ شوند.",
   },
   heating: {
     title: "جت هیتر و گرمایش مرغداری | طیوران صنعت پویا",
     h1: "سیستم گرمایش سالن مرغداری",
     description: "هیتر گازی و دوگانه‌سوز برای سالن گوشتی؛ مقایسه با تابشی در مشاوره فنی طیوران صنعت پویا.",
+    body: "جت‌هیتر، کابینتی یا تابشی بر اساس عایق سازه، نوع سوخت، تهویه حداقل و توزیع دما انتخاب می‌شود. رقم مصرف سوخت واحد برای همه سالن‌ها ادعا نمی‌شود.",
   },
   feeding: {
     title: "دانخوری پروانه‌ای و بشقابی | طیوران صنعت پویا",
     h1: "دانخوری اتومات مرغداری",
-    description: "دانخوری پروانه‌ای پویا و بشقابی؛ ظرفیت خط و کاهش پرت دان. استعلام از طیوران صنعت پویا.",
+    description: "دانخوری پروانه‌ای پویا و بشقابی؛ ظرفیت خط، تنظیم دان، شست‌وشو و استعلام از طیوران صنعت پویا.",
+    body: "برای دانخوری اتومات باید تعداد خط، فاصله بشقاب، ارتفاع لبه، قابلیت تغذیه از یک‌روزگی و شست‌وشو مشخص شود. دانخوری پروانه‌ای پویا برای کاهش پرت دان و حذف سینی هفته اول طراحی شده؛ ظرفیت خط پس از ابعاد سالن محاسبه می‌شود. استعلام شامل نقشه چیدمان است نه فقط قیمت بشقاب.",
   },
   drinking: {
     title: "آبخوری نیپل مرغداری | طیوران صنعت پویا",
     h1: "سیستم آبخوری سالن مرغداری",
     description: "آبخوری نیپل و تجهیزات آب سالن مرغداری. درخواست مشاوره فنی از طیوران صنعت پویا.",
+    body: "نیپل، فشارشکن و شیب خط باید با ظرفیت گله و کیفیت آب هماهنگ شود تا بستر خشک بماند.",
   },
   cooling: {
     title: "سرمایش و پد سلولزی مرغداری | طیوران صنعت پویا",
     h1: "سیستم سرمایش سالن مرغداری",
     description: "پد سلولزی و سرمایش سالن مرغداری. استعلام فنی از طیوران صنعت پویا.",
+    body: "پد و مهپاش فقط وقتی مؤثرند که دبی فن و آب‌رسانی پد با اقلیم و سطح مقطع سالن جور باشد.",
   },
   inlet: {
     title: "اینلت سالن مرغداری | طیوران صنعت پویا",
     h1: "دریچه اینلت سالن مرغداری",
-    description: "اینلت و ورودی هوای سالن مرغداری. مشاوره انتخاب از طیوران صنعت پویا.",
+    description: "اینلت و ورودی هوای سالن مرغداری؛ فشار منفی، یکنواختی هوا و مشاوره انتخاب از طیوران صنعت پویا.",
+    body: "اینلت باید با ظرفیت فن، فشار منفی هدف و فصل پرورش انتخاب شود. جانمایی نادرست نقطه کور و باد سرد روی بستر می‌سازد. در استعلام، عرض سالن، ارتفاع و نوع تهویه (حداقل/تونلی) لازم است تا تعداد و زاویه دریچه مشخص شود.",
   },
 };
+
+const FITOUT_CHECKLIST = [
+  "عایق سقف و دیوار و هوابندی سازه",
+  "برق، دیزل و تابلو متناسب با فن و هیتر",
+  "آب، فشارشکن و شیب خط آبخوری",
+  "تهویه: فن، اینلت، پد و کنترل اقلیم",
+  "گرمایش متناسب با اقلیم و عایق",
+  "خطوط دان و آب و دسترسی شست‌وشو",
+  "ایمنی گاز، اگزوز و خروج اضطراری",
+];
 
 export type SeoCatalog = {
   products: Product[];
@@ -80,7 +96,40 @@ export function publicServicePath(service: Service): string {
 }
 
 export function publicProductPath(product: Product): string {
-  return `/products/${encodeURIComponent(product.code || product.id)}`;
+  return `/products/${productSeoSlug(product)}`;
+}
+
+export function productSeoSlug(product: Product): string {
+  const code = String(product.code || product.id || "").toLowerCase();
+  const name = String(product.name || "")
+    .trim()
+    .replace(/[()[\].,،/\\+#]+/g, " ")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return name ? `${name}-${code}` : code;
+}
+
+export function findProduct(slug: string, source: SeoCatalog | Product[]): Product | undefined {
+  const decoded = decodeURIComponent(slug);
+  const products = Array.isArray(source) ? source : source.products;
+  return products.find(
+    (p) => p.id === decoded || p.code === decoded || productSeoSlug(p) === decoded || productSeoSlug(p) === slug
+  );
+}
+
+export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | null {
+  const path = stripQuery(pathname);
+  if (SEO_REDIRECTS[path]) return SEO_REDIRECTS[path];
+  if (path.startsWith("/products/")) {
+    const slug = decodeURIComponent(path.split("/")[2] || "");
+    if (isCategorySlug(slug, catalog)) return null;
+    const product = findProduct(slug, catalog);
+    if (!product) return null;
+    const canonical = publicProductPath(product);
+    if (canonical !== path) return canonical;
+  }
+  return null;
 }
 
 export function escapeHtml(value: string): string {
@@ -102,6 +151,7 @@ function collectionDay(catalog: SeoCatalog, key: keyof NonNullable<SeoCatalog["c
 }
 
 function orgSchema(company: CompanyInfo) {
+  const sameAs = Object.values(company.socialLinks || {}).filter((url) => Boolean(url && url.startsWith("http")));
   return {
     "@type": "Organization",
     "@id": `${CANONICAL_ORIGIN}/#org`,
@@ -113,8 +163,10 @@ function orgSchema(company: CompanyInfo) {
     address: {
       "@type": "PostalAddress",
       addressCountry: "IR",
+      addressLocality: "مشهد",
       streetAddress: company.address,
     },
+    sameAs,
   };
 }
 
@@ -130,6 +182,10 @@ function breadcrumb(items: { name: string; path: string }[]) {
   };
 }
 
+export function categoryIntro(slug: string): string | undefined {
+  return CATEGORY_SEO[slug]?.body;
+}
+
 function categoryMeta(slug: string, catalog: SeoCatalog) {
   if (CATEGORY_SEO[slug]) return CATEGORY_SEO[slug];
   const cat = catalog.categories.find((c) => c.id === slug);
@@ -138,6 +194,7 @@ function categoryMeta(slug: string, catalog: SeoCatalog) {
     title: `${cat.title} | طیوران صنعت پویا`,
     h1: cat.title,
     description: cat.description,
+    body: cat.description,
   };
 }
 
@@ -193,16 +250,26 @@ ${advantages ? `<h2>ویژگی‌ها</h2><ul>${advantages}</ul>` : ""}
 <p><a href="/contact?cta=product-quote&amp;product=${encodeURIComponent(product.code || product.id)}">استعلام قیمت و مشخصات فنی</a></p>`;
 }
 
-function serviceBody(service: Service, h1: string): string {
+function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string {
   const provide = service.whatWeProvide.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   const steps = (service.workflow || [])
     .map((step) => `<li>${escapeHtml(step.title)}: ${escapeHtml(step.description)} — خروجی: ${escapeHtml(step.deliverable)}</li>`)
+    .join("");
+  const isFitout = service.id === FITOUT_SERVICE_ID;
+  const checklist = isFitout ? `<h2>چک‌لیست ممیزی قبل از نوسازی</h2><ul>${FITOUT_CHECKLIST.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : "";
+  const faqs = (service.faqs || []).map((f) => `<h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p>`).join("");
+  const related = catalog.projects
+    .filter((p) => service.sampleProjectIds?.includes(p.id))
+    .map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)}</li>`)
     .join("");
   return `<p>${escapeHtml(service.tagline)}</p>
 <p>${escapeHtml(service.problemSolved)}</p>
 <h2>دامنه کار ${escapeHtml(h1)}</h2>
 <ul>${provide}</ul>
 ${steps ? `<h2>فرایند اجرا</h2><ol>${steps}</ol>` : ""}
+${checklist}
+${related ? `<h2>پروژه‌های مرتبط</h2><ul>${related}</ul>` : ""}
+${faqs ? `<h2>پرسش‌های متداول</h2>${faqs}` : ""}
 <p><a href="/contact?cta=service-visit">درخواست بازدید و پیشنهاد فنی</a> · <a href="/products">مشاهده تجهیزات</a></p>`;
 }
 
@@ -277,8 +344,14 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>طیوران صنعت پویا طراحی، تأمین تجهیزات و اجرای نوسازی سالن مرغداری را انجام می‌دهد. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
+<p>تلفن دفتر مشهد: ${escapeHtml(company.phone)} · فروش: ${escapeHtml(company.directSalesPhone || company.phone)}</p>
+<p>${escapeHtml(company.address)}</p>
+<p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>
 <p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات مرغداری</a> · <a href="/contact?cta=home-consult">درخواست مشاوره</a></p>
-<ul>${serviceLinks}</ul>`,
+<h2>خدمات</h2>
+<ul>${serviceLinks}</ul>
+<h2>دسته‌های تجهیزات</h2>
+<ul>${catalog.categories.map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a></li>`).join("")}</ul>`,
       jsonLd: [
         orgSchema(company),
         {
@@ -326,7 +399,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
         h1,
         ogType: "website",
         lastmod: collectionDay(catalog, "services"),
-        body: serviceBody(service, h1),
+        body: serviceBody(service, h1, catalog),
         jsonLd: [
           orgSchema(company),
           {
@@ -334,9 +407,21 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
             name: h1,
             description,
             provider: { "@id": `${CANONICAL_ORIGIN}/#org` },
-            areaServed: "IR",
+            areaServed: ["IR", "مشهد", "گرگان"],
             url: canonicalPath(canonicalServicePath),
           },
+          ...(service.faqs?.length
+            ? [
+                {
+                  "@type": "FAQPage",
+                  mainEntity: service.faqs.map((f) => ({
+                    "@type": "Question",
+                    name: f.q,
+                    acceptedAnswer: { "@type": "Answer", text: f.a },
+                  })),
+                },
+              ]
+            : []),
           breadcrumb([
             { name: "خانه", path: "/" },
             { name: "خدمات", path: "/services" },
@@ -377,7 +462,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
         h1: category.h1,
         ogType: "website",
         lastmod: collectionDay(catalog, "products"),
-        body: `<p>${escapeHtml(category.description)}</p><ul>${items}</ul><p><a href="/contact?cta=category-quote">استعلام فنی</a></p>`,
+        body: `<p>${escapeHtml(category.body || category.description)}</p><ul>${items}</ul><p><a href="/contact?cta=category-quote">استعلام فنی</a> · <a href="/services/${FITOUT_SLUG}">تجهیز و نوسازی سالن</a></p>`,
         jsonLd: [
           orgSchema(company),
           breadcrumb([
@@ -388,10 +473,11 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
         ],
       });
     }
-    const product = catalog.products.find((p) => p.id === slug || p.code === slug);
+    const product = findProduct(slug, catalog);
     if (product) {
+      const imageAbs = product.image?.startsWith("http") ? product.image : `${CANONICAL_ORIGIN}${product.image || "/images/hero-final-1.jpg"}`;
       return okDoc({
-        path: `/products/${product.code || product.id}`,
+        path: publicProductPath(product),
         title: `${product.name} | طیوران صنعت پویا`,
         description: product.shortDescription || product.fullDescription,
         h1: product.name,
@@ -404,14 +490,25 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
             name: product.name,
             description: product.shortDescription || product.fullDescription,
             sku: product.code,
+            image: imageAbs,
             brand: { "@type": "Brand", name: company.nameFa },
             manufacturer: { "@id": `${CANONICAL_ORIGIN}/#org` },
+            offers: {
+              "@type": "Offer",
+              url: canonicalPath(publicProductPath(product)),
+              availability: "https://schema.org/InStock",
+              businessFunction: "https://schema.org/Sell",
+              priceSpecification: {
+                "@type": "PriceSpecification",
+                description: "قیمت پس از استعلام فنی و ظرفیت سالن اعلام می‌شود؛ قیمت ثابت در اسکیما درج نشده است.",
+              },
+            },
           },
           breadcrumb([
             { name: "خانه", path: "/" },
             { name: "محصولات", path: "/products" },
             { name: product.categoryTitle, path: `/products/${product.category}` },
-            { name: product.name, path },
+            { name: product.name, path: publicProductPath(product) },
           ]),
         ],
       });
@@ -521,6 +618,20 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
             publisher: { "@id": `${CANONICAL_ORIGIN}/#org` },
             mainEntityOfPage: canonicalPath(path),
           },
+          ...(article.id === "how-to-calculate-ventilation-capacity"
+            ? [
+                {
+                  "@type": "HowTo",
+                  name: article.title,
+                  description: article.summary,
+                  step: [
+                    { "@type": "HowToStep", name: "محاسبه حجم و سطح مقطع سالن", text: "طول، عرض و ارتفاع میانگین سالن را برای حجم و سطح مقطع تهویه تونلی ثبت کنید." },
+                    { "@type": "HowToStep", name: "تعیین وزن زنده پایان دوره", text: "تعداد پرنده × وزن هدف؛ مبنای دبی باید منبع سویه باشد نه رقم بازار بدون شرط." },
+                    { "@type": "HowToStep", name: "انتخاب فن روی منحنی فشار استاتیک", text: "ظرفیت کاتالوگ را در فشار استاتیک پد/اینلت اصلاح کنید و با مهندس تأیید کنید." },
+                  ],
+                },
+              ]
+            : []),
           breadcrumb([
             { name: "خانه", path: "/" },
             { name: "مجله", path: "/magazine" },
@@ -539,7 +650,14 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       h1: "درباره طیوران صنعت پویا",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>${escapeHtml(company.tagline || "")}</p><p>${escapeHtml(company.address)}</p><p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>`,
+      body: `<p>${escapeHtml(company.tagline || "")}</p>
+<p>${escapeHtml(company.subTagline || "")}</p>
+<p>تلفن: ${escapeHtml(company.phone)} · فروش: ${escapeHtml(company.directSalesPhone || "")} · پشتیبانی فنی: ${escapeHtml(company.technicalSupportPhone || "")}</p>
+<p>ساعات کار: ${escapeHtml(company.workingHours)}</p>
+<p>دفتر مشهد: ${escapeHtml(company.address)}</p>
+<p>کارخانه: ${escapeHtml(company.factoryAddress)}</p>
+<p>واحد تحقیق و توسعه گرگان: ${escapeHtml(company.rdAddress || "")}</p>
+<p><a href="/contact?cta=about">درخواست مشاوره تجهیز سالن</a></p>`,
       jsonLd: [orgSchema(company)],
     });
   }
@@ -555,10 +673,12 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       h1: "تماس و درخواست مشاوره",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>تلفن: ${escapeHtml(company.phone)}</p>
+      body: `<p>تلفن دفتر مشهد: ${escapeHtml(company.phone)}</p>
 <p>فروش: ${escapeHtml(company.directSalesPhone || company.phone)}</p>
+<p>پشتیبانی فنی: ${escapeHtml(company.technicalSupportPhone || "")}</p>
+<p>ساعات کار: ${escapeHtml(company.workingHours)}</p>
 <ul>${locHtml}</ul>
-<p><a href="#free-consultation-form">فرم درخواست مشاوره</a></p>`,
+<p><a href="#free-consultation-form">فرم درخواست بازدید و پیشنهاد فنی</a></p>`,
       jsonLd: [orgSchema(company), ...localBusinessNodes(company)],
     });
   }
@@ -583,7 +703,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
     ogType: "website",
     body: `<p>این مسیر در سایت وجود ندارد. <a href="/">بازگشت به خانه</a></p>`,
     jsonLd: [],
-    robots: "noindex, nofollow",
+    robots: "noindex, follow",
     canonicalHref: null,
     notFound: true,
   };
@@ -601,7 +721,7 @@ export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolea
   if (path.startsWith("/products/")) {
     const slug = decodeURIComponent(path.split("/")[2] || "");
     if (isCategorySlug(slug, catalog)) return true;
-    if (catalog.products.some((p) => p.id === slug || p.code === slug)) return true;
+    if (catalog.products.some((p) => p.id === slug || p.code === slug || productSeoSlug(p) === slug || productSeoSlug(p) === decodeURIComponent(slug))) return true;
   }
   if (path.startsWith("/services/")) {
     const slug = path.split("/")[2];
@@ -631,10 +751,33 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
   };
   for (const cat of catalog.categories) add(`/products/${cat.id}`, "0.8", collectionDay(catalog, "products"));
   for (const service of catalog.services) add(publicServicePath(service), "0.8", collectionDay(catalog, "services"));
-  for (const product of catalog.products) add(`/products/${product.code || product.id}`, "0.7", collectionDay(catalog, "products"));
+  for (const product of catalog.products) add(publicProductPath(product), "0.7", collectionDay(catalog, "products"));
   for (const project of catalog.projects) add(`/projects/${project.id}`, "0.7", collectionDay(catalog, "projects"));
   for (const article of catalog.articles) {
     add(`/magazine/${article.id}`, "0.6", isoDay(article.dateModifiedIso || article.datePublishedIso) || collectionDay(catalog, "articles"));
   }
   return urls;
+}
+
+export function llmsTxt(catalog: SeoCatalog): string {
+  const services = catalog.services.map((s) => `- ${publicServicePath(s)} — ${s.title}`).join("\n");
+  const cats = catalog.categories.map((c) => `- /products/${c.id} — ${c.title}`).join("\n");
+  return `# طیوران صنعت پویا
+> تجهیز و نوسازی سالن مرغداری؛ تهویه، گرمایش، دانخوری و آبخوری. دفاتر مشهد و گرگان.
+
+- سایت: ${CANONICAL_ORIGIN}
+- تماس: ${CANONICAL_ORIGIN}/contact
+- خدمت محوری: ${CANONICAL_ORIGIN}/services/${FITOUT_SLUG}
+
+## خدمات
+${services}
+
+## دسته‌های محصول
+${cats}
+
+## قواعد استناد
+- اعداد ظرفیت فن و مصرف سوخت را بدون فشار استاتیک، اقلیم و تأیید مهندس نقل نکنید.
+- قیمت محصول در صفحات عمومی استعلام است نه رقم ثابت.
+- نقشه و مشخصات را از HTML اولیه یا صفحه محصول/خدمت بخوانید نه از حدس مدل.
+`;
 }

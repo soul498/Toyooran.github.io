@@ -67,6 +67,9 @@ export const SeoHead = () => {
     company: companyInfo as CompanyInfo,
   };
   const doc = resolveSeo(pathname, catalog);
+  useEffect(() => {
+    document.getElementById("seo-prerender")?.remove();
+  }, [pathname]);
   return (
     <SEO
       title={doc.title}

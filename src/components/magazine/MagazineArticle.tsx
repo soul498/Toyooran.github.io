@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { LazyImage } from '../LazyImage';
 import type { Article } from '../../types';
+import { publicProductPath } from '../../seo/resolveSeo';
 
 const IMAGES = [
   '/images/poultry-1.jpg',
@@ -183,7 +184,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                 {linkedProducts.map((p) => (
                   <Link
                     key={p.id}
-                    to={`/products/${p.code || p.id}`}
+                    to={publicProductPath(p)}
                     className="flex items-center gap-4 p-4 rounded-2xl border border-slate-200 hover:border-[#003F86]/30 bg-slate-50/50 hover:bg-blue-50/50 transition-all group"
                   >
                     <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">

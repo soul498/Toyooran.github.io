@@ -6,7 +6,8 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
-import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, robotsTxt, SEO_REDIRECTS, sitemapXml, stripQuery } from "./server/seo";
+import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, llmsTxt, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
+import { loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
 
 dotenv.config();
@@ -23,8 +24,7 @@ async function startServer() {
     next();
   });
   app.use((req, res, next) => {
-    const pathOnly = stripQuery(req.path);
-    const dest = SEO_REDIRECTS[pathOnly];
+    const dest = seoRedirectFor(req.path, loadSeoCatalog());
     if (dest) {
       return res.redirect(301, `${CANONICAL_ORIGIN}${dest}`);
     }
@@ -34,7 +34,7 @@ async function startServer() {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-    res.setHeader('Content-Security-Policy', "default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com");
+    res.setHeader('Content-Security-Policy', "default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com");
     if (process.env.NODE_ENV === 'production') res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     next();
   });
@@ -219,11 +219,19 @@ async function startServer() {
   // SEO: robots.txt
   app.get("/robots.txt", (_req, res) => {
     res.type('text/plain');
+    res.set("Cache-Control", "public, max-age=300, s-maxage=3600");
     res.send(robotsTxt());
+  });
+
+  app.get("/llms.txt", (_req, res) => {
+    res.type("text/plain; charset=utf-8");
+    res.set("Cache-Control", "public, max-age=300, s-maxage=3600");
+    res.send(llmsTxt(loadSeoCatalog()));
   });
 
   app.get("/sitemap.xml", (_req, res) => {
     res.header('Content-Type', 'application/xml');
+    res.set("Cache-Control", "public, max-age=300, s-maxage=3600");
     res.send(sitemapXml());
   });
 
@@ -246,11 +254,11 @@ async function startServer() {
         const finalHtml = injectSeoTags(template, url);
         const isKnownRoute = isKnownPublicPath(url);
         if (!isKnownRoute && url !== '/') {
-           res.status(404).set({ 'Content-Type': 'text/html' }).end(finalHtml);
+           res.status(404).set({ 'Content-Type': 'text/html', 'Cache-Control': 'no-store' }).end(finalHtml);
            return;
         }
 
-        res.status(200).set({ 'Content-Type': 'text/html' }).end(finalHtml);
+        res.status(200).set({ 'Content-Type': 'text/html', 'Cache-Control': 'public, max-age=120, s-maxage=600, stale-while-revalidate=86400' }).end(finalHtml);
       } catch (e: any) {
         vite.ssrFixStacktrace(e);
         next(e);
@@ -267,11 +275,11 @@ async function startServer() {
       const finalHtml = injectSeoTags(template, url);
       const isKnownRoute = isKnownPublicPath(url);
       if (!isKnownRoute && url !== '/') {
-         res.status(404).set({ 'Content-Type': 'text/html' }).send(finalHtml);
+         res.status(404).set({ 'Content-Type': 'text/html', 'Cache-Control': 'no-store' }).send(finalHtml);
          return;
       }
 
-      res.status(200).set({ 'Content-Type': 'text/html' }).send(finalHtml);
+      res.status(200).set({ 'Content-Type': 'text/html', 'Cache-Control': 'public, max-age=120, s-maxage=600, stale-while-revalidate=86400' }).send(finalHtml);
     });
   }
 

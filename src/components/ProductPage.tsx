@@ -5,6 +5,7 @@ import { ArrowRight, PhoneCall, Sparkles, Layers, Package, Zap, Settings } from 
 import { LazyImage } from './LazyImage';
 import { NotFoundPage } from './NotFoundPage';
 import { ProductCatalogSection } from './ProductCatalogSection';
+import { findProduct, publicProductPath } from '../seo/resolveSeo';
 import { ProductCategory } from '../types';
 
 const CATEGORY_IDS: ProductCategory[] = ['heating', 'ventilation', 'drinking', 'cooling', 'inlet', 'feeding', 'cage', 'silo', 'other'];
@@ -20,13 +21,13 @@ export const ProductPage: React.FC = () => {
         products={products}
         selectedCategory={productId as ProductCategory}
         onSelectCategory={(cat) => navigate(cat === 'all' ? '/products' : `/products/${cat}`)}
-        onSelectProduct={(product) => navigate(`/products/${product.code || product.id}`)}
+        onSelectProduct={(product) => navigate(publicProductPath(product))}
         onRequestQuoteForProduct={(product) => navigate('/contact')}
       />
     );
   }
 
-  const product = products.find(p => p.id === productId || p.code === productId);
+  const product = findProduct(decodeURIComponent(productId || ""), products);
 
   if (!product) {
     return <NotFoundPage />;

@@ -4,13 +4,14 @@ import {
   canonicalPath,
   escapeHtml,
   isKnownPublicPath as isKnownWithCatalog,
+  llmsTxt,
   resolveSeo,
-  SEO_REDIRECTS,
+  seoRedirectFor,
   sitemapEntries,
   stripQuery,
 } from "../src/seo/resolveSeo";
 
-export { CANONICAL_ORIGIN, stripQuery, canonicalPath, resolveSeo, SEO_REDIRECTS };
+export { CANONICAL_ORIGIN, stripQuery, canonicalPath, resolveSeo, seoRedirectFor, llmsTxt };
 
 export function isKnownPublicPath(pathname: string): boolean {
   return isKnownWithCatalog(pathname, loadSeoCatalog());
@@ -37,7 +38,9 @@ export function injectSeoTags(html: string, reqPath: string): string {
     ? `    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": doc.jsonLd }).replace(/</g, "\\u003c")}</script>\n`
     : "";
   const extra = `
-${canonical}    <meta property="og:title" content="${escapeHtml(doc.title)}" />
+${canonical}    <link rel="preload" as="image" href="/images/hero-final-1.webp" type="image/webp" />
+    <link rel="preload" as="image" href="/images/hero-final-1.jpg" />
+    <meta property="og:title" content="${escapeHtml(doc.title)}" />
     <meta property="og:description" content="${escapeHtml(doc.description)}" />
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />
     <meta property="og:type" content="${doc.ogType}" />
@@ -52,8 +55,7 @@ ${robots}${jsonLd}`;
     <div id="seo-prerender">
       <h1>${escapeHtml(doc.h1)}</h1>
       ${doc.body}
-    </div>
-    <style>#root:not(:empty)~#seo-prerender{display:none!important}</style>`;
+    </div>`;
   if (out.includes('<div id="root"></div>')) {
     out = out.replace('<div id="root"></div>', `<div id="root"></div>${prerender}`);
   }
@@ -82,6 +84,7 @@ User-agent: PerplexityBot
 Allow: /
 
 Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml
+# AI/citation: ${CANONICAL_ORIGIN}/llms.txt
 `;
 }
 

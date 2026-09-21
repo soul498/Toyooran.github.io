@@ -8,7 +8,7 @@ const ALIASES: Record<string, string> = { "poultry-hall-fitout": "srv-turnkey-sh
 
 export const ServicePage: React.FC<{ onOpenConsultation: (title: string) => void }> = ({ onOpenConsultation }) => {
   const { serviceId } = useParams();
-  const { services } = useData();
+  const { services, projects } = useData();
   const resolved = ALIASES[serviceId || ""] || serviceId;
   const service = services.find((s) => s.id === resolved);
   if (!service) return <NotFoundPage />;
@@ -40,6 +40,38 @@ export const ServicePage: React.FC<{ onOpenConsultation: (title: string) => void
               </li>
             ))}
           </ol>
+        ) : null}
+        {isFitout ? (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6">
+            <h2 className="text-xl font-black mb-3">چک‌لیست ممیزی قبل از نوسازی</h2>
+            <ul className="list-disc mr-5 text-sm text-slate-700 space-y-1">
+              <li>عایق سقف و دیوار و هوابندی سازه</li>
+              <li>برق، دیزل و تابلو متناسب با فن و هیتر</li>
+              <li>آب، فشارشکن و شیب خط آبخوری</li>
+              <li>تهویه: فن، اینلت، پد و کنترل اقلیم</li>
+              <li>گرمایش متناسب با اقلیم و عایق</li>
+              <li>خطوط دان و آب و دسترسی شست‌وشو</li>
+              <li>ایمنی گاز، اگزوز و خروج اضطراری</li>
+            </ul>
+          </div>
+        ) : null}
+        {service.faqs?.length ? (
+          <div className="space-y-3">
+            <h2 className="text-xl font-black">پرسش‌های متداول</h2>
+            {service.faqs.map((f) => (
+              <div key={f.q} className="bg-white border border-slate-200 rounded-xl p-4">
+                <h3 className="font-bold text-slate-900">{f.q}</h3>
+                <p className="text-sm text-slate-600 mt-1">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        {service.sampleProjectIds?.length ? (
+          <ul className="text-sm space-y-2">
+            {projects.filter((p) => service.sampleProjectIds.includes(p.id)).map((p) => (
+              <li key={p.id}><Link className="text-[#003F86] font-bold" to={`/projects/${p.id}`}>{p.title}</Link> — {p.location}</li>
+            ))}
+          </ul>
         ) : null}
         <div className="flex flex-wrap gap-3">
           <Link to="/contact" onClick={() => onOpenConsultation(service.title)} className="bg-[#003F86] text-white font-bold px-6 py-3 rounded-2xl inline-flex items-center gap-2">

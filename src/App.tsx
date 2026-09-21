@@ -43,6 +43,7 @@ import { AiEngineerAssistantModal } from './components/AiEngineerAssistantModal'
 import { useParams } from 'react-router-dom';
 
 import { SeoHead } from "./components/SEO";
+import { publicProductPath } from "./seo/resolveSeo";
 
 const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: any) => {
   const { articleId } = useParams();
@@ -111,7 +112,7 @@ const MainAppInner: React.FC = () => {
 
   // Modals state
   const handleSelectProduct = (product: Product) => {
-    navigate(`/products/${product.code || product.id}`);
+    navigate(publicProductPath(product));
   };
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Product, ProductCategory } from '../types';
+import { categoryIntro, publicProductPath } from '../seo/resolveSeo';
 
 import { InnerScrollIndicator } from './InnerScrollIndicator';
 import { LazyImage } from './LazyImage';
@@ -99,7 +100,9 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
               تجهیزات <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">مرغداری</span>
             </h1>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
-              تجهیزات تخصصی مرغداری، ماشین‌آلات خطوط تولید خوراک و محصولات موردنیاز صنعت دام، طیور و آبزیان
+              {selectedCategory !== 'all' && categoryIntro(selectedCategory)
+                ? categoryIntro(selectedCategory)
+                : 'تجهیزات تخصصی مرغداری، ماشین‌آلات خطوط تولید خوراک و محصولات موردنیاز صنعت دام، طیور و آبزیان'}
             </p>
           </motion.div>
         </div>
@@ -181,7 +184,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                     >
                     {/* Image Area */}
                     <Link
-                      to={`/products/${product.code || product.id}`}
+                      to={publicProductPath(product)}
                       className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 mb-6 block"
                     >
                       <LazyImage
@@ -205,7 +208,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                       </div>
                       
                       <Link
-                        to={`/products/${product.code || product.id}`}
+                        to={publicProductPath(product)}
                         className="text-xl md:text-2xl font-black text-slate-900 mb-8 group-hover:text-[#003F86] transition-colors line-clamp-2"
                       >
                         {product.name}
@@ -225,7 +228,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                           استعلام قیمت
                         </Link>
                         <Link
-                          to={`/products/${product.code || product.id}`}
+                          to={publicProductPath(product)}
                           className="w-14 h-14 shrink-0 flex justify-center items-center bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-2xl transition-colors"
                           title="مشاهده جزئیات کامل"
                         >

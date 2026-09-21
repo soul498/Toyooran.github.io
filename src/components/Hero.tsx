@@ -396,14 +396,11 @@ const Hero: React.FC<HeroProps> = ({
             </span>
           </motion.div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          <h1
             className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.15] tracking-tight drop-shadow-2xl mb-6"
           >
             {cmsHero?.title || 'طیوران صنعت پویا'}
-          </motion.h1>
+          </h1>
 
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
