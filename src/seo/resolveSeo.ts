@@ -441,7 +441,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       h1: "تجهیزات مرغداری",
       ogType: "website",
       lastmod: collectionDay(catalog, "products"),
-      body: `<p>کاتالوگ تجهیزات سالن مرغداری طیوران صنعت پویا.</p><ul>${cats}</ul><p><a href="/contact?cta=catalog-quote">استعلام قیمت</a></p>`,
+      body: `<p>کاتالوگ تجهیزات سالن مرغداری طیوران صنعت پویا.</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">دانلود کاتالوگ PDF</a> · <a href="/contact?cta=catalog-quote">استعلام قیمت</a></p>`,
       jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "محصولات", path: "/products" }])],
     });
   }

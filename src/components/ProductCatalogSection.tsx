@@ -1,19 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useInView } from 'motion/react';
-import { 
+import { motion, useInView } from 'motion/react';
+import {
   Search,
-  Layers, 
-  Zap, 
   PhoneCall,
   ArrowLeft,
-  Filter
+  Filter,
+  Download
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Product, ProductCategory } from '../types';
 import { categoryIntro, publicProductPath } from '../seo/resolveSeo';
-
-import { InnerScrollIndicator } from './InnerScrollIndicator';
 import { LazyImage } from './LazyImage';
+import { CategoryMarquee } from './CategoryMarquee';
+
+export const CATALOG_PDF_HREF = '/TSPK_catalog.pdf';
 
 interface ProductCatalogSectionProps {
   products: Product[];
@@ -22,10 +22,6 @@ interface ProductCatalogSectionProps {
   onSelectProduct: (product: Product) => void;
   onRequestQuoteForProduct: (product: Product) => void;
 }
-
-import { CategoryMarquee } from "./CategoryMarquee";
-
-
 
 export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({ 
   products, 
@@ -79,34 +75,27 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
         <div className="absolute top-[30%] right-[30%] w-[40vw] h-[40vw] bg-[radial-gradient(circle_at_center,_rgba(52,211,153,0.12)_0%,_transparent_60%)]" style={{ animationDuration: '12s' }} />
       </div>
 
-      <div className="w-full min-h-[100dvh] flex flex-col justify-center relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 z-10">
-        <div className="max-w-4xl mx-auto w-full relative z-10 text-center">
-          {/* 
-            ========================================================
-            HERO & HEADER (MINIMALIST)
-            ========================================================
-          */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-8 relative z-10"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95  border border-white/50 shadow-sm mb-6">
-              <Zap className="w-5 h-5 text-amber-500" />
-              <span className="text-sm font-bold text-slate-800">تجهیزات و ماشین‌آلات</span>
+      <div className="relative z-10 pt-28 pb-6 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-3xl border border-slate-200 bg-white/95 shadow-sm px-5 py-4 sm:px-7 sm:py-5">
+            <div className="text-right min-w-0">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">تجهیزات مرغداری</h1>
+              <p className="text-sm text-slate-600 font-medium mt-1 leading-relaxed">
+                {selectedCategory !== 'all' && categoryIntro(selectedCategory)
+                  ? categoryIntro(selectedCategory)
+                  : 'کاتالوگ تهویه، گرمایش، دانخوری و آبخوری — استعلام فنی از طیوران صنعت پویا'}
+              </p>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight mb-6">
-              تجهیزات <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">مرغداری</span>
-            </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
-              {selectedCategory !== 'all' && categoryIntro(selectedCategory)
-                ? categoryIntro(selectedCategory)
-                : 'تجهیزات تخصصی مرغداری، ماشین‌آلات خطوط تولید خوراک و محصولات موردنیاز صنعت دام، طیور و آبزیان'}
-            </p>
-          </motion.div>
+            <a
+              href={CATALOG_PDF_HREF}
+              download="TSPK_catalog.pdf"
+              className="shrink-0 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#003F86] hover:bg-blue-800 text-white font-bold text-sm px-5 py-3 shadow-lg shadow-blue-900/20 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              دانلود کاتالوگ
+            </a>
+          </div>
         </div>
-        <InnerScrollIndicator />
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-16 lg:pb-24 relative z-10">

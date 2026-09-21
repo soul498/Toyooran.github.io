@@ -235,6 +235,19 @@ async function startServer() {
     res.send(sitemapXml());
   });
 
+  app.get("/TSPK_catalog.pdf", (_req, res) => {
+    const prodFile = path.join(process.cwd(), "dist", "TSPK_catalog.pdf");
+    const devFile = path.join(process.cwd(), "public", "TSPK_catalog.pdf");
+    const file = fs.existsSync(prodFile) ? prodFile : devFile;
+    if (!fs.existsSync(file)) return res.status(404).type("text/plain").send("catalog not found");
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": 'attachment; filename="TSPK_catalog.pdf"',
+      "Cache-Control": "public, max-age=86400",
+    });
+    res.sendFile(path.resolve(file));
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
