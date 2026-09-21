@@ -11,7 +11,11 @@
 | [database-status.md](database-status.md) | SQLite، seed، localStorage |
 | [architecture-critique.md](architecture-critique.md) | نقد معماری و بدهی‌ها |
 | [ai-studio-boundary.md](ai-studio-boundary.md) | ورود امن پچ از Google AI Studio |
-| [seo/CHANGELOG.md](seo/CHANGELOG.md) | قرارداد SEO |
+| [seo/README.md](seo/README.md) | سیستم عملیاتی سئو (قرارداد، محتوا، backlog) |
+| [seo/SEO-CONTRACT.md](seo/SEO-CONTRACT.md) | invariant فنی SEO |
+| [seo/CONTENT-STRATEGY.md](seo/CONTENT-STRATEGY.md) | استراتژی تولید محتوا |
+| [seo/CONTENT-BACKLOG.md](seo/CONTENT-BACKLOG.md) | صف محتوا |
+| [seo/CHANGELOG.md](seo/CHANGELOG.md) | تاریخچه تغییرات SEO |
 | [security-admin.md](security-admin.md) | ادمین، MFA، secretها |
 | [ci-cd.md](ci-cd.md) | Forgejo Actions و دیپلوی روی همین سرور |
 

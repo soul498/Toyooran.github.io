@@ -8,6 +8,7 @@
 |---|---|
 | `server.ts` | فرایند Node: Express، API، تزریق SEO در HTML، استاتیک `dist` در production |
 | `server/seo.ts` | canonical، JSON-LD، sitemap، robots، prerender مسیرهای عمومی |
+| `docs/seo/` | سیستم عملیاتی سئو: قرارداد، استراتژی محتوا، backlog |
 | `server/auth.ts` | SQLite، نشست ادمین، CSRF، نقش‌ها، MFA |
 | `server/leads.ts` | ذخیره lead در فایل JSONL |
 | `src/main.tsx` | mount ری‌اکت |

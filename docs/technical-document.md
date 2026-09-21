@@ -68,7 +68,7 @@
 
 `/admin` و `/api` در robots disallow هستند.
 
-جزئیات مسیرها: `docs/seo/CHANGELOG.md`.
+جزئیات قرارداد: `docs/seo/SEO-CONTRACT.md`. تاریخچه: `docs/seo/CHANGELOG.md`.
 
 ## امنیت هدر
 
