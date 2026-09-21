@@ -1,0 +1,51 @@
+﻿cluster,keyword,intent,pillar,page_type,proposed_url,destination,score,demand_est,notes
+Ready-خدمت-تجهیز,تجهیز و نوسازی سالن مرغداری,commercial,A,Service,/services/poultry-hall-fitout,درخواست مشاوره/استعلام تجهیز سالن,12,Med–High,Ready#1؛ seed اصلی برند؛ SERP فعلی اغلب محتوایی/ساخت نه مجری تجهیز مشهد
+Ready-خدمت-تجهیز,نوسازی سالن مرغداری,commercial,A,Service,/services/poultry-hall-fitout,مشاوره نوسازی,11,Med,autocomplete ضعیف اما intent خرید بالا؛ هم‌پوشانی با صفحه خدمت
+Ready-خدمت-تجهیز,تجهیز سالن مرغداری,commercial,A,Service,/services/poultry-hall-fitout,استعلام فنی,11,Med,suggest دقیق؛ مقصد همان fitout
+Ready-خدمت-تجهیز,طراحی سالن مرغداری گوشتی,commercial-info,A,Service,/services/poultry-hall-fitout,مشاوره طراحی+تجهیز,9,Med,suggest: طراحی سالن مرغداری گوشتی؛ cannibal با /magazine/common-mistakes-in-poultry-design — خدمت اولویت
+Ready-خدمت-تجهیز,اجرای سالن مرغداری,commercial,A,Service,/services/poultry-hall-fitout,CTA پروژه,8,Low–Med,suggest محدود؛ بیشتر پیمانکار سازه — تمایز با تمرکز تجهیز/تاسیسات
+Ready-خدمت-تجهیز,تجهیزات مرغداری مشهد,local-commercial,A,Service,/services/poultry-hall-fitout#mashhad یا /contact,تماس مشهد,9,Med,local SERP: پارس‌تجهیزات و دایرکتوری‌ها؛ فرصت صفحه محلی/NAP
+Ready-خدمت-تجهیز,تجهیزات مرغداری گرگان,local-commercial,A,Service,/services/poultry-hall-fitout#gorgan یا /contact,تماس گرگان,8,Low–Med,suggest دقیق؛ volume کیفی پایین‌تر از مشهد
+Ready-تهویه-محاسبه,محاسبه ظرفیت تهویه سالن مرغداری,informational-calc,B,Calculator/Guide,/magazine/how-to-calculate-ventilation-capacity,مشاوره محاسبه تهویه + /products/ventilation,11,High,Ready#2 rewrite؛ رقبا: aerofanco، karnotech، nemunetak
+Ready-تهویه-محاسبه,محاسبه تهویه مرغداری,informational-calc,B,Calculator/Guide,/magazine/how-to-calculate-ventilation-capacity,همان CTA,11,High,suggest قوی
+Ready-تهویه-محاسبه,محاسبه تعداد هواکش مرغداری,informational-calc,B,Calculator/Guide,/magazine/how-to-calculate-ventilation-capacity,خرید هواکش /products/ventilation,11,High,PAA/عنوان رقبا؛ gap: فشار استاتیک واقعی+دیتاشیت
+Ready-دانخوری-پویا,دانخوری پروانه‌ای پویا,commercial-brand,D,Product guide,/magazine/introduction-to-pouya-butterfly-feeder + /products/feeding,استعلام دانخوری پویا,11,Med,Ready#3؛ برند شرکت؛ SERP بیشتر parscenter
+Ready-دانخوری-پویا,دانخوری پروانه ای,commercial,D,Product guide,/products/feeding یا همان magazine,استعلام محصول,10,Med,suggest دقیق؛ تمایز از بشقابی پارس/کوناوی
+Ready-گرمایش-مقایسه,مقایسه جت هیتر و گرمایش تابشی مرغداری,comparison,C,Technical Guide,/magazine/comparison-of-heating-systems,استعلام گرمایش /products/heating,10,Med,Ready#4 rewrite؛ رقبا: akhgartabesh، eig-shop، ntdamavand، garmasaze
+Ready-گرمایش-مقایسه,بهترین سیستم گرمایش مرغداری,comparison-commercial,C,Technical Guide,/magazine/comparison-of-heating-systems,CTA گرمایش,10,Med–High,عنوان رقیب eig-shop
+Ready-ممیزی,چک لیست ممیزی قبل از نوسازی سالن مرغداری,checklist,A,Checklist,/magazine/pre-renovation-audit-checklist (پیشنهادی),CTA ممیزی+مشاوره,10,Med,Ready#5؛ SERP چک‌لیست بهداشت/راه‌اندازی هست، ممیزی نوسازی تجهیز ضعیف
+Ready-ممیزی,ممیزی تاسیسات سالن مرغداری,problem,A,Checklist,همان checklist,درخواست بازدید فنی,9,Low–Med,intent مسئله‌محور مالک/فنی
+B-هواکش-کتگوری,هواکش مرغداری ۱۴۰,commercial,B,Category/Product,/products/ventilation + هاب /magazine/poultry-exhaust-fan-140-guide,استعلام هواکش ۱۴۰,11,High,suggest: هواکش مرغداری 140، قیمت؛ دسته TS-009/015/062/082+
+B-هواکش-کتگوری,قیمت هواکش مرغداری ۱۴۰,commercial,B,Category,/products/ventilation,استعلام قیمت (بدون رقم ثابت),10,High,autocomplete قوی؛ سناریو قیمت نه لیست ثابت
+B-هواکش-کتگوری,خرید هواکش مرغداری,commercial,B,Category,/products/ventilation,CTA خرید/تأمین,10,High,suggest دقیق
+B-هواکش-کتگوری,هواکش مرغداری ۱۰۰,commercial,B,Category,/products/ventilation,استعلام,9,Med–High,suggest سایز ۱۰۰
+B-هواکش-کتگوری,هواکش صنعتی مرغداری,commercial,B,Category,/products/ventilation,CTA,8,Med,عمومی‌تر
+B-اینلت,پنجره اینلت مرغداری,commercial,B,Category/Product,/products/inlet,استعلام اینلت,11,High,suggest غنی: چیست/قیمت/ابعاد/خرید
+B-اینلت,اینلت مرغداری چیست,informational,B,Technical Guide,/magazine/poultry-inlet-guide (پیشنهادی) → /products/inlet,CTA اینلت,9,High,PAA رایج
+B-اینلت,ابعاد اینلت مرغداری,informational-spec,B,Technical Guide,همان inlet guide,CTA,9,Med,suggest
+B-اینلت,خرید اینلت مرغداری,commercial,B,Category,/products/inlet,استعلام,10,Med–High,رقبا: kgy، اندیشه سبز، chicken-device
+B-اینلت,محاسبه تعداد اینلت مرغداری,informational-calc,B,Calculator/Guide,/magazine/how-to-calculate-inlet-count (پیشنهادی),مشاوره+اینلت,10,Med,gap نسبت به صفحات فن؛ مکمل Ready#2
+B-تونلی-حداقلی,تهویه تونلی سالن مرغداری,informational,B,Technical Guide,/magazine/tunnel-vs-minimum-ventilation (پیشنهادی),CTA تهویه,9,Med,suggest: تهویه تونلی
+B-تونلی-حداقلی,تهویه حداقلی مرغداری,informational,B,Technical Guide,همان,CTA,9,Med,suggest دقیق؛ gap محتوای فارسی عمیق
+B-پد,پد سلولزی مرغداری,commercial-info,B,Category + Guide,/products/cooling + /magazine/poultry-cellulose-pad-sizing,استعلام پد/سرمایش,10,High,suggest غنی: چیست/قیمت/نصب/محاسبه
+B-پد,محاسبه پد سلولزی مرغداری,informational-calc,B,Calculator,/magazine/poultry-cellulose-pad-sizing,CTA سرمایش+فن,10,Med–High,suggest؛ رقیب garmasaze
+B-پد,نصب پد سلولزی مرغداری,informational-commercial,B,Technical Guide,همان یا service,بازدید/اجرا,8,Med,suggest نصب
+B-سیرکوله,فن سیرکوله مرغداری,commercial,B,Product,/products/ventilation (TS-002/074…),استعلام,8,Low–Med,suggest دقیق اما demand کمتر از ۱۴۰
+B-اشتباهات,اشتباهات رایج تهویه و اینلت مرغداری,problem,B,Technical Guide,/magazine/common-mistakes-in-poultry-design (بازنویسی هدفمند),CTA ممیزی/تهویه,9,Med,صفحه موجود؛ همپوشانی با Ready#2 — زاویه اشتباهات نه فرمول
+C-جت‌هیتر,جت هیتر مرغداری,commercial,C,Category,/products/heating,استعلام جت‌هیتر,11,High,suggest بسیار غنی: قیمت/بهترین/گازی/مصرف
+C-جت‌هیتر,بهترین جت هیتر مرغداری,comparison-commercial,C,Product guide,/magazine/best-poultry-jet-heater-selection (پیشنهادی) → /products/heating,CTA,10,High,عنوان ntdamavand ۱۴۰۴
+C-جت‌هیتر,جت هیتر گازی مرغداری,commercial,C,Category,/products/heating,استعلام,9,Med–High,suggest
+C-جت‌هیتر,مصرف گاز جت هیتر مرغداری,informational,C,Technical Guide,مقایسه گرمایش یا صفحه جت‌هیتر,مشاوره انرژی,8,Med,suggest؛ بدون رقم ساختگی
+C-هیتر,هیتر مرغداری,commercial,C,Category,/products/heating,CTA,9,High,suggest گسترده؛ cannibal با جت‌هیتر — هاب گرمایش واحد
+C-هیتر,کوره هوای گرم مرغداری,commercial,C,Category/Product,/products/heating (کابینتی),استعلام هیتر کابینتی,9,Med,suggest؛ محصولات KHG
+C-تابشی,گرمایش تابشی مرغداری,comparison-info,C,Technical Guide,/magazine/comparison-of-heating-systems,CTA,8,Med,suggest محدود؛ صفحه مقایسه پوشش می‌دهد
+D-مقایسه-دانخوری,مقایسه دانخوری پروانه‌ای بشقابی زنجیری,comparison,D,Product guide,/magazine/feeder-types-comparison (پیشنهادی) → پویا,استعلام دانخوری پویا,10,Med,suggest دانخوری بشقابی/زنجیری قوی؛ مقایسه هدفمند برند
+D-مقایسه-دانخوری,دانخوری بشقابی مرغداری,commercial,D,Category,/products/feeding,CTA,9,High,suggest غنی؛ رقیب پارس/کوناوی — تمایز پویا
+D-مقایسه-دانخوری,دانخوری زنجیری مرغداری,commercial,D,Guide (مقایسه),feeder comparison,هدایت به پویا در صورت fit,7,Med–High,رقابت زنجیری؛ فقط به‌عنوان قیاس نه محصول اصلی
+D-نیپل,آبخوری نیپل مرغداری,commercial,D,Category,/products/drinking,استعلام نیپل,10,High,suggest + SERP karnotech/tina-sanat/modiranfarm
+D-نیپل,محاسبه تعداد آبخوری و دانخوری مرغ گوشتی,informational-calc,D,Calculator,/magazine/feeder-drinker-count-calc (پیشنهادی),CTA feeding+drinking,10,Med–High,صفحات قوی کارنوتک/مدیران‌فارم؛ فرصت CTA طیوران
+D-نیپل,سیستم آبخوری نیپل,commercial,D,Category,/products/drinking,استعلام,9,Med
+A-اتوماسیون,اتوماسیون سالن مرغداری,commercial-info,A,Service/Product,/services/poultry-hall-fitout + TS-019,مشاوره اتوماسیون در بسته نوسازی,8,High,suggest قوی؛ مقصد واضح محصول کنترلر؛ بعد از هسته تجهيز
+A-کارایی,کاهش تلفات با بهینه‌سازی تهویه و دانخوری,problem,A,Technical Guide,/magazine/... پس از evidence,CTA ممیزی,8,Med,intent مالک؛ نیاز SME
+E-پروژه,پروژه تجهیز سالن مرغ گوشتی قبل و بعد,case-study,E,Case Study,/magazine/before-and-after-renovation,CTA,—,—,BLOCKED تا evidence واقعی؛ URL در sitemap هست
+E-هزینه,هزینه تجهیز سالن مرغداری,commercial,A,Scenario pricing only,/magazine/cost-and-components-of-equipping-a-hall,CTA استعلام,—,High intent,BLOCKED رقم ثابت؛ فقط سناریو/اجزا پس از تأیید
