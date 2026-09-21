@@ -3,158 +3,25 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import fs from "fs";
-import { ARTICLES, PRODUCTS } from "./src/data/mockData";
 import cookieParser from "cookie-parser";
 import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
+import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, robotsTxt, sitemapXml, stripQuery } from "./server/seo";
+import { appendLead, leadsToCsv } from "./server/leads";
 
 dotenv.config();
-
-// Helper to get SEO metadata based on route
-function getSeoMetadata(reqPath: string): { title: string; description: string; ogType: string } {
-  const baseTitle = "Toyooran";
-  
-  if (reqPath === '/' || reqPath === '') {
-    return {
-      title: `صفحه اصلی | ${baseTitle}`,
-      description: "طیوران صنعت پویا، پیشگام در طراحی، تولید و اجرای مدرن‌ترین تجهیزات پرورشی و کارخانجات خوراک دام و طیور در خاورمیانه.",
-      ogType: "website"
-    };
-  }
-  
-  if (reqPath.startsWith('/products')) {
-    return {
-      title: `محصولات | ${baseTitle}`,
-      description: "کاتالوگ جامع محصولات و تجهیزات مدرن مرغداری، اتوماسیون سالن‌های پرورشی و ماشین‌آلات کارخانجات خوراک طیوران صنعت پویا.",
-      ogType: "website"
-    };
-  }
-  
-  if (reqPath.startsWith('/services')) {
-    return {
-      title: `خدمات | ${baseTitle}`,
-      description: "خدمات تخصصی طیوران صنعت پویا شامل طراحی و ساخت سوله‌های صنعتی، راه‌اندازی کارخانجات خوراک دام و طیور و مشاوره تخصصی.",
-      ogType: "website"
-    };
-  }
-  
-  if (reqPath.startsWith('/projects')) {
-    return {
-      title: `پروژه‌ها | ${baseTitle}`,
-      description: "نمونه کارهای اجرایی و پروژه‌های شاخص طیوران صنعت پویا در سطح کشور و خاورمیانه.",
-      ogType: "website"
-    };
-  }
-
-  if (reqPath.startsWith('/products/') && reqPath !== '/products/') {
-    const productId = reqPath.split('/')[2];
-    const product = PRODUCTS.find(p => p.id === productId || p.code === productId);
-    if (product) {
-      return {
-        title: `${product.name} | ${baseTitle}`,
-        description: product.shortDescription || product.fullDescription,
-        ogType: "product"
-      };
-    }
-  }
-
-  if (reqPath.startsWith('/magazine/')) {
-    const articleId = reqPath.split('/')[2];
-    const article = ARTICLES.find(a => a.id === articleId) as any;
-    if (article) {
-      return {
-        title: `${article.title} | مجله ${baseTitle}`,
-        description: article.excerpt || "مقاله تخصصی در مجله طیوران صنعت پویا",
-        ogType: "article"
-      };
-    }
-  }
-  
-  if (reqPath.startsWith('/magazine')) {
-    return {
-      title: `مجله تخصصی | ${baseTitle}`,
-      description: "دانش‌نامه و مجله تخصصی صنعت مرغداری. مقالات آموزشی پرورش طیور، تجهیزات و جدیدترین اخبار.",
-      ogType: "website"
-    };
-  }
-  
-  if (reqPath.startsWith('/about')) {
-    return {
-      title: `درباره ما | ${baseTitle}`,
-      description: "معرفی شرکت طیوران صنعت پویا، تاریخچه، گواهینامه‌ها و چشم‌انداز فعالیت در حوزه تجهیزات مدرن مرغداری.",
-      ogType: "website"
-    };
-  }
-  
-  if (reqPath.startsWith('/contact')) {
-    return {
-      title: `تماس با ما | ${baseTitle}`,
-      description: "ارتباط با کارشناسان فروش، پشتیبانی فنی و ثبت درخواست مشاوره برای راه‌اندازی و تجهیز مرغداری.",
-      ogType: "website"
-    };
-  }
-
-  // Default fallback (e.g. 404 pages)
-  return {
-    title: `پیدا نشد | ${baseTitle}`,
-    description: "صفحه مورد نظر در سامانه طیوران صنعت پویا یافت نشد.",
-    ogType: "website"
-  };
-}
-
-// Helper to inject SEO tags into raw HTML
-function injectSeoTags(html: string, reqPath: string, baseUrl: string): string {
-  const metadata = getSeoMetadata(reqPath);
-  const canonicalUrl = `${baseUrl}${reqPath}`;
-  
-  let modifiedHtml = html;
-  
-  // Replace <title>
-  modifiedHtml = modifiedHtml.replace(
-    /<title>.*?<\/title>/i,
-    `<title>${metadata.title}</title>`
-  );
-  
-  // Replace or inject meta description
-  if (modifiedHtml.includes('name="description"')) {
-    modifiedHtml = modifiedHtml.replace(
-      /<meta[^>]*name="description"[^>]*>/i,
-      `<meta name="description" content="${metadata.description}" />`
-    );
-  } else {
-    modifiedHtml = modifiedHtml.replace(
-      '</head>',
-      `  <meta name="description" content="${metadata.description}" />\n  </head>`
-    );
-  }
-  
-  // Inject OpenGraph, Twitter Cards, Canonical
-  const extraMeta = `
-    <link rel="canonical" href="${canonicalUrl}" />
-    <meta property="og:title" content="${metadata.title}" />
-    <meta property="og:description" content="${metadata.description}" />
-    <meta property="og:url" content="${canonicalUrl}" />
-    <meta property="og:type" content="${metadata.ogType}" />
-    <meta property="og:site_name" content="Toyooran" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${metadata.title}" />
-    <meta name="twitter:description" content="${metadata.description}" />
-  `;
-  
-  modifiedHtml = modifiedHtml.replace('</head>', `${extraMeta}\n  </head>`);
-  
-  // Noindex private routes
-  if (reqPath.startsWith('/admin') || reqPath.startsWith('/login') || reqPath.startsWith('/dashboard')) {
-    modifiedHtml = modifiedHtml.replace('</head>', `  <meta name="robots" content="noindex, nofollow" />\n  </head>`);
-  }
-  
-  return modifiedHtml;
-}
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
   app.disable('x-powered-by');
+  app.use((req, res, next) => {
+    const host = (req.hostname || "").toLowerCase();
+    if (host === "toyooran.com") {
+      return res.redirect(301, `${CANONICAL_ORIGIN}${req.originalUrl}`);
+    }
+    next();
+  });
   app.use((_req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -235,8 +102,23 @@ async function startServer() {
         location,
         message,
         source,
-        timestamp
+        timestamp,
+        isDecisionMaker,
+        timing
       } = req.body;
+      appendLead({
+        fullName,
+        phoneNumber,
+        companyName,
+        subject,
+        productName,
+        capacity,
+        location,
+        message,
+        source,
+        isDecisionMaker: Boolean(isDecisionMaker),
+        timing,
+      });
 
       const baleToken = process.env.BALE_BOT_TOKEN === 'AI_STUDIO_PREVIEW_DISABLED' ? '' : process.env.BALE_BOT_TOKEN;
       const baleChatId = process.env.BALE_CHAT_ID === 'AI_STUDIO_PREVIEW_DISABLED' ? '' : process.env.BALE_CHAT_ID;
@@ -317,52 +199,20 @@ async function startServer() {
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
-
-  // SEO: robots.txt
-  app.get("/robots.txt", (req, res) => {
-    const baseUrl = process.env.APP_URL || `https://${req.get('host')}`;
-    res.type('text/plain');
-    res.send(`User-agent: *
-Disallow: /admin
-Disallow: /login
-Disallow: /dashboard
-Disallow: /api/
-Allow: /
-
-Sitemap: ${baseUrl}/sitemap.xml`);
+  app.get("/api/admin/leads.csv", requireAdmin, (_req, res) => {
+    res.set({ "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": "attachment; filename=toyooran-leads.csv" });
+    res.send(leadsToCsv());
   });
 
-  // SEO: sitemap.xml
-  app.get("/sitemap.xml", (req, res) => {
-    const baseUrl = process.env.APP_URL || `https://${req.get('host')}`;
-    const date = new Date().toISOString().split('T')[0];
-    
-    // Static Routes
-    const staticRoutes = ['/', '/products', '/services', '/projects', '/magazine', '/about', '/contact'];
-    
-    const staticUrls = staticRoutes.map(route => `
-  <url>
-    <loc>${baseUrl}${route}</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>${route === '/' ? 'daily' : 'weekly'}</changefreq>
-    <priority>${route === '/' ? '1.0' : '0.9'}</priority>
-  </url>`).join('');
+  // SEO: robots.txt
+  app.get("/robots.txt", (_req, res) => {
+    res.type('text/plain');
+    res.send(robotsTxt());
+  });
 
-    // Add dynamic articles to sitemap
-    const articleUrls = ARTICLES.map(article => `
-  <url>
-    <loc>${baseUrl}/magazine/${article.id}</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`).join('');
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticUrls}${articleUrls}
-</urlset>`;
-    
+  app.get("/sitemap.xml", (_req, res) => {
     res.header('Content-Type', 'application/xml');
-    res.send(xml);
+    res.send(sitemapXml());
   });
 
   // Vite middleware for development
@@ -376,18 +226,13 @@ Sitemap: ${baseUrl}/sitemap.xml`);
     // Serve index.html for all other routes
     app.use(/.*/, async (req, res, next) => {
       try {
-        const url = req.originalUrl;
-        const baseUrl = process.env.APP_URL || `https://${req.get('host')}`;
+        const url = stripQuery(req.originalUrl);
         
         let template = fs.readFileSync(path.resolve('index.html'), 'utf-8');
         template = await vite.transformIndexHtml(url, template);
         
-        // Inject SEO metadata
-        const finalHtml = injectSeoTags(template, url, baseUrl);
-        
-        // 404 Status for unknown routes
-        const knownRoutes = ['/', '/products', '/services', '/projects', '/magazine', '/about', '/contact', '/admin'];
-        const isKnownRoute = knownRoutes.some(r => url === r || url.startsWith(`${r}/`));
+        const finalHtml = injectSeoTags(template, url);
+        const isKnownRoute = isKnownPublicPath(url);
         if (!isKnownRoute && url !== '/') {
            res.status(404).set({ 'Content-Type': 'text/html' }).end(finalHtml);
            return;
@@ -404,16 +249,11 @@ Sitemap: ${baseUrl}/sitemap.xml`);
     app.use(express.static(distPath, { index: false })); // Disable automatic index.html serving
     
     app.get(/.*/, (req, res) => {
-      const url = req.originalUrl;
-      const baseUrl = process.env.APP_URL || `https://${req.get('host')}`;
+      const url = stripQuery(req.originalUrl);
       
       let template = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
-      
-      // Inject SEO metadata
-      const finalHtml = injectSeoTags(template, url, baseUrl);
-      
-      const knownRoutes = ['/', '/products', '/services', '/projects', '/magazine', '/about', '/contact', '/admin'];
-      const isKnownRoute = knownRoutes.some(r => url === r || url.startsWith(`${r}/`));
+      const finalHtml = injectSeoTags(template, url);
+      const isKnownRoute = isKnownPublicPath(url);
       if (!isKnownRoute && url !== '/') {
          res.status(404).set({ 'Content-Type': 'text/html' }).send(finalHtml);
          return;

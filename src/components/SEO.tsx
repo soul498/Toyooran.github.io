@@ -32,7 +32,7 @@ export const SEO = ({ title, description, ogType = 'website' }: SEOProps) => {
     updateOrCreateMeta('meta[property="og:description"]', 'og:description', description, true);
     updateOrCreateMeta('meta[property="og:type"]', 'og:type', ogType, true);
     
-    const canonicalUrl = `${window.location.origin}${pathname}`;
+    const canonicalUrl = `https://www.toyooran.com${pathname === '/' ? '/' : pathname}`;
     updateOrCreateMeta('meta[property="og:url"]', 'og:url', canonicalUrl, true);
     
     updateOrCreateMeta('meta[name="twitter:card"]', 'twitter:card', 'summary_large_image');

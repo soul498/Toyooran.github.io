@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, User, Phone, FileText, Layers, CheckCircle2 } from 'lucide-react';
+import { sendNotificationToBale } from '../utils/sendToBale';
 
 interface FreeConsultationFormProps {
   initialSubject?: string;
@@ -19,25 +19,42 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
     phoneNumber: '',
     subject: initialSubject || 'مرغداری گوشتی',
     message: initialMessage + (initialProduct ? ` \nمحصول مورد نظر: ${initialProduct}` : ''),
+    location: '',
+    capacity: '',
+    isDecisionMaker: false,
+    timing: '',
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 4000);
-      setFormData({
-        fullName: '',
-        phoneNumber: '',
-        subject: 'مرغداری گوشتی',
-        message: '',
-      });
-    }, 1200);
+    await sendNotificationToBale({
+      fullName: formData.fullName,
+      phoneNumber: formData.phoneNumber,
+      subject: formData.subject,
+      message: formData.message,
+      location: formData.location,
+      capacity: formData.capacity,
+      productName: initialProduct,
+      source: 'contact-form',
+      isDecisionMaker: formData.isDecisionMaker,
+      timing: formData.timing,
+    });
+    setLoading(false);
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 4000);
+    setFormData({
+      fullName: '',
+      phoneNumber: '',
+      subject: 'مرغداری گوشتی',
+      message: '',
+      location: '',
+      capacity: '',
+      isDecisionMaker: false,
+      timing: '',
+    });
   };
 
   return (
@@ -129,7 +146,49 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
               </div>
             </div>
 
-            {/* Message */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <label className="text-[13px] font-bold text-slate-700 block">شهر / استان</label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="مثلاً مشهد"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[13px] font-bold text-slate-700 block">ظرفیت سالن (قطعه)</label>
+                <input
+                  type="text"
+                  value={formData.capacity}
+                  onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                  placeholder="مثلاً ۴۰۰۰۰"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[13px] font-bold text-slate-700 block">زمان تصمیم</label>
+              <select
+                value={formData.timing}
+                onChange={(e) => setFormData({ ...formData, timing: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
+              >
+                <option value="">انتخاب نشده</option>
+                <option value="این ماه">این ماه</option>
+                <option value="این فصل">این فصل</option>
+                <option value="سال جاری">سال جاری</option>
+              </select>
+            </div>
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-700">
+              <input
+                type="checkbox"
+                checked={formData.isDecisionMaker}
+                onChange={(e) => setFormData({ ...formData, isDecisionMaker: e.target.checked })}
+              />
+              تصمیم‌گیرنده خرید هستم
+            </label>
             <div className="space-y-1.5">
               <label className="text-[13px] font-bold text-slate-700 block">
                 توضیحات تکمیلی

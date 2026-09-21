@@ -71,7 +71,7 @@ const categoryCards = [
     }
   ];
 
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { InnerScrollIndicator } from './InnerScrollIndicator';
 
@@ -132,9 +132,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
               <Sparkles className="w-5 h-5 text-amber-500" />
               <span className="text-sm font-bold text-slate-800">خدمات مهندسی و اجرایی (Outcome-Driven)</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
-              پوشش کامل <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">چرخه عمر</span> پروژه‌های صنعتی
-            </h2>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
+              خدمات طراحی، تجهیز و نوسازی <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">مرغداری</span>
+            </h1>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed mb-10">
               ما صرفاً تجهیزات نمی‌فروشیم. طیوران صنعت پویا با بیش از نیم قرن تجربه، شریک مهندسی شما از فاز طراحی مفهومی سوله تا رسیدن به بالاترین راندمان و ظرفیت نامی است.
             </p>
@@ -153,6 +153,17 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
             {categoryCards.map((card, idx) => (
               <ServiceCard key={idx} idx={idx} card={card} onClick={() => onSelectCategory && onSelectCategory(card.id)} />
             ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+            <Link to="/services/poultry-hall-fitout" className="bg-white border border-slate-200 rounded-3xl p-6 font-black text-slate-900 hover:border-[#003F86]">
+              نوسازی و تجهیز کامل سالن مرغداری
+            </Link>
+            {services.slice(0, 4).map((service) => (
+              <Link key={service.id} to={`/services/${service.id}`} className="bg-white border border-slate-200 rounded-3xl p-6 font-bold text-slate-800 hover:border-[#003F86]">
+                {service.title}
+              </Link>
+            ))}
+          </div>
           </div>
         </div>
       </div>

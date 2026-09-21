@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Clock, Calendar, Share2, Tag, Link as LinkIcon, CheckCircle2, Image as ImageIcon } from 'lucide-react';
-import { Article, Product } from '../../types';
+import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../../data/mockData';
 import { LazyImage } from '../LazyImage';
 
@@ -148,18 +148,12 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                       <h4 className="text-white text-lg md:text-xl font-bold mb-2">نیاز به راهنمایی بیشتر دارید؟</h4>
                       <p className="text-blue-100 text-sm md:text-base font-medium">کارشناسان ما آماده ارائه مشاوره تخصصی و فنی به شما هستند.</p>
                     </div>
-                    <button 
-                      onClick={() => {
-                        // Very simple handling for CTAs targeting contact/quote
-                        if (link === '/contact') {
-                          // Try to navigate or just open modal
-                          window.location.hash = 'contact';
-                        }
-                      }}
+                    <Link
+                      to={link.startsWith('http') ? link : link}
                       className="relative z-10 whitespace-nowrap bg-amber-400 hover:bg-amber-500 text-blue-950 px-8 py-3.5 rounded-xl font-black text-sm transition-all shadow-lg shadow-amber-400/20"
                     >
                       {btnText}
-                    </button>
+                    </Link>
                   </div>
                 );
               }
@@ -186,10 +180,10 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {linkedProducts.map((p) => (
-                  <div 
+                  <Link
                     key={p.id}
-                    onClick={() => onSelectProductById(p.id)}
-                    className="flex items-center gap-4 p-4 rounded-2xl border border-slate-200 hover:border-[#003F86]/30 bg-slate-50/50 hover:bg-blue-50/50 transition-all cursor-pointer group"
+                    to={`/products/${p.code || p.id}`}
+                    className="flex items-center gap-4 p-4 rounded-2xl border border-slate-200 hover:border-[#003F86]/30 bg-slate-50/50 hover:bg-blue-50/50 transition-all group"
                   >
                     <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
                       <LazyImage src={p.image} alt={p.name} className="w-full h-full" imgClassName="w-full h-full object-cover group-hover:scale-110 transition-transform" />
@@ -198,13 +192,23 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                       <h4 className="font-bold text-slate-900 group-hover:text-[#003F86] transition-colors">{p.name}</h4>
                       <p className="text-xs text-slate-500 mt-1 line-clamp-1">{p.shortDescription}</p>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
           )}
           
-          {/* Tags */}
+          <div className="mt-10 pt-8 border-t border-slate-200 text-sm text-slate-600 space-y-2">
+            <p>نویسنده/بازبین فنی: واحد مهندسی طیوران صنعت پویا</p>
+            <p>تاریخ انتشار: {article.date}</p>
+            <p>
+              <Link className="text-[#003F86] font-bold" to="/products/ventilation">تهویه و هواکش</Link>
+              {' · '}
+              <Link className="text-[#003F86] font-bold" to="/services/poultry-hall-fitout">تجهیز و نوسازی سالن</Link>
+              {' · '}
+              <Link className="text-[#003F86] font-bold" to="/contact">درخواست مشاوره</Link>
+            </p>
+          </div>
           <div className="mt-16 pt-8 flex flex-wrap items-center gap-2">
              <Tag className="w-5 h-5 text-slate-400 mr-2" />
              {(article.tags && article.tags.length > 0 ? article.tags : ['دانش فنی', 'صنعت طیور', 'تجهیزات']).map(tag => (

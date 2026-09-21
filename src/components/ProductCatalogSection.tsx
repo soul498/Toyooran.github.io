@@ -8,7 +8,7 @@ import {
   ArrowLeft,
   Filter
 } from 'lucide-react';
-import { Product, ProductCategory } from '../types';
+import { Link } from 'react-router-dom';
 
 import { InnerScrollIndicator } from './InnerScrollIndicator';
 import { LazyImage } from './LazyImage';
@@ -94,9 +94,9 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
               <Zap className="w-5 h-5 text-amber-500" />
               <span className="text-sm font-bold text-slate-800">تجهیزات و ماشین‌آلات</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight mb-6">
-              فروشگاه <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">محصولات</span>
-            </h2>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight mb-6">
+              تجهیزات <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">مرغداری</span>
+            </h1>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
               تجهیزات تخصصی مرغداری، ماشین‌آلات خطوط تولید خوراک و محصولات موردنیاز صنعت دام، طیور و آبزیان
             </p>
@@ -179,9 +179,9 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                       className="group bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transform-gpu will-change-transform border border-slate-100 transition-all duration-300 flex flex-col"
                     >
                     {/* Image Area */}
-                    <div 
-                      className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 mb-6 cursor-pointer"
-                      onClick={() => onSelectProduct(product)}
+                    <Link
+                      to={`/products/${product.code || product.id}`}
+                      className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 mb-6 block"
                     >
                       <LazyImage
                         src={product.image}
@@ -197,24 +197,23 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                       </div>
                       
                       
-                    </div>
-
-                    {/* Content Area */}
+                    </Link>
                     <div className="px-2 flex-1 flex flex-col">
                       <div className="text-xs text-slate-400 font-bold mb-2">
                         کد محصول: {product.code}
                       </div>
                       
-                      <h3 
-                        className="text-xl md:text-2xl font-black text-slate-900 mb-8 group-hover:text-[#003F86] transition-colors cursor-pointer line-clamp-2"
-                        onClick={() => onSelectProduct(product)}
+                      <Link
+                        to={`/products/${product.code || product.id}`}
+                        className="text-xl md:text-2xl font-black text-slate-900 mb-8 group-hover:text-[#003F86] transition-colors line-clamp-2"
                       >
                         {product.name}
-                      </h3>
+                      </Link>
 
                       {/* Action Buttons */}
                       <div className="mt-auto flex items-center gap-3">
-                        <button
+                        <Link
+                          to="/contact"
                           onClick={(e) => {
                             e.stopPropagation();
                             onRequestQuoteForProduct(product);
@@ -223,18 +222,14 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                         >
                           <PhoneCall className="w-4 h-4" />
                           استعلام قیمت
-                        </button>
-                        
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSelectProduct(product);
-                          }}
+                        </Link>
+                        <Link
+                          to={`/products/${product.code || product.id}`}
                           className="w-14 h-14 shrink-0 flex justify-center items-center bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-2xl transition-colors"
                           title="مشاهده جزئیات کامل"
                         >
                           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </motion.div>

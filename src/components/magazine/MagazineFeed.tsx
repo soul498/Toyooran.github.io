@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import { Clock, Calendar, ArrowLeft, ChevronLeft, Sparkles } from 'lucide-react';
-import { Article } from '../../types';
+import { Link } from 'react-router-dom';
 import { InnerScrollIndicator } from '../InnerScrollIndicator';
 import { LazyImage } from '../LazyImage';
 
@@ -115,9 +115,9 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.4 }}
-              className="mb-12 group cursor-pointer relative"
-              onClick={() => onSelectArticle(featuredArticle)}
+              className="mb-12 group relative"
             >
+              <Link to={`/magazine/${featuredArticle.id}`} className="block">
               {/* Highlight glow behind featured */}
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-amber-500/20 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10" />
               
@@ -157,6 +157,7 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
                   </div>
                 </div>
               </div>
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>
@@ -174,9 +175,9 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
                 key={article.id}
-                onClick={() => onSelectArticle(article)}
-                className="relative bg-white transform-gpu will-change-transform rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer flex flex-col h-full origin-center"
+                className="relative bg-white transform-gpu will-change-transform rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full origin-center"
               >
+                <Link to={`/magazine/${article.id}`} className="flex flex-col h-full">
                 {/* Accent Top Border */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-30" />
                 
@@ -213,6 +214,7 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
                      </span>
                   </div>
                 </div>
+                </Link>
               </motion.div>
             ))}
         </motion.div>

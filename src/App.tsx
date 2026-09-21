@@ -1,4 +1,7 @@
 import { ProductPage } from './components/ProductPage';
+import { ProductCatalogSection } from './components/ProductCatalogSection';
+import { ServicePage } from './components/ServicePage';
+import { ProjectPage } from './components/ProjectPage';
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
@@ -18,7 +21,6 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { TrustBar } from './components/TrustBar';
 import { CategoryHexSection } from './components/CategoryHexSection';
-import { ProductCatalogSection } from './components/ProductCatalogSection';
 import { WorkflowSection } from './components/WorkflowSection';
 import { ServicesSection } from './components/ServicesSection';
 import { FeaturedProjectsSection } from './components/FeaturedProjectsSection';
@@ -158,7 +160,8 @@ const MainAppInner: React.FC = () => {
 
   const handleSelectCategory = (cat: ProductCategory | 'all') => {
     setSelectedCategory(cat);
-    navigate('/products');
+    if (cat === 'all') navigate('/products');
+    else navigate(`/products/${cat}`);
   };
 
   // Unified Handler: Redirects all quotes and consultations to the unified form in Contact Us
@@ -230,7 +233,7 @@ const MainAppInner: React.FC = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={
-            <SEORoute title="صفحه اصلی | Toyooran" description="طیوران صنعت پویا، پیشگام در طراحی، تولید و اجرای مدرن‌ترین تجهیزات پرورشی و کارخانجات خوراک دام و طیور در خاورمیانه.">
+            <SEORoute title="تجهیز و نوسازی سالن مرغداری | طیوران صنعت پویا" description="طراحی، تأمین تجهیزات و اجرای نوسازی سالن مرغداری: تهویه، گرمایش، دانخوری و آبخوری. استعلام فنی از طیوران صنعت پویا.">
               <Hero
                 cmsHero={heroCms}
                 onNavigate={handleNavigateSection}
@@ -252,7 +255,7 @@ const MainAppInner: React.FC = () => {
           } />
           <Route path="/products/:productId" element={<ProductPage />} />
           <Route path="/products" element={
-            <SEORoute title="محصولات | Toyooran" description="کاتالوگ جامع محصولات و تجهیزات مدرن مرغداری، اتوماسیون سالن‌های پرورشی و ماشین‌آلات کارخانجات خوراک طیوران صنعت پویا.">
+            <SEORoute title="تجهیزات مرغداری: تهویه، هیتر، دانخوری، آبخوری | طیوران صنعت پویا" description="کاتالوگ هواکش، جت‌هیتر، دانخوری پروانه‌ای و آبخوری نیپل. استعلام قیمت.">
               <ProductCatalogSection
                 products={products}
                 selectedCategory={selectedCategory}
@@ -262,8 +265,9 @@ const MainAppInner: React.FC = () => {
               />
             </SEORoute>
           } />
+          <Route path="/services/:serviceId" element={<ServicePage onOpenConsultation={(title) => handleOpenUnifiedConsultation(title, undefined, `مشاوره درباره خدمت: ${title}`)} />} />
           <Route path="/services" element={
-            <SEORoute title="خدمات | Toyooran" description="خدمات تخصصی طیوران صنعت پویا شامل طراحی و ساخت سوله‌های صنعتی، راه‌اندازی کارخانجات خوراک دام و طیور و مشاوره تخصصی.">
+            <SEORoute title="خدمات طراحی و تجهیز مرغداری | طیوران صنعت پویا" description="از طراحی سالن تا نصب تهویه، گرمایش و سیستم دان. درخواست مشاوره فنی.">
               <ServicesSection
                 services={services}
                 onSelectService={setSelectedService}
@@ -272,8 +276,9 @@ const MainAppInner: React.FC = () => {
               />
             </SEORoute>
           } />
+          <Route path="/projects/:projectId" element={<ProjectPage onOpenConsultation={(title) => handleOpenUnifiedConsultation('سوله و سالن صنعتی', undefined, `مشاوره درباره پروژه: ${title}`)} />} />
           <Route path="/projects" element={
-            <SEORoute title="پروژه‌های ویژه مرغداری | Toyooran" description="نمونه کارهای اجرایی و پروژه‌های شاخص طیوران صنعت پویا در سطح کشور.">
+            <SEORoute title="پروژه‌های تجهیز مرغداری | طیوران صنعت پویا" description="نمونه کارهای اجرایی طیوران صنعت پویا در سالن مرغداری و کارخانه خوراک.">
               <FeaturedProjectsSection
                 projects={projects}
                 onSelectProject={setSelectedProject}

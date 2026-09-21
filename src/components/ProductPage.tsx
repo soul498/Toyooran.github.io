@@ -1,15 +1,31 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ArrowRight, PhoneCall, Sparkles, Layers, Package, Zap, Settings } from 'lucide-react';
 import { LazyImage } from './LazyImage';
 import { NotFoundPage } from './NotFoundPage';
 import { SEO } from './SEO';
+import { ProductCatalogSection } from './ProductCatalogSection';
+import { ProductCategory } from '../types';
+
+const CATEGORY_IDS: ProductCategory[] = ['heating', 'ventilation', 'drinking', 'cooling', 'inlet', 'feeding', 'cage', 'silo', 'other'];
 
 export const ProductPage: React.FC = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { products } = useData();
+
+  if (productId && CATEGORY_IDS.includes(productId as ProductCategory)) {
+    return (
+      <ProductCatalogSection
+        products={products}
+        selectedCategory={productId as ProductCategory}
+        onSelectCategory={(cat) => navigate(cat === 'all' ? '/products' : `/products/${cat}`)}
+        onSelectProduct={(product) => navigate(`/products/${product.code || product.id}`)}
+        onRequestQuoteForProduct={(product) => navigate('/contact')}
+      />
+    );
+  }
 
   const product = products.find(p => p.id === productId || p.code === productId);
 
@@ -26,13 +42,13 @@ export const ProductPage: React.FC = () => {
       />
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Breadcrumb / Back button */}
-        <button 
-          onClick={() => navigate('/products')}
-          className="flex items-center gap-2 text-slate-500 hover:text-[#003F86] transition-colors mb-8 text-sm font-bold bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200"
+        <Link
+          to="/products"
+          className="flex items-center gap-2 text-slate-500 hover:text-[#003F86] transition-colors mb-8 text-sm font-bold bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 w-fit"
         >
           <ArrowRight className="w-4 h-4" />
           <span>بازگشت به محصولات</span>
-        </button>
+        </Link>
 
         <div className="bg-white rounded-[3rem] shadow-xl border border-slate-200 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">

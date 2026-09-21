@@ -7,7 +7,8 @@ export interface FormSubmissionPayload {
   capacity?: string;
   location?: string;
   message?: string;
-  source?: string;
+  isDecisionMaker?: boolean;
+  timing?: string;
 }
 
 export async function sendNotificationToBale(payload: FormSubmissionPayload): Promise<{ success: boolean; message: string }> {

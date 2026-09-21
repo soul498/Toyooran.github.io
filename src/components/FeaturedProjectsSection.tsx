@@ -16,7 +16,7 @@ import { Project } from '../types';
 import { PROJECTS } from '../data/mockData';
 
 import { InnerScrollIndicator } from './InnerScrollIndicator';
-import { UnderConstruction } from './UnderConstruction';
+import { Link } from 'react-router-dom';
 import { LazyImage } from './LazyImage';
 
 interface FeaturedProjectsSectionProps {
@@ -82,9 +82,9 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
               <FileCheck className="w-5 h-5 text-amber-500" />
               <span className="text-sm font-bold text-slate-800">مطالعات موردی (Case Studies)</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
               پروژه‌های شاخص <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">اجرا شده</span>
-            </h2>
+            </h1>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
               اثبات عملکرد با نتایج واقعی در ظرفیت، بهبود ضریب تبدیل (FCR) و کاهش تلفات. پروژه‌هایی که استانداردهای صنعت طیور را ارتقا داده‌اند.
             </p>
@@ -93,11 +93,16 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
         <InnerScrollIndicator />
       </div>
 
-      <div className="w-full relative z-10 -mt-16">
-        <UnderConstruction 
-          title="بخش پروژه‌ها در حال بروزرسانی است" 
-          description="ما در حال تهیه مستندات کامل، گالری تصاویر و تحلیل‌های تخصصی از بزرگترین پروژه‌های اجرا شده در سراسر کشور هستیم. این بخش به زودی تکمیل خواهد شد."
-        />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-20 grid md:grid-cols-2 gap-6">
+        {displayedProjects.map((project) => (
+          <Link key={project.id} to={`/projects/${project.id}`} className="bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-lg">
+            <LazyImage src={project.image} alt={project.title} className="w-full h-48" />
+            <div className="p-5">
+              <h2 className="font-black text-slate-900 mb-2">{project.title}</h2>
+              <p className="text-sm text-slate-600">{project.location} · {project.year}</p>
+            </div>
+          </Link>
+        ))}
       </div>
     </section>
   );
