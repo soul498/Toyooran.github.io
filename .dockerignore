@@ -1,0 +1,16 @@
+.git
+.forgejo
+.github
+.cursor
+node_modules
+dist
+docs
+workflows
+*.md
+.env
+.env.*
+!.env.example
+data
+backups
+*.log
+scripts

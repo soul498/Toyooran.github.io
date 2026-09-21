@@ -1,9 +1,32 @@
-# سند CI/CD (Continuous Integration / Continuous Deployment)
+# CI/CD طیوران — Forgejo محلی
 
-## فرآیند بیلد و دیپلوی
-- **محیط توسعه:** پلتفرم Google AI Studio.
-- **بیلد (Build):** با اجرای دستور `npm run build` توسط ابزار Vite، کدهای TypeScript و Tailwind پردازش شده و باندل نهایی در پوشه `dist` قرار می‌گیرد.
-- **سرور اجرای نهایی:** پس از بیلد، فایل‌های استاتیک ایجاد شده آماده میزبانی روی سرویس‌های ابری (مثل Google Cloud Run یا هر CDN دیگری) هستند.
+سورس حقیقت git روی همین سرور است: `https://git.toyooran.com/mhzare/toyooran.git`.
+دیپلوی از GitHub، Docker Hub و GitHub Actions استفاده نمی‌کند.
 
-## نگهداری
-- در صورت استفاده از ساختار فعلی کلاینت‌ساید (SPA)، نیاز به تنظیمات پیچیده سرور نیست و مسیریابی (Routing) در سمت کلاینت مدیریت می‌شود.
+## چرا این مدل
+
+اینترنت بین‌الملل (GitHub، registry-1.docker.io) از این سرور اغلب قطع یا فیلتر است.
+Forgejo، runner، کد، ایمیج `toyooran:*` و npm داخل ایمیج قبلی همه روی دیسک محلی هستند.
+
+## مسیر دولوپر / ایجنت
+
+کار در `/opt/Toyooran`. push به `origin/main` دیپلوی می‌کند.
+
+| کار | دستور |
+|---|---|
+| وضعیت | `cd /opt/Toyooran && git status -sb` |
+| دیپلوی از git | `toyooran-deploy.sh` |
+| دیپلوی کار در حال انجام | `toyooran-deploy.sh --from-workdir` |
+| rollback | `toyooran-rollback.sh` |
+| سلامت | `curl -fsS http://127.0.0.1:3000/api/health` |
+
+بیلد `FROM toyooran:prev` است تا بدون Docker Hub انجام شود. `npm install` با `--prefer-offline` از `node_modules` همان ایمیج استفاده می‌کند.
+
+## دسترسی اگر DNS یا نت خارجی خوابید
+
+روی خود سرور `git.toyooran.com` در `/etc/hosts` به `127.0.0.1` است.
+از بیرون: سایت روی `www.toyooran.com`، گیت روی `git.toyooran.com`، پشتیبان Forgejo روی `https://IP:8443`.
+
+## داده
+
+`DATA_DIR=/opt/toyooran-data` روی کانتینر mount می‌شود. بکاپ SQLite در `/opt/toyooran-data/backups`.
