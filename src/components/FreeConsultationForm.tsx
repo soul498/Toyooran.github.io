@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Send, User, Phone, FileText, Layers, CheckCircle2 } from 'lucide-react';
 import { sendNotificationToBale } from '../utils/sendToBale';
 
 interface FreeConsultationFormProps {

@@ -164,7 +164,6 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
               </Link>
             ))}
           </div>
-          </div>
         </div>
       </div>
     </section>

@@ -9,6 +9,7 @@ import {
   Filter
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Product, ProductCategory } from '../types';
 
 import { InnerScrollIndicator } from './InnerScrollIndicator';
 import { LazyImage } from './LazyImage';
