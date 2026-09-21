@@ -4,9 +4,9 @@
 .cursor
 node_modules
 dist
-docs
 workflows
 *.md
+!AGENTS.md
 .env
 .env.*
 !.env.example

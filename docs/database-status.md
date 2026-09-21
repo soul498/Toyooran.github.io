@@ -1,14 +1,29 @@
-# وضعیت و سلامت دیتابیس (Database Status)
+# داده و پایداری
 
-## وضعیت فعلی
-- **نوع ذخیره‌سازی:** Local State (Memory)
-- **مدیریت داده‌ها:** تمامی داده‌ها در حال حاضر به صورت Mock Data در فایلی به نام `DataContext.tsx` نگهداری می‌شوند. با رفرش شدن مرورگر، تغییرات اعمال شده از طریق پنل ادمین (در صورتی که در LocalStorage ذخیره نشده باشند) به حالت اولیه بازمی‌گردند.
+## production روی این سرور
 
-## سلامت و عملکرد
-- **عملکرد:** بسیار سریع، زیرا هیچ ریکوئست شبکه‌ای (Network Request) برای دریافت داده‌ها ارسال نمی‌شود.
-- **پایداری:** ناپایدار برای محیط Production.
+| ذخیره | مسیر | محتوا |
+|---|---|---|
+| SQLite WAL | `/opt/toyooran-data/toyooran.sqlite` | ادمین، نشست، MFA، `admin_state`، audit |
+| JSONL | `/opt/toyooran-data/qualified-leads.jsonl` | lead فرم سایت |
+| بکاپ | `/opt/toyooran-data/backups/` | کپی SQLite هنگام دیپلوی / cron |
 
-## توصیه‌های توسعه آینده
-برای استقرار پروژه در محیط واقعی، نیاز است که دیتابیس فعلی از حالت Local به یکی از موارد زیر مهاجرت کند:
-1. **Cloud SQL (PostgreSQL):** در صورت نیاز به دیتابیس رابطه‌ای.
-2. **Firebase Firestore:** برای راه‌اندازی سریع دیتابیس NoSQL به همراه سیستم احراز هویت (Authentication) برای پنل ادمین.
+`DATA_DIR` باید volume باشد. داخل ایمیج Docker ماندگار نیست.
+
+جدول‌ها در `server/auth.ts` ساخته می‌شوند: `admins`, `sessions`, `admin_state`, `audit_log`, `mfa_recovery_codes`, `password_history`, `rate_limits`.
+
+اولین ادمین فقط اگر جدول خالی باشد و `ADMIN_BOOTSTRAP_PASSWORD` (≥۱۶ کاراکتر) ست شده باشد ساخته می‌شود. تغییر بعدی env رمز موجود را عوض نمی‌کند.
+
+## سایت عمومی
+
+پیش‌فرض RAM از `mockData.ts`. `localStorage` هنوز برای بخشی از `companyInfo` در Context خوانده می‌شود؛ مسیر اصلی persistence ادمین SQLite است نه localStorage.
+
+سند قدیمی که فقط «Memory / LocalStorage» می‌گفت منسوخ است.
+
+## توسعه محلی
+
+بدون volume هم SQLite در `./data/toyooran.sqlite` نسبی ساخته می‌شود. آن را commit نکن.
+
+## بکاپ ادمین در UI
+
+`BackupTab` JSON از state می‌سازد و در نسخه‌های قدیمی کلید localStorage می‌نوشت. منبع حقیقت سرور همان API state است؛ بعد از import، ذخیره از طریق Context به SQLite برمی‌گردد اگر نشست ادمین فعال باشد.

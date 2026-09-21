@@ -7,9 +7,10 @@ cd /opt/Toyooran
 git status -sb
 ```
 
-قبل از ادیت: `docs/seo` و قرارداد canonical `https://www.toyooran.com` را بخوان.
+قبل از ادیت: `docs/README.md`، `docs/source-map.md` و قرارداد canonical `https://www.toyooran.com` را بخوان.
 SEO عمومی باید در HTML اولیه باشد (`server/seo.ts`). canonical، Schema، sitemap و prerender را برای UI حذف نکن.
 `/admin` و `/api` نباید ایندکس شوند. ادعای فنی را اختراع نکن.
+همهٔ commitها روی `main`. شاخهٔ دیگر نساز.
 
 ## مسیر قطعی کار و دیپلوی
 

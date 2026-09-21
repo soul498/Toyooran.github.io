@@ -10,7 +10,7 @@ Forgejo، runner، کد، ایمیج `toyooran:*` و npm داخل ایمیج ق�
 
 ## مسیر دولوپر / ایجنت
 
-کار در `/opt/Toyooran`. push به `origin/main` دیپلوی می‌کند.
+کار در `/opt/Toyooran` روی شاخه **`main`**. push به `origin/main` دیپلوی می‌کند. شاخه جدا نساز.
 
 | کار | دستور |
 |---|---|
