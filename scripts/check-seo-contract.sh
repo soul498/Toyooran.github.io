@@ -29,8 +29,10 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   echo "$html" | grep -q 'https://www.toyooran.com/' || fail "live HTML missing www.toyooran.com"
   echo "$html" | grep -q 'application/ld+json' || fail "live HTML missing JSON-LD"
   echo "$html" | grep -q 'seo-prerender' || fail "live HTML missing prerender"
-  curl -fsS --max-time 5 http://127.0.0.1:3000/robots.txt | grep -q 'Disallow: /admin' || fail "live robots"
-  curl -fsS --max-time 5 http://127.0.0.1:3000/sitemap.xml | grep -q 'www.toyooran.com' || fail "live sitemap"
+  robots="$(curl -fsS --max-time 5 http://127.0.0.1:3000/robots.txt)"
+  echo "$robots" | grep -q 'Disallow: /admin' || fail "live robots"
+  sitemap="$(curl -fsS --max-time 5 http://127.0.0.1:3000/sitemap.xml)"
+  echo "$sitemap" | grep -q 'www.toyooran.com' || fail "live sitemap"
   ok "live HTTP SEO"
 else
   echo "check-seo: skip live HTTP (app not on :3000)"
