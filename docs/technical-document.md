@@ -74,6 +74,10 @@
 
 CSP، HSTS در production، مخفی کردن `X-Powered-By`. اسکریپت Cloudflare Turnstile در CSP مجاز است.
 
+## شکاف شناخته‌شده در کد
+
+`AiEngineerAssistantModal` به `POST /api/chat` درخواست می‌دهد؛ در `server.ts` این روت پیاده نشده. UI محاسبات تهویه را سمت کلاینت هم دارد.
+
 ## محیط اجرا روی این سرور
 
 کانتینر `toyooran-app`، bind `127.0.0.1:3000`، volume `/opt/toyooran-data`.
