@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AparatIcon } from "./AparatIcon";
-import toast from 'react-hot-toast';
+import { SocialIconLink } from './SocialIconLink';
 import { 
   Phone, Mail, MapPin, Clock, Building2, Factory, Map,
   MessageCircle, Instagram, Linkedin, FileText, Send, Youtube, Tv, Grid
@@ -112,85 +112,55 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                 {companyInfo.socialLinks && (
                   <div className="mt-8 pt-6 border-t border-white/10">
                     <span className="text-slate-300 text-xs block mb-4">شبکه‌های اجتماعی:</span>
-                    <div className="flex items-center gap-3">
-                      <a 
-                        href={companyInfo.socialLinks.instagram || '#'} 
-                        onClick={(e) => {
-                          if (!companyInfo.socialLinks.instagram) {
-                            e.preventDefault();
-                            toast('به زودی صفحه اینستاگرام ما راه‌اندازی می‌شود', { icon: '✨' });
-                          }
-                        }}
-                        target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group"
-                        aria-label="اینستاگرام">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <SocialIconLink
+                        href={companyInfo.socialLinks.instagram}
+                        label="اینستاگرام"
+                        comingSoon="به زودی صفحه اینستاگرام ما راه‌اندازی می‌شود"
+                        className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group"
+                      >
                         <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                      </a>
-                      <a 
-                        href={companyInfo.socialLinks.telegram || '#'} 
-                        onClick={(e) => {
-                          if (!companyInfo.socialLinks.telegram) {
-                            e.preventDefault();
-                            toast('به زودی کانال تلگرام ما راه‌اندازی می‌شود', { icon: '✨' });
-                          }
-                        }}
-                        target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group"
-                        aria-label="تلگرام">
+                      </SocialIconLink>
+                      <SocialIconLink
+                        href={companyInfo.socialLinks.telegram}
+                        label="تلگرام"
+                        comingSoon="به زودی کانال تلگرام ما راه‌اندازی می‌شود"
+                        className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group"
+                      >
                         <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                      </a>
-                      <a 
-                        href={companyInfo.socialLinks.aparat || '#'} 
-                        onClick={(e) => {
-                          if (!companyInfo.socialLinks.aparat) {
-                            e.preventDefault();
-                            toast('به زودی کانال آپارات ما راه‌اندازی می‌شود', { icon: '✨' });
-                          }
-                        }}
-                        target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
-                        aria-label="آپارات">
-                        <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                      </a>
-                      <a 
-                        href={companyInfo.socialLinks.rubika || '#'} 
-                        onClick={(e) => {
-                          if (!companyInfo.socialLinks.rubika) {
-                            e.preventDefault();
-                            toast('به زودی کانال روبیکا ما راه‌اندازی می‌شود', { icon: '✨' });
-                          }
-                        }}
-                        target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
-                        aria-label="روبیکا">
+                      </SocialIconLink>
+                      <SocialIconLink
+                        href={companyInfo.socialLinks.aparat}
+                        label="آپارات"
+                        comingSoon="به زودی کانال آپارات ما راه‌اندازی می‌شود"
+                        className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
+                      >
+                        <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                      </SocialIconLink>
+                      <SocialIconLink
+                        href={companyInfo.socialLinks.rubika}
+                        label="روبیکا"
+                        comingSoon="به زودی کانال روبیکا ما راه‌اندازی می‌شود"
+                        className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
+                      >
                         <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                      </a>
-                      <a 
-                        href={companyInfo.socialLinks.youtube || '#'} 
-                        onClick={(e) => {
-                          if (!companyInfo.socialLinks.youtube) {
-                            e.preventDefault();
-                            toast('به زودی کانال یوتیوب ما راه‌اندازی می‌شود', { icon: '✨' });
-                          }
-                        }}
-                        target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
-                        aria-label="یوتیوب">
+                      </SocialIconLink>
+                      <SocialIconLink
+                        href={companyInfo.socialLinks.youtube}
+                        label="یوتیوب"
+                        comingSoon="به زودی کانال یوتیوب ما راه‌اندازی می‌شود"
+                        className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
+                      >
                         <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                      </a>
-                      <a 
-                        href={companyInfo.socialLinks.linkedin || '#'} 
-                        onClick={(e) => {
-                          if (!companyInfo.socialLinks.linkedin) {
-                            e.preventDefault();
-                            toast('به زودی صفحه لینکدین ما راه‌اندازی می‌شود', { icon: '✨' });
-                          }
-                        }}
-                        target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0077b5] hover:border-transparent transition-all duration-300 group"
-                        aria-label="لینکدین">
+                      </SocialIconLink>
+                      <SocialIconLink
+                        href={companyInfo.socialLinks.linkedin}
+                        label="لینکدین"
+                        comingSoon="به زودی صفحه لینکدین ما راه‌اندازی می‌شود"
+                        className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0077b5] hover:border-transparent transition-all duration-300 group"
+                      >
                         <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                      </a>
+                      </SocialIconLink>
                     </div>
                   </div>
                 )}
@@ -286,9 +256,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                             </div>
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10 pointer-events-none" />
                             <div className="relative z-20 mt-auto p-6 sm:p-10 lg:p-12 flex flex-col w-full text-right pointer-events-auto">
-                                <h4 className="text-3xl sm:text-4xl font-black text-white mb-5 leading-tight">
+                                <p className="text-3xl sm:text-4xl font-black text-white mb-5 leading-tight">
                                   {activeLocation.title || (activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : 'شعبه')}
-                                </h4>
+                                </p>
                                 <a
                                   href={neshanMapsUrl(activeLocation.address, (activeLocation as any).lat, (activeLocation as any).lng)}
                                   target="_blank"

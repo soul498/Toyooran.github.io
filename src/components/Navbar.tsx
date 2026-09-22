@@ -80,7 +80,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="h-10 sm:h-12 flex items-center justify-center relative group-hover:-translate-y-0.5 transition-transform duration-300">
              <img 
                src="/images/logo-wide.png" 
-               alt="طیوران صنعت پویا" 
+               alt="طیوران صنعت پویا"
+               width={180}
+               height={48}
                className="h-full w-auto object-contain"
              />
           </div>
@@ -123,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Minimal Search Trigger */}
           <button 
             onClick={onOpenSearch}
-            className="flex items-center justify-center w-10 h-10 bg-white/50 hover:bg-white border border-slate-200/50 hover:border-blue-200 transition-all duration-300 rounded-full group cursor-pointer shadow-sm hover:shadow-md"
+            className="flex items-center justify-center min-w-11 min-h-11 w-11 h-11 bg-white/50 hover:bg-white border border-slate-200/50 hover:border-blue-200 transition-all duration-300 rounded-full group cursor-pointer shadow-sm hover:shadow-md"
             aria-label="جستجو"
             type="button"
             title="جستجو"
@@ -136,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-2 lg:hidden relative z-[60]">
           <button
             onClick={onOpenSearch}
-            className="p-2.5 text-slate-500 hover:text-[#003F86] hover:bg-white rounded-full transition-colors bg-white/50 backdrop-blur-md border border-white/60 shadow-sm"
+            className="min-w-11 min-h-11 p-2.5 text-slate-500 hover:text-[#003F86] hover:bg-white rounded-full transition-colors bg-white/50 backdrop-blur-md border border-white/60 shadow-sm"
             aria-label="جستجو"
           >
             <Search className="w-5 h-5" />
@@ -144,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             id="mobile-menu-toggle-btn"
-            className="p-2.5 rounded-full text-slate-700 hover:bg-white transition-all duration-300 bg-white/50 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 flex items-center justify-center relative overflow-hidden"
+            className="min-w-11 min-h-11 p-2.5 rounded-full text-slate-700 hover:bg-white transition-all duration-300 bg-white/50 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 flex items-center justify-center relative overflow-hidden"
             aria-label={mobileMenuOpen ? 'بستن منو' : 'باز کردن منو'}
             aria-expanded={mobileMenuOpen}
           >

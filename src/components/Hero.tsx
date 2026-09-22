@@ -49,20 +49,21 @@ export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void
     <button
       type="button"
       onClick={onClick}
+      aria-label={`مشاهده جزئیات ${card.title}`}
       className="relative group w-full h-[320px] sm:h-[360px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 hover:border-blue-500/50 transition-colors cursor-pointer text-right"
     >
       <div className="absolute inset-[2px] rounded-[calc(2rem-2px)] bg-[#001c3d] z-10 overflow-hidden flex flex-col p-6">
         {card.bgImage && (
           <div className="absolute inset-0 z-0 opacity-50 pointer-events-none">
-            <LazyImage src={card.bgImage} alt="" className="w-full h-full" imgClassName="w-full h-full object-cover" />
+            <LazyImage src={card.bgImage} alt="" className="w-full h-full" imgClassName="w-full h-full object-cover" width={800} height={800} />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-[#001c3d]/40 via-[#001c3d]/70 to-[#001c3d]/95 z-0 pointer-events-none" />
         <div className="relative z-20 flex-1 flex flex-col items-center justify-center text-center">
           <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-4">
-            <Icon className="w-7 h-7 text-amber-400" />
+            <Icon className="w-7 h-7 text-amber-400" aria-hidden="true" />
           </div>
-          <h3 className="text-lg font-black text-white mb-2">{card.title}</h3>
+          <p className="text-lg font-black text-white mb-2">{card.title}</p>
           <p className="text-xs text-slate-300 leading-relaxed px-2">{card.desc}</p>
         </div>
         <div className="relative z-20 text-center text-xs font-bold text-amber-300 pb-1">مشاهده جزئیات</div>
@@ -82,7 +83,6 @@ const Hero: React.FC<HeroProps> = ({
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const cardsSectionRef = useRef<HTMLDivElement>(null);
-  const lite = isLiteDevice();
 
   // Default beautiful images for poultry & feed mill
   const defaultImages = [
@@ -126,7 +126,7 @@ const Hero: React.FC<HeroProps> = ({
       badgeBg: 'bg-blue-50',
       badgeText: 'text-[#003F86]',
       specs: ['پرس پلت ۲ الی ۲۰ تن/ساعت', 'میکرودایزینگ دقیق افزودنی‌ها'],
-      bgImage: '/images/service_feed_machinery.jpg'
+      bgImage: '/images/service_feed_machinery.webp'
     },
     {
       id: 'ventilation',
@@ -139,7 +139,7 @@ const Hero: React.FC<HeroProps> = ({
       badgeBg: 'bg-amber-50',
       badgeText: 'text-amber-700',
       specs: ['بشقاب پروانه‌ای لیسانس آمریکا', 'جت هیتر و سیستم‌های گرمایشی'],
-      bgImage: '/images/service_farm_equipment.jpg'
+      bgImage: '/images/service_farm_equipment.webp'
     },
     {
       id: 'cooling',
@@ -152,7 +152,7 @@ const Hero: React.FC<HeroProps> = ({
       badgeBg: 'bg-emerald-50',
       badgeText: 'text-emerald-700',
       specs: ['سازه‌های سبک و بهداشتی', 'عایق‌بندی و هوابندی کامل'],
-      bgImage: '/images/service_turnkey_shed.jpg'
+      bgImage: '/images/service_turnkey_shed.webp'
     },
     {
       id: 'other',
@@ -165,7 +165,7 @@ const Hero: React.FC<HeroProps> = ({
       badgeBg: 'bg-purple-50',
       badgeText: 'text-purple-700',
       specs: ['کنسانتره گوشتی و تخم‌گذار', 'پریمیکس دامی و روغن‌های گیاهی'],
-      bgImage: '/images/service_supplements.jpg'
+      bgImage: '/images/service_supplements.webp'
     },
   ];
 
@@ -197,14 +197,12 @@ const Hero: React.FC<HeroProps> = ({
         
         {/* Full-bleed Background Image with Elegant Vignette */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 bg-slate-950">
-          {(lite ? heroImages.slice(0, 1) : heroImages).map((src, index) => (
-            <LazyHeroImage
-              key={src}
-              src={src}
-              alt={lite || currentImageIndex === index ? "شرکت طیوران صنعت پویا" : ""}
-              isActive={lite ? true : currentImageIndex === index}
-            />
-          ))}
+          <LazyHeroImage
+            key={heroImages[currentImageIndex] || heroImages[0]}
+            src={heroImages[currentImageIndex] || heroImages[0]}
+            alt="شرکت طیوران صنعت پویا"
+            isActive
+          />
           {/* Subtle gradient to ensure text readability but keep image prominent */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/40 to-slate-950/90 z-10" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50 z-10" />
@@ -297,8 +295,9 @@ const Hero: React.FC<HeroProps> = ({
             </div>
 
             <button
+              type="button"
               onClick={() => onNavigate('contact')}
-              className="self-center sm:self-auto text-xs bg-white hover:bg-slate-100 text-[#003F86] font-bold px-4 py-2.5 rounded-xl border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="self-center sm:self-auto text-xs bg-white hover:bg-slate-100 text-[#003F86] font-bold px-4 py-2.5 min-h-11 rounded-xl border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <PhoneCall className="w-4 h-4 text-amber-500" />
               <span>ارتباط با واحد فروش و مهندسی</span>
@@ -319,6 +318,7 @@ const Hero: React.FC<HeroProps> = ({
                   type="button"
                   className="mt-8 relative group w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 p-8 sm:p-10 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 text-right"
                   onClick={onOpenConsultation}
+                  aria-label="ثبت درخواست مشاوره"
                 >
                     {/* Animated geometric background */}
                     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -335,7 +335,7 @@ const Hero: React.FC<HeroProps> = ({
                           
                           <div>
                              <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 tracking-widest uppercase mb-1.5 block drop-shadow-md">Engineering Excellence</span>
-                             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg mb-2">شرکت طیوران صنعت پویا</h2>
+                             <p className="text-2xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg mb-2">شرکت طیوران صنعت پویا</p>
                              <p className="text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed font-medium">از طراحی و ساخت تا تجهیز و بهره‌برداری؛ راهکاری یکپارچه برای پروژه‌های صنعت دام، طیور و آبزیان</p>
                           </div>
                        </div>
@@ -369,8 +369,9 @@ const Hero: React.FC<HeroProps> = ({
 
               <div className="flex items-center gap-3">
                 <button
+                  type="button"
                   onClick={() => onNavigate('contact')}
-                  className="text-[#003F86] hover:text-amber-500 font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  className="text-[#003F86] hover:text-amber-500 font-bold flex items-center gap-1 transition-colors cursor-pointer min-h-11"
                 >
                   <span>تماس با ما</span>
                   <ChevronLeft className="w-3.5 h-3.5" />

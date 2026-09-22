@@ -45,8 +45,8 @@ function createIcon(name: string, iconNode: IconNode) {
         strokeLinecap: "round",
         strokeLinejoin: "round",
         className: cls,
-        ...(!children && !a11y ? { "aria-hidden": "true" } : {}),
         ...rest,
+        ...(!children && !a11y ? { "aria-hidden": true, role: "presentation", focusable: "false" } : {}),
       },
       ...iconNode.map(([tag, attrs], i) => createElement(tag, { ...attrs, key: i })),
       children
