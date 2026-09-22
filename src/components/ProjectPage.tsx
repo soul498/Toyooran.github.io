@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useData } from "../context/DataContext";
 import { NotFoundPage } from "./NotFoundPage";
 import { LazyImage } from "./LazyImage";
-import { MapPin, Calendar, Activity } from "lucide-react";
+import { MapPin, Calendar, Activity } from "../icons";
 
 export const ProjectPage: React.FC<{ onOpenConsultation: (title: string) => void }> = ({ onOpenConsultation }) => {
   const { projectId } = useParams();

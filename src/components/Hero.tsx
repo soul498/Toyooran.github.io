@@ -19,7 +19,7 @@ import {
   CheckCircle2,
   Cpu,
   ArrowLeft
-} from 'lucide-react';
+} from '../icons';
 import { PageSection, ProductCategory } from '../types';
 import { isLiteDevice } from '../lib/device';
 

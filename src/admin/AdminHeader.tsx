@@ -7,7 +7,7 @@ import {
   Layers, 
   Bell,
   UserCheck
-} from 'lucide-react';
+} from '../icons';
 import { useData } from '../context/DataContext';
 
 interface AdminHeaderProps {

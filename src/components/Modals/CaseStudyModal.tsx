@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, CheckCircle2, MapPin, Calendar, Layers, Activity, ChevronLeft, PhoneCall, TrendingUp } from 'lucide-react';
+import { X, CheckCircle2, MapPin, Calendar, Layers, Activity, ChevronLeft, PhoneCall, TrendingUp } from '../../icons';
 import { Project } from '../../types';
 import { LazyImage } from '../LazyImage';
 

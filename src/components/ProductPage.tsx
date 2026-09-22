@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ArrowRight, PhoneCall, Sparkles, Layers, Package, Zap, Settings } from 'lucide-react';
+import { ArrowRight, PhoneCall, Sparkles, Layers, Package, Zap, Settings } from '../icons';
 import { LazyImage } from './LazyImage';
 import { NotFoundPage } from './NotFoundPage';
 import { ProductCatalogSection } from './ProductCatalogSection';

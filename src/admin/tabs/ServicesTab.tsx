@@ -10,7 +10,7 @@ import {
   Layers,
   Sparkles,
   CheckCircle2
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { Service, ServiceWorkflowStep } from '../../types';
 

@@ -11,7 +11,7 @@ import {
   Sparkles,
   Check, FileText,
   AlertCircle
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { ImagePicker } from '../components/ImagePicker';
 import { Product, ProductCategory } from '../../types';

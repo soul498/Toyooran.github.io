@@ -9,7 +9,7 @@ import {
   HelpCircle,
   Sparkles,
   Link as LinkIcon
-} from 'lucide-react';
+} from '../icons';
 import { Article, Product } from '../types';
 import { ARTICLES, PRODUCTS } from '../data/mockData';
 

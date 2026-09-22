@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
-import { Clock, Calendar, ArrowLeft, ChevronLeft, Sparkles } from 'lucide-react';
+import { Clock, Calendar, ArrowLeft, ChevronLeft, Sparkles } from '../../icons';
 import { Link } from 'react-router-dom';
 import { InnerScrollIndicator } from '../InnerScrollIndicator';
 import { LazyImage } from '../LazyImage';

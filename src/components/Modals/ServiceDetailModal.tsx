@@ -9,7 +9,7 @@ import {
   PhoneCall, 
   Building2, 
   Boxes 
-} from 'lucide-react';
+} from '../../icons';
 import { Service } from '../../types';
 
 interface ServiceDetailModalProps {

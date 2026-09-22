@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { FlaskConical } from 'lucide-react';
+import { FlaskConical } from '../icons';
 import { InnerScrollIndicator } from './InnerScrollIndicator';
 import { UnderConstruction } from './UnderConstruction';
 

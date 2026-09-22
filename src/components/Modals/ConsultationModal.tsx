@@ -10,7 +10,7 @@ import {
   ShieldCheck, 
   TrendingUp,
   MessageSquare
-} from 'lucide-react';
+} from '../../icons';
 import { ConsultationFormData } from '../../types';
 import { COMPANY_INFO } from '../../data/mockData';
 import { useData } from '../../context/DataContext';

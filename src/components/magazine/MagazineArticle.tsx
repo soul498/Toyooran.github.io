@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Clock, Calendar, Share2, Tag, Link as LinkIcon, CheckCircle2, Image as ImageIcon } from 'lucide-react';
+import { ArrowRight, Clock, Calendar, Share2, Tag, Link as LinkIcon, CheckCircle2, Image as ImageIcon } from '../../icons';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { LazyImage } from '../LazyImage';

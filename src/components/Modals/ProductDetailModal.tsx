@@ -11,7 +11,7 @@ import {
   Layers, 
   Sparkles,
   PhoneCall
-} from 'lucide-react';
+} from '../../icons';
 import { Product } from '../../types';
 import { LazyImage } from '../LazyImage';
 

@@ -15,7 +15,7 @@ import {
   LayoutGrid,
   Database,
   MoreHorizontal
-} from 'lucide-react';
+} from '../icons';
 import { ProductCategory, PageSection, CategoryInfo } from '../types';
 import { CATEGORIES_DATA } from '../data/mockData';
 import { LazyImage } from './LazyImage';

@@ -21,7 +21,7 @@ import {
   Eye,
   Check,
   ChevronDown
-} from 'lucide-react';
+} from '../icons';
 import { PRODUCTS } from '../data/mockData';
 
 interface AdminPanelModalProps {

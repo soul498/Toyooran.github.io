@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LazyImage } from "./LazyImage";
-import { Package, Newspaper, Clock, ArrowLeft, ChevronLeft, Sparkles, Zap, ArrowRight } from 'lucide-react';
+import { Package, Newspaper, Clock, ArrowLeft, ChevronLeft, Sparkles, Zap, ArrowRight } from '../icons';
 import { Product, Article } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 

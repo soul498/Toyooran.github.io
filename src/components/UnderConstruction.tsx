@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Settings, Sparkles, Clock } from 'lucide-react';
+import { Settings, Sparkles, Clock } from '../icons';
 
 interface UnderConstructionProps {
   title?: string;

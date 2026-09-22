@@ -11,7 +11,7 @@ import {
   Phone,
   User,
   MapPin
-} from 'lucide-react';
+} from '../../icons';
 import { Product, ProductCategory, QuoteFormData } from '../../types';
 import { CATEGORIES_DATA, PRODUCTS } from '../../data/mockData';
 import { useData } from '../../context/DataContext';

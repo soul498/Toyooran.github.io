@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Clock, Calendar, BookOpen, Link as LinkIcon, ChevronLeft, FileText, PhoneCall } from 'lucide-react';
+import { X, Clock, Calendar, BookOpen, Link as LinkIcon, ChevronLeft, FileText, PhoneCall } from '../../icons';
 import { Article, Product } from '../../types';
 import { PRODUCTS } from '../../data/mockData';
 

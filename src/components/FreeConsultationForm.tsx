@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Send, User, Phone, FileText, Layers, CheckCircle2 } from 'lucide-react';
+import { Send, User, Phone, FileText, Layers, CheckCircle2 } from '../icons';
 import { sendNotificationToBale } from '../utils/sendToBale';
 
 interface FreeConsultationFormProps {

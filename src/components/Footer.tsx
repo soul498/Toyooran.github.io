@@ -15,7 +15,7 @@ import {
   Grid,
   ArrowLeft,
   ChevronLeft
-} from 'lucide-react';
+} from '../icons';
 
 interface FooterProps {
   onNavigate: (id: string) => void;

@@ -8,7 +8,7 @@ import {
   CheckCircle2, 
   Cpu,
   MessageSquare
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { AiAdvisorConfig } from '../../types';
 

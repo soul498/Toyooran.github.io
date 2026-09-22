@@ -10,7 +10,7 @@ import {
   FileCheck,
   ChevronLeft,
   Filter
-} from 'lucide-react';
+} from '../icons';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import { Project } from '../types';
 import { PROJECTS } from '../data/mockData';

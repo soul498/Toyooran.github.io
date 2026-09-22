@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Search, Plus, Mail, Phone, Building, User, Trash2, X, Save } from 'lucide-react';
+import { Users, Search, Plus, Mail, Phone, Building, User, Trash2, X, Save } from '../../icons';
 import { useData } from '../../context/DataContext';
 import { CustomerContact } from '../../types';
 

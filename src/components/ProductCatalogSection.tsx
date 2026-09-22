@@ -6,7 +6,7 @@ import {
   ArrowLeft,
   Filter,
   Download
-} from 'lucide-react';
+} from '../icons';
 import { Link } from 'react-router-dom';
 import { Product, ProductCategory } from '../types';
 import { categoryIntro, publicProductPath } from '../seo/resolveSeo';

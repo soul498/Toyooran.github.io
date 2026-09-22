@@ -1,7 +1,7 @@
 import React from 'react';
 import { LazyImage } from './LazyImage';
 import { motion } from 'motion/react';
-import { Building2, CheckCircle2, Factory, Globe2 } from 'lucide-react';
+import { Building2, CheckCircle2, Factory, Globe2 } from '../icons';
 import { SEO } from './SEO';
 import { InnerScrollIndicator } from './InnerScrollIndicator';
 

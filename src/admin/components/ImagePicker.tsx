@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image as ImageIcon, Link2, UploadCloud, CheckCircle2, X } from 'lucide-react';
+import { Image as ImageIcon, Link2, UploadCloud, CheckCircle2, X } from '../../icons';
 import { useData } from '../../context/DataContext';
 
 interface ImagePickerProps {

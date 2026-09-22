@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useData } from "../context/DataContext";
 import { NotFoundPage } from "./NotFoundPage";
-import { CheckCircle2, PhoneCall } from "lucide-react";
+import { CheckCircle2, PhoneCall } from "../icons";
 
 const ALIASES: Record<string, string> = { "poultry-hall-fitout": "srv-turnkey-shed" };
 

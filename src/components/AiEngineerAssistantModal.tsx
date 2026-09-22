@@ -14,7 +14,7 @@ import {
   FileText,
   HelpCircle,
   TrendingUp
-} from 'lucide-react';
+} from '../icons';
 
 interface AiEngineerAssistantModalProps {
   isOpen: boolean;

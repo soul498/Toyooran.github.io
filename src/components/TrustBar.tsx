@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, Layers, ShieldCheck, Factory, CheckCircle } from 'lucide-react';
+import { Award, Layers, ShieldCheck, Factory, CheckCircle } from '../icons';
 import { COMPANY_INFO } from '../data/mockData';
 
 export const TrustBar: React.FC = () => {

@@ -11,7 +11,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Building
-} from 'lucide-react';
+} from '../icons';
 import { useData } from '../context/DataContext';
 import { Turnstile } from '@marsidev/react-turnstile';
 

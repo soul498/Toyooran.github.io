@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Layers, Image as ImageIcon, CheckCircle2 } from 'lucide-react';
+import { Save, Layers, Image as ImageIcon, CheckCircle2 } from '../../icons';
 import { useData } from '../../context/DataContext';
 import { ImagePicker } from '../components/ImagePicker';
 import { HeroCms } from '../../types';

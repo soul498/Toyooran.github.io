@@ -9,7 +9,7 @@ import {
   AlertCircle,
   Sparkles,
   Package
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { ImagePicker } from '../components/ImagePicker';
 import { CategoryInfo, ProductCategory } from '../../types';

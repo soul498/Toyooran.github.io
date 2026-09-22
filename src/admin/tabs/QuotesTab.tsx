@@ -16,7 +16,7 @@ import {
   Check,
   PhoneCall,
   MessageSquare
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { QuoteRequest } from '../../types';
 

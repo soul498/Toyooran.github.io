@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image as ImageIcon, Copy, Check, Plus, ExternalLink, Trash2, X, Link2 } from 'lucide-react';
+import { Image as ImageIcon, Copy, Check, Plus, ExternalLink, Trash2, X, Link2 } from '../../icons';
 import { useData } from '../../context/DataContext';
 
 export const MediaTab: React.FC = () => {

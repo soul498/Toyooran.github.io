@@ -12,7 +12,7 @@ import {
   Calendar,
   Layers,
   Sparkles
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { ImagePicker } from '../components/ImagePicker';
 import { Project } from '../../types';

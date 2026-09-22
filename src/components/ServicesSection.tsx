@@ -9,13 +9,13 @@ import {
   Factory,
   Pill,
   ArrowLeft
-} from 'lucide-react';
+} from '../icons';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'motion/react';
 import { Service } from '../types';
 import { SERVICES } from '../data/mockData';
 import { ServiceCard } from './Hero';
 
-import { Fan } from 'lucide-react';
+import { Fan } from '../icons';
 const categoryCards = [
     {
       id: 'heating',

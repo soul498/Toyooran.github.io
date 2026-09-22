@@ -12,7 +12,7 @@ import {
   RefreshCw,
   HelpCircle,
   ExternalLink
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 
 export const SecurityTab: React.FC = () => {

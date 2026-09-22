@@ -16,7 +16,7 @@ import {
   KeyRound,
   Sparkles,
   ChevronDown
-} from 'lucide-react';
+} from '../icons';
 import { useData } from '../context/DataContext';
 import { useState } from 'react';
 

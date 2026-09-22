@@ -6,7 +6,7 @@ import {
   CheckCircle2,
   Plus,
   Trash2
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { CompanyInfo } from '../../types';
 

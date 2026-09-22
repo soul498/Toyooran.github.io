@@ -10,7 +10,7 @@ import {
   ArrowLeft,
   ChevronLeft,
   Sparkles
-} from 'lucide-react';
+} from '../icons';
 
 interface WorkflowSectionProps {
   onOpenConsultation: () => void;

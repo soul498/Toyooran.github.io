@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { 
   Phone, Mail, MapPin, Clock, Building2, Factory, Map,
   MessageCircle, Instagram, Linkedin, FileText, Send, Youtube, Tv, Grid
-} from 'lucide-react';
+} from '../icons';
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
 import { InnerScrollIndicator } from './InnerScrollIndicator';

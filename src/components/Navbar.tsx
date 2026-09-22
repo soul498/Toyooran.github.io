@@ -16,7 +16,7 @@ import {
   Phone,
   ChevronLeft,
   FlaskConical
-} from 'lucide-react';
+} from '../icons';
 import { motion, AnimatePresence } from 'motion/react';
 import { PageSection } from '../types';
 

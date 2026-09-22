@@ -12,7 +12,7 @@ import {
   Wheat,
   Database,
   MoreHorizontal,
-} from 'lucide-react';
+} from '../icons';
 import { isLiteDevice } from '../lib/device';
 
 const ICONS: Record<string, React.ElementType> = {

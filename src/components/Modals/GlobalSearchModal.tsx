@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, X, ChevronLeft, Wrench, Layers, BookOpen, CheckCircle2, Zap } from 'lucide-react';
+import { Search, X, ChevronLeft, Wrench, Layers, BookOpen, CheckCircle2, Zap } from '../../icons';
 import { Product, Project, Article } from '../../types';
 import { PRODUCTS, PROJECTS, ARTICLES } from '../../data/mockData';
 

@@ -17,7 +17,7 @@ import {
   Youtube,
   Tv,
   Grid
-} from 'lucide-react';
+} from '../icons';
 import { useData } from '../context/DataContext';
 
 export const AboutContactUnifiedSection: React.FC = () => {

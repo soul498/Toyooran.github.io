@@ -15,7 +15,7 @@ import {
   Sparkles,
   ArrowUpRight,
   ShieldCheck
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { AdminTab } from '../AdminSidebar';
 

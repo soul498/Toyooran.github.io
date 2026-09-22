@@ -11,7 +11,7 @@ import {
   AlertCircle, 
   PhoneCall,
   User
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 import { ConsultationRequest } from '../../types';
 

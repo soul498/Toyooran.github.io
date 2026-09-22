@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useSpring } from 'motion/react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp } from '../icons';
 import { isLiteDevice } from '../lib/device';
 
 function ScrollProgressUi() {

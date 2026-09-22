@@ -9,7 +9,7 @@ import {
   Sparkles,
   FileJson,
   ShieldCheck
-} from 'lucide-react';
+} from '../../icons';
 import { useData } from '../../context/DataContext';
 
 export const BackupTab: React.FC = () => {
