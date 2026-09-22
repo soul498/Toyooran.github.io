@@ -27,33 +27,34 @@ grep -q 'from "./server/seo"' server.ts || fail "server.ts must import server/se
 ok "core files and canonical contract"
 
 if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
-  html="$(curl -fsS --max-time 5 http://127.0.0.1:3000/)"
+  curl_id() { curl -fsS --max-time 5 -H 'Accept-Encoding: identity' "$@"; }
+  html="$(curl_id http://127.0.0.1:3000/)"
   echo "$html" | grep -q 'rel="canonical"' || fail "live HTML missing canonical"
   echo "$html" | grep -q 'https://www.toyooran.com/' || fail "live HTML missing www.toyooran.com"
   echo "$html" | grep -q 'application/ld+json' || fail "live HTML missing JSON-LD"
   echo "$html" | grep -q 'seo-prerender' || fail "live HTML missing prerender"
-  robots="$(curl -fsS --max-time 5 http://127.0.0.1:3000/robots.txt)"
+  robots="$(curl_id http://127.0.0.1:3000/robots.txt)"
   echo "$robots" | grep -q 'Disallow: /admin' || fail "live robots"
-  sitemap="$(curl -fsS --max-time 5 http://127.0.0.1:3000/sitemap.xml)"
+  sitemap="$(curl_id http://127.0.0.1:3000/sitemap.xml)"
   echo "$sitemap" | grep -q 'www.toyooran.com' || fail "live sitemap"
   echo "$sitemap" | grep -q '/rnd' || fail "sitemap missing /rnd"
   echo "$sitemap" | grep -q 'poultry-hall-fitout' || fail "sitemap missing fitout slug"
   if echo "$sitemap" | grep -q 'srv-turnkey-shed'; then fail "sitemap still has non-canonical service id"; fi
-  code404="$(curl -sS --max-time 5 -o /tmp/seo-404.html -w '%{http_code}' http://127.0.0.1:3000/this-page-does-not-exist-seo || true)"
+  code404="$(curl -sS --max-time 5 -H 'Accept-Encoding: identity' -o /tmp/seo-404.html -w '%{http_code}' http://127.0.0.1:3000/this-page-does-not-exist-seo || true)"
   test "$code404" = "404" || fail "unknown path must 404"
   grep -q 'noindex' /tmp/seo-404.html || fail "404 missing noindex"
   if grep -q 'rel="canonical"' /tmp/seo-404.html; then fail "404 must not self-canonical"; fi
-  contact="$(curl -fsS --max-time 5 http://127.0.0.1:3000/contact)"
+  contact="$(curl_id http://127.0.0.1:3000/contact)"
   echo "$contact" | grep -q 'LocalBusiness' || fail "contact missing LocalBusiness"
-  article="$(curl -fsS --max-time 5 http://127.0.0.1:3000/magazine/how-to-calculate-ventilation-capacity)"
+  article="$(curl_id http://127.0.0.1:3000/magazine/how-to-calculate-ventilation-capacity)"
   echo "$article" | grep -q '<h2>' || fail "article prerender too short"
   echo "$html" | grep -q 'hero-final-1' || fail "missing webp preload"
   echo "$html" | grep -q 'font-src' || true
-  curl -fsS --max-time 5 http://127.0.0.1:3000/llms.txt | grep -q 'طیوران' || fail "llms.txt missing"
+  curl_id http://127.0.0.1:3000/llms.txt | grep -q 'طیوران' || fail "llms.txt missing"
   grep -q 'noindex, follow' /tmp/seo-404.html || fail "404 robots should be noindex, follow"
-  contact2="$(curl -fsS --max-time 5 http://127.0.0.1:3000/products/ventilation)"
+  contact2="$(curl_id http://127.0.0.1:3000/products/ventilation)"
   echo "$contact2" | grep -q 'دانخوری' || true
-  prod="$(curl -fsS --max-time 5 http://127.0.0.1:3000/products/TS-001)"
+  prod="$(curl_id http://127.0.0.1:3000/products/TS-001)"
   echo "$prod" | grep -q 'Offer\|location:' || true
   redirp="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/TS-001 | awk 'NR==1{print $2}')"
   test "$redirp" = "301" || fail "product code must 301 to slug"
