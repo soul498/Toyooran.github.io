@@ -39,14 +39,6 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         (p.models && p.models.some((m) => m.toLowerCase().includes(q)))
     );
 
-    const matchedProjects = projects.filter(
-      (pr) =>
-        pr.title.toLowerCase().includes(q) ||
-        pr.location.toLowerCase().includes(q) ||
-        pr.typeTitle.toLowerCase().includes(q) ||
-        pr.equipmentSummary.some((e) => e.toLowerCase().includes(q))
-    );
-
     const matchedArticles = articles.filter(
       (a) =>
         a.title.toLowerCase().includes(q) ||
@@ -56,7 +48,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
     return {
       products: matchedProducts,
-      projects: matchedProjects,
+      projects: [],
       articles: matchedArticles,
     };
   }, [products, projects, articles, query]);

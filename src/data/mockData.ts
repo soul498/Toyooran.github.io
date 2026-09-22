@@ -35,28 +35,34 @@ export const COMPANY_INFO = {
       title: 'دفتر مرکزی مشهد',
       type: 'headquarter',
       address: 'مشهد، میدان مادر، مجتمع تجاری ادیب، طبقه ۳، واحد ۴۰۶',
-      mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3224.225574526543!2d59.50566!3d36.3263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDE5JzM0LjciTiA1OcKwMzAnMjAuNCJF!5e0!3m2!1sen!2s!4v1620000000000!5m2!1sen!2s'
+      lat: 36.3263,
+      lng: 59.50566,
+      mapEmbedUrl: 'https://neshan.org/maps/@36.3263,59.50566,17z'
     },
     {
       id: 'fact-01',
       title: 'کارخانه صنعتی و خط تولید',
       type: 'factory',
       address: 'مشهد، بلوار میثاق، کارخانجات صنعتی طیوران صنعت پویا',
-      mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3223.125574526543!2d59.45566!3d36.3363!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDE5JzM0LjciTiA1OcKwMzAnMjAuNCJF!5e0!3m2!1sen!2s!4v1620000000000!5m2!1sen!2s'
+      lat: 36.3363,
+      lng: 59.45566,
+      mapEmbedUrl: 'https://neshan.org/maps/@36.3363,59.45566,17z'
     },
     {
       id: 'rd-01',
       title: 'دفتر تحقیق و توسعه (R&D)',
       type: 'rd',
       address: 'گرگان، دانشگاه منابع طبیعی گلستان',
-      mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3198.868770258107!2d54.436329!3d36.840243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDUwJzI0LjkiTiA1NMKwMjYnMTAuOCJF!5e0!3m2!1sen!2s!4v1620000000000!5m2!1sen!2s'
+      lat: 36.840243,
+      lng: 54.436329,
+      mapEmbedUrl: 'https://neshan.org/maps/@36.840243,54.436329,17z'
     },
     {
       id: 'branch-tehran',
       title: 'دفتر بازرگانی گرگان',
       type: 'branch',
       address: 'گرگان، میدان مفتح، ابتدای خیابان جمهوری، کارخانه نوآوری',
-      mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.924843187216!2d51.40871141525946!3d35.75266738017772!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e068b55555555%3A0x8e5e6b0f98cd3a21!2sVanak%20Square!5e0!3m2!1sen!2sus!4v1689234567890!5m2!1sen!2sus'
+      mapEmbedUrl: 'https://neshan.org/maps#/search/%DA%AF%D8%B1%DA%AF%D8%A7%D9%86%D8%8C%20%D9%85%DB%8C%D8%AF%D8%A7%D9%86%20%D9%85%D9%81%D8%AA%D8%AD'
     }
   ]
 };

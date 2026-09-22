@@ -8,6 +8,7 @@ import {
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
 import { PageBanner } from './PageBanner';
+import { toTelHref, neshanMapsUrl } from '../lib/phone';
 
 interface ContactPageProps {
   initialSubject?: string;
@@ -66,7 +67,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                     </div>
                     <div>
                       <span className="text-slate-400 block text-xs mb-1">تلفن دفتر مرکزی:</span>
-                      <a href={`tel:\${companyInfo.phone}`} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md">
+                      <a href={toTelHref(companyInfo.phone)} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
                         {companyInfo.phone}
                       </a>
                     </div>
@@ -78,8 +79,20 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                     </div>
                     <div>
                       <span className="text-slate-400 block text-xs mb-1">واحد فروش و استعلام:</span>
-                      <a href="tel:09151126258" className="font-mono font-bold text-white text-base hover:text-blue-400 transition-colors drop-shadow-md" style={{ direction: 'ltr', display: 'inline-block' }}>
-                        ۰۹۱۵۱۱۲۶۲۵۸
+                      <a href={toTelHref(companyInfo.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸')} className="font-mono font-bold text-white text-base hover:text-blue-400 transition-colors drop-shadow-md" dir="ltr">
+                        {companyInfo.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸'}
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-400/30 hover:bg-white/10 transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-400/10 text-emerald-400 flex items-center justify-center shrink-0">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-xs mb-1">پشتیبانی فنی:</span>
+                      <a href={toTelHref(companyInfo.technicalSupportPhone || '۰۹۱۱۵۱۱۶۲۵۸')} className="font-mono font-bold text-white text-base hover:text-emerald-400 transition-colors" dir="ltr">
+                        {companyInfo.technicalSupportPhone || '۰۹۱۱۵۱۱۶۲۵۸'}
                       </a>
                     </div>
                   </div>
@@ -268,9 +281,23 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                                 <h4 className="text-3xl sm:text-4xl font-black text-white mb-5 leading-tight">
                                   {activeLocation.title || (activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : 'شعبه')}
                                 </h4>
-                                <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-8 font-medium">
+                                <a
+                                  href={neshanMapsUrl(activeLocation.address, (activeLocation as any).lat, (activeLocation as any).lng)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-6 font-medium hover:text-amber-400 transition-colors block"
+                                >
                                   {activeLocation.address}
-                                </p>
+                                </a>
+                                <a
+                                  href={neshanMapsUrl(activeLocation.address, (activeLocation as any).lat, (activeLocation as any).lng)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-2 self-start mb-6 px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-sm hover:bg-amber-300"
+                                >
+                                  <MapPin className="w-4 h-4" />
+                                  مشاهده روی نقشه نشان
+                                </a>
                                 <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10">
                                   {((activeLocation as any).workingHours || (activeLocation.type === 'headquarter' ? companyInfo.workingHours : null)) && (
                                     <div className="flex items-center gap-2.5 text-sm sm:text-base text-amber-400 font-bold bg-amber-500/10 px-5 py-2.5 rounded-xl border border-amber-500/20">

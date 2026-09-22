@@ -2,6 +2,7 @@ import React from "react";
 import { AparatIcon } from "./AparatIcon";
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { toTelHref, neshanMapsUrl } from '../lib/phone';
 import { 
   Phone, 
   Mail, 
@@ -39,8 +40,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
 
   
 
-  const mainPhone = '09151126258';
-  const email = companyInfo?.email || 'info@pooyapoultry.com';
   const hq = companyInfo?.locations?.find(loc => loc.type === 'headquarter');
 
   const currentYear = new Date().getFullYear();
@@ -220,9 +219,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-1">
                   <Phone className="w-4 h-4 text-amber-400" />
                 </div>
-                <div>
-                  <span className="block text-[10px] text-slate-500 font-bold mb-1">تلفن مشاوره و فروش</span>
-                  <a href="tel:09151126258" className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">۰۹۱۵۱۱۲۶۲۵۸</a>
+                <div className="space-y-1">
+                  <span className="block text-[10px] text-slate-500 font-bold">تلفن دفتر مرکزی</span>
+                  <a href={toTelHref(companyInfo?.phone || '۰۵۱-۳۶۶۶۵۶۰۰')} className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{companyInfo?.phone || '۰۵۱-۳۶۶۶۵۶۰۰'}</a>
+                  <span className="block text-[10px] text-slate-500 font-bold pt-2">تلفن مشاوره و فروش</span>
+                  <a href={toTelHref(companyInfo?.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸')} className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{companyInfo?.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸'}</a>
                 </div>
               </div>
               
@@ -233,7 +234,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                   </div>
                   <div>
                     <span className="block text-[10px] text-slate-500 font-bold mb-1">دفتر مرکزی</span>
-                    <span className="text-slate-300 font-medium text-sm leading-relaxed">{hq.address}</span>
+                    <a
+                      href={neshanMapsUrl(hq.address, hq.lat, hq.lng)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-slate-300 hover:text-amber-400 font-medium text-sm leading-relaxed"
+                    >
+                      {hq.address}
+                    </a>
                   </div>
                 </div>
               )}
@@ -248,7 +256,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
         {/* Copyright & Credits */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
           <p>
-            © {currentYear} تمامی حقوق این وب‌سایت متعلق به <span className="text-slate-300">{companyInfo?.name}</span> می‌باشد. طراحی و توسعه توسط <span className="text-slate-300">شرکت هزارتو</span>.
+            © {currentYear} تمامی حقوق این وب‌سایت متعلق به طیوران صنعت پویا می‌باشد. طراحی و توسعه توسط <strong className="text-slate-200 font-black">هزارتو</strong>.
           </p>
           <div className="flex items-center gap-4">
              <a href="#" className="hover:text-slate-300 transition-colors">قوانین و مقررات</a>

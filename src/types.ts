@@ -165,6 +165,8 @@ export interface CompanyInfo {
     type: 'headquarter' | 'factory' | 'branch' | 'rd';
     address: string;
     mapEmbedUrl?: string;
+    lat?: number;
+    lng?: number;
   }[];
 }
 

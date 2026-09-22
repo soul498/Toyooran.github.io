@@ -1,48 +1,21 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
-import { useData } from "../context/DataContext";
-import { NotFoundPage } from "./NotFoundPage";
-import { LazyImage } from "./LazyImage";
-import { MapPin, Calendar, Activity } from "../icons";
+import { Link } from "react-router-dom";
+import { PageBanner } from "./PageBanner";
+import { UnderConstruction } from "./UnderConstruction";
 
-export const ProjectPage: React.FC<{ onOpenConsultation: (title: string) => void }> = ({ onOpenConsultation }) => {
-  const { projectId } = useParams();
-  const { projects } = useData();
-  const project = projects.find((p) => p.id === projectId);
-  if (!project) return <NotFoundPage />;
-
+export const ProjectPage: React.FC<{ onOpenConsultation?: (title: string) => void }> = () => {
   return (
-    <div className="pt-32 pb-24 bg-slate-50 min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+    <div className="min-h-screen bg-blueprint-light">
+      <PageBanner
+        title="پروژه‌ها"
+        subtitle="این بخش در حال بارگزاری هست"
+      />
+      <UnderConstruction
+        title="این بخش در حال بارگزاری هست"
+        description="جزئیات پروژه‌ها به‌زودی منتشر می‌شود. برای مشاوره تجهیز سالن از صفحه تماس اقدام کنید."
+      />
+      <div className="text-center pb-16">
         <Link to="/projects" className="text-sm font-bold text-[#003F86]">بازگشت به پروژه‌ها</Link>
-        <h1 className="text-3xl font-black text-slate-900">{project.title}</h1>
-        <div className="flex flex-wrap gap-4 text-sm text-slate-600">
-          <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{project.location}</span>
-          <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />{project.year}</span>
-          <span className="flex items-center gap-1"><Activity className="w-4 h-4" />{project.capacity}</span>
-        </div>
-        <div className="rounded-3xl overflow-hidden h-56 bg-slate-100">
-          <LazyImage src={project.image} alt={project.title} className="w-full h-full" />
-        </div>
-        <p className="text-slate-700 font-medium">{project.keyOutcome}</p>
-        {project.caseStudy ? (
-          <div className="space-y-4 text-sm text-slate-700">
-            <p>{project.caseStudy.problem}</p>
-            <p>{project.caseStudy.solution}</p>
-            <ul className="list-disc mr-5 space-y-1">
-              {project.caseStudy.processSteps.map((step) => (
-                <li key={step.title}>{step.title}: {step.desc}</li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <ul className="list-disc mr-5 text-sm text-slate-700 space-y-1">
-            {project.servicesProvided.map((item) => <li key={item}>{item}</li>)}
-          </ul>
-        )}
-        <Link to="/contact" onClick={() => onOpenConsultation(project.title)} className="inline-flex bg-[#003F86] text-white font-bold px-6 py-3 rounded-2xl">
-          مشاوره پروژه مشابه
-        </Link>
       </div>
     </div>
   );

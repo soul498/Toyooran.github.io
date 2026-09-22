@@ -13,6 +13,7 @@ import {
 } from '../../icons';
 import { ConsultationFormData } from '../../types';
 import { COMPANY_INFO } from '../../data/mockData';
+import { toTelHref } from '../../lib/phone';
 import { useData } from '../../context/DataContext';
 import { sendNotificationToBale } from '../../utils/sendToBale';
 
@@ -222,10 +223,10 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
             {/* Direct Phone Assistance */}
             <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
-              <span className="flex items-center gap-1">
-                <PhoneCall className="w-3.5 h-3.5 text-[#003F86]" />
-                <span>تماس فوری: {COMPANY_INFO.phone}</span>
-              </span>
+                <a href={toTelHref(COMPANY_INFO.phone)} className="flex items-center gap-1 hover:text-[#003F86]">
+                  <PhoneCall className="w-3.5 h-3.5 text-[#003F86]" />
+                  <span>تماس فوری: {COMPANY_INFO.phone}</span>
+                </a>
               
               <button
                 type="submit"

@@ -28,6 +28,7 @@ const AiEngineerAssistantModal = lazy(() => import('./components/AiEngineerAssis
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
+import { CustomCursor } from './components/CustomCursor';
 import { NotFoundPage } from './components/NotFoundPage';
 import { useParams } from 'react-router-dom';
 import { SeoHead } from "./components/SEO";
@@ -178,6 +179,7 @@ const MainAppInner: React.FC = () => {
       </a>
       <ScrollToTop />
       <SeoHead />
+      <CustomCursor />
       <ScrollProgress />
       
       {/* Top Navbar */}

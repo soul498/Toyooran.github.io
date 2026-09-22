@@ -1,70 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useInView } from '../lib/useInView';
-import { Project } from '../types';
-import { PROJECTS } from '../data/mockData';
+import React from 'react';
 import { PageBanner } from './PageBanner';
-import { Link } from 'react-router-dom';
-import { LazyImage } from './LazyImage';
+import { UnderConstruction } from './UnderConstruction';
 
 interface FeaturedProjectsSectionProps {
-  projects?: Project[];
-  onSelectProject: (project: Project) => void;
-  onOpenConsultation: () => void;
+  projects?: unknown;
+  onSelectProject?: (project: unknown) => void;
+  onOpenConsultation?: () => void;
 }
 
-
-export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = ({
-  projects = PROJECTS,
-  onSelectProject,
-  onOpenConsultation,
-}) => {
-  const [activeFilter, setActiveFilter] = useState<string>('all');
-  const [visibleCount, setVisibleCount] = useState(6);
-  
-  const { ref: loadMoreRef, isInView } = useInView<HTMLDivElement>();
-
-  useEffect(() => {
-    setVisibleCount(6);
-  }, [activeFilter]);
-
-  useEffect(() => {
-    if (isInView) {
-      setVisibleCount(prev => prev + 6);
-    }
-  }, [isInView]);
-
-  const filterTabs = [
-    { id: 'all', label: 'همه پروژه‌ها' },
-    { id: 'broiler', label: 'مرغداری گوشتی' },
-    { id: 'layer', label: 'مرغداری تخم‌گذار' },
-    { id: 'feed_mill', label: 'کارخانه خوراک' },
-    { id: 'breeder', label: 'مادر و اجداد' },
-  ];
-
-  const filteredProjects = activeFilter === 'all' 
-    ? projects 
-    : projects.filter(p => p.type === activeFilter);
-    
-  const displayedProjects = filteredProjects.slice(0, visibleCount);
-
+export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = () => {
   return (
     <section className="min-h-screen relative z-0" id="projects-section">
       <PageBanner
         title="پروژه‌های اجرا شده"
-        subtitle="نمونه سالن گوشتی، تخم‌گذار و کارخانه خوراک با نتایج واقعی ظرفیت و راندمان"
+        subtitle="نمونه‌کارهای تجهیز سالن و خطوط خوراک به‌زودی در این بخش منتشر می‌شود"
       />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-20 grid md:grid-cols-2 gap-6">
-        {displayedProjects.map((project) => (
-          <Link key={project.id} to={`/projects/${project.id}`} className="bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-lg">
-            <LazyImage src={project.image} alt={project.title} className="w-full h-48" />
-            <div className="p-5">
-              <h2 className="font-black text-slate-900 mb-2">{project.title}</h2>
-              <p className="text-sm text-slate-600">{project.location} · {project.year}</p>
-            </div>
-          </Link>
-        ))}
-      </div>
+      <UnderConstruction
+        title="این بخش در حال بارگزاری هست"
+        description="آرشیو پروژه‌های واقعی در حال آماده‌سازی است. برای بازدید از سالن اجراشده یا دریافت مشخصات فنی، از صفحه تماس درخواست مشاوره بدهید."
+      />
     </section>
   );
 };

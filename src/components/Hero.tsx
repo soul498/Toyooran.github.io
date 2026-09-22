@@ -171,6 +171,21 @@ const Hero: React.FC<HeroProps> = ({
 
   return (
     <div className="w-full relative min-h-screen bg-slate-950">
+      <style>{`
+        .hero-pill {
+          animation: heroPillGlow 2.8s ease-in-out infinite;
+          backdrop-filter: blur(8px);
+        }
+        @keyframes heroPillGlow {
+          0%, 100% { box-shadow: 0 0 14px rgba(251,191,36,0.35), 0 0 40px rgba(251,191,36,0.12); }
+          50% { box-shadow: 0 0 28px rgba(251,191,36,0.7), 0 0 72px rgba(251,191,36,0.28); }
+        }
+        .hero-fade { animation: heroFadeUp 0.7s ease-out both; }
+        @keyframes heroFadeUp {
+          from { opacity: 0; transform: translateY(14px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
       
       {/* ========================================================================= */}
       {/* 1. 100% FIXED HERO (Redesigned: Clean, Minimalist, Image-Focused) */}
@@ -196,11 +211,11 @@ const Hero: React.FC<HeroProps> = ({
         </div>
 
         {/* Minimalist Centered Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-5xl mx-auto w-full mt-[-8vh] sm:mt-[-5vh]">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-5xl mx-auto w-full mt-[-8vh] sm:mt-[-5vh] hero-fade">
           
-          <div className="inline-flex items-center gap-2 bg-white/5 border border-white/30 px-4 py-1.5 rounded-full mb-6">
-            <span className="w-2 h-2 rounded-full bg-amber-400 " />
-            <span className="text-xs sm:text-sm font-medium text-slate-100 tracking-wide">
+          <div className="hero-pill inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-7 border border-amber-300/50 bg-amber-400/15 font-black">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse" />
+            <span className="text-sm sm:text-base text-white tracking-wide drop-shadow-[0_0_12px_rgba(251,191,36,0.55)]">
               {cmsHero?.pillText || 'با نیم قرن تجربه و بیش از ۲۰۰ پروژه ملی و بین‌المللی'}
             </span>
           </div>
@@ -240,7 +255,7 @@ const Hero: React.FC<HeroProps> = ({
           onClick={scrollToCards}
         >
           <span className="text-[10px] sm:text-xs tracking-widest text-white/80 font-medium">اسکرول کنید</span>
-          <ChevronLeft className="w-5 h-5 text-amber-400 -rotate-90" />
+          <ChevronLeft className="w-5 h-5 text-amber-400 -rotate-90 animate-bounce" />
         </button>
 
       </section>

@@ -3,6 +3,7 @@ import { LazyImage } from './LazyImage';
 import { Building2, CheckCircle2, Factory, Globe2 } from '../icons';
 import { SEO } from './SEO';
 import { PageBanner } from './PageBanner';
+import { toTelHref } from '../lib/phone';
 
 export const AboutPage: React.FC = () => {
   return (
@@ -54,8 +55,8 @@ export const AboutPage: React.FC = () => {
                     <CheckCircle2 className="w-6 h-6 text-[#003F86]" />
                   </div>
                   <div>
-                    <h3 className="text-slate-900 font-bold text-lg mb-1">لایسنس معتبر بین‌المللی</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">تنها تولیدکننده بشقاب‌های پروانه‌ای تحت لیسانس Butterfly Concepts آمریکا با تاییدیه FDA.</p>
+                    <h3 className="text-slate-900 font-bold text-lg mb-1">برند IMACHINE</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed font-medium">طراحی و تولید ماشین‌آلات صنعتی با برند IMACHINE در صنعت خوراک.</p>
                   </div>
                 </div>
 
@@ -83,12 +84,12 @@ export const AboutPage: React.FC = () => {
               <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/60 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-sm">
                  <div className="text-slate-700 text-sm font-bold flex items-center gap-2">
                    تلفن دفتر مرکزی:
-                   <span className="font-mono text-[#003F86] text-base">۰۵۱۳۶۶۶۵۶۰۰</span>
+                   <a href={toTelHref('۰۵۱-۳۶۶۶۵۶۰۰')} className="font-mono text-[#003F86] text-base hover:underline" dir="ltr">۰۵۱-۳۶۶۶۵۶۰۰</a>
                  </div>
                  <div className="w-px h-6 bg-slate-200 hidden sm:block"></div>
                  <div className="text-slate-700 text-sm font-bold flex items-center gap-2">
                    مشاوره فروش:
-                   <span className="font-mono text-[#003F86] text-base">۰۹۱۵۱۱۲۶۲۵۸</span>
+                   <a href={toTelHref('۰۹۱۵۱۱۲۶۲۵۸')} className="font-mono text-[#003F86] text-base hover:underline" dir="ltr">۰۹۱۵۱۱۲۶۲۵۸</a>
                  </div>
               </div>
 

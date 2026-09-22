@@ -18,14 +18,15 @@ import {
   Grid
 } from '../icons';
 import { useData } from '../context/DataContext';
+import { toTelHref, neshanMapsUrl } from '../lib/phone';
 
 export const AboutContactUnifiedSection: React.FC = () => {
   const { companyInfo } = useData();
   const [activeLocationIndex, setActiveLocationIndex] = useState(0);
   
   // Clean Data Extractions
-  const phones = [companyInfo.phone].filter(Boolean) || [];
-  const mainPhone = phones[0] || '۰۵۱-۳۶۶۶۵۶۰۰';
+  const officePhone = companyInfo.phone || '۰۵۱-۳۶۶۶۵۶۰۰';
+  const salesPhone = companyInfo.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸';
   const email = companyInfo.email || 'info@pooyapoultry.com';
   const locations = companyInfo.locations || [];
   
@@ -86,13 +87,17 @@ export const AboutContactUnifiedSection: React.FC = () => {
             {/* Right: Core Contacts */}
             <div className="flex flex-col gap-6 justify-center lg:pl-10">
               {/* Phone */}
-              <div className="group flex items-center gap-5 cursor-pointer">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-slate-900 group-hover:scale-110 transition-all duration-500 shadow-lg  shrink-0">
-                  <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
-                </div>
-                <div>
-                  <span className="block text-[11px] sm:text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">مشاوره و فروش</span>
-                  <a href={`tel:${mainPhone}`} className="block text-xl sm:text-2xl text-white font-black group-hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{mainPhone}</a>
+              <div className="flex flex-col gap-4">
+                <div className="group flex items-center gap-5">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-slate-900 transition-colors shrink-0">
+                    <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
+                  </div>
+                  <div>
+                    <span className="block text-[11px] sm:text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">دفتر مرکزی</span>
+                    <a href={toTelHref(officePhone)} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{officePhone}</a>
+                    <span className="block text-[11px] sm:text-xs text-slate-500 font-bold mt-3 mb-1 uppercase tracking-wider">مشاوره و فروش</span>
+                    <a href={toTelHref(salesPhone)} className="block text-lg sm:text-xl text-white font-black hover:text-amber-400 transition-colors" dir="ltr" style={{ textAlign: 'right' }}>{salesPhone}</a>
+                  </div>
                 </div>
               </div>
               
@@ -257,9 +262,23 @@ export const AboutContactUnifiedSection: React.FC = () => {
                                 <h4 className="text-3xl sm:text-4xl font-black text-white mb-5 leading-tight">
                                   {activeLocation.title || (activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : 'شعبه')}
                                 </h4>
-                                <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-8 font-medium">
+                                <a
+                                  href={neshanMapsUrl(activeLocation.address, (activeLocation as any).lat, (activeLocation as any).lng)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                  className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-6 font-medium hover:text-amber-400 transition-colors block"
+                                >
                                   {activeLocation.address}
-                                </p>
+                                </a>
+                                <a
+                                  href={neshanMapsUrl(activeLocation.address, (activeLocation as any).lat, (activeLocation as any).lng)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-2 self-start mb-6 px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-sm hover:bg-amber-300"
+                                >
+                                  <MapPin className="w-4 h-4" />
+                                  مشاهده روی نقشه نشان
+                                </a>
                                 <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10">
                                   {((activeLocation as any).workingHours || (activeLocation.type === 'headquarter' ? companyInfo.workingHours : null)) && (
                                     <div className="flex items-center gap-2.5 text-sm sm:text-base text-amber-400 font-bold bg-amber-500/10 px-5 py-2.5 rounded-xl border border-amber-500/20">
