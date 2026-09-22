@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { LazyImage } from '../LazyImage';
 import type { Article } from '../../types';
+import { articleBlocks } from '../../seo/articleBlocks';
 import { publicProductPath } from '../../seo/resolveSeo';
 
 const IMAGES = [
@@ -98,51 +99,41 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
           
           {/* Article Text */}
           <div className="prose prose-lg prose-slate max-w-none text-slate-700 leading-loose">
-            {article.content.map((paragraph, idx) => {
-              const text = paragraph.trim();
-              
-              if (text.startsWith('## ')) {
+            {articleBlocks(article.content).map((block, idx) => {
+              if (block.type === "h2") {
                 return (
                   <h2 key={idx} className="text-2xl font-black text-slate-900 mt-12 mb-6 border-b border-slate-200 pb-4">
-                    {text.replace('## ', '')}
+                    {block.text}
                   </h2>
                 );
               }
-              
-              if (text.startsWith('### ')) {
+              if (block.type === "h3") {
                 return (
                   <h3 key={idx} className="text-xl font-bold text-slate-800 mt-8 mb-4">
-                    {text.replace('### ', '')}
+                    {block.text}
                   </h3>
                 );
               }
-
-              if (text.startsWith('- ')) {
+              if (block.type === "ul") {
                 return (
                   <ul key={idx} className="list-disc list-inside mb-4 mr-4 space-y-2">
-                    <li className="text-base md:text-lg font-medium text-slate-700">
-                      {text.replace('- ', '')}
-                    </li>
+                    {block.items.map((item) => (
+                      <li key={item} className="text-base md:text-lg font-medium text-slate-700">
+                        {item}
+                      </li>
+                    ))}
                   </ul>
                 );
               }
-
-              // Parse IMG: [IMG|Image URL|Alt Text]
-              const imgMatch = text.match(/^\[IMG\|([^|]+)\|([^\]]+)\]$/);
-              if (imgMatch) {
-                const [, src, alt] = imgMatch;
+              if (block.type === "img") {
                 return (
                   <div key={idx} className="my-10 rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-200 bg-white">
-                    <LazyImage src={src} alt={alt} className="w-full min-h-[250px] md:min-h-[400px]" imgClassName="w-full h-auto object-cover max-h-[600px]" />
-                    {alt && <p className="text-center text-sm text-slate-500 py-3 font-medium bg-slate-50">{alt}</p>}
+                    <LazyImage src={block.src} alt={block.alt} className="w-full min-h-[250px] md:min-h-[400px]" imgClassName="w-full h-auto object-cover max-h-[600px]" />
+                    {block.alt && <p className="text-center text-sm text-slate-500 py-3 font-medium bg-slate-50">{block.alt}</p>}
                   </div>
                 );
               }
-
-              // Parse CTA: [CTA|Button Text|Link] e.g. [CTA|درخواست مشاوره رایگان|/contact]
-              const ctaMatch = text.match(/^\[CTA\|([^|]+)\|([^\]]+)\]$/);
-              if (ctaMatch) {
-                const [, btnText, link] = ctaMatch;
+              if (block.type === "cta") {
                 return (
                   <div key={idx} className="my-10 bg-gradient-to-r from-blue-900 to-[#003F86] rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-blue-900/20 relative overflow-hidden">
                     <div className="absolute inset-0 bg-[url('/images/pattern-circuit.svg')] opacity-10 mix-blend-overlay"></div>
@@ -151,18 +142,41 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                       <p className="text-blue-100 text-sm md:text-base font-medium">کارشناسان ما آماده ارائه مشاوره تخصصی و فنی به شما هستند.</p>
                     </div>
                     <Link
-                      to={link.startsWith('http') ? link : link}
+                      to={block.href}
                       className="relative z-10 whitespace-nowrap bg-amber-400 hover:bg-amber-500 text-blue-950 px-8 py-3.5 rounded-xl font-black text-sm transition-all shadow-lg shadow-amber-400/20"
                     >
-                      {btnText}
+                      {block.label}
                     </Link>
                   </div>
                 );
               }
-
+              if (block.type === "table") {
+                return (
+                  <div key={idx} className="my-8 overflow-x-auto rounded-2xl border border-slate-200">
+                    <table className="w-full text-right text-sm text-slate-700">
+                      <thead>
+                        <tr className="bg-slate-100">
+                          {block.headers.map((cell) => (
+                            <th key={cell} className="py-3 px-4 font-black whitespace-nowrap">{cell}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {block.rows.map((row, rowIdx) => (
+                          <tr key={rowIdx} className="border-t border-slate-100 even:bg-slate-50">
+                            {row.map((cell, cellIdx) => (
+                              <td key={`${rowIdx}-${cellIdx}`} className="py-3 px-4 align-top">{cell}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              }
               return (
                 <p key={idx} className="mb-6 text-base md:text-lg text-justify font-medium">
-                  {text}
+                  {block.text}
                 </p>
               );
             })}

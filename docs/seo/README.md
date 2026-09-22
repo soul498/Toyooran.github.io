@@ -9,7 +9,8 @@
 2. `CONTENT-STRATEGY.md` — انتخاب موضوع، تولید، بازبینی و انتشار
 3. `CONTENT-BRIEF-TEMPLATE.md` — Brief اجباری هر محتوا
 4. `CONTENT-BACKLOG.md` — صف شروع و محتوای Blocked
-5. `CHANGELOG.md` — تاریخچه تغییرات عمومی سئو
+5. `briefs/` — Brief تکمیل‌شده هر آیتم Ready
+6. `CHANGELOG.md` — تاریخچه تغییرات عمومی سئو
 
 ## هدف کسب‌وکار
 

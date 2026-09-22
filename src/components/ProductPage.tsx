@@ -13,7 +13,7 @@ const CATEGORY_IDS: ProductCategory[] = ['heating', 'ventilation', 'drinking', '
 export const ProductPage: React.FC = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { products } = useData();
+  const { products, articles } = useData();
 
   if (productId && CATEGORY_IDS.includes(productId as ProductCategory)) {
     return (
@@ -32,6 +32,11 @@ export const ProductPage: React.FC = () => {
   if (!product) {
     return <NotFoundPage />;
   }
+
+  const relatedArticles = articles.filter(
+    (article) =>
+      product.relatedArticleIds?.includes(article.id) || article.relatedProductIds?.includes(product.id)
+  );
 
   return (
     <div className="pt-32 pb-24 bg-slate-50 min-h-screen">
@@ -130,6 +135,23 @@ export const ProductPage: React.FC = () => {
                 </div>
               )}
 
+              {product.applications && product.applications.length > 0 && (
+                <div className="mb-10">
+                  <h3 className="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-[#003F86]" />
+                    کاربردها
+                  </h3>
+                  <ul className="space-y-3">
+                    {product.applications.map((app, idx) => (
+                      <li key={idx} className="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <div className="w-2 h-2 bg-[#003F86] rounded-full mt-2 shrink-0" />
+                        <span className="text-sm text-slate-700 leading-relaxed font-bold">{app}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               {/* 7. مشخصات فنی محصول */}
               {product.specs && product.specs.length > 0 && (
                 <div className="mb-12">
@@ -154,17 +176,40 @@ export const ProductPage: React.FC = () => {
 
               {/* Call to Action */}
               <div className="mt-auto pt-8 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
+                {product.category === 'feeding' ? (
+                  <Link
+                    to={`/contact?cta=feeder-line-count&product=${encodeURIComponent(product.code || product.id)}`}
+                    className="flex-1 bg-[#003F86] hover:bg-blue-800 text-white py-4 px-8 rounded-2xl font-black text-base transition-all shadow-xl shadow-blue-900/20 hover:shadow-blue-900/40 flex justify-center items-center gap-3 group"
+                  >
+                    <PhoneCall className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    <span>محاسبه تعداد خطوط</span>
+                  </Link>
+                ) : null}
                 <Link
                   to="/contact"
-                  className="flex-1 bg-[#003F86] hover:bg-blue-800 text-white py-4 px-8 rounded-2xl font-black text-base transition-all shadow-xl shadow-blue-900/20 hover:shadow-blue-900/40 flex justify-center items-center gap-3 group"
+                  className={`${product.category === 'feeding' ? 'flex-1 border border-slate-200 bg-white text-slate-800' : 'flex-1 bg-[#003F86] hover:bg-blue-800 text-white shadow-xl shadow-blue-900/20 hover:shadow-blue-900/40'} py-4 px-8 rounded-2xl font-black text-base transition-all flex justify-center items-center gap-3 group`}
                 >
-                  <PhoneCall className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  {product.category === 'feeding' ? null : <PhoneCall className="w-5 h-5 group-hover:scale-110 transition-transform" />}
                   <span>استعلام قیمت</span>
                 </Link>
               </div>
             </div>
           </div>
         </div>
+        {relatedArticles.length > 0 ? (
+          <div className="mt-8 bg-white rounded-3xl border border-slate-200 p-6">
+            <h2 className="text-lg font-black text-slate-900 mb-4">راهنمای مرتبط</h2>
+            <ul className="space-y-2">
+              {relatedArticles.map((article) => (
+                <li key={article.id}>
+                  <Link className="text-[#003F86] font-bold text-sm" to={`/magazine/${article.id}`}>
+                    {article.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
     </div>
   );

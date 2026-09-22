@@ -1,4 +1,5 @@
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../types";
+import { articleBlocks } from "./articleBlocks";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
@@ -47,7 +48,7 @@ const CATEGORY_SEO: Record<string, { title: string; h1: string; description: str
   },
 };
 
-const FITOUT_CHECKLIST = [
+export const FITOUT_CHECKLIST = [
   "عایق سقف و دیوار و هوابندی سازه",
   "برق، دیزل و تابلو متناسب با فن و هیتر",
   "آب، فشارشکن و شیب خط آبخوری",
@@ -56,6 +57,9 @@ const FITOUT_CHECKLIST = [
   "خطوط دان و آب و دسترسی شست‌وشو",
   "ایمنی گاز، اگزوز و خروج اضطراری",
 ];
+
+export const FITOUT_LEAD =
+  "نوسازی و تجهیز کامل سالن مرغداری یعنی سازه، دان، آب، تهویه و گرمایش در یک فرایند تحویل می‌شود تا ناهماهنگی سازنده سوله و نصاب تجهیزات تکرار نشود. کار از مشاوره و طراحی سازه شروع می‌شود، با اسکلت و پوشش عایق ادامه می‌یابد و با نصب خطوط و تحویل آماده جوجه‌ریزی تمام می‌شود.";
 
 export type SeoCatalog = {
   products: Product[];
@@ -203,35 +207,21 @@ function isCategorySlug(slug: string, catalog: SeoCatalog) {
 }
 
 function articleHtml(article: Article): string {
-  const parts: string[] = [];
-  for (const raw of article.content) {
-    const text = raw.trim();
-    if (!text) continue;
-    const img = text.match(/^\[IMG\|([^|]+)\|([^\]]+)\]$/);
-    if (img) {
-      parts.push(`<figure><img src="${escapeHtml(img[1])}" alt="${escapeHtml(img[2])}" /><figcaption>${escapeHtml(img[2])}</figcaption></figure>`);
-      continue;
-    }
-    const cta = text.match(/^\[CTA\|([^|]+)\|([^\]]+)\]$/);
-    if (cta) {
-      parts.push(`<p><a href="${escapeHtml(cta[2])}">${escapeHtml(cta[1])}</a></p>`);
-      continue;
-    }
-    if (text.startsWith("## ")) {
-      parts.push(`<h2>${escapeHtml(text.slice(3))}</h2>`);
-      continue;
-    }
-    if (text.startsWith("### ")) {
-      parts.push(`<h3>${escapeHtml(text.slice(4))}</h3>`);
-      continue;
-    }
-    if (text.startsWith("- ")) {
-      parts.push(`<ul><li>${escapeHtml(text.slice(2))}</li></ul>`);
-      continue;
-    }
-    parts.push(`<p>${escapeHtml(text)}</p>`);
-  }
-  return parts.join("\n");
+  return articleBlocks(article.content)
+    .map((block) => {
+      if (block.type === "h2") return `<h2>${escapeHtml(block.text)}</h2>`;
+      if (block.type === "h3") return `<h3>${escapeHtml(block.text)}</h3>`;
+      if (block.type === "p") return `<p>${escapeHtml(block.text)}</p>`;
+      if (block.type === "ul") return `<ul>${block.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+      if (block.type === "img") {
+        return `<figure><img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.alt)}" /><figcaption>${escapeHtml(block.alt)}</figcaption></figure>`;
+      }
+      if (block.type === "cta") return `<p><a href="${escapeHtml(block.href)}">${escapeHtml(block.label)}</a></p>`;
+      const head = `<tr>${block.headers.map((cell) => `<th>${escapeHtml(cell)}</th>`).join("")}</tr>`;
+      const body = block.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
+      return `<table>${head}${body}</table>`;
+    })
+    .join("\n");
 }
 
 function productBody(product: Product): string {
@@ -243,10 +233,20 @@ function productBody(product: Product): string {
     .slice(0, 8)
     .map((item) => `<li>${escapeHtml(item)}</li>`)
     .join("");
+  const applications = (product.applications || [])
+    .slice(0, 8)
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join("");
+  const feedingCta =
+    product.category === "feeding"
+      ? `<p><a href="/contact?cta=feeder-line-count&amp;product=${encodeURIComponent(product.code || product.id)}">محاسبه تعداد خطوط دانخوری</a></p>`
+      : "";
   return `<p>${escapeHtml(product.fullDescription || product.shortDescription)}</p>
 <p>دسته: <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>
 ${specs ? `<h2>مشخصات</h2><ul>${specs}</ul>` : ""}
 ${advantages ? `<h2>ویژگی‌ها</h2><ul>${advantages}</ul>` : ""}
+${applications ? `<h2>کاربردها</h2><ul>${applications}</ul>` : ""}
+${feedingCta}
 <p><a href="/contact?cta=product-quote&amp;product=${encodeURIComponent(product.code || product.id)}">استعلام قیمت و مشخصات فنی</a></p>`;
 }
 
@@ -262,7 +262,11 @@ function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string 
     .filter((p) => service.sampleProjectIds?.includes(p.id))
     .map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)}</li>`)
     .join("");
-  return `<p>${escapeHtml(service.tagline)}</p>
+  const lead = isFitout ? `<p>${escapeHtml(FITOUT_LEAD)}</p>` : `<p>${escapeHtml(service.tagline)}</p>`;
+  const auditLink = isFitout
+    ? ` · <a href="/magazine/poultry-hall-audit-checklist">چک‌لیست ممیزی قبل از نوسازی</a> · <a href="/contact?cta=hall-audit">درخواست ممیزی</a>`
+    : "";
+  return `${lead}
 <p>${escapeHtml(service.problemSolved)}</p>
 <h2>دامنه کار ${escapeHtml(h1)}</h2>
 <ul>${provide}</ul>
@@ -270,7 +274,7 @@ ${steps ? `<h2>فرایند اجرا</h2><ol>${steps}</ol>` : ""}
 ${checklist}
 ${related ? `<h2>پروژه‌های مرتبط</h2><ul>${related}</ul>` : ""}
 ${faqs ? `<h2>پرسش‌های متداول</h2>${faqs}` : ""}
-<p><a href="/contact?cta=service-visit">درخواست بازدید و پیشنهاد فنی</a> · <a href="/products">مشاهده تجهیزات</a></p>`;
+<p><a href="/contact?cta=service-visit">درخواست بازدید و پیشنهاد فنی</a> · <a href="/products">مشاهده تجهیزات</a>${auditLink}</p>`;
 }
 
 function projectBody(project: Project): string {
@@ -629,6 +633,16 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
                     { "@type": "HowToStep", name: "تعیین وزن زنده پایان دوره", text: "تعداد پرنده × وزن هدف؛ مبنای دبی باید منبع سویه باشد نه رقم بازار بدون شرط." },
                     { "@type": "HowToStep", name: "انتخاب فن روی منحنی فشار استاتیک", text: "ظرفیت کاتالوگ را در فشار استاتیک پد/اینلت اصلاح کنید و با مهندس تأیید کنید." },
                   ],
+                },
+              ]
+            : []),
+          ...(article.id === "poultry-hall-audit-checklist"
+            ? [
+                {
+                  "@type": "HowTo",
+                  name: article.title,
+                  description: article.summary,
+                  step: FITOUT_CHECKLIST.map((name) => ({ "@type": "HowToStep", name, text: name })),
                 },
               ]
             : []),

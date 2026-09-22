@@ -15,6 +15,17 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-09-22 — صف محتوا Ready 1–5 (C1 آروان باقی است)
+
+- مالک: توسعه + SEO
+- فایل‌ها: `docs/seo/briefs/*`, `src/components/ServicePage.tsx`, `src/components/ProductPage.tsx`, `src/components/magazine/MagazineArticle.tsx`, `src/data/mockData.ts`, `src/data/productsData.ts`, `src/seo/resolveSeo.ts`, `src/seo/articleBlocks.ts`, `server/catalog.ts`
+- URLها: `/services/poultry-hall-fitout`, `/magazine/how-to-calculate-ventilation-capacity`, `/magazine/comparison-of-heating-systems`, `/magazine/introduction-to-pouya-butterfly-feeder`, `/magazine/poultry-hall-audit-checklist`, محصول `ts-013`
+- تغییر: Brief اجباری برای ۵ آیتم Ready؛ Lead و کارت پروژه در خدمت fitout؛ جدول مقایسه گرمایش؛ قید شواهد تهویه/دانخوری؛ چک‌لیست ممیزی؛ کاربردها و CTA محاسبه خطوط روی دانخوری؛ seed کاتالوگ SEO روی idهای seed غالب است
+- دلیل/Issue: ACTION-PLAN M2–M4 و CONTENT-BACKLOG پس از رد کردن C1 توسط مالک
+- invariantهای بررسی‌شده: بدون قیمت Product جعلی؛ بدون Person اختراعی؛ بدون کیس‌استادی/هزینه Blocked
+- Verify: `npm run lint` و `npm run check:seo` پس از دیپلوی
+- نتیجه پس از انتشار: در همین commit
+
 ## 2026-09-21 — بستن آیتم‌های باز ACTION-PLAN
 
 - مالک: توسعه

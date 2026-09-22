@@ -12,6 +12,14 @@ function asArray<T>(key: string, fallback: T[]): T[] {
   }
 }
 
+function mergeSeedById<T extends { id: string }>(key: string, seed: T[]): T[] {
+  const overlay = asArray<T>(key, []);
+  if (!overlay.length) return seed;
+  const seedIds = new Set(seed.map((item) => item.id));
+  const extras = overlay.filter((item) => item?.id && !seedIds.has(item.id));
+  return extras.length ? [...seed, ...extras] : seed;
+}
+
 function asCompany(): CompanyInfo {
   try {
     const value = getAdminState("companyInfo");
@@ -26,10 +34,10 @@ function asCompany(): CompanyInfo {
 
 export function loadSeoCatalog(): SeoCatalog {
   return {
-    products: asArray<Product>("products", PRODUCTS),
-    services: asArray<Service>("services", SERVICES),
-    projects: asArray<Project>("projects", PROJECTS),
-    articles: asArray<Article>("articles", ARTICLES),
+    products: mergeSeedById<Product>("products", PRODUCTS),
+    services: mergeSeedById<Service>("services", SERVICES),
+    projects: mergeSeedById<Project>("projects", PROJECTS),
+    articles: mergeSeedById<Article>("articles", ARTICLES),
     categories: asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[]),
     company: asCompany(),
     collectionUpdatedAt: {

@@ -612,7 +612,8 @@ export const PRODUCTS: Product[] = [
     "models": [
       "KT-013"
     ],
-    "catalogPdfName": "Catalog_TS-013.pdf"
+    "catalogPdfName": "Catalog_TS-013.pdf",
+    "relatedArticleIds": ["introduction-to-pouya-butterfly-feeder"]
   },
   {
     "id": "ts-014",

@@ -15,6 +15,7 @@
 | [seo/SEO-CONTRACT.md](seo/SEO-CONTRACT.md) | invariant فنی SEO |
 | [seo/CONTENT-STRATEGY.md](seo/CONTENT-STRATEGY.md) | استراتژی تولید محتوا |
 | [seo/CONTENT-BACKLOG.md](seo/CONTENT-BACKLOG.md) | صف محتوا |
+| [seo/briefs/](seo/briefs/) | Briefهای آیتم‌های Ready |
 | [seo/CHANGELOG.md](seo/CHANGELOG.md) | تاریخچه تغییرات SEO |
 | [security-admin.md](security-admin.md) | ادمین، MFA، secretها |
 | [ci-cd.md](ci-cd.md) | Forgejo Actions و دیپلوی روی همین سرور |
