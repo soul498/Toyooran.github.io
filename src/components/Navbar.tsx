@@ -80,12 +80,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="h-10 sm:h-12 flex items-center justify-center relative group-hover:-translate-y-0.5 transition-transform duration-300">
              <img 
                src="/images/logo-wide.png" 
-               alt="Logo" 
+               alt="طیوران صنعت پویا" 
                className="h-full w-auto object-contain"
              />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-lg sm:text-xl font-black bg-gradient-to-r from-[#003F86] to-blue-600 bg-clip-text text-transparent tracking-tight group-hover:opacity-80 transition-opacity">
+            <span className="text-lg sm:text-xl font-black text-[#003F86] tracking-tight group-hover:opacity-90 transition-opacity">
               TSPK
             </span>
             <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-600 tracking-wider -mt-1">
@@ -145,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             id="mobile-menu-toggle-btn"
             className="p-2.5 rounded-full text-slate-700 hover:bg-white transition-all duration-300 bg-white/50 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 flex items-center justify-center relative overflow-hidden"
-            aria-label="باز کردن منو"
+            aria-label={mobileMenuOpen ? 'بستن منو' : 'باز کردن منو'}
             aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -163,7 +163,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <img src="/images/logo-wide.png" alt="طیوران صنعت پویا" className="w-full h-full object-contain " width={80} height={40} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-lg font-black bg-gradient-to-r from-[#003F86] to-blue-600 bg-clip-text text-transparent">TSPK</span>
+                  <span className="text-lg font-black text-[#003F86]">TSPK</span>
                   <span className="text-[10px] font-extrabold text-slate-500 -mt-1">طیوران صنعت پویا</span>
                 </div>
               </div>

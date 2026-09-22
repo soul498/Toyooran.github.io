@@ -21,7 +21,7 @@ export const LazyImage = ({ src, alt, className, imgClassName, fallbackSrc = '/i
       <img
         ref={imgRef}
         src={currentSrc}
-        alt={alt && alt.trim() ? alt : 'تجهیزات مرغداری طیوران صنعت پویا'}
+        alt={alt !== undefined ? alt : 'تجهیزات مرغداری طیوران صنعت پویا'}
         loading="lazy"
         decoding="async"
         onLoad={() => setIsLoaded(true)}

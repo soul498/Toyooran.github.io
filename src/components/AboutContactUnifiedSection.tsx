@@ -74,12 +74,12 @@ export const AboutContactUnifiedSection: React.FC = () => {
               
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.2] mb-6 drop-shadow-lg">
                 آینده‌ی صنعت را <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500">
+                <span className="text-amber-300">
                   با هم بسازیم.
                 </span>
               </h2>
               
-              <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-0 font-medium max-w-md">
+              <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-0 font-medium max-w-md">
                 تیم مهندسی طیوران صنعت پویا آماده ارائه مشاوره تخصصی در زمینه راه‌اندازی و تجهیز مدرن‌ترین سیستم‌های پرورشی است.
               </p>
             </div>
@@ -93,9 +93,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
                   </div>
                   <div>
-                    <span className="block text-[11px] sm:text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">دفتر مرکزی</span>
+                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mb-1 uppercase tracking-wider">دفتر مرکزی</span>
                     <a href={toTelHref(officePhone)} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{officePhone}</a>
-                    <span className="block text-[11px] sm:text-xs text-slate-500 font-bold mt-3 mb-1 uppercase tracking-wider">مشاوره و فروش</span>
+                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mt-3 mb-1 uppercase tracking-wider">مشاوره و فروش</span>
                     <a href={toTelHref(salesPhone)} className="block text-lg sm:text-xl text-white font-black hover:text-amber-400 transition-colors" dir="ltr" style={{ textAlign: 'right' }}>{salesPhone}</a>
                   </div>
                 </div>
@@ -104,7 +104,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
               {/* Social Links Row */}
               {hasSocials && (
                 <div className="mt-6 flex items-center gap-4">
-                  <span className="text-xs font-bold text-slate-500 ml-2">شبکه‌های اجتماعی:</span>
+                  <span className="text-xs font-bold text-slate-300 ml-2">شبکه‌های اجتماعی:</span>
                   
                   <a 
                     href={companyInfo.socialLinks?.instagram || '#'} 
@@ -116,8 +116,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     }}
                     target="_blank" 
                     rel="noreferrer" 
-                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 flex items-center justify-center hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300">
-                    <Instagram className="w-4 h-4" />
+                    aria-label="اینستاگرام"
+                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300">
+                    <Instagram className="w-4 h-4" aria-hidden="true" />
                   </a>
                   <a 
                     href={companyInfo.socialLinks?.telegram || '#'} 
@@ -129,8 +130,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     }}
                     target="_blank" 
                     rel="noreferrer" 
-                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 flex items-center justify-center hover:bg-[#0088cc] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300">
-                    <Send className="w-4 h-4 ml-0.5" />
+                    aria-label="تلگرام"
+                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0088cc] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300">
+                    <Send className="w-4 h-4 ml-0.5" aria-hidden="true" />
                   </a>
                   <a 
                     href={companyInfo.socialLinks?.aparat || '#'} 
@@ -142,8 +144,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     }}
                     target="_blank" 
                     rel="noreferrer" 
-                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 flex items-center justify-center hover:bg-[#263238] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300">
-                    <AparatIcon className="w-4 h-4" />
+                    aria-label="آپارات"
+                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#263238] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300">
+                    <AparatIcon className="w-4 h-4" aria-hidden="true" />
                   </a>
                   <a 
                     href={companyInfo.socialLinks?.rubika || '#'} 
@@ -155,8 +158,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     }}
                     target="_blank" 
                     rel="noreferrer" 
-                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 flex items-center justify-center hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300">
-                    <Grid className="w-4 h-4" />
+                    aria-label="روبیکا"
+                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300">
+                    <Grid className="w-4 h-4" aria-hidden="true" />
                   </a>
                   <a 
                     href={companyInfo.socialLinks?.youtube || '#'} 
@@ -168,8 +172,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     }}
                     target="_blank" 
                     rel="noreferrer" 
-                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 flex items-center justify-center hover:bg-[#ff0000] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300">
-                    <Youtube className="w-4 h-4" />
+                    aria-label="یوتیوب"
+                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#ff0000] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300">
+                    <Youtube className="w-4 h-4" aria-hidden="true" />
                   </a>
                   <a 
                     href={companyInfo.socialLinks?.linkedin || '#'} 
@@ -181,8 +186,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     }}
                     target="_blank" 
                     rel="noreferrer" 
-                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 flex items-center justify-center hover:bg-[#0a66c2] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300">
-                    <Linkedin className="w-4 h-4" />
+                    aria-label="لینکدین"
+                    className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0a66c2] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300">
+                    <Linkedin className="w-4 h-4" aria-hidden="true" />
                   </a>
                 </div>
               )}
@@ -193,9 +199,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
           {locations && locations.length > 0 && (
             <div className="mt-16 sm:mt-24 relative z-10">
               
-              <div className="flex items-center gap-6 mb-10 opacity-60">
+              <div className="flex items-center gap-6 mb-10">
                 <div className="h-px flex-1 bg-gradient-to-l from-white/20 to-transparent" />
-                <h3 className="text-white/80 font-bold text-lg tracking-widest uppercase">آدرس مراکز و شعب</h3>
+                <h3 className="text-slate-200 font-bold text-lg tracking-widest uppercase">آدرس مراکز و شعب</h3>
                 <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
               </div>
 
@@ -218,7 +224,9 @@ export const AboutContactUnifiedSection: React.FC = () => {
                         return (
                           <button
                             key={loc.id || idx}
+                            type="button"
                             onClick={() => setActiveLocationIndex(idx)}
+                            aria-current={isActive ? 'true' : undefined}
                             className={`w-full text-right flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border ${
                               isActive
                                 ? 'bg-white/10 border-amber-400/40 shadow-[0_0_20px_rgba(251,191,36,0.1)]'
@@ -226,15 +234,15 @@ export const AboutContactUnifiedSection: React.FC = () => {
                             }`}
                           >
                              <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center shrink-0 transition-all duration-300 shadow-inner ${
-                               isActive ? 'bg-amber-400 text-slate-900 shadow-white/20' : 'bg-white/5 text-slate-400 shadow-transparent'
+                               isActive ? 'bg-amber-400 text-slate-900 shadow-white/20' : 'bg-white/5 text-slate-300 shadow-transparent'
                              }`}>
-                               <Icon className="w-5 h-5" />
+                               <Icon className="w-5 h-5" aria-hidden="true" />
                              </div>
                              <div className="flex-1 overflow-hidden">
-                               <h5 className={`font-black truncate text-[13px] sm:text-sm mb-1 transition-colors ${isActive ? 'text-amber-400' : 'text-slate-300'}`}>
+                               <p className={`font-black truncate text-[13px] sm:text-sm mb-1 transition-colors ${isActive ? 'text-amber-400' : 'text-slate-200'}`}>
                                  {loc.title || (isHQ ? 'دفتر مرکزی' : 'شعبه')}
-                               </h5>
-                               <p className="text-[11px] text-slate-500 truncate">{loc.address}</p>
+                               </p>
+                               <p className="text-[11px] text-slate-300 truncate">{loc.address}</p>
                              </div>
                           </button>
                         )

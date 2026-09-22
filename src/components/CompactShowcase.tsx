@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { LazyImage } from "./LazyImage";
-import { Package, Newspaper, Clock, ArrowLeft, ChevronLeft, Sparkles, Zap, ArrowRight } from '../icons';
+import { Newspaper, Clock, ArrowLeft, ChevronLeft, Zap } from '../icons';
 import { Product, Article } from '../types';
+import { publicProductPath } from '../seo/resolveSeo';
 
 interface CompactShowcaseProps {
   products: Product[];
@@ -15,7 +17,6 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
   products,
   articles,
   onNavigate,
-  onSelectProduct,
   onSelectArticle
 }) => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -63,6 +64,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                 </div>
               </div>
               <button 
+                type="button"
                 onClick={() => onNavigate('products')}
                 className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs font-bold text-white bg-white/10 hover:bg-white hover:text-[#003F86] flex items-center gap-2 transition-all duration-300 backdrop-blur-md border border-white/20 hover:border-transparent group/btn"
               >
@@ -75,9 +77,10 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
             {/* Slider Content */}
             <div className="flex-1 relative flex items-center justify-center min-h-[250px] sm:min-h-[300px]">
                 {featuredProducts.length > 0 && (
-                  <div
-                    className="w-full flex flex-col md:flex-row items-center gap-6 sm:gap-10 cursor-pointer group/slide"
-                    onClick={() => onSelectProduct(featuredProducts[currentSlide].id)}
+                  <Link
+                    to={publicProductPath(featuredProducts[currentSlide])}
+                    className="w-full flex flex-col md:flex-row items-center gap-6 sm:gap-10 cursor-pointer group/slide text-inherit no-underline"
+                    aria-label={`مشاهده محصول ${featuredProducts[currentSlide].name}`}
                   >
                     <div className="w-48 sm:w-56 md:w-64 shrink-0 relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 border border-white/10">
                       <LazyImage 
@@ -95,22 +98,27 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                       <h4 className="text-xl sm:text-3xl lg:text-4xl font-black text-white leading-tight mb-4 sm:mb-6">
                         {featuredProducts[currentSlide].name}
                       </h4>
-                      <div className="flex items-center gap-2 text-white/60 text-xs sm:text-sm font-medium">
-                        مشاهده جزئیات و مشخصات فنی <ChevronLeft className="w-4 h-4" />
+                      <div className="flex items-center gap-2 text-slate-200 text-xs sm:text-sm font-medium">
+                        مشاهده جزئیات و مشخصات فنی <ChevronLeft className="w-4 h-4" aria-hidden="true" />
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
             </div>
 
             {/* Slider Dots */}
-            <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8 z-20">
-              {featuredProducts.map((_, idx) => (
+            <div className="flex items-center justify-center gap-1 mt-6 sm:mt-8 z-20" role="tablist" aria-label="اسلاید محصولات">
+              {featuredProducts.map((product, idx) => (
                 <button
-                  key={idx}
+                  key={product.id || idx}
+                  type="button"
                   onClick={(e) => { e.stopPropagation(); setCurrentSlide(idx); }}
-                  className={`h-1.5 sm:h-2 rounded-full transition-all duration-500 ${currentSlide === idx ? 'w-8 sm:w-10 bg-amber-400' : 'w-2 bg-white/20 hover:bg-white/40'}`}
-                />
+                  aria-label={`اسلاید ${idx + 1}: ${product.name}`}
+                  aria-current={currentSlide === idx ? 'true' : undefined}
+                  className="min-w-6 min-h-6 flex items-center justify-center"
+                >
+                  <span className={`block h-1.5 sm:h-2 rounded-full transition-all duration-500 ${currentSlide === idx ? 'w-8 sm:w-10 bg-amber-400' : 'w-2 bg-white/40 hover:bg-white/60'}`} />
+                </button>
               ))}
             </div>
 
@@ -127,24 +135,27 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
               </div>
               <div>
                 <h3 className="font-black text-xl text-slate-800 tracking-tight">مجله تخصصی</h3>
-                <span className="text-[10px] sm:text-[11px] text-slate-400 font-bold block mt-0.5 uppercase tracking-wider">مقالات و اخبار صنعت</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-600 font-bold block mt-0.5 uppercase tracking-wider">مقالات و اخبار صنعت</span>
               </div>
             </div>
             <button
+              type="button"
               onClick={() => onNavigate('magazine')}
+              aria-label="مشاهده مجله"
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-50 hover:bg-slate-900 hover:text-amber-400 text-slate-600 flex items-center justify-center transition-all duration-300 group shadow-sm border border-slate-100"
             >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 group-hover:scale-110 transition-all" />
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 group-hover:scale-110 transition-all" aria-hidden="true" />
             </button>
           </div>
 
           {/* Vertical Articles List */}
           <div className="flex flex-col gap-3 sm:gap-4 flex-1">
             {featuredArticles.slice(0, 3).map((article) => (
-              <div
+              <button
                 key={article.id}
+                type="button"
                 onClick={() => onSelectArticle(article.id)}
-                className="flex items-center gap-4 bg-white rounded-[1.5rem] p-3 sm:p-4 cursor-pointer border border-slate-100 hover:border-slate-200 transition-colors group"
+                className="flex items-center gap-4 bg-white rounded-[1.5rem] p-3 sm:p-4 cursor-pointer border border-slate-100 hover:border-slate-200 transition-colors group w-full text-right"
               >
                 <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-xl overflow-hidden relative">
                   <LazyImage src={article.image} alt={article.title} className="w-full h-full" imgClassName="w-full h-full object-cover" />
@@ -158,12 +169,12 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                   <h4 className="text-slate-800 font-bold text-sm sm:text-[15px] leading-snug line-clamp-2 group-hover:text-amber-500 transition-colors">
                     {article.title}
                   </h4>
-                  <div className="flex items-center gap-2 mt-2 sm:mt-2.5 text-[10px] sm:text-xs text-slate-400 font-medium">
-                    <Clock className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-2 mt-2 sm:mt-2.5 text-[10px] sm:text-xs text-slate-600 font-medium">
+                    <Clock className="w-3.5 h-3.5" aria-hidden="true" />
                     {article.readTime}
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>

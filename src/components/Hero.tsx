@@ -54,7 +54,7 @@ export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void
       <div className="absolute inset-[2px] rounded-[calc(2rem-2px)] bg-[#001c3d] z-10 overflow-hidden flex flex-col p-6">
         {card.bgImage && (
           <div className="absolute inset-0 z-0 opacity-50 pointer-events-none">
-            <LazyImage src={card.bgImage} className="w-full h-full" imgClassName="w-full h-full object-cover" />
+            <LazyImage src={card.bgImage} alt="" className="w-full h-full" imgClassName="w-full h-full object-cover" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-[#001c3d]/40 via-[#001c3d]/70 to-[#001c3d]/95 z-0 pointer-events-none" />
@@ -201,18 +201,21 @@ const Hero: React.FC<HeroProps> = ({
             <LazyHeroImage
               key={src}
               src={src}
-              alt="شرکت طیوران صنعت پویا"
+              alt={lite || currentImageIndex === index ? "شرکت طیوران صنعت پویا" : ""}
               isActive={lite ? true : currentImageIndex === index}
             />
           ))}
           {/* Subtle gradient to ensure text readability but keep image prominent */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/40 to-slate-950/90 z-10" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50 z-10" />
+          <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_rgba(2,6,23,0.78)_0%,_rgba(2,6,23,0.45)_48%,_transparent_74%)]" />
         </div>
 
         {/* Minimalist Centered Content */}
         <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-5xl mx-auto w-full mt-[-8vh] sm:mt-[-5vh] hero-fade">
-          
+          <div className="relative w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+            <div className="absolute inset-0 rounded-[2rem] bg-slate-950/70 pointer-events-none" aria-hidden="true" />
+            <div className="relative">
           <div className="hero-pill inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-7 border border-amber-300/50 bg-amber-400/15 font-black">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse" />
             <span className="text-sm sm:text-base text-white tracking-wide drop-shadow-[0_0_12px_rgba(251,191,36,0.55)]">
@@ -226,7 +229,7 @@ const Hero: React.FC<HeroProps> = ({
             {cmsHero?.title || 'طیوران صنعت پویا'}
           </h1>
 
-          <p className="text-sm sm:text-base lg:text-xl text-slate-200/90 leading-relaxed max-w-2xl font-light drop-shadow-lg mb-10">
+          <p className="text-sm sm:text-base lg:text-xl text-slate-100 leading-relaxed max-w-2xl font-light drop-shadow-lg mb-10 mx-auto">
             {cmsHero?.subtitle}
           </p>
 
@@ -235,27 +238,30 @@ const Hero: React.FC<HeroProps> = ({
               to="/products"
               className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-[#FF9F14] hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold px-8 py-3.5 rounded-full text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/20 hover:-translate-y-1 transition-all"
             >
-              <Package className="w-4 h-4" />
+              <Package className="w-4 h-4" aria-hidden="true" />
               <span>{cmsHero?.ctaPrimaryText || 'محصولات و تجهیزات'}</span>
             </Link>
 
             <Link
               to="/contact"
-              className="w-full sm:w-auto bg-slate-900/40 hover:bg-slate-800/60 text-white font-bold px-8 py-3.5 rounded-full text-sm sm:text-base flex items-center justify-center gap-2 border-[1.5px] border-white/40  transform-gpu will-change-transform shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+              className="w-full sm:w-auto bg-slate-950 hover:bg-slate-900 text-white font-bold px-8 py-3.5 rounded-full text-sm sm:text-base flex items-center justify-center gap-2 border-[1.5px] border-white/40  transform-gpu will-change-transform shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
             >
-              <PhoneCall className="w-4 h-4 text-amber-400" />
+              <PhoneCall className="w-4 h-4 text-amber-400" aria-hidden="true" />
               <span>{cmsHero?.ctaSecondaryText === 'ارتباط با مهندسین' ? 'تماس با ما' : (cmsHero?.ctaSecondaryText || 'تماس با ما')}</span>
             </Link>
+          </div>
+            </div>
           </div>
         </div>
 
         <button
           type="button"
-          className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer z-10 bg-transparent border-0"
+          className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer z-10 bg-transparent border-0 min-w-6 min-h-11"
           onClick={scrollToCards}
+          aria-label="اسکرول به دسته‌بندی‌ها"
         >
-          <span className="text-[10px] sm:text-xs tracking-widest text-white/80 font-medium">اسکرول کنید</span>
-          <ChevronLeft className="w-5 h-5 text-amber-400 -rotate-90 animate-bounce" />
+          <span className="text-[10px] sm:text-xs tracking-widest text-white font-medium">اسکرول کنید</span>
+          <ChevronLeft className="w-5 h-5 text-amber-400 -rotate-90 animate-bounce" aria-hidden="true" />
         </button>
 
       </section>
@@ -328,9 +334,9 @@ const Hero: React.FC<HeroProps> = ({
                           </div>
                           
                           <div>
-                             <span className="text-[10px] sm:text-[11px] font-bold text-amber-400/90 tracking-widest uppercase mb-1.5 block drop-shadow-md">Engineering Excellence</span>
+                             <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 tracking-widest uppercase mb-1.5 block drop-shadow-md">Engineering Excellence</span>
                              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg mb-2">شرکت طیوران صنعت پویا</h2>
-                             <p className="text-sm sm:text-base text-blue-100/90 max-w-xl leading-relaxed font-medium">از طراحی و ساخت تا تجهیز و بهره‌برداری؛ راهکاری یکپارچه برای پروژه‌های صنعت دام، طیور و آبزیان</p>
+                             <p className="text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed font-medium">از طراحی و ساخت تا تجهیز و بهره‌برداری؛ راهکاری یکپارچه برای پروژه‌های صنعت دام، طیور و آبزیان</p>
                           </div>
                        </div>
 

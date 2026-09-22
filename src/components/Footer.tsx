@@ -61,14 +61,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
           <div className="lg:col-span-4 flex flex-col">
             <div className="flex items-center gap-3 mb-6">
                <div className="h-14 flex items-center justify-center">
-                  <img src="/images/logo-wide.png" alt="Logo" className="h-full w-auto object-contain" />
+                  <img src="/images/logo-wide.png" alt="طیوران صنعت پویا" className="h-full w-auto object-contain" />
                </div>
                <div>
                   <h3 className="text-xl font-black text-white tracking-tight">{companyInfo?.name}</h3>
                   <span className="text-xs text-amber-400 font-bold tracking-widest uppercase">{companyInfo?.nameEn}</span>
                </div>
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed font-medium mb-8 max-w-sm">
+            <p className="text-slate-300 text-sm leading-relaxed font-medium mb-8 max-w-sm">
               شرکت طیوران صنعت پویا، با بیش از 50 سال سابقه، پیشگام در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانجات خوراک دام و طیور در خاورمیانه است.
             </p>
             
@@ -84,8 +84,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 }}
                 target="_blank"
                 rel="noreferrer"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group">
-                <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group"
+                aria-label="اینستاگرام">
+                <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </a>
               <a 
                 href={companyInfo?.socialLinks?.telegram || '#'} 
@@ -97,8 +98,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 }}
                 target="_blank"
                 rel="noreferrer"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group">
-                <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" />
+                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group"
+                aria-label="تلگرام">
+                <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </a>
               <a 
                 href={companyInfo?.socialLinks?.aparat || '#'} 
@@ -110,8 +112,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 }}
                 target="_blank"
                 rel="noreferrer"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group">
-                <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
+                aria-label="آپارات">
+                <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </a>
               <a 
                 href={companyInfo?.socialLinks?.rubika || '#'} 
@@ -123,8 +126,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 }}
                 target="_blank"
                 rel="noreferrer"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group">
-                <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
+                aria-label="روبیکا">
+                <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </a>
               <a 
                 href={companyInfo?.socialLinks?.youtube || '#'} 
@@ -136,8 +140,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 }}
                 target="_blank"
                 rel="noreferrer"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group">
-                <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
+                aria-label="یوتیوب">
+                <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </a>
               <a 
                 href={companyInfo?.socialLinks?.linkedin || '#'} 
@@ -149,8 +154,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 }}
                 target="_blank"
                 rel="noreferrer"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#0a66c2] hover:border-transparent transition-all duration-300 group">
-                <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0a66c2] hover:border-transparent transition-all duration-300 group"
+                aria-label="لینکدین">
+                <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -164,7 +170,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
             <ul className="space-y-3">
               {navigation.map((nav, idx) => (
                 <li key={idx}>
-                  <Link to={nav.path} className="text-slate-400 hover:text-amber-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                  <Link to={nav.path} className="text-slate-300 hover:text-amber-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                     <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-amber-400 transition-colors" />
                     {nav.title}
                   </Link>
@@ -181,25 +187,25 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
             </h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/services" className="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                <Link to="/services" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
                   ماشین‌آلات کارخانجات خوراک
                 </Link>
               </li>
               <li>
-                <Link to="/products" className="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                <Link to="/products" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
                   تجهیزات مدرن مرغداری
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                <Link to="/services" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
                   سازه‌ها و سوله‌های صنعتی
                 </Link>
               </li>
               <li>
-                <Link to="/products" className="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                <Link to="/products" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
                   مواد اولیه و مکمل‌های دارویی
                 </Link>
@@ -220,9 +226,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                   <Phone className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="space-y-1">
-                  <span className="block text-[10px] text-slate-500 font-bold">تلفن دفتر مرکزی</span>
+                  <span className="block text-[10px] text-slate-300 font-bold">تلفن دفتر مرکزی</span>
                   <a href={toTelHref(companyInfo?.phone || '۰۵۱-۳۶۶۶۵۶۰۰')} className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{companyInfo?.phone || '۰۵۱-۳۶۶۶۵۶۰۰'}</a>
-                  <span className="block text-[10px] text-slate-500 font-bold pt-2">تلفن مشاوره و فروش</span>
+                  <span className="block text-[10px] text-slate-300 font-bold pt-2">تلفن مشاوره و فروش</span>
                   <a href={toTelHref(companyInfo?.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸')} className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{companyInfo?.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸'}</a>
                 </div>
               </div>
@@ -233,7 +239,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                     <MapPin className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div>
-                    <span className="block text-[10px] text-slate-500 font-bold mb-1">دفتر مرکزی</span>
+                    <span className="block text-[10px] text-slate-300 font-bold mb-1">دفتر مرکزی</span>
                     <a
                       href={neshanMapsUrl(hq.address, hq.lat, hq.lng)}
                       target="_blank"
@@ -254,7 +260,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
         <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
 
         {/* Copyright & Credits */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-300">
           <p>
             © {currentYear} تمامی حقوق این وب‌سایت متعلق به طیوران صنعت پویا می‌باشد. طراحی و توسعه توسط <strong className="text-slate-200 font-black">هزارتو</strong>.
           </p>

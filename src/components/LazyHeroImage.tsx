@@ -12,7 +12,7 @@ export const LazyHeroImage: React.FC<{ src: string, alt?: string, className?: st
     ? "/images/hero-final-1-480.webp 480w, /images/hero-final-1-800.webp 800w, /images/hero-final-1.webp 1400w"
     : null;
   const mobileWebp = src.includes("hero-final-1") ? "/images/hero-final-1-480.webp" : null;
-  const label = alt && alt.trim() ? alt : "سالن مرغداری تجهیزشده توسط طیوران صنعت پویا";
+  const label = alt !== undefined ? alt : "سالن مرغداری تجهیزشده توسط طیوران صنعت پویا";
 
   return (
     <div

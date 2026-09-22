@@ -15,6 +15,14 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-09-22 — Accessibility صفحه اصلی (نام کنترل، کنتراست، heading)
+
+- مالک: توسعه
+- فایل‌ها: Navbar, Hero, CompactShowcase, Footer, AboutContactUnifiedSection, ContactPage, LazyImage, LazyHeroImage, AparatIcon
+- URLها: `/` (و هم‌خوانی `/contact`)
+- تغییر: aria-label شبکه اجتماعی و دکمه‌های آیکونی؛ اسلایدر Link/دکمه با نام و tap ۲۴px؛ alt لوگو؛ TSPK و تیتر کهربایی بدون text-transparent؛ پلاک تیره فقط پشت متن Hero؛ slate-300 روی متن تیره؛ h5 شعب به متن معمولی؛ prerender همچنان بعد از hydrate حذف می‌شود
+- Verify: lint
+
 ## 2026-09-22 — C1 آروان: حذف چالش کوکی ۳۰۷ برای خزنده
 
 - مالک: زیرساخت CDN (پنل آروان، بدون تغییر کد اپ)

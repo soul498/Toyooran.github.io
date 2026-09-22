@@ -66,7 +66,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-xs mb-1">تلفن دفتر مرکزی:</span>
+                      <span className="text-slate-300 block text-xs mb-1">تلفن دفتر مرکزی:</span>
                       <a href={toTelHref(companyInfo.phone)} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
                         {companyInfo.phone}
                       </a>
@@ -78,7 +78,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-xs mb-1">واحد فروش و استعلام:</span>
+                      <span className="text-slate-300 block text-xs mb-1">واحد فروش و استعلام:</span>
                       <a href={toTelHref(companyInfo.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸')} className="font-mono font-bold text-white text-base hover:text-blue-400 transition-colors drop-shadow-md" dir="ltr">
                         {companyInfo.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸'}
                       </a>
@@ -90,7 +90,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-xs mb-1">پشتیبانی فنی:</span>
+                      <span className="text-slate-300 block text-xs mb-1">پشتیبانی فنی:</span>
                       <a href={toTelHref(companyInfo.technicalSupportPhone || '۰۹۱۱۵۱۱۶۲۵۸')} className="font-mono font-bold text-white text-base hover:text-emerald-400 transition-colors" dir="ltr">
                         {companyInfo.technicalSupportPhone || '۰۹۱۱۵۱۱۶۲۵۸'}
                       </a>
@@ -102,7 +102,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Clock className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-xs mb-1">ساعات پاسخگویی مهندسین:</span>
+                      <span className="text-slate-300 block text-xs mb-1">ساعات پاسخگویی مهندسین:</span>
                       <span className="text-slate-200 text-sm">{companyInfo.workingHours}</span>
                     </div>
                   </div>
@@ -111,7 +111,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                 {/* Social Links inside the dark card */}
                 {companyInfo.socialLinks && (
                   <div className="mt-8 pt-6 border-t border-white/10">
-                    <span className="text-slate-400 text-xs block mb-4">شبکه‌های اجتماعی:</span>
+                    <span className="text-slate-300 text-xs block mb-4">شبکه‌های اجتماعی:</span>
                     <div className="flex items-center gap-3">
                       <a 
                         href={companyInfo.socialLinks.instagram || '#'} 
@@ -122,8 +122,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                           }
                         }}
                         target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group">
-                        <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group"
+                        aria-label="اینستاگرام">
+                        <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </a>
                       <a 
                         href={companyInfo.socialLinks.telegram || '#'} 
@@ -134,8 +135,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                           }
                         }}
                         target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group">
-                        <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" />
+                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group"
+                        aria-label="تلگرام">
+                        <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </a>
                       <a 
                         href={companyInfo.socialLinks.aparat || '#'} 
@@ -146,8 +148,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                           }
                         }}
                         target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group">
-                        <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
+                        aria-label="آپارات">
+                        <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </a>
                       <a 
                         href={companyInfo.socialLinks.rubika || '#'} 
@@ -158,8 +161,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                           }
                         }}
                         target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group">
-                        <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
+                        aria-label="روبیکا">
+                        <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </a>
                       <a 
                         href={companyInfo.socialLinks.youtube || '#'} 
@@ -170,8 +174,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                           }
                         }}
                         target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group">
-                        <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
+                        aria-label="یوتیوب">
+                        <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </a>
                       <a 
                         href={companyInfo.socialLinks.linkedin || '#'} 
@@ -182,8 +187,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                           }
                         }}
                         target="_blank" rel="noreferrer"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#0077b5] hover:border-transparent transition-all duration-300 group">
-                        <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0077b5] hover:border-transparent transition-all duration-300 group"
+                        aria-label="لینکدین">
+                        <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </a>
                     </div>
                   </div>
@@ -212,9 +218,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
           <div className="absolute inset-0 bg-[url('/images/cubes.png')] opacity-[0.03] pointer-events-none" />
           
           <div className="relative z-10 w-full">
-            <div className="flex items-center gap-6 mb-10 opacity-60">
+            <div className="flex items-center gap-6 mb-10">
                 <div className="h-px flex-1 bg-gradient-to-l from-white/20 to-transparent" />
-                <h3 className="text-white/80 font-bold text-lg tracking-widest uppercase">آدرس مراکز و شعب</h3>
+                <h3 className="text-slate-200 font-bold text-lg tracking-widest uppercase">آدرس مراکز و شعب</h3>
                 <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
               </div>
 
@@ -237,7 +243,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                         return (
                           <button
                             key={loc.id || idx}
+                            type="button"
                             onClick={() => setActiveLocationIndex(idx)}
+                            aria-current={isActive ? 'true' : undefined}
                             className={`w-full text-right flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border ${
                               isActive
                                 ? 'bg-white/10 border-amber-400/40 shadow-[0_0_20px_rgba(251,191,36,0.1)]'
@@ -245,15 +253,15 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                             }`}
                           >
                              <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center shrink-0 transition-all duration-300 shadow-inner ${
-                               isActive ? 'bg-amber-400 text-slate-900 shadow-white/20' : 'bg-white/5 text-slate-400 shadow-transparent'
+                               isActive ? 'bg-amber-400 text-slate-900 shadow-white/20' : 'bg-white/5 text-slate-300 shadow-transparent'
                              }`}>
-                               <Icon className="w-5 h-5" />
+                               <Icon className="w-5 h-5" aria-hidden="true" />
                              </div>
                              <div className="flex-1 overflow-hidden">
-                               <h5 className={`font-black truncate text-[13px] sm:text-sm mb-1 transition-colors ${isActive ? 'text-amber-400' : 'text-slate-300'}`}>
+                               <p className={`font-black truncate text-[13px] sm:text-sm mb-1 transition-colors ${isActive ? 'text-amber-400' : 'text-slate-200'}`}>
                                  {loc.title || (isHQ ? 'دفتر مرکزی' : 'شعبه')}
-                               </h5>
-                               <p className="text-[11px] text-slate-500 truncate">{loc.address}</p>
+                               </p>
+                               <p className="text-[11px] text-slate-300 truncate">{loc.address}</p>
                              </div>
                           </button>
                         )
