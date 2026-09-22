@@ -2,7 +2,7 @@ import { ProductPage } from './components/ProductPage';
 import { ProductCatalogSection } from './components/ProductCatalogSection';
 import { ServicePage } from './components/ServicePage';
 import { ProjectPage } from './components/ProjectPage';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Lenis from 'lenis';
@@ -10,10 +10,10 @@ import 'lenis/dist/lenis.css';
 import { ScrollProgress } from './components/ScrollProgress';
 import { DataProvider, useData } from './context/DataContext';
 import { PageSection, Product, Project, Service, Article, ProductCategory } from './types';
+import { isLiteDevice } from './lib/device';
 
-// Admin Components
-import { AdminLogin } from './admin/AdminLogin';
-import { AdminPanel } from './admin/AdminPanel';
+const AdminLogin = lazy(() => import('./admin/AdminLogin').then((m) => ({ default: m.AdminLogin })));
+const AdminPanel = lazy(() => import('./admin/AdminPanel').then((m) => ({ default: m.AdminPanel })));
 
 // Public Components
 import { CustomCursor } from './components/CustomCursor';
@@ -71,6 +71,7 @@ const MainAppInner: React.FC = () => {
   const location = useLocation();
   // Initialize Smooth Scrolling (Lenis)
   useEffect(() => {
+    if (isLiteDevice()) return;
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -195,10 +196,15 @@ const MainAppInner: React.FC = () => {
 
   // If Admin Route: render Admin Login or Admin Dashboard
   if (location.pathname.startsWith('/admin')) {
-    if (isAuthenticated) {
-      return <AdminPanel onViewPublicSite={navigateToPublic} />;
-    }
-    return <AdminLogin onBackToSite={navigateToPublic} />;
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-slate-950" dir="rtl" />}>
+        {isAuthenticated ? (
+          <AdminPanel onViewPublicSite={navigateToPublic} />
+        ) : (
+          <AdminLogin onBackToSite={navigateToPublic} />
+        )}
+      </Suspense>
+    );
   }
 
   // Public Website View

@@ -21,6 +21,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { PageSection, ProductCategory } from '../types';
+import { isLiteDevice } from '../lib/device';
 
 interface HeroProps {
   cmsHero?: import('../types').HeroCms;
@@ -51,7 +52,7 @@ export interface CircleCategoryCard {
 // --- EXCLUSIVE 3D CARD COMPONENTS --- //
 
 const ThematicParticles = ({ id, isHovered }: { id: string, isHovered: boolean }) => {
-  if (!isHovered) return null;
+  if (!isHovered || isLiteDevice()) return null;
   
   // Generating stable random positions for particles
   const particles = Array.from({ length: 15 }).map((_, i) => ({
@@ -269,6 +270,7 @@ const Hero: React.FC<HeroProps> = ({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const cardsSectionRef = useRef<HTMLDivElement>(null);
+  const lite = isLiteDevice();
 
   // Default beautiful images for poultry & feed mill
   const defaultImages = [
@@ -285,11 +287,11 @@ const Hero: React.FC<HeroProps> = ({
     : (isDefaultBg ? defaultImages : [cmsHero.backgroundImage]);
 
   useEffect(() => {
-    if (heroImages.length <= 1) return;
+    if (heroImages.length <= 1 || isLiteDevice()) return;
     
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }, 5000); // Change image every 5 seconds for a calm, luxurious feel
+    }, 5000);
     
     return () => clearInterval(interval);
   }, [heroImages.length]);
@@ -368,12 +370,12 @@ const Hero: React.FC<HeroProps> = ({
         
         {/* Full-bleed Background Image with Elegant Vignette */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 bg-slate-950">
-          {heroImages.map((src, index) => (
+          {(lite ? heroImages.slice(0, 1) : heroImages).map((src, index) => (
             <LazyHeroImage
               key={src}
               src={src}
               alt="شرکت طیوران صنعت پویا"
-              isActive={currentImageIndex === index}
+              isActive={lite ? true : currentImageIndex === index}
             />
           ))}
           {/* Subtle gradient to ensure text readability but keep image prominent */}

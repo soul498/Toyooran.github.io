@@ -41,13 +41,15 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
     }
   };
   const [searchQuery, setSearchQuery] = useState('');
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 6
+  );
   
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(loadMoreRef, { margin: "200px 0px" });
 
   useEffect(() => {
-    setVisibleCount(6);
+    setVisibleCount(typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 6);
   }, [selectedCategory, searchQuery]);
 
   useEffect(() => {

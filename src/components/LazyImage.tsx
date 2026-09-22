@@ -17,22 +17,22 @@ export const LazyImage = ({ src, alt, className, imgClassName, fallbackSrc = '/i
   }, [currentSrc]);
 
   return (
-    <div className={`relative overflow-hidden ${className || ''}`}>
+    <div className={`relative overflow-hidden bg-slate-100 ${className || ''}`}>
       <img
         ref={imgRef}
         src={currentSrc}
         alt={alt && alt.trim() ? alt : 'تجهیزات مرغداری طیوران صنعت پویا'}
         loading="lazy"
+        decoding="async"
         onLoad={() => setIsLoaded(true)}
         onError={() => {
           if (currentSrc !== fallbackSrc) {
             setCurrentSrc(fallbackSrc);
-          } else { 
-             // even fallback failed, let's just stop showing error loop
-             setIsLoaded(true);
+          } else {
+            setIsLoaded(true);
           }
         }}
-        className={`relative z-10 transition-all duration-700 ease-in-out ${imgClassName || 'w-full h-full object-cover'} ${isLoaded ? 'opacity-100 blur-0 scale-100' : 'opacity-100 blur-xl scale-110'}`}
+        className={`relative z-10 ${imgClassName || 'w-full h-full object-cover'} ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
       />
     </div>
   );
