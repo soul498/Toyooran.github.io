@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useInView } from 'motion/react';
+import React, { useState, useEffect } from 'react';
+import { useInView } from '../lib/useInView';
 import {
   Search,
   PhoneCall,
@@ -45,8 +45,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
     typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 6
   );
   
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(loadMoreRef, { margin: "200px 0px" });
+  const { ref: loadMoreRef, isInView } = useInView<HTMLDivElement>();
 
   useEffect(() => {
     setVisibleCount(typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 6);

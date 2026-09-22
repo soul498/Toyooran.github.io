@@ -38,8 +38,7 @@ export function injectSeoTags(html: string, reqPath: string): string {
     ? `    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": doc.jsonLd }).replace(/</g, "\\u003c")}</script>\n`
     : "";
   const extra = `
-${canonical}    <link rel="preload" as="image" href="/images/hero-final-1.webp" type="image/webp" />
-    <link rel="preload" as="image" href="/images/hero-final-1.jpg" />
+${canonical}    <link rel="preload" as="image" type="image/webp" href="/images/hero-final-1-800.webp" imagesrcset="/images/hero-final-1-800.webp 800w, /images/hero-final-1.webp 1400w" imagesizes="100vw" fetchpriority="high" />
     <meta property="og:title" content="${escapeHtml(doc.title)}" />
     <meta property="og:description" content="${escapeHtml(doc.description)}" />
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />

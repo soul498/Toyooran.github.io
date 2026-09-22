@@ -15,7 +15,15 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
-## 2026-09-22 — صف محتوا Ready 1–5 (C1 آروان باقی است)
+## 2026-09-22 — بهینه‌سازی Core Web Vitals / PageSpeed
+
+- مالک: توسعه
+- فایل‌ها: `server.ts`, `server/gzip.ts`, `server/seo.ts`, `vite.config.ts`, `src/App.tsx`, `src/context/DataContext.tsx`, `src/components/LazyHeroImage.tsx`, `deploy/nginx-toyooran.conf`
+- URLها: `/` و دارایی‌های `/assets/`
+- تغییر: gzip پروکسی، کش immutable برای JS/CSS، code-split مسیرها و کاتالوگ، LCP webp 800w، حذف preload JPG، CLS prerender، contrast و دکمه به‌جای div
+- Verify: lint + check:seo پس از دیپلوی
+
+
 
 - مالک: توسعه + SEO
 - فایل‌ها: `docs/seo/briefs/*`, `src/components/ServicePage.tsx`, `src/components/ProductPage.tsx`, `src/components/magazine/MagazineArticle.tsx`, `src/data/mockData.ts`, `src/data/productsData.ts`, `src/seo/resolveSeo.ts`, `src/seo/articleBlocks.ts`, `server/catalog.ts`

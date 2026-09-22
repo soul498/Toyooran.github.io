@@ -124,6 +124,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button 
             onClick={onOpenSearch}
             className="flex items-center justify-center w-10 h-10 bg-white/50 hover:bg-white border border-slate-200/50 hover:border-blue-200 transition-all duration-300 rounded-full group cursor-pointer shadow-sm hover:shadow-md"
+            aria-label="جستجو"
+            type="button"
             title="جستجو"
           >
             <Search className="w-5 h-5 text-slate-500 group-hover:text-[#003F86] transition-colors" />
@@ -143,7 +145,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             id="mobile-menu-toggle-btn"
             className="p-2.5 rounded-full text-slate-700 hover:bg-white transition-all duration-300 bg-white/50 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 flex items-center justify-center relative overflow-hidden"
-            aria-label="Toggle Menu"
+            aria-label="باز کردن منو"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -157,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-white shadow-sm z-10">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-auto min-w-[2.5rem] bg-slate-100 rounded-lg flex items-center justify-center px-2 py-1 shadow-inner border border-slate-200/50">
-                  <img src="/images/logo-wide.png" alt="Logo" className="w-full h-full object-contain " />
+                  <img src="/images/logo-wide.png" alt="طیوران صنعت پویا" className="w-full h-full object-contain " width={80} height={40} />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-lg font-black bg-gradient-to-r from-[#003F86] to-blue-600 bg-clip-text text-transparent">TSPK</span>
@@ -166,7 +169,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               
               <button
+                type="button"
                 onClick={() => setMobileMenuOpen(false)}
+                aria-label="بستن منو"
                 className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors active:scale-95 border border-slate-200/50"
               >
                 <X className="w-5 h-5" />

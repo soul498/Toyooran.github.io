@@ -23,7 +23,7 @@ function ScrollProgressUi() {
       type="button"
       className="fixed bottom-6 left-6 sm:bottom-10 sm:left-10 z-[99999] w-12 h-12 rounded-full bg-slate-900 text-amber-400 border border-white/10 shadow-lg flex items-center justify-center"
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      title="بازگشت به بالا"
+      aria-label="بازگشت به بالا"
     >
       <ArrowUp className="w-5 h-5" />
     </button>

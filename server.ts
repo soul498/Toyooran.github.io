@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, llmsTxt, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
 import { loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
+import { gzipResponses } from "./server/gzip";
 
 dotenv.config();
 
@@ -34,12 +35,23 @@ async function startServer() {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-    res.setHeader('Content-Security-Policy', "default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com");
-    if (process.env.NODE_ENV === 'production') res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    if (process.env.NODE_ENV === "production") {
+      res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com"
+      );
+      res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    } else {
+      res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com"
+      );
+    }
     next();
   });
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
+  app.use(gzipResponses);
   app.use('/api', (req, res, next) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && !req.path.startsWith('/auth/login') && !req.path.startsWith('/consultation') && !verifyCsrf(req)) return res.status(403).json({ error: 'CSRF token نامعتبر است.' });
     next();
@@ -278,8 +290,29 @@ async function startServer() {
       }
     });
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath, { index: false })); // Disable automatic index.html serving
+    const distPath = path.join(process.cwd(), "dist");
+    app.use(
+      "/assets",
+      express.static(path.join(distPath, "assets"), {
+        maxAge: "1y",
+        immutable: true,
+        index: false,
+        setHeaders(res) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        },
+      })
+    );
+    app.use(
+      express.static(distPath, {
+        index: false,
+        maxAge: "7d",
+        setHeaders(res, filePath) {
+          if (/\.(webp|avif|jpg|jpeg|png|svg|woff2)$/i.test(filePath)) {
+            res.setHeader("Cache-Control", "public, max-age=604800");
+          }
+        },
+      })
+    );
     
     app.get(/.*/, (req, res) => {
       const url = stripQuery(req.originalUrl);

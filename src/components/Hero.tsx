@@ -46,9 +46,10 @@ export interface CircleCategoryCard {
 export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void }> = ({ card, idx, onClick }) => {
   const Icon = card.icon;
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className="relative group w-full h-[320px] sm:h-[360px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 hover:border-blue-500/50 transition-colors cursor-pointer"
+      className="relative group w-full h-[320px] sm:h-[360px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 hover:border-blue-500/50 transition-colors cursor-pointer text-right"
     >
       <div className="absolute inset-[2px] rounded-[calc(2rem-2px)] bg-[#001c3d] z-10 overflow-hidden flex flex-col p-6">
         {card.bgImage && (
@@ -66,7 +67,7 @@ export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void
         </div>
         <div className="relative z-20 text-center text-xs font-bold text-amber-300 pb-1">مشاهده جزئیات</div>
       </div>
-    </div>
+    </button>
   );
 };
 
@@ -238,7 +239,7 @@ const Hero: React.FC<HeroProps> = ({
           className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer z-10 bg-transparent border-0"
           onClick={scrollToCards}
         >
-          <span className="text-[10px] sm:text-xs tracking-widest text-white/50 font-medium">اسکرول کنید</span>
+          <span className="text-[10px] sm:text-xs tracking-widest text-white/80 font-medium">اسکرول کنید</span>
           <ChevronLeft className="w-5 h-5 text-amber-400 -rotate-90" />
         </button>
 
@@ -293,7 +294,11 @@ const Hero: React.FC<HeroProps> = ({
                 </div>
 
                 {/* Ultra-Wide Premium Brand Banner */}
-                <div className="mt-8 relative group w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 p-8 sm:p-10 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500" onClick={onOpenConsultation}>
+                <button
+                  type="button"
+                  className="mt-8 relative group w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 p-8 sm:p-10 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 text-right"
+                  onClick={onOpenConsultation}
+                >
                     {/* Animated geometric background */}
                     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                     <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.08)_0%,_transparent_70%)] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
@@ -315,15 +320,15 @@ const Hero: React.FC<HeroProps> = ({
                        </div>
 
                        <div className="w-full lg:w-auto shrink-0 mt-4 lg:mt-0">
-                         <button className="w-full lg:w-auto bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black px-8 py-4 rounded-2xl flex items-center justify-center gap-3 transition-transform duration-300 transform active:scale-95 shadow-[0_10px_30px_rgba(251,191,36,0.3)]">
+                         <span className="w-full lg:w-auto bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-8 py-4 rounded-2xl inline-flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(251,191,36,0.3)]">
                             <span className="text-sm">ثبت درخواست مشاوره</span>
-                            <div className="w-8 h-8 rounded-full bg-slate-950/10 flex items-center justify-center group-hover:translate-x-[-4px] transition-transform">
+                            <span className="w-8 h-8 rounded-full bg-slate-950/10 flex items-center justify-center group-hover:translate-x-[-4px] transition-transform">
                                <ArrowLeft className="w-4 h-4" />
-                            </div>
-                         </button>
+                            </span>
+                         </span>
                        </div>
                     </div>
-                </div>
+                </button>
               </div>
 
           {/* Bottom Quick Feature Strip */}

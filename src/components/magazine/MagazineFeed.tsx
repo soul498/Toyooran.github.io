@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useInView } from 'motion/react';
+import React, { useState, useEffect } from 'react';
+import { useInView } from '../../lib/useInView';
 import { Clock, Calendar, ArrowLeft, ChevronLeft } from '../../icons';
 import { Link } from 'react-router-dom';
 import { PageBanner } from '../PageBanner';
@@ -26,8 +26,7 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [visibleCount, setVisibleCount] = useState(6);
   
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(loadMoreRef, { margin: "200px 0px" });
+  const { ref: loadMoreRef, isInView } = useInView<HTMLDivElement>();
 
   useEffect(() => {
     setVisibleCount(6);

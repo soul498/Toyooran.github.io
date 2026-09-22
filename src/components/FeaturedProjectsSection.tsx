@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useInView } from 'motion/react';
+import React, { useState, useEffect } from 'react';
+import { useInView } from '../lib/useInView';
 import { Project } from '../types';
 import { PROJECTS } from '../data/mockData';
 import { PageBanner } from './PageBanner';
@@ -21,8 +21,7 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [visibleCount, setVisibleCount] = useState(6);
   
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(loadMoreRef, { margin: "200px 0px" });
+  const { ref: loadMoreRef, isInView } = useInView<HTMLDivElement>();
 
   useEffect(() => {
     setVisibleCount(6);

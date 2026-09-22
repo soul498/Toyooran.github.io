@@ -1,8 +1,6 @@
 @import "@fontsource/estedad/arabic-400.css";
 @import "@fontsource/estedad/arabic-700.css";
 @import "@fontsource/estedad/arabic-900.css";
-@import "@fontsource/estedad/latin-400.css";
-@import "@fontsource/estedad/latin-700.css";
 
 @theme {
   --font-sans: "Estedad", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -129,6 +127,18 @@
 html {
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+#seo-prerender {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 767px), (prefers-reduced-motion: reduce) {

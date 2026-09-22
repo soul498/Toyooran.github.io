@@ -12,10 +12,19 @@ export default defineConfig(() => {
       },
     },
     build: {
+      cssCodeSplit: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            react: ['react', 'react-dom', 'react-router-dom'],
+          manualChunks(id) {
+            if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/") || id.includes("node_modules/react-router")) {
+              return "react";
+            }
+            if (id.includes("node_modules/motion") || id.includes("node_modules/framer-motion")) {
+              return "motion";
+            }
+            if (id.includes("src/data/productsData")) {
+              return "catalog";
+            }
           },
         },
       },

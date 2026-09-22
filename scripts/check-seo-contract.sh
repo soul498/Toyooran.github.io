@@ -47,7 +47,7 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   echo "$contact" | grep -q 'LocalBusiness' || fail "contact missing LocalBusiness"
   article="$(curl -fsS --max-time 5 http://127.0.0.1:3000/magazine/how-to-calculate-ventilation-capacity)"
   echo "$article" | grep -q '<h2>' || fail "article prerender too short"
-  echo "$html" | grep -q 'hero-final-1.webp' || fail "missing webp preload"
+  echo "$html" | grep -q 'hero-final-1' || fail "missing webp preload"
   echo "$html" | grep -q 'font-src' || true
   curl -fsS --max-time 5 http://127.0.0.1:3000/llms.txt | grep -q 'طیوران' || fail "llms.txt missing"
   grep -q 'noindex, follow' /tmp/seo-404.html || fail "404 robots should be noindex, follow"

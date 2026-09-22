@@ -13,7 +13,7 @@ const CATEGORY_IDS: ProductCategory[] = ['heating', 'ventilation', 'drinking', '
 export const ProductPage: React.FC = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { products, articles } = useData();
+  const { products, articles, catalogReady } = useData();
 
   if (productId && CATEGORY_IDS.includes(productId as ProductCategory)) {
     return (
@@ -30,6 +30,9 @@ export const ProductPage: React.FC = () => {
   const product = findProduct(decodeURIComponent(productId || ""), products);
 
   if (!product) {
+    if (!catalogReady) {
+      return <div className="pt-32 min-h-screen bg-slate-50" aria-busy="true" />;
+    }
     return <NotFoundPage />;
   }
 

@@ -2,24 +2,29 @@ import React from 'react';
 
 function webpFor(src: string): string | null {
   if (src.endsWith(".jpg") || src.endsWith(".jpeg")) return src.replace(/\.jpe?g$/i, ".webp");
+  if (src.endsWith(".webp")) return src;
   return null;
 }
 
 export const LazyHeroImage: React.FC<{ src: string, alt?: string, className?: string, isActive: boolean }> = ({ src, alt, className, isActive }) => {
   const webp = webpFor(src);
+  const mobileWebp = src.includes("hero-final-1") ? "/images/hero-final-1-800.webp" : null;
   const label = alt && alt.trim() ? alt : "سالن مرغداری تجهیزشده توسط طیوران صنعت پویا";
 
   return (
     <div
-      className={`absolute inset-0 transition-opacity duration-700 ease-out ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'} ${className || ''}`}
+      className={`absolute inset-0 ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'} ${className || ''}`}
     >
       <picture>
-        {webp ? <source srcSet={webp} type="image/webp" /> : null}
+        {mobileWebp ? <source srcSet={`${mobileWebp} 800w, ${webp || src} 1400w`} sizes="100vw" type="image/webp" /> : null}
+        {webp && !mobileWebp ? <source srcSet={webp} type="image/webp" /> : null}
         <img
-          src={src}
+          src={mobileWebp || webp || src}
           alt={label}
+          width={1400}
+          height={1750}
           loading={isActive ? "eager" : "lazy"}
-          decoding="async"
+          decoding={isActive ? "sync" : "async"}
           fetchPriority={isActive ? "high" : "low"}
           className="absolute inset-0 w-full h-full object-cover object-center"
         />

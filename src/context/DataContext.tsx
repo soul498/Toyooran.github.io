@@ -17,7 +17,6 @@ import {
   MediaItem
 } from '../types';
 import {
-  PRODUCTS,
   PROJECTS,
   SERVICES,
   ARTICLES,
@@ -33,6 +32,7 @@ import {
 interface DataContextType {
   // Products
   products: Product[];
+  catalogReady: boolean;
   addProduct: (product: Product) => void;
   updateProduct: (id: string, product: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
@@ -131,7 +131,23 @@ const STORAGE_KEYS = {
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Initialize from LocalStorage or Defaults
-  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [catalogReady, setCatalogReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    import("../data/productsData").then((mod) => {
+      if (!cancelled) {
+        setProducts((prev) => (prev.length ? prev : mod.PRODUCTS));
+        setCatalogReady(true);
+      }
+    }).catch(() => {
+      if (!cancelled) setCatalogReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const [projects, setProjects] = useState<Project[]>(PROJECTS);
 
@@ -375,7 +391,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Reset to Defaults
   const resetToDefaults = () => {
-    setProducts(PRODUCTS);
+    import("../data/productsData").then((mod) => setProducts(mod.PRODUCTS));
     setProjects(PROJECTS);
     setServices(SERVICES);
     setArticles(ARTICLES);
@@ -429,6 +445,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <DataContext.Provider
       value={{
         products,
+        catalogReady,
         addProduct,
         updateProduct,
         deleteProduct,

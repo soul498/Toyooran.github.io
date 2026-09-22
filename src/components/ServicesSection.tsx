@@ -6,7 +6,7 @@ import {
   Factory,
   Pill,
 } from '../icons';
-import { useInView } from 'motion/react';
+import { useInView } from '../lib/useInView';
 import { Service } from '../types';
 import { SERVICES } from '../data/mockData';
 import { ServiceCard } from './Hero';
@@ -95,8 +95,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   
   const [visibleCount, setVisibleCount] = useState(6);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(loadMoreRef, { margin: "200px 0px" });
+  const { ref: loadMoreRef, isInView } = useInView<HTMLDivElement>();
 
   useEffect(() => {
     if (isInView) {

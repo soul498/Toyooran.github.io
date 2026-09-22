@@ -1,9 +1,5 @@
-import { ProductPage } from './components/ProductPage';
-import { ProductCatalogSection } from './components/ProductCatalogSection';
-import { ServicePage } from './components/ServicePage';
-import { ProjectPage } from './components/ProjectPage';
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ScrollProgress } from './components/ScrollProgress';
 import { DataProvider, useData } from './context/DataContext';
@@ -11,35 +7,33 @@ import { PageSection, Product, Project, Service, Article, ProductCategory } from
 
 const AdminLogin = lazy(() => import('./admin/AdminLogin').then((m) => ({ default: m.AdminLogin })));
 const AdminPanel = lazy(() => import('./admin/AdminPanel').then((m) => ({ default: m.AdminPanel })));
+const ProductPage = lazy(() => import('./components/ProductPage').then((m) => ({ default: m.ProductPage })));
+const ProductCatalogSection = lazy(() => import('./components/ProductCatalogSection').then((m) => ({ default: m.ProductCatalogSection })));
+const ServicePage = lazy(() => import('./components/ServicePage').then((m) => ({ default: m.ServicePage })));
+const ProjectPage = lazy(() => import('./components/ProjectPage').then((m) => ({ default: m.ProjectPage })));
+const ServicesSection = lazy(() => import('./components/ServicesSection').then((m) => ({ default: m.ServicesSection })));
+const FeaturedProjectsSection = lazy(() => import('./components/FeaturedProjectsSection').then((m) => ({ default: m.FeaturedProjectsSection })));
+const MagazineFeed = lazy(() => import('./components/magazine/MagazineFeed').then((m) => ({ default: m.MagazineFeed })));
+const MagazineArticle = lazy(() => import('./components/magazine/MagazineArticle').then((m) => ({ default: m.MagazineArticle })));
+const AboutPage = lazy(() => import('./components/AboutPage').then((m) => ({ default: m.AboutPage })));
+const RnDPage = lazy(() => import('./components/RnDPage').then((m) => ({ default: m.RnDPage })));
+const ContactPage = lazy(() => import('./components/ContactPage').then((m) => ({ default: m.ContactPage })));
+const CompactShowcase = lazy(() => import('./components/CompactShowcase').then((m) => ({ default: m.CompactShowcase })));
+const AboutContactUnifiedSection = lazy(() => import('./components/AboutContactUnifiedSection').then((m) => ({ default: m.AboutContactUnifiedSection })));
+const CaseStudyModal = lazy(() => import('./components/Modals/CaseStudyModal').then((m) => ({ default: m.CaseStudyModal })));
+const ServiceDetailModal = lazy(() => import('./components/Modals/ServiceDetailModal').then((m) => ({ default: m.ServiceDetailModal })));
+const GlobalSearchModal = lazy(() => import('./components/Modals/GlobalSearchModal').then((m) => ({ default: m.GlobalSearchModal })));
+const AiEngineerAssistantModal = lazy(() => import('./components/AiEngineerAssistantModal').then((m) => ({ default: m.AiEngineerAssistantModal })));
 
-// Public Components
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
-import { TrustBar } from './components/TrustBar';
-import { CategoryHexSection } from './components/CategoryHexSection';
-import { WorkflowSection } from './components/WorkflowSection';
-import { ServicesSection } from './components/ServicesSection';
-import { FeaturedProjectsSection } from './components/FeaturedProjectsSection';
-import { MagazineFeed } from './components/magazine/MagazineFeed';
-import { MagazineArticle } from './components/magazine/MagazineArticle';
-import { AboutPage } from './components/AboutPage';
-import { RnDPage } from './components/RnDPage';
-import { CompactShowcase } from './components/CompactShowcase';
-import { ContactPage } from './components/ContactPage';
-import { AboutContactUnifiedSection } from './components/AboutContactUnifiedSection';
 import { Footer } from './components/Footer';
-import { NotFoundPage } from './components/NotFoundPage'; // Added
-
-// Modals
-import { CaseStudyModal } from './components/Modals/CaseStudyModal';
-import { ServiceDetailModal } from './components/Modals/ServiceDetailModal';
-import { GlobalSearchModal } from './components/Modals/GlobalSearchModal';
-import { AiEngineerAssistantModal } from './components/AiEngineerAssistantModal';
-
+import { NotFoundPage } from './components/NotFoundPage';
 import { useParams } from 'react-router-dom';
-
 import { SeoHead } from "./components/SEO";
 import { publicProductPath } from "./seo/resolveSeo";
+
+const RouteFallback = () => <div className="min-h-[40vh]" aria-hidden="true" />;
 
 const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: any) => {
   const { articleId } = useParams();
@@ -179,6 +173,9 @@ const MainAppInner: React.FC = () => {
   // Public Website View
   return (
     <div className="min-h-screen bg-blueprint-light text-[#333132] font-['Estedad',sans-serif] flex flex-col selection:bg-amber-400 selection:text-slate-950" dir="rtl">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:right-2 focus:z-[100] bg-white text-[#003F86] font-bold px-4 py-2 rounded-xl">
+        رفتن به محتوای اصلی
+      </a>
       <ScrollToTop />
       <SeoHead />
       <ScrollProgress />
@@ -194,7 +191,8 @@ const MainAppInner: React.FC = () => {
       />
 
       {/* Main Content by Section */}
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
+        <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={
             <Hero
@@ -205,6 +203,7 @@ const MainAppInner: React.FC = () => {
               onOpenQuote={() => handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور')}
               onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
             >
+              <Suspense fallback={null}>
               <CompactShowcase 
                 products={products}
                 articles={articles}
@@ -213,6 +212,7 @@ const MainAppInner: React.FC = () => {
                 onSelectArticle={(articleId) => navigate(`/magazine/${articleId}`)}
               />
               <AboutContactUnifiedSection />
+              </Suspense>
             </Hero>
           } />
           <Route path="/products/:productId" element={<ProductPage />} />
@@ -270,6 +270,7 @@ const MainAppInner: React.FC = () => {
           {/* Catch-all for unknown routes */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        </Suspense>
       </main>
 
       {/* Footer */}
@@ -284,23 +285,29 @@ const MainAppInner: React.FC = () => {
 
       {/* Detail Modals (Technical specifications & info) */}
       {selectedProject && (
+        <Suspense fallback={null}>
         <CaseStudyModal
           project={selectedProject}
           isOpen={!!selectedProject}
           onClose={() => setSelectedProject(null)}
           onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی', undefined, `مشاوره درباره پروژه: ${selectedProject.title}`)}
         />
+        </Suspense>
       )}
 
       {selectedService && (
+        <Suspense fallback={null}>
         <ServiceDetailModal
           service={selectedService}
           isOpen={!!selectedService}
           onClose={() => setSelectedService(null)}
           onOpenConsultation={() => handleOpenUnifiedConsultation(selectedService.title, undefined, `مشاوره درباره خدمت: ${selectedService.title}`)}
         />
+        </Suspense>
       )}
 
+      {isSearchOpen ? (
+      <Suspense fallback={null}>
       <GlobalSearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
@@ -308,7 +315,11 @@ const MainAppInner: React.FC = () => {
         onSelectProject={setSelectedProject}
         onSelectArticle={setSelectedArticle}
       />
+      </Suspense>
+      ) : null}
 
+      {isAiAssistantOpen ? (
+      <Suspense fallback={null}>
       <AiEngineerAssistantModal
         isOpen={isAiAssistantOpen}
         onClose={() => setIsAiAssistantOpen(false)}
@@ -317,6 +328,8 @@ const MainAppInner: React.FC = () => {
           handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور');
         }}
       />
+      </Suspense>
+      ) : null}
 
     </div>
   );
