@@ -8,6 +8,7 @@ import type { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 
 dotenv.config();
+dotenv.config({ path: '/etc/toyooran.env', override: false });
 const dataDir = path.resolve(process.env.DATA_DIR || './data');
 fs.mkdirSync(dataDir, { recursive: true });
 const db = new DatabaseSync(path.join(dataDir, 'toyooran.sqlite'));
@@ -48,7 +49,27 @@ export function requireAdmin(req: AdminRequest, res: Response, next: NextFunctio
 }
 export function requireRole(...roles: string[]) { return (req: AdminRequest, res: Response, next: NextFunction) => { if (!req.admin || !roles.includes(req.admin.role)) return res.status(403).json({ error: 'دسترسی کافی نیست.' }); next(); }; }
 export function requireMfaPending(req: AdminRequest, res: Response, next: NextFunction) { const row = sessionRow(req); if (!row || !row.mfa_enabled || row.mfa_verified) return res.status(401).json({ error: 'MFA challenge نامعتبر است.' }); req.admin = { id: row.id, username: row.username, role: row.role, mfaEnabled: true }; next(); }
-async function verifyTurnstile(token: string | undefined, ip: string | undefined) { const secret = process.env.TURNSTILE_SECRET_KEY; const previewPlaceholder = secret === 'AI_STUDIO_PREVIEW_DISABLED'; if (process.env.NODE_ENV !== 'production' && (!secret || previewPlaceholder)) return true; if (!token) return false; const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret, response: token, remoteip: ip }) }); return (await response.json() as { success?: boolean }).success === true; }
+function turnstileSecret(): string {
+  const secret = (process.env.TURNSTILE_SECRET_KEY || '').trim();
+  if (!secret || secret === 'AI_STUDIO_PREVIEW_DISABLED' || secret.startsWith('replace-with-')) return '';
+  return secret;
+}
+export function publicTurnstileSiteKey(): string {
+  const siteKey = (process.env.TURNSTILE_SITE_KEY || process.env.VITE_TURNSTILE_SITE_KEY || '').trim();
+  if (!siteKey || siteKey === 'AI_STUDIO_PREVIEW_DISABLED' || siteKey.startsWith('replace-with-')) return '';
+  return siteKey;
+}
+async function verifyTurnstile(token: string | undefined, ip: string | undefined) {
+  const secret = turnstileSecret();
+  if (!secret) return true;
+  if (!token) return false;
+  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret, response: token, remoteip: ip }),
+  });
+  return ((await response.json()) as { success?: boolean }).success === true;
+}
 export function audit(req: AdminRequest, action: string, target = '') { db.prepare('INSERT INTO audit_log(admin_id, action, target, ip, user_agent, created_at) VALUES(?,?,?,?,?,?)').run(req.admin?.id ?? null, action, target, req.ip, req.get('user-agent')?.slice(0, 300) || '', new Date().toISOString()); }
 export function consumeRateLimit(rateKey: string, limit: number, windowMs: number) { const now = Date.now(); const row = db.prepare('SELECT count, reset_at FROM rate_limits WHERE rate_key=?').get(rateKey) as any; const next = !row || row.reset_at <= now ? { count: 1, resetAt: now + windowMs } : { count: row.count + 1, resetAt: row.reset_at }; db.prepare('INSERT INTO rate_limits(rate_key,count,reset_at) VALUES(?,?,?) ON CONFLICT(rate_key) DO UPDATE SET count=excluded.count, reset_at=excluded.reset_at').run(rateKey, next.count, next.resetAt); return { allowed: next.count <= limit, retryAfterMs: Math.max(0, next.resetAt - now) }; }
 export function resetRateLimit(rateKey: string) { db.prepare('DELETE FROM rate_limits WHERE rate_key=?').run(rateKey); }

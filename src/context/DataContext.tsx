@@ -370,15 +370,22 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Authentication is performed by the backend; no password or session token is stored in the browser.
   const login = async (username: string, password: string, turnstileToken?: string) => {
-    const response = await fetch('/api/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, turnstileToken }) });
-    const result = await response.json();
-    if (response.ok) {
-      if (result.mfaRequired) return { success: false, mfaRequired: true };
-      await refreshCsrf();
-      setAdminUser({ username, displayName: username === 'admin' ? 'مدیریت کل سیستم' : 'مدیر مهندسی و فروش', role: 'superadmin' });
-      return { success: true };
+    try {
+      const response = await fetch('/api/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, turnstileToken }) });
+      const result = await response.json().catch(() => ({ error: 'پاسخ ورود نامعتبر است.' }));
+      if (response.ok) {
+        if (result.mfaRequired) {
+          await refreshCsrf();
+          return { success: true, mfaRequired: true };
+        }
+        await refreshCsrf();
+        setAdminUser({ username, displayName: username === 'admin' ? 'مدیریت کل سیستم' : 'مدیر مهندسی و فروش', role: 'superadmin' });
+        return { success: true };
+      }
+      return { success: false, error: result.error || 'ورود ناموفق بود.' };
+    } catch {
+      return { success: false, error: 'ارتباط با سرور ورود برقرار نشد.' };
     }
-    return { success: false, error: result.error || 'ورود ناموفق بود.' };
   };
 
   const verifyMfa = async (token: string) => {

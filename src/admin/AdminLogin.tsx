@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Lock, 
   User, 
@@ -23,6 +23,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
   const { login, verifyMfa } = useData();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [turnstileSiteKey, setTurnstileSiteKey] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
   const [mfaRequired, setMfaRequired] = useState(false);
   const [mfaCode, setMfaCode] = useState('');
@@ -30,19 +31,39 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    fetch('/api/auth/csrf', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (data?.turnstileSiteKey) setTurnstileSiteKey(String(data.turnstileSiteKey));
+      })
+      .catch(() => undefined);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true);
-    if (mfaRequired) {
-      const result = await verifyMfa(mfaCode);
-      if (!result.success) setError(result.error || 'کد MFA نامعتبر است.');
-      setIsLoading(false);
+    if (!mfaRequired && turnstileSiteKey && !turnstileToken) {
+      setError('ابتدا کادر امنیتی CAPTCHA را کامل کنید.');
       return;
     }
-    const result = await login(username, password, turnstileToken);
-    if (result.mfaRequired) { setMfaRequired(true); setError('کد برنامه Authenticator را وارد کنید.'); setIsLoading(false); return; }
-    if (!result.success) { setError(result.error || 'اطلاعات ورود نامعتبر است.'); setIsLoading(false); }
+    setIsLoading(true);
+    try {
+      if (mfaRequired) {
+        const result = await verifyMfa(mfaCode);
+        if (!result.success) setError(result.error || 'کد MFA نامعتبر است.');
+        return;
+      }
+      const result = await login(username, password, turnstileToken);
+      if (result.mfaRequired) {
+        setMfaRequired(true);
+        setError('کد برنامه Authenticator را وارد کنید.');
+        return;
+      }
+      if (!result.success) setError(result.error || 'اطلاعات ورود نامعتبر است.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleQuickFill = (user: string, pass: string) => {
@@ -152,7 +173,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
               </div>
             </div>}
 
-            {mfaRequired ? <div><label className="block text-xs font-bold text-slate-300 mb-1.5">کد شش‌رقمی MFA</label><input inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} required className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white" /></div> : (import.meta.env.VITE_TURNSTILE_SITE_KEY && import.meta.env.VITE_TURNSTILE_SITE_KEY !== 'AI_STUDIO_PREVIEW_DISABLED' ? <Turnstile siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken('')} /> : <p className="text-xs text-amber-300">CAPTCHA در Preview غیرفعال است.</p>)}
+            {mfaRequired ? <div><label className="block text-xs font-bold text-slate-300 mb-1.5">کد شش‌رقمی MFA</label><input inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} required className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white" /></div> : (turnstileSiteKey ? <Turnstile siteKey={turnstileSiteKey} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken('')} /> : null)}
 
             <button
               type="submit"

@@ -4,7 +4,7 @@ import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import fs from "fs";
 import cookieParser from "cookie-parser";
-import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
+import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, publicTurnstileSiteKey, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
 import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, llmsTxt, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
 import { loadSeoCatalog } from "./server/catalog";
@@ -77,7 +77,7 @@ async function startServer() {
     if (result.success) resetRateLimit(key);
     res.status(result.success ? 200 : 401).json(result);
   });
-  app.get('/api/auth/csrf', (req, res) => res.json({ token: createCsrfToken(res) }));
+  app.get('/api/auth/csrf', (_req, res) => res.json({ token: createCsrfToken(res), turnstileSiteKey: publicTurnstileSiteKey() }));
   app.post('/api/auth/password', requireAdmin, requireRole('superadmin'), (req, res) => {
     const parsed = z.object({ oldPassword: z.string().min(1).max(256), newPassword: z.string().min(16).max(256) }).safeParse(req.body);
     if (!parsed.success || !changePassword(req as any, parsed.data.oldPassword, parsed.data.newPassword)) return res.status(400).json({ success: false, error: 'تغییر رمز ناموفق بود.' });
