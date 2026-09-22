@@ -28,13 +28,13 @@
 - Product/Service مقصد: `srv-turnkey-shed`
 - CTA اصلی: درخواست بازدید و پیشنهاد فنی
 - Conversion event: `cta=service-visit` / فرم تماس
-- CTA ثانویه: درخواست ممیزی (`/magazine/poultry-hall-audit-checklist` و فرم)
+- CTA ثانویه: درخواست ممیزی (فرم) و گزارش قبل/بعد (`/magazine/before-and-after-renovation`)
 - 3 تا 5 لینک داخلی مقصد با anchor پیشنهادی:
   - پروژه‌های نمونه → `/projects/proj-broiler-novin-120k`
   - تهویه → `/products/ventilation`
   - گرمایش → `/products/heating`
   - دانخوری → `/products/feeding`
-  - چک‌لیست ممیزی → `/magazine/poultry-hall-audit-checklist`
+  - چک‌لیست ممیزی → همان صفحه خدمت؛ قبل/بعد نوسازی → `/magazine/before-and-after-renovation`
 
 ## 4. شواهد
 

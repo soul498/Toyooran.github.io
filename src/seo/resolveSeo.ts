@@ -7,6 +7,7 @@ export const FITOUT_SLUG = "poultry-hall-fitout";
 
 export const SEO_REDIRECTS: Record<string, string> = {
   [`/services/${FITOUT_SERVICE_ID}`]: `/services/${FITOUT_SLUG}`,
+  "/magazine/poultry-hall-audit-checklist": "/magazine/before-and-after-renovation",
 };
 
 const CATEGORY_SEO: Record<string, { title: string; h1: string; description: string; body: string }> = {
@@ -264,7 +265,7 @@ function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string 
     .join("");
   const lead = isFitout ? `<p>${escapeHtml(FITOUT_LEAD)}</p>` : `<p>${escapeHtml(service.tagline)}</p>`;
   const auditLink = isFitout
-    ? ` · <a href="/magazine/poultry-hall-audit-checklist">چک‌لیست ممیزی قبل از نوسازی</a> · <a href="/contact?cta=hall-audit">درخواست ممیزی</a>`
+    ? ` · <a href="/magazine/before-and-after-renovation">قبل و بعد از نوسازی</a> · <a href="/contact?cta=hall-audit">درخواست ممیزی</a>`
     : "";
   return `${lead}
 <p>${escapeHtml(service.problemSolved)}</p>
@@ -633,16 +634,6 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
                     { "@type": "HowToStep", name: "تعیین وزن زنده پایان دوره", text: "تعداد پرنده × وزن هدف؛ مبنای دبی باید منبع سویه باشد نه رقم بازار بدون شرط." },
                     { "@type": "HowToStep", name: "انتخاب فن روی منحنی فشار استاتیک", text: "ظرفیت کاتالوگ را در فشار استاتیک پد/اینلت اصلاح کنید و با مهندس تأیید کنید." },
                   ],
-                },
-              ]
-            : []),
-          ...(article.id === "poultry-hall-audit-checklist"
-            ? [
-                {
-                  "@type": "HowTo",
-                  name: article.title,
-                  description: article.summary,
-                  step: FITOUT_CHECKLIST.map((name) => ({ "@type": "HowToStep", name, text: name })),
                 },
               ]
             : []),

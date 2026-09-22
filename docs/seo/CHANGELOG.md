@@ -15,6 +15,14 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-09-22 — مجله فقط ۷ موضوع تأییدشده
+
+- مالک: توسعه
+- فایل‌ها: `src/data/mockData.ts`, `src/components/ServicePage.tsx`, `src/seo/resolveSeo.ts`, `src/context/DataContext.tsx`, `server/catalog.ts`
+- URLها: `/magazine/*`؛ ۳۰۱ از `/magazine/poultry-hall-audit-checklist`
+- تغییر: مقاله چک‌لیست ممیزی از مجله حذف شد؛ چک‌لیست روی صفحه خدمت باقی است؛ کاتالوگ SEO دیگر مقالهٔ خارج از seed را منتشر نمی‌کند
+- Verify: lint / tsc / فهرست ۷ مقاله در seed
+
 ## 2026-09-22 — بهینه‌سازی Core Web Vitals / PageSpeed
 
 - مالک: توسعه

@@ -29,6 +29,12 @@ import {
   INITIAL_MEDIA
 } from '../data/mockData';
 
+function reconcileMagazineArticles(stored: Article[] | null | undefined): Article[] {
+  if (!Array.isArray(stored) || !stored.length) return ARTICLES;
+  const byId = new Map(stored.filter((item) => item?.id).map((item) => [item.id, item]));
+  return ARTICLES.map((seed) => byId.get(seed.id) ?? seed);
+}
+
 interface DataContextType {
   // Products
   products: Product[];
@@ -116,7 +122,7 @@ const STORAGE_KEYS = {
   PRODUCTS: 'toyooran_products_v5',
   PROJECTS: 'toyooran_projects_v3',
   SERVICES: 'toyooran_services_v3',
-  ARTICLES: 'toyooran_articles_v3',
+  ARTICLES: 'toyooran_articles_v4',
   CATEGORIES: 'toyooran_categories_v4',
   COMPANY_INFO: 'toyooran_company_v5',
   HERO_CMS: 'toyooran_hero_cms_v3',
@@ -200,7 +206,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (state.products.value) setProducts(state.products.value);
         if (state.projects.value) setProjects(state.projects.value);
         if (state.services.value) setServices(state.services.value);
-        if (state.articles.value) setArticles(state.articles.value);
+        if (state.articles.value) setArticles(reconcileMagazineArticles(state.articles.value));
         if (state.categories.value) setCategories(state.categories.value);
         if (state.companyInfo.value) setCompanyInfo(state.companyInfo.value);
         if (state.heroCms.value) setHeroCms(state.heroCms.value);
@@ -428,7 +434,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (parsed.products) setProducts(parsed.products);
       if (parsed.projects) setProjects(parsed.projects);
       if (parsed.services) setServices(parsed.services);
-      if (parsed.articles) setArticles(parsed.articles);
+      if (parsed.articles) setArticles(reconcileMagazineArticles(parsed.articles));
       if (parsed.categories) setCategories(parsed.categories);
       if (parsed.companyInfo) setCompanyInfo(parsed.companyInfo);
       if (parsed.heroCms) setHeroCms(parsed.heroCms);

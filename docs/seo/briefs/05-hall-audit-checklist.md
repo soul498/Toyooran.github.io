@@ -20,7 +20,7 @@
 
 ## 3. مقصد و تبدیل
 
-- URL: `/magazine/poultry-hall-audit-checklist`
+- URL: حذف‌شده از مجله؛ چک‌لیست در `/services/poultry-hall-fitout`؛ redirect به `/magazine/before-and-after-renovation`
 - Service: fitout
 - CTA: درخواست ممیزی
 - لینک: fitout، تهویه، گرمایش، دانخوری، تماس
@@ -47,7 +47,7 @@
 
 ## 7. تحویل
 
-- مقاله جدید در `ARTICLES`
+- مقاله مجله ساخته نشد / از `ARTICLES` حذف شد؛ چک‌لیست روی صفحه خدمت fitout
 - تاریخ: 2026-09-22
 
 ## 8. تأییدها

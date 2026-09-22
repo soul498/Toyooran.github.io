@@ -39,13 +39,11 @@ Briefها در `docs/seo/briefs/`. C1 آروان خارج از این صف اس�
 - Brief: `briefs/04-heating-comparison.md`
 - وضعیت: جدول کیفی + لینک SKU واقعی. SKU تابشی در کاتالوگ نیست.
 
-### 5. راهنمای ممیزی قبل از نوسازی سالن
+### 5. راهنمای ممیزی قبل از نوسازی سالن — خارج از مجله
 
-- نوع: Checklist
-- امتیاز: 10/12
-- URL: `/magazine/poultry-hall-audit-checklist`
-- Brief: `briefs/05-hall-audit-checklist.md`
-- وضعیت: هفت بند موجود منتشر شد. فرم کاغذی تیم اجرا هنوز تأیید نشده.
+- نوع: Checklist (صفحه خدمت، نه مقاله مجله)
+- URL قبلی: `/magazine/poultry-hall-audit-checklist` → ۳۰۱ به `/magazine/before-and-after-renovation`
+- وضعیت: از مجله حذف شد. هفت بند چک‌لیست فقط در `/services/poultry-hall-fitout` می‌ماند.
 
 ## Blocked — تا دریافت داده منتشر نشود
 

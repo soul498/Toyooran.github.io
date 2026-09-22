@@ -64,7 +64,7 @@ export const ServicePage: React.FC<{ onOpenConsultation: (title: string) => void
               ))}
             </ul>
             <p className="text-sm mt-4">
-              <Link className="text-[#003F86] font-bold" to="/magazine/poultry-hall-audit-checklist">راهنمای کامل ممیزی</Link>
+              <Link className="text-[#003F86] font-bold" to="/magazine/before-and-after-renovation">گزارش قبل و بعد از نوسازی</Link>
             </p>
           </section>
         ) : null}
