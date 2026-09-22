@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+const Toaster = lazy(() => import('react-hot-toast').then((m) => ({ default: m.Toaster })));
 import { ScrollProgress } from './components/ScrollProgress';
 import { DataProvider, useData } from './context/DataContext';
 import { PageSection, Product, Project, Service, Article, ProductCategory } from './types';
@@ -28,7 +28,7 @@ const AiEngineerAssistantModal = lazy(() => import('./components/AiEngineerAssis
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
-import { CustomCursor } from './components/CustomCursor';
+const CustomCursor = lazy(() => import('./components/CustomCursor').then((m) => ({ default: m.CustomCursor })));
 import { NotFoundPage } from './components/NotFoundPage';
 import { useParams } from 'react-router-dom';
 import { SeoHead } from "./components/SEO";
@@ -179,7 +179,7 @@ const MainAppInner: React.FC = () => {
       </a>
       <ScrollToTop />
       <SeoHead />
-      <CustomCursor />
+      <Suspense fallback={null}><CustomCursor /></Suspense>
       <ScrollProgress />
       
       {/* Top Navbar */}
@@ -342,7 +342,9 @@ export default function App() {
     <DataProvider>
       <BrowserRouter>
         <MainAppInner />
-        <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '12px', fontFamily: 'Estedad, sans-serif' } }} />
+        <Suspense fallback={null}>
+          <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '12px', fontFamily: 'Estedad, sans-serif' } }} />
+        </Suspense>
       </BrowserRouter>
     </DataProvider>
   );

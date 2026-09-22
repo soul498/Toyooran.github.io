@@ -17,10 +17,24 @@ export function isKnownPublicPath(pathname: string): boolean {
   return isKnownWithCatalog(pathname, loadSeoCatalog());
 }
 
+function deferRenderBlockingCss(html: string): string {
+  return html.replace(/<link rel="stylesheet"([^>]*href="[^"]+\.css"[^>]*)\/?>/gi, (_full, attrs: string) => {
+    return `<link rel="preload" as="style"${attrs} onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet"${attrs} /></noscript>`;
+  });
+}
+
+function ensureViewport(html: string): string {
+  if (/name="viewport"/i.test(html)) return html;
+  return html.replace("<head>", `<head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />`);
+}
+
 export function injectSeoTags(html: string, reqPath: string): string {
   const path = stripQuery(reqPath);
   const doc = resolveSeo(path, loadSeoCatalog());
-  let out = html.replace(/<html\b[^>]*>/i, '<html lang="fa-IR" dir="rtl">');
+  let out = ensureViewport(html);
+  out = deferRenderBlockingCss(out);
+  out = out.replace(/<html\b[^>]*>/i, '<html lang="fa-IR" dir="rtl">');
   out = out.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(doc.title)}</title>`);
   if (out.includes('name="description"')) {
     out = out.replace(
@@ -38,7 +52,7 @@ export function injectSeoTags(html: string, reqPath: string): string {
     ? `    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": doc.jsonLd }).replace(/</g, "\\u003c")}</script>\n`
     : "";
   const extra = `
-${canonical}    <link rel="preload" as="image" type="image/webp" href="/images/hero-final-1-800.webp" imagesrcset="/images/hero-final-1-800.webp 800w, /images/hero-final-1.webp 1400w" imagesizes="100vw" fetchpriority="high" />
+${canonical}    <link rel="preload" as="image" type="image/webp" href="/images/hero-final-1-480.webp" imagesrcset="/images/hero-final-1-480.webp 480w, /images/hero-final-1-800.webp 800w, /images/hero-final-1.webp 1400w" imagesizes="100vw" />
     <meta property="og:title" content="${escapeHtml(doc.title)}" />
     <meta property="og:description" content="${escapeHtml(doc.description)}" />
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />
@@ -51,7 +65,7 @@ ${canonical}    <link rel="preload" as="image" type="image/webp" href="/images/h
 ${robots}${jsonLd}`;
   out = out.replace("</head>", `${extra}  </head>`);
   const prerender = `
-    <div id="seo-prerender">
+    <div id="seo-prerender" aria-hidden="true">
       <h1>${escapeHtml(doc.h1)}</h1>
       ${doc.body}
     </div>`;

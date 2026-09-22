@@ -8,7 +8,10 @@ function webpFor(src: string): string | null {
 
 export const LazyHeroImage: React.FC<{ src: string, alt?: string, className?: string, isActive: boolean }> = ({ src, alt, className, isActive }) => {
   const webp = webpFor(src);
-  const mobileWebp = src.includes("hero-final-1") ? "/images/hero-final-1-800.webp" : null;
+  const mobileSrcSet = src.includes("hero-final-1")
+    ? "/images/hero-final-1-480.webp 480w, /images/hero-final-1-800.webp 800w, /images/hero-final-1.webp 1400w"
+    : null;
+  const mobileWebp = src.includes("hero-final-1") ? "/images/hero-final-1-480.webp" : null;
   const label = alt && alt.trim() ? alt : "سالن مرغداری تجهیزشده توسط طیوران صنعت پویا";
 
   return (
@@ -16,7 +19,7 @@ export const LazyHeroImage: React.FC<{ src: string, alt?: string, className?: st
       className={`absolute inset-0 ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'} ${className || ''}`}
     >
       <picture>
-        {mobileWebp ? <source srcSet={`${mobileWebp} 800w, ${webp || src} 1400w`} sizes="100vw" type="image/webp" /> : null}
+        {mobileSrcSet ? <source srcSet={mobileSrcSet} sizes="100vw" type="image/webp" /> : null}
         {webp && !mobileWebp ? <source srcSet={webp} type="image/webp" /> : null}
         <img
           src={mobileWebp || webp || src}

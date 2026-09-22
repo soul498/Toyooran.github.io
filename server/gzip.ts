@@ -23,7 +23,7 @@ export function gzipResponses(req: Request, res: Response, next: NextFunction) {
   res.end = ((chunk?: unknown, encoding?: unknown, cb?: unknown) => {
     if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as string, encoding as BufferEncoding));
     const body = chunks.length ? Buffer.concat(chunks) : Buffer.alloc(0);
-    const type = String(res.getHeader("Content-Type") || "");
+    const type = String(res.getHeader("Content-Type") || (maybeHtml ? "text/html; charset=utf-8" : ""));
     const compressible = body.length > 800 && /javascript|json|text\/|xml|svg\+xml/.test(type);
     if (!compressible) {
       res.write = originalWrite;

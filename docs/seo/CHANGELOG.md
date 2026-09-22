@@ -15,7 +15,15 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
-## 2026-09-22 — مجله فقط ۷ موضوع تأییدشده
+## 2026-09-22 — PageSpeed موبایل (viewport، CSS غیرمسدود، LCP/فونت)
+
+- مالک: توسعه
+- فایل‌ها: `index.html`, `src/index.css`, `server/seo.ts`, `server/gzip.ts`, `src/main.tsx`, `src/components/LazyHeroImage.tsx`
+- URLها: `/`
+- تغییر: برگشت viewport، preload فونت woff2، تعویق CSS رندر-بلاک، تصویر LCP 480w، aria-hidden روی prerender، کش تصویر ۱ سال، target es2022
+- Verify: lint + check:seo
+
+
 
 - مالک: توسعه
 - فایل‌ها: `src/data/mockData.ts`, `src/components/ServicePage.tsx`, `src/seo/resolveSeo.ts`, `src/context/DataContext.tsx`, `server/catalog.ts`
