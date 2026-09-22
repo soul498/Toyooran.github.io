@@ -10,7 +10,7 @@ Aligned with their algorithm when evidence supports it:
 
 | ID | Action | Evidence | Algorithm map |
 |----|--------|----------|---------------|
-| C1 | Fix ArvanCloud bot challenge so Googlebot/Bingbot/major tools get **200 without infinite 307** (whitelist or complete challenge server-side) | 307 self-loop + `__arcscoc`/`__arcsco` without cookies | Crawlability |
+| C1 | ~~Fix ArvanCloud bot challenge so Googlebot/Bingbot/major tools get **200 without infinite 307**~~ **انجام شد (2026-09-22):** چالش L7 کوکی روی پلن Basic خاموش شد؛ فایروال + Allow برای `is_known_bot` ماند. Exception اختصاصی خزنده روی Basic ممکن نبود (Growth/Pro). | قبل: 307 + `__arcscoc`؛ بعد: Googlebot بدون کوکی **200** | Crawlability |
 | C2 | **SSR/prerender** full money-page copy for `/`, `/services/poultry-hall-fitout`, key categories, `/contact`, `/about` into initial HTML | Shell ~3.4KB vs rendered ~87KB; contact prerender ~60 chars | Priority **1** |
 | C3 | **Dedupe:** 301 `/services/srv-turnkey-shed` → `/services/poultry-hall-fitout` (or fully unique content); remove loser from sitemap | Identical title/desc/H1/prerender | Priority **2** + **3** |
 

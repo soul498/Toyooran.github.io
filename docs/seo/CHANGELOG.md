@@ -15,6 +15,17 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-09-22 — C1 آروان: حذف چالش کوکی ۳۰۷ برای خزنده
+
+- مالک: زیرساخت CDN (پنل آروان، بدون تغییر کد اپ)
+- فایل‌ها: هیچ فایل اپ؛ تنظیم `ddos/settings` و page-ruleهای CDN
+- URLها: `/` ، `/robots.txt` ، `/sitemap.xml`
+- تغییر: پلن Basic اجازهٔ exception برای DDoS/چالش ندارد؛ `protection_mode=cookie` خاموش شد تا Googlebot بدون `__arcscoc` همان اول **200** بگیرد. فایروال روشن ماند (`default_action=allow`) + قانون `KnownBots` با `is_known_bot`. کش لبه برای `/admin*` `/api*` `/login*` `/dashboard*` `/crm*` روی `off`. WAF همچنان off (وضع قبلی). HTTPS 301 به www دست نخورده.
+- دلیل/Issue: ACTION-PLAN C1
+- invariantهای بررسی‌شده: Googlebot/Bingbot/GPTBot بدون کوکی 200؛ apex 301 به www؛ `seo-prerender` و canonical در HTML اولیه؛ بدون Set-Cookie چالش
+- Verify: curl بدون cookie jar با UA گوگل‌بات
+- نتیجه پس از انتشار: زنده روی لبهٔ آروان (کد اپ commit لازم نداشت)
+
 ## 2026-09-22 — PageSpeed موبایل (viewport، CSS غیرمسدود، LCP/فونت)
 
 - مالک: توسعه
