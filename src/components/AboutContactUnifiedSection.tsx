@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { AparatIcon } from "./AparatIcon";
-import { motion, AnimatePresence } from 'motion/react';
 import toast from 'react-hot-toast';
 import { 
   MapPin, 
@@ -240,76 +239,38 @@ export const AboutContactUnifiedSection: React.FC = () => {
 
                 {/* 2. Right Detail View: Active Card */}
                 <div className="lg:col-span-8 relative rounded-[2rem] overflow-hidden bg-[#002d61]/50 border border-white/10 h-[400px] lg:h-full group shadow-2xl">
-                   <AnimatePresence mode="wait">
                       {activeLocation && (
-                         <motion.div
-                           key={activeLocationIndex}
-                           initial={{ opacity: 0, scale: 0.98, filter: 'blur(5px)' }}
-                           animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                           exit={{ opacity: 0, scale: 1.02, filter: 'blur(5px)' }}
-                           transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-                           className="absolute inset-0 flex flex-col w-full h-full"
-                         >
-                            {/* Elegant Graphic Background instead of Map */}
+                         <div className="absolute inset-0 flex flex-col w-full h-full">
                             <div className="absolute inset-0 z-0 bg-[#001c3d] overflow-hidden">
-                              {/* Background Patterns */}
                               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(251,191,36,0.08)_0%,_transparent_70%)]" />
-                              <div className="absolute top-[20%] right-[20%] w-[50%] h-[50%] bg-blue-500/5 rounded-full blur-[100px]" />
-                              <div className="absolute bottom-[20%] left-[20%] w-[50%] h-[50%] bg-amber-500/5 rounded-full blur-[100px]" />
-                              
-                              {/* Central Abstract Logo / Icon Element */}
                               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                 <div className="w-80 h-80 border border-white/5 rounded-full flex items-center justify-center animate-[spin_60s_linear_infinite]">
-                                    <div className="w-56 h-56 border border-white/10 rounded-full flex items-center justify-center animate-[spin_40s_linear_infinite_reverse]">
-                                       <div className="w-32 h-32 border border-amber-500/20 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-xl shadow-[0_0_50px_rgba(251,191,36,0.1)]">
-                                          {activeLocation.type === 'headquarter' ? <Building2 className="w-12 h-12 text-amber-500/60" /> : 
-                                           activeLocation.type === 'factory' ? <Factory className="w-12 h-12 text-amber-500/60" /> : 
-                                           <MapPin className="w-12 h-12 text-amber-500/60" />}
-                                       </div>
-                                    </div>
+                                 <div className="w-32 h-32 border border-amber-500/20 rounded-full flex items-center justify-center bg-white/5">
+                                    {activeLocation.type === 'headquarter' ? <Building2 className="w-12 h-12 text-amber-500/60" /> : 
+                                     activeLocation.type === 'factory' ? <Factory className="w-12 h-12 text-amber-500/60" /> : 
+                                     <MapPin className="w-12 h-12 text-amber-500/60" />}
                                  </div>
                               </div>
-                              
-                              {/* Soft Overlay */}
                               <div className="absolute inset-0 bg-gradient-to-t from-[#001c3d] via-[#001c3d]/60 to-transparent z-10" />
                             </div>
-                            
-                            {/* Massive Dark Gradient Overlay for Typography */}
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10 pointer-events-none" />
-
-                            {/* Info Content Anchored Bottom */}
                             <div className="relative z-20 mt-auto p-6 sm:p-10 lg:p-12 flex flex-col w-full text-right pointer-events-auto">
-                                <div className="flex items-center gap-3 mb-6">
-                                  {/* <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-black rounded-lg border  ${
-                                    activeLocation.type === 'headquarter' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20 shadow-[0_0_15px_rgba(251,191,36,0.15)]' :
-                                    activeLocation.type === 'factory' ? 'text-blue-300 bg-[#003F86]/30 border-[#003F86]/50 shadow-[0_0_15px_rgba(0,63,134,0.3)]' :
-                                    'text-emerald-400 bg-emerald-500/20 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
-                                  }`}>
-                                     {activeLocation.type === 'headquarter' ? <Building2 className="w-3.5 h-3.5"/> : activeLocation.type === 'factory' ? <Factory className="w-3.5 h-3.5"/> : <MapPin className="w-3.5 h-3.5"/>}
-                                     {activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : activeLocation.type === 'factory' ? 'سایت تولید' : 'شعبه / نمایندگی'}
-                                  </span> */}
-                                </div>
-
-                                <h4 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-5 drop-shadow-lg leading-tight">
+                                <h4 className="text-3xl sm:text-4xl font-black text-white mb-5 leading-tight">
                                   {activeLocation.title || (activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : 'شعبه')}
                                 </h4>
-
-                                <p className="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl mb-8 font-medium">
+                                <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-8 font-medium">
                                   {activeLocation.address}
                                 </p>
-
                                 <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10">
                                   {((activeLocation as any).workingHours || (activeLocation.type === 'headquarter' ? companyInfo.workingHours : null)) && (
-                                    <div className="flex items-center gap-2.5 text-sm sm:text-base text-amber-400 font-bold bg-amber-500/10 px-5 py-2.5 rounded-xl border border-amber-500/20  shadow-lg">
+                                    <div className="flex items-center gap-2.5 text-sm sm:text-base text-amber-400 font-bold bg-amber-500/10 px-5 py-2.5 rounded-xl border border-amber-500/20">
                                       <Clock className="w-4.5 h-4.5" />
                                       <span>{(activeLocation as any).workingHours || companyInfo.workingHours}</span>
                                     </div>
                                   )}
                                 </div>
                             </div>
-                         </motion.div>
+                         </div>
                       )}
-                   </AnimatePresence>
                 </div>
 
               </div>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { ArrowRight, Clock, Calendar, Share2, Tag, Link as LinkIcon, CheckCircle2, Image as ImageIcon } from '../../icons';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
@@ -32,14 +31,8 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
   const linkedProducts = products.filter((p) => article.relatedProductIds.includes(p.id));
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-[#F8FAFC] pb-24"
-    >
-      {/* Hero Header Section */}
-      <div className="relative min-h-[60vh] md:min-h-[70vh] w-full flex flex-col justify-end pt-40 sm:pt-44 md:pt-48 pb-16 overflow-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] pb-24">
+      <div className="relative min-h-[240px] md:min-h-[320px] w-full flex flex-col justify-end pt-28 pb-10 overflow-hidden">
         {/* Parallax Background */}
         <div className="absolute inset-0 z-0 bg-slate-900">
           <LazyImage 
@@ -67,11 +60,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
             </button>
           </div>
 
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
+          <div>
             <div className="flex flex-wrap items-center gap-4 text-white/80 text-sm font-medium mb-6">
               <span className="bg-amber-500/90 text-white border border-amber-400/50 px-4 py-1.5 rounded-full text-xs font-bold shadow-lg">
                 {article.categoryLabel}
@@ -89,7 +78,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
             <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl font-light">
               {article.summary}
             </p>
-          </motion.div>
+          </div>
         </div>
       </div>
 
@@ -244,6 +233,6 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
 
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

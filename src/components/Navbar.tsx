@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Home, 
-  User, 
-  Package, 
-  Wrench, 
-  Building, 
-  BookOpen, 
-  Compass, 
-  Sparkles, 
-  Menu, 
-  X, 
-  Search, 
-  FileText,
-  Phone,
+import {
+  Home,
+  User,
+  Package,
+  Wrench,
+  Building,
+  BookOpen,
+  Compass,
+  Menu,
+  X,
+  Search,
   ChevronLeft,
   FlaskConical
 } from '../icons';
-import { motion, AnimatePresence } from 'motion/react';
 import { PageSection } from '../types';
 
 interface NavbarProps {
@@ -149,31 +145,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="p-2.5 rounded-full text-slate-700 hover:bg-white transition-all duration-300 bg-white/50 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 flex items-center justify-center relative overflow-hidden"
             aria-label="Toggle Menu"
           >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={mobileMenuOpen ? 'close' : 'menu'}
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </motion.div>
-            </AnimatePresence>
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Perfect Fit Minimalist Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ y: '-100%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '-100%', opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="lg:hidden fixed inset-0 z-[100] bg-slate-50 flex flex-col w-full h-[100dvh] overflow-hidden shadow-2xl"
-          >
+      {mobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 z-[100] bg-slate-50 flex flex-col w-full h-[100dvh] overflow-hidden">
             {/* Top Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-white shadow-sm z-10">
               <div className="flex items-center gap-3">
@@ -190,13 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors active:scale-95 border border-slate-200/50"
               >
-                <motion.div
-                  initial={{ rotate: -90 }}
-                  animate={{ rotate: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <X className="w-5 h-5" />
-                </motion.div>
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -206,29 +179,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               style={{ paddingBottom: 'calc(3rem + env(safe-area-inset-bottom))' }}
             >
               <div className="flex flex-col justify-evenly flex-1">
-                {navItems.map((item, i) => {
+                {navItems.map((item) => {
                   const isActive = currentSection === item.id;
                   const Icon = item.icon;
                   return (
-                    <motion.div
-                      key={item.id}
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.4, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
-                      className="w-full"
-                    >
+                    <div key={item.id} className="w-full">
                       <Link
                         to={item.path}
                         onClick={() => handleNavClick(item.id)}
                         className={`relative flex items-center justify-between w-full py-2.5 px-3 sm:p-4 rounded-2xl transition-all duration-300 ${isActive ? 'scale-[1.02]' : 'active:scale-95'}`}
                       >
                         {isActive && (
-                          <motion.div
-                            layoutId="active-mobile-bg"
-                            className="absolute inset-0 bg-blue-50/80 rounded-2xl border border-blue-100/60 shadow-sm"
-                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                          />
+                          <div className="absolute inset-0 bg-blue-50/80 rounded-2xl border border-blue-100/60" />
                         )}
                         
                         <div className="relative z-10 flex items-center gap-3 sm:gap-4">
@@ -244,32 +206,28 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <ChevronLeft className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 text-[#003F86]/50" />
                         )}
                       </Link>
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>
 
               {/* Search Action at Bottom */}
               <div className="mt-4 shrink-0">
-                <motion.button
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.4, delay: navItems.length * 0.05 + 0.1 }}
+                <button
+                  type="button"
                   onClick={() => {
                     setMobileMenuOpen(false);
                     onOpenSearch();
                   }}
-                  className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#003F86] to-blue-700 text-white p-3.5 sm:p-4 rounded-2xl font-bold shadow-lg shadow-blue-900/20 active:scale-95 transition-all"
+                  className="w-full flex items-center justify-center gap-3 bg-[#003F86] text-white p-3.5 sm:p-4 rounded-2xl font-bold"
                 >
                   <Search className="w-5 h-5 text-amber-400" />
                   <span>جستجوی هوشمند</span>
-                </motion.button>
+                </button>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+      )}
     </header>
   );
 };

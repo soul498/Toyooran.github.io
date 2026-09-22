@@ -1,21 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Building2, 
-  MapPin, 
-  Calendar, 
-  Activity, 
-  CheckCircle2, 
-  ArrowLeft, 
-  Sparkles,
-  FileCheck,
-  ChevronLeft,
-  Filter
-} from '../icons';
-import { motion, AnimatePresence, useInView } from 'motion/react';
+import { useInView } from 'motion/react';
 import { Project } from '../types';
 import { PROJECTS } from '../data/mockData';
-
-import { InnerScrollIndicator } from './InnerScrollIndicator';
+import { PageBanner } from './PageBanner';
 import { Link } from 'react-router-dom';
 import { LazyImage } from './LazyImage';
 
@@ -62,36 +49,11 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
   const displayedProjects = filteredProjects.slice(0, visibleCount);
 
   return (
-    <section className="min-h-screen relative overflow-hidden z-0" id="projects-section">
-      {/* Dynamic Vibrant Mesh Gradient Background */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.15)_0%,_transparent_60%)]" style={{ animationDuration: '8s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(251,191,36,0.15)_0%,_transparent_60%)]" style={{ animationDuration: '10s' }} />
-        <div className="absolute top-[30%] left-[30%] w-[40vw] h-[40vw] bg-[radial-gradient(circle_at_center,_rgba(52,211,153,0.12)_0%,_transparent_60%)]" style={{ animationDuration: '12s' }} />
-      </div>
-
-      <div className="w-full min-h-[100dvh] flex flex-col justify-center relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 z-10">
-        <div className="max-w-7xl mx-auto w-full relative z-10">
-          {/* Header section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95  border border-white/50 shadow-sm mb-6">
-              <FileCheck className="w-5 h-5 text-amber-500" />
-              <span className="text-sm font-bold text-slate-800">مطالعات موردی (Case Studies)</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
-              پروژه‌های شاخص <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">اجرا شده</span>
-            </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
-              اثبات عملکرد با نتایج واقعی در ظرفیت، بهبود ضریب تبدیل (FCR) و کاهش تلفات. پروژه‌هایی که استانداردهای صنعت طیور را ارتقا داده‌اند.
-            </p>
-          </motion.div>
-        </div>
-        <InnerScrollIndicator />
-      </div>
+    <section className="min-h-screen relative z-0" id="projects-section">
+      <PageBanner
+        title="پروژه‌های اجرا شده"
+        subtitle="نمونه سالن گوشتی، تخم‌گذار و کارخانه خوراک با نتایج واقعی ظرفیت و راندمان"
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-20 grid md:grid-cols-2 gap-6">
         {displayedProjects.map((project) => (

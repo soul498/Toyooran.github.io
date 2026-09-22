@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { AparatIcon } from "./AparatIcon";
-import { motion, AnimatePresence } from 'motion/react';
 import toast from 'react-hot-toast';
 import { 
   Phone, Mail, MapPin, Clock, Building2, Factory, Map,
@@ -8,7 +7,7 @@ import {
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
-import { InnerScrollIndicator } from './InnerScrollIndicator';
+import { PageBanner } from './PageBanner';
 
 interface ContactPageProps {
   initialSubject?: string;
@@ -36,35 +35,10 @@ export const ContactPage: React.FC<ContactPageProps> = ({
         .dir-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.4); }
       `}</style>
       
-      {/* Dynamic Vibrant Mesh Gradient Background */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.15)_0%,_transparent_60%)] animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(251,191,36,0.15)_0%,_transparent_60%)] animate-pulse" style={{ animationDuration: '10s' }} />
-        <div className="absolute top-[30%] left-[30%] w-[40vw] h-[40vw] bg-[radial-gradient(circle_at_center,_rgba(52,211,153,0.12)_0%,_transparent_60%)] animate-pulse" style={{ animationDuration: '12s' }} />
-      </div>
-
-      <div className="w-full min-h-[100dvh] flex flex-col justify-center relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 z-10">
-        <div className="max-w-7xl mx-auto w-full relative z-10">
-          {/* Header section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95  border border-white/50 shadow-sm mb-6">
-              <Phone className="w-5 h-5 text-amber-500" />
-              <span className="text-sm font-bold text-slate-800">ارتباط هوشمند با طیوران صنعت پویا</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
-              تماس با <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">ما</span>
-            </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
-              تیم مهندسی و پشتیبانی ما آماده ارائه مشاوره رایگان، پاسخ به استعلامات و اعزام تکنسین برای پروژه‌های شما در سراسر کشور است.
-            </p>
-          </motion.div>
-        </div>
-        <InnerScrollIndicator />
-      </div>
+      <PageBanner
+        title="تماس با ما"
+        subtitle="مشاوره رایگان، استعلام قیمت و ارتباط با دفتر مشهد و واحد فنی گرگان"
+      />
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
 
@@ -276,76 +250,38 @@ export const ContactPage: React.FC<ContactPageProps> = ({
 
                 {/* 2. Right Detail View: Active Card */}
                 <div className="lg:col-span-8 relative rounded-[2rem] overflow-hidden bg-[#002d61]/50 border border-white/10 h-[400px] lg:h-full group shadow-2xl">
-                   <AnimatePresence mode="wait">
                       {activeLocation && (
-                         <motion.div
-                           key={activeLocationIndex}
-                           initial={{ opacity: 0, scale: 0.98, filter: 'blur(5px)' }}
-                           animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                           exit={{ opacity: 0, scale: 1.02, filter: 'blur(5px)' }}
-                           transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-                           className="absolute inset-0 flex flex-col w-full h-full"
-                         >
-                            {/* Elegant Graphic Background instead of Map */}
+                         <div className="absolute inset-0 flex flex-col w-full h-full">
                             <div className="absolute inset-0 z-0 bg-[#001c3d] overflow-hidden">
-                              {/* Background Patterns */}
                               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(251,191,36,0.08)_0%,_transparent_70%)]" />
-                              <div className="absolute top-[20%] right-[20%] w-[50%] h-[50%] bg-blue-500/5 rounded-full blur-[100px]" />
-                              <div className="absolute bottom-[20%] left-[20%] w-[50%] h-[50%] bg-amber-500/5 rounded-full blur-[100px]" />
-                              
-                              {/* Central Abstract Logo / Icon Element */}
                               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                 <div className="w-80 h-80 border border-white/5 rounded-full flex items-center justify-center animate-[spin_60s_linear_infinite]">
-                                    <div className="w-56 h-56 border border-white/10 rounded-full flex items-center justify-center animate-[spin_40s_linear_infinite_reverse]">
-                                       <div className="w-32 h-32 border border-amber-500/20 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-xl shadow-[0_0_50px_rgba(251,191,36,0.1)]">
-                                          {activeLocation.type === 'headquarter' ? <Building2 className="w-12 h-12 text-amber-500/60" /> : 
-                                           activeLocation.type === 'factory' ? <Factory className="w-12 h-12 text-amber-500/60" /> : 
-                                           <MapPin className="w-12 h-12 text-amber-500/60" />}
-                                       </div>
-                                    </div>
+                                 <div className="w-32 h-32 border border-amber-500/20 rounded-full flex items-center justify-center bg-white/5">
+                                    {activeLocation.type === 'headquarter' ? <Building2 className="w-12 h-12 text-amber-500/60" /> : 
+                                     activeLocation.type === 'factory' ? <Factory className="w-12 h-12 text-amber-500/60" /> : 
+                                     <MapPin className="w-12 h-12 text-amber-500/60" />}
                                  </div>
                               </div>
-                              
-                              {/* Soft Overlay */}
                               <div className="absolute inset-0 bg-gradient-to-t from-[#001c3d] via-[#001c3d]/60 to-transparent z-10" />
                             </div>
-                            
-                            {/* Massive Dark Gradient Overlay for Typography */}
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10 pointer-events-none" />
-
-                            {/* Info Content Anchored Bottom */}
                             <div className="relative z-20 mt-auto p-6 sm:p-10 lg:p-12 flex flex-col w-full text-right pointer-events-auto">
-                                <div className="flex items-center gap-3 mb-6">
-                                  {/* <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-black rounded-lg border  ${
-                                    activeLocation.type === 'headquarter' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20 shadow-[0_0_15px_rgba(251,191,36,0.15)]' :
-                                    activeLocation.type === 'factory' ? 'text-blue-300 bg-[#003F86]/30 border-[#003F86]/50 shadow-[0_0_15px_rgba(0,63,134,0.3)]' :
-                                    'text-emerald-400 bg-emerald-500/20 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
-                                  }`}>
-                                     {activeLocation.type === 'headquarter' ? <Building2 className="w-3.5 h-3.5"/> : activeLocation.type === 'factory' ? <Factory className="w-3.5 h-3.5"/> : <MapPin className="w-3.5 h-3.5"/>}
-                                     {activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : activeLocation.type === 'factory' ? 'سایت تولید' : 'شعبه / نمایندگی'}
-                                  </span> */}
-                                </div>
-
-                                <h4 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-5 drop-shadow-lg leading-tight">
+                                <h4 className="text-3xl sm:text-4xl font-black text-white mb-5 leading-tight">
                                   {activeLocation.title || (activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : 'شعبه')}
                                 </h4>
-
-                                <p className="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl mb-8 font-medium">
+                                <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-8 font-medium">
                                   {activeLocation.address}
                                 </p>
-
                                 <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10">
                                   {((activeLocation as any).workingHours || (activeLocation.type === 'headquarter' ? companyInfo.workingHours : null)) && (
-                                    <div className="flex items-center gap-2.5 text-sm sm:text-base text-amber-400 font-bold bg-amber-500/10 px-5 py-2.5 rounded-xl border border-amber-500/20  shadow-lg">
+                                    <div className="flex items-center gap-2.5 text-sm sm:text-base text-amber-400 font-bold bg-amber-500/10 px-5 py-2.5 rounded-xl border border-amber-500/20">
                                       <Clock className="w-4.5 h-4.5" />
                                       <span>{(activeLocation as any).workingHours || companyInfo.workingHours}</span>
                                     </div>
                                   )}
                                 </div>
                             </div>
-                         </motion.div>
+                         </div>
                       )}
-                   </AnimatePresence>
                 </div>
 
               </div>

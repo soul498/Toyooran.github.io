@@ -5,18 +5,14 @@ import { ProjectPage } from './components/ProjectPage';
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import Lenis from 'lenis';
-import 'lenis/dist/lenis.css';
 import { ScrollProgress } from './components/ScrollProgress';
 import { DataProvider, useData } from './context/DataContext';
 import { PageSection, Product, Project, Service, Article, ProductCategory } from './types';
-import { isLiteDevice } from './lib/device';
 
 const AdminLogin = lazy(() => import('./admin/AdminLogin').then((m) => ({ default: m.AdminLogin })));
 const AdminPanel = lazy(() => import('./admin/AdminPanel').then((m) => ({ default: m.AdminPanel })));
 
 // Public Components
-import { CustomCursor } from './components/CustomCursor';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { TrustBar } from './components/TrustBar';
@@ -57,11 +53,7 @@ const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: any) 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
-    if ((window as any).lenis) {
-      (window as any).lenis.scrollTo(0, { immediate: true });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [pathname]);
   return null;
 };
@@ -69,29 +61,6 @@ const ScrollToTop = () => {
 const MainAppInner: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // Initialize Smooth Scrolling (Lenis)
-  useEffect(() => {
-    if (isLiteDevice()) return;
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 2,
-      infinite: false,
-    });
-
-    (window as any).lenis = lenis;
-    function raf(time: any) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-      delete (window as any).lenis;
-    };
-  }, []);
   const { 
     isAuthenticated, 
     products, 
@@ -212,7 +181,6 @@ const MainAppInner: React.FC = () => {
     <div className="min-h-screen bg-blueprint-light text-[#333132] font-['Estedad',sans-serif] flex flex-col selection:bg-amber-400 selection:text-slate-950" dir="rtl">
       <ScrollToTop />
       <SeoHead />
-      <CustomCursor />
       <ScrollProgress />
       
       {/* Top Navbar */}

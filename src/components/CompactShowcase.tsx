@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { LazyImage } from "./LazyImage";
 import { Package, Newspaper, Clock, ArrowLeft, ChevronLeft, Sparkles, Zap, ArrowRight } from '../icons';
 import { Product, Article } from '../types';
-import { motion, AnimatePresence } from 'motion/react';
 
 interface CompactShowcaseProps {
   products: Product[];
@@ -49,9 +48,6 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
         <div className="lg:col-span-7 relative rounded-[2.5rem] p-1 overflow-hidden group shadow-2xl shadow-blue-900/20">
           {/* Animated Background Gradient (Aurora style) */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-[#003F86] to-indigo-900" />
-          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(56,189,248,0.4)_0%,_transparent_50%)] animate-pulse" />
-          <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_bottom_left,_rgba(251,191,36,0.3)_0%,_transparent_50%)] animate-pulse" style={{ animationDelay: '2s' }} />
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay" />
           
           <div className="relative z-10 bg-slate-900/30 backdrop-blur-2xl rounded-[2.2rem] h-full border border-white/10 flex flex-col p-6 sm:p-10 overflow-hidden">
             
@@ -78,56 +74,33 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
 
             {/* Slider Content */}
             <div className="flex-1 relative flex items-center justify-center min-h-[250px] sm:min-h-[300px]">
-              <AnimatePresence mode="wait">
                 {featuredProducts.length > 0 && (
-                  <motion.div
-                    key={currentSlide}
-                    initial={{ opacity: 0, scale: 0.95, y: 15 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.05, y: -15 }}
-                    transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
+                  <div
                     className="w-full flex flex-col md:flex-row items-center gap-6 sm:gap-10 cursor-pointer group/slide"
                     onClick={() => onSelectProduct(featuredProducts[currentSlide].id)}
                   >
-                    <div className="w-48 sm:w-56 md:w-64 shrink-0 relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 border border-white/10 shadow-xl">
+                    <div className="w-48 sm:w-56 md:w-64 shrink-0 relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 border border-white/10">
                       <LazyImage 
                          src={featuredProducts[currentSlide].image} 
                          alt={featuredProducts[currentSlide].name} 
                          className="w-full h-full relative z-10" 
-                         imgClassName="w-full h-full object-cover transform transition-transform duration-700 group-hover/slide:scale-105" 
+                         imgClassName="w-full h-full object-cover" 
                        />
-                       <div className="absolute inset-0 bg-black/0 group-hover/slide:bg-black/5 transition-colors duration-500 z-20 pointer-events-none" />
                     </div>
                     
                     <div className="flex-1 text-center md:text-right flex flex-col items-center md:items-start">
-                      <motion.span 
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="inline-block px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-[10px] font-black tracking-wider mb-3 sm:mb-4"
-                      >
+                      <span className="inline-block px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-[10px] font-black tracking-wider mb-3 sm:mb-4">
                         {featuredProducts[currentSlide].categoryTitle}
-                      </motion.span>
-                      <motion.h4 
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="text-xl sm:text-3xl lg:text-4xl font-black text-white leading-tight mb-4 sm:mb-6"
-                      >
+                      </span>
+                      <h4 className="text-xl sm:text-3xl lg:text-4xl font-black text-white leading-tight mb-4 sm:mb-6">
                         {featuredProducts[currentSlide].name}
-                      </motion.h4>
-                      <motion.div 
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="flex items-center gap-2 text-white/60 text-xs sm:text-sm font-medium group-hover/slide:text-amber-400 transition-colors"
-                      >
-                        مشاهده جزئیات و مشخصات فنی <ChevronLeft className="w-4 h-4 group-hover/slide:-translate-x-1 transition-transform" />
-                      </motion.div>
+                      </h4>
+                      <div className="flex items-center gap-2 text-white/60 text-xs sm:text-sm font-medium">
+                        مشاهده جزئیات و مشخصات فنی <ChevronLeft className="w-4 h-4" />
+                      </div>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
             </div>
 
             {/* Slider Dots */}
@@ -167,19 +140,14 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
 
           {/* Vertical Articles List */}
           <div className="flex flex-col gap-3 sm:gap-4 flex-1">
-            {featuredArticles.slice(0, 3).map((article, idx) => (
-              <motion.div
+            {featuredArticles.slice(0, 3).map((article) => (
+              <div
                 key={article.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
                 onClick={() => onSelectArticle(article.id)}
-                className="flex items-center gap-4 bg-white rounded-[1.5rem] p-3 sm:p-4 cursor-pointer shadow-sm hover:shadow-lg hover:shadow-slate-200/50 border border-slate-100 transition-all duration-300 group"
+                className="flex items-center gap-4 bg-white rounded-[1.5rem] p-3 sm:p-4 cursor-pointer border border-slate-100 hover:border-slate-200 transition-colors group"
               >
-                {/* Square Image */}
-                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-xl overflow-hidden relative shadow-sm">
-                  <LazyImage src={article.image} alt={article.title} className="w-full h-full" imgClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-xl overflow-hidden relative">
+                  <LazyImage src={article.image} alt={article.title} className="w-full h-full" imgClassName="w-full h-full object-cover" />
                 </div>
                 
                 {/* Content */}
@@ -195,7 +163,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                     {article.readTime}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

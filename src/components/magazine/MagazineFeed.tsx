@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useInView } from 'motion/react';
-import { Clock, Calendar, ArrowLeft, ChevronLeft, Sparkles } from '../../icons';
+import { useInView } from 'motion/react';
+import { Clock, Calendar, ArrowLeft, ChevronLeft } from '../../icons';
 import { Link } from 'react-router-dom';
-import { InnerScrollIndicator } from '../InnerScrollIndicator';
+import { PageBanner } from '../PageBanner';
 import { LazyImage } from '../LazyImage';
 import type { Article } from '../../types';
 
@@ -57,36 +57,11 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
   const getArticleImage = (article: Article, index: number) => article.image || IMAGES[index % IMAGES.length];
 
   return (
-    <div className="min-h-screen relative overflow-hidden z-0" id="magazine-feed">
-      {/* Dynamic Vibrant Mesh Gradient Background */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.15)_0%,_transparent_60%)]" style={{ animationDuration: '8s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(251,191,36,0.15)_0%,_transparent_60%)]" style={{ animationDuration: '10s' }} />
-        <div className="absolute top-[30%] left-[30%] w-[40vw] h-[40vw] bg-[radial-gradient(circle_at_center,_rgba(52,211,153,0.12)_0%,_transparent_60%)]" style={{ animationDuration: '12s' }} />
-      </div>
-      
-      <div className="w-full min-h-[100dvh] flex flex-col justify-center relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 z-10">
-        <div className="max-w-7xl mx-auto w-full relative z-10">
-          {/* Header section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95  border border-white/50 shadow-sm mb-6">
-              <Sparkles className="w-5 h-5 text-amber-500" />
-              <span className="text-sm font-bold text-slate-800">مجله تخصصی طیوران صنعت پویا</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
-              کشف <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-amber-500">دانش و نوآوری</span>
-            </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
-              به‌روزترین مقالات، تحلیل‌ها و راهنماهای کاربردی برای ارتقای بهره‌وری در صنعت طیور
-            </p>
-          </motion.div>
-        </div>
-        <InnerScrollIndicator />
-      </div>
+    <div className="min-h-screen relative z-0" id="magazine-feed">
+      <PageBanner
+        title="مجله تخصصی طیوران صنعت پویا"
+        subtitle="راهنمای تهویه، گرمایش، دانخوری و تجهیز سالن مرغداری"
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
 
@@ -108,16 +83,8 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
         </div>
 
         {/* Featured Article */}
-        <AnimatePresence mode="wait">
-          {featuredArticle && (
-            <motion.div
-              key={`featured-${activeCategory}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4 }}
-              className="mb-12 group relative"
-            >
+        {featuredArticle && (
+            <div className="mb-12 group relative">
               <Link to={`/magazine/${featuredArticle.id}`} className="block">
               {/* Highlight glow behind featured */}
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-amber-500/20 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10" />
@@ -130,7 +97,7 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
                     src={getArticleImage(featuredArticle, 0)} 
                     alt={featuredArticle.title}
                     className="absolute inset-0 w-full h-full"
-                    imgClassName="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                    imgClassName="absolute inset-0 w-full h-full object-cover"
                   />
                   <div className="absolute top-6 right-6 z-20">
                      <span className="bg-white/20  text-white border border-white/30 text-xs font-bold px-4 py-1.5 rounded-full shadow-sm">
@@ -159,24 +126,15 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
                 </div>
               </div>
               </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+        )}
 
         {/* Grid Articles */}
-        <motion.div 
-          
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayedGridArticles.map((article, index) => (
-              <motion.div
-                
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+              <div
                 key={article.id}
-                className="relative bg-white transform-gpu will-change-transform rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full origin-center"
+                className="relative bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-colors duration-200 group flex flex-col h-full"
               >
                 <Link to={`/magazine/${article.id}`} className="flex flex-col h-full">
                 {/* Accent Top Border */}
@@ -188,7 +146,7 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
                     src={getArticleImage(article, index + 1)} 
                     alt={article.title}
                     className="w-full h-full"
-                    imgClassName="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    imgClassName="w-full h-full object-cover"
                   />
                   <div className="absolute bottom-4 right-4 z-20">
                      <span className="bg-white/20  text-white border border-white/30 text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm">
@@ -216,9 +174,9 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
                   </div>
                 </div>
                 </Link>
-              </motion.div>
+              </div>
             ))}
-        </motion.div>
+        </div>
 
         {/* Lazy Load Trigger */}
         {visibleCount < gridArticles.length && (

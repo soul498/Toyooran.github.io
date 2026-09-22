@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, useInView } from 'motion/react';
+import { useInView } from 'motion/react';
 import {
   Search,
   PhoneCall,
@@ -141,14 +141,9 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
           PRODUCT GRID (DRIBBBLE STYLE / MINIMALIST)
           ========================================================
         */}
-        <motion.div className="mt-2 sm:mt-4">
+        <div className="mt-2 sm:mt-4">
             {filteredProducts.length === 0 ? (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="py-24 flex flex-col items-center justify-center text-center bg-white rounded-[3rem] border border-slate-200 shadow-sm"
-              >
+              <div className="py-24 flex flex-col items-center justify-center text-center bg-white rounded-[3rem] border border-slate-200 shadow-sm">
                 <div className="w-24 h-24 rounded-full bg-slate-50 flex items-center justify-center mb-6">
                   <Filter className="w-10 h-10 text-slate-400" />
                 </div>
@@ -160,18 +155,13 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                 >
                   نمایش همه محصولات
                 </button>
-              </motion.div>
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-10">
-                  {displayedProducts.map((product, index) => (
-                    <motion.div
-                      
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-50px" }}
-                      transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+                  {displayedProducts.map((product) => (
+                    <div
                       key={`${product.id}-${selectedCategory}`}
-                      className="group bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-lg hover:-translate-y-1 transform-gpu will-change-transform border border-slate-100 transition-all duration-300 flex flex-col"
+                      className="group bg-white rounded-[2rem] p-4 shadow-sm border border-slate-100 hover:border-slate-200 transition-colors flex flex-col"
                     >
                     {/* Image Area */}
                     <Link
@@ -182,7 +172,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                         src={product.image}
                         alt={product.name}
                         className="w-full h-full"
-                        imgClassName="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
+                        imgClassName="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
 
@@ -227,7 +217,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                         </Link>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             )}
@@ -238,7 +228,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
               <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin opacity-50" />
             </div>
           )}
-        </motion.div>
+        </div>
 
       </div>
     </section>
