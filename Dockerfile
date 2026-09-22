@@ -1,4 +1,5 @@
 # Build from the last local production image so deploys work when Docker Hub / npm are blocked.
+# Deploy script flattens the base when layer count >= 90 (Docker max 127).
 ARG BASE_IMAGE=toyooran:latest
 FROM ${BASE_IMAGE}
 WORKDIR /app

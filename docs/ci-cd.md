@@ -21,6 +21,7 @@ Forgejo، runner، کد، ایمیج `toyooran:*` و npm داخل ایمیج ق�
 | سلامت | `curl -fsS http://127.0.0.1:3000/api/health` |
 
 بیلد `FROM toyooran:prev` است تا بدون Docker Hub انجام شود. `npm install` با `--prefer-offline` از `node_modules` همان ایمیج استفاده می‌کند.
+اگر تعداد لایه به ۹۰ برسد، `toyooran-deploy.sh` قبل از بیلد ایمیج پایه را flatten می‌کند (سقف Docker ۱۲۷ لایه است؛ بدون این کار کانتینر با `max depth exceeded` بالا نمی‌آید و nginx ۵۰۲ می‌دهد).
 
 ## دسترسی اگر DNS یا نت خارجی خوابید
 
