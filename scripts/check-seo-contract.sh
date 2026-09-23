@@ -37,6 +37,7 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   echo "$html" | grep -q 'https://www.toyooran.com/' || fail "live HTML missing www.toyooran.com"
   echo "$html" | grep -q 'application/ld+json' || fail "live HTML missing JSON-LD"
   echo "$html" | grep -q 'seo-prerender' || fail "live HTML missing prerender"
+  echo "$html" | grep -q 'GTM-5Q5PWTTK' || fail "live HTML missing GTM container"
   robots="$(curl_id http://127.0.0.1:3000/robots.txt)"
   echo "$robots" | grep -q 'Disallow: /admin' || fail "live robots"
   sitemap="$(curl_id http://127.0.0.1:3000/sitemap.xml)"
