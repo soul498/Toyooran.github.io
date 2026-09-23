@@ -12,6 +12,8 @@ Forgejo، runner، کد، ایمیج `toyooran:*` و npm داخل ایمیج ق�
 
 کار در `/opt/Toyooran` روی شاخه **`main`**. push به `origin/main` دیپلوی می‌کند. شاخه جدا نساز.
 
+دیپلوی CI از کلون تمیز `/var/lib/toyooran/src` بیلد می‌گیرد، نه از workspace ایجنت. اگر `/opt/Toyooran` فایل ذخیره‌نشده داشته باشد اکشن دیگر fail نمی‌شود. دو پوش پشت‌سرهم پشت قفل ۵ دقیقه‌ای صف می‌شوند.
+
 | کار | دستور |
 |---|---|
 | وضعیت | `cd /opt/Toyooran && git status -sb` |

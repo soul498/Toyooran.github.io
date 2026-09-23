@@ -17,7 +17,7 @@ SEO عمومی باید در HTML اولیه باشد (`server/seo.ts`). canonic
 
 1. ادیت در `/opt/Toyooran`
 2. `git add` / `git commit` (شاخه `main`)
-3. `git push origin main` → Forgejo Actions روی همین ماشین `/usr/local/sbin/toyooran-deploy.sh` را اجرا می‌کند
+3. `git push origin main` → Forgejo Actions روی همین ماشین `/usr/local/sbin/toyooran-deploy.sh` را اجرا می‌کند (بیلد از `/var/lib/toyooran/src`، مستقل از وضعیت dirty بودن `/opt/Toyooran`)
 4. اگر runner خواب بود: `toyooran-deploy.sh` (یا `--from-workdir` برای تست بدون push)
 5. برگشت اضطراری: `toyooran-rollback.sh`
 
