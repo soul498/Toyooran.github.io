@@ -1,4 +1,5 @@
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../types";
+import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
@@ -490,7 +491,8 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
     }
     const product = findProduct(slug, catalog);
     if (product) {
-      const imageAbs = product.image?.startsWith("http") ? product.image : `${CANONICAL_ORIGIN}${product.image || "/images/hero-final-1.jpg"}`;
+      const imagePath = withMediaVersion(product.image || "/images/hero-final-1.jpg");
+      const imageAbs = imagePath.startsWith("http") ? imagePath : `${CANONICAL_ORIGIN}${imagePath}`;
       return okDoc({
         path: publicProductPath(product),
         title: `${product.name} | طیوران صنعت پویا`,

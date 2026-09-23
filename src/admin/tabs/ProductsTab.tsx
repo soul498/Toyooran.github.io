@@ -15,6 +15,7 @@ import {
 import { useData } from '../../context/DataContext';
 import { ImagePicker } from '../components/ImagePicker';
 import { Product, ProductCategory } from '../../types';
+import { withMediaVersion } from '../../lib/mediaUrl';
 
 export const ProductsTab: React.FC = () => {
   const { products, addProduct, updateProduct, deleteProduct, replaceAllProducts, categories } = useData();
@@ -186,7 +187,7 @@ export const ProductsTab: React.FC = () => {
                 <tr key={product.id} className="hover:bg-slate-800/30 transition-colors group">
                   <td className="py-3 px-4">
                     <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-800">
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover mix-blend-screen" />
+                      <img src={withMediaVersion(product.image)} alt={product.name} className="w-full h-full object-cover mix-blend-screen" />
                     </div>
                   </td>
                   <td className="py-3 px-4 font-mono text-amber-400 font-bold">
