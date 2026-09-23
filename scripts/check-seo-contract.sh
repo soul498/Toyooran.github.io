@@ -60,6 +60,11 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   echo "$prod" | grep -q 'Offer\|location:' || true
   redirp="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/TS-001 | awk 'NR==1{print $2}')"
   test "$redirp" = "301" || fail "product code must 301 to slug"
+  heater_enc="/products/%D9%87%DB%8C%D8%AA%D8%B1-%DA%AF%D8%A7%D8%B2%DB%8C-%D8%A7%D9%86%D8%B1%DA%98%DB%8C-%D9%85%D8%AF%D9%84-GH-0625-ts-001"
+  heater_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000${heater_enc}" | awk 'NR==1{print $2}')"
+  test "$heater_code" = "200" || fail "encoded Persian product slug must be 200, got ${heater_code}"
+  heater_html="$(curl_id "http://127.0.0.1:3000${heater_enc}")"
+  echo "$heater_html" | grep -q 'هیتر گازی' || fail "encoded heater slug missing product content"
   grep -q 'font-src' server.ts || fail "CSP font-src missing"
   redir="$(curl -sI --max-time 5 http://127.0.0.1:3000/services/srv-turnkey-shed | awk 'NR==1{print $2}')"
   test "$redir" = "301" || fail "service alias must 301"

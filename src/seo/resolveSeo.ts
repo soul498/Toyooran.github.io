@@ -91,6 +91,15 @@ export function stripQuery(rawPath: string): string {
   return pathOnly || "/";
 }
 
+/** Decode percent-encoded path once. Express/nginx may pass either form; never throw on bad %. */
+export function decodePathname(pathname: string): string {
+  try {
+    return decodeURIComponent(pathname);
+  } catch {
+    return pathname;
+  }
+}
+
 export function canonicalPath(pathname: string): string {
   return `${CANONICAL_ORIGIN}${pathname === "/" ? "/" : pathname}`;
 }
@@ -116,7 +125,7 @@ export function productSeoSlug(product: Product): string {
 }
 
 export function findProduct(slug: string, source: SeoCatalog | Product[]): Product | undefined {
-  const decoded = decodeURIComponent(slug);
+  const decoded = decodePathname(slug);
   const products = Array.isArray(source) ? source : source.products;
   return products.find(
     (p) => p.id === decoded || p.code === decoded || productSeoSlug(p) === decoded || productSeoSlug(p) === slug
@@ -124,14 +133,15 @@ export function findProduct(slug: string, source: SeoCatalog | Product[]): Produ
 }
 
 export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | null {
-  const path = stripQuery(pathname);
+  const path = decodePathname(stripQuery(pathname));
   if (SEO_REDIRECTS[path]) return SEO_REDIRECTS[path];
   if (path.startsWith("/products/")) {
-    const slug = decodeURIComponent(path.split("/")[2] || "");
+    const slug = path.split("/")[2] || "";
     if (isCategorySlug(slug, catalog)) return null;
     const product = findProduct(slug, catalog);
     if (!product) return null;
     const canonical = publicProductPath(product);
+    // Compare decoded forms so percent-encoded Persian slugs are not 301'd to themselves.
     if (canonical !== path) return canonical;
   }
   return null;
@@ -319,7 +329,7 @@ function okDoc(partial: Omit<SeoDoc, "robots" | "canonicalHref"> & { path: strin
 }
 
 export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
-  const path = stripQuery(pathname);
+  const path = decodePathname(stripQuery(pathname));
   const company = catalog.company;
   const privatePrefixes = ["/admin", "/login", "/dashboard", "/crm"];
   if (privatePrefixes.some((p) => path === p || path.startsWith(`${p}/`))) {
@@ -452,7 +462,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path.startsWith("/products/")) {
-    const slug = decodeURIComponent(path.split("/")[2] || "");
+    const slug = decodePathname(path.split("/")[2] || "");
     const category = categoryMeta(slug, catalog);
     if (category && isCategorySlug(slug, catalog)) {
       const items = catalog.products
@@ -715,7 +725,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
 }
 
 export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolean {
-  const path = stripQuery(pathname);
+  const path = decodePathname(stripQuery(pathname));
   if (["/", "/products", "/services", "/projects", "/magazine", "/about", "/contact", "/rnd", "/admin", "/login", "/dashboard"].includes(path)) {
     return true;
   }
@@ -724,9 +734,9 @@ export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolea
   }
   if (path.startsWith("/magazine/") && catalog.articles.some((a) => a.id === path.split("/")[2])) return true;
   if (path.startsWith("/products/")) {
-    const slug = decodeURIComponent(path.split("/")[2] || "");
+    const slug = path.split("/")[2] || "";
     if (isCategorySlug(slug, catalog)) return true;
-    if (catalog.products.some((p) => p.id === slug || p.code === slug || productSeoSlug(p) === slug || productSeoSlug(p) === decodeURIComponent(slug))) return true;
+    if (catalog.products.some((p) => p.id === slug || p.code === slug || productSeoSlug(p) === slug)) return true;
   }
   if (path.startsWith("/services/")) {
     const slug = path.split("/")[2];
