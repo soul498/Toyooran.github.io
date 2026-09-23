@@ -131,7 +131,12 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
         {/* Dynamic Articles Column (takes 5 cols) - BENTO DESIGN */}
         <div className="lg:col-span-5 flex flex-col gap-4 h-full">
           {/* Floating Modern Header */}
-          <div className="bg-white rounded-[2rem] p-4 sm:p-5 flex items-center justify-between shadow-xl shadow-slate-200/40 border border-slate-100 shrink-0">
+          <Link
+            to="/magazine"
+            onClick={() => onNavigate('magazine')}
+            className="bg-white rounded-[2rem] p-4 sm:p-5 flex items-center justify-between shadow-xl shadow-slate-200/40 border border-slate-100 shrink-0 no-underline text-inherit"
+            aria-label="ورود به مجله تخصصی"
+          >
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-amber-400 rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-amber-400/30">
                 <Newspaper className="w-6 h-6" />
@@ -141,15 +146,12 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                 <span className="text-[10px] sm:text-[11px] text-slate-600 font-bold block mt-0.5 uppercase tracking-wider">مقالات و اخبار صنعت</span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => onNavigate('magazine')}
-              aria-label="مشاهده مجله"
-              className="min-w-11 min-h-11 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-50 hover:bg-slate-900 hover:text-amber-400 text-slate-600 flex items-center justify-center transition-all duration-300 group shadow-sm border border-slate-100"
+            <span
+              className="min-w-11 min-h-11 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center shadow-sm border border-slate-100"
             >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 group-hover:scale-110 transition-all" aria-hidden="true" />
-            </button>
-          </div>
+              <ArrowLeft className="w-5 h-5" aria-hidden="true" />
+            </span>
+          </Link>
 
           {/* Vertical Articles List */}
           <div className="flex flex-col gap-3 sm:gap-4 flex-1">

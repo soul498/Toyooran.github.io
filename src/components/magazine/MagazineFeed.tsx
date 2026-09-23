@@ -111,10 +111,10 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles, onSelectAr
                     <span className="flex items-center gap-2"><Calendar className="w-4 h-4 text-[#003F86]" /> {featuredArticle.date}</span>
                     <span className="flex items-center gap-2"><Clock className="w-4 h-4 text-amber-500" /> {featuredArticle.readTime}</span>
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-[1.6] mb-6 group-hover:text-[#003F86] transition-colors">
+                  <h2 className="text-lg md:text-xl font-black text-slate-900 leading-[1.6] mb-6 group-hover:text-[#003F86] transition-colors">
                     {featuredArticle.title}
                   </h2>
-                  <p className="text-slate-600 text-base md:text-lg leading-relaxed mb-8">
+                  <p className="text-slate-600 text-sm md:text-base leading-relaxed mb-8">
                     {featuredArticle.summary}
                   </p>
                   <div className="mt-auto">

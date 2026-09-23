@@ -96,7 +96,7 @@ const MainAppInner: React.FC = () => {
     else if (section === 'products') navigate('/products');
     else if (section === 'services') navigate('/services');
     else if (section === 'projects') navigate('/projects');
-    else if (section === 'knowledge') navigate('/magazine');
+    else if (section === 'knowledge' || section === 'magazine' || section === 'magazine-article') navigate('/magazine');
     else if (section === 'about') navigate('/about');
     else if (section === 'rnd') navigate('/rnd');
     else if (section === 'contact') navigate('/contact');

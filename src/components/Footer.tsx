@@ -73,7 +73,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
             </p>
             
             {/* Social Links */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
               <SocialIconLink
                 href={companyInfo?.socialLinks?.instagram}
                 label="اینستاگرام"

@@ -41,11 +41,11 @@ export const AboutPage: React.FC = () => {
                 درباره طیوران صنعت پویا
               </div>
               
-              <h2 className="text-3xl lg:text-4xl font-black text-slate-900 leading-tight mb-6">
+              <h2 className="text-2xl lg:text-3xl font-black text-slate-900 leading-snug mb-5">
                 مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی
               </h2>
               
-              <p className="text-slate-600 leading-relaxed text-lg mb-8 text-justify font-medium">
+              <p className="text-slate-600 leading-relaxed text-sm sm:text-base mb-8 text-justify font-medium">
                 شرکت طیوران صنعت پویا با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان، مجری بیش از ۲۰۰ پروژه ملی و بین‌المللی است. ما به عنوان یک مرجع تخصصی، راهکارهای جامع توسعه، طراحی، ساخت و تجهیز کامل سوله و کارخانجات را ارائه می‌دهیم.
               </p>
 
@@ -55,7 +55,7 @@ export const AboutPage: React.FC = () => {
                     <CheckCircle2 className="w-6 h-6 text-[#003F86]" />
                   </div>
                   <div>
-                    <h3 className="text-slate-900 font-bold text-lg mb-1">برند IMACHINE</h3>
+                    <h3 className="text-slate-900 font-bold text-base mb-1">برند IMACHINE</h3>
                     <p className="text-sm text-slate-600 leading-relaxed font-medium">طراحی و تولید ماشین‌آلات صنعتی با برند IMACHINE در صنعت خوراک.</p>
                   </div>
                 </div>
@@ -65,7 +65,7 @@ export const AboutPage: React.FC = () => {
                     <Factory className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="text-slate-900 font-bold text-lg mb-1">تولید تخصصی ماشین‌آلات</h3>
+                    <h3 className="text-slate-900 font-bold text-base mb-1">تولید تخصصی ماشین‌آلات</h3>
                     <p className="text-sm text-slate-600 leading-relaxed font-medium">تولیدکننده تخصصی انواع جت هیتر، تجهیزات گرمایشی و ماشین‌آلات خطوط تولید خوراک دام و طیور.</p>
                   </div>
                 </div>
@@ -75,7 +75,7 @@ export const AboutPage: React.FC = () => {
                     <Globe2 className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="text-slate-900 font-bold text-lg mb-1">گستره فعالیت و توسعه</h3>
+                    <h3 className="text-slate-900 font-bold text-base mb-1">گستره فعالیت و توسعه</h3>
                     <p className="text-sm text-slate-600 leading-relaxed font-medium">دارای دفتر تحقیق و توسعه (R&D) مستقر در دانشگاه منابع طبیعی گلستان و حضور فعال در بازارهای داخلی و خارجی.</p>
                   </div>
                 </div>

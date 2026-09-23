@@ -70,6 +70,15 @@ export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCatego
     return () => cancelAnimationFrame(animationFrameId);
   }, [isPaused, lite]);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || selectedCategory == null) return;
+    const target = container.querySelector(`[data-cat="${selectedCategory}"][data-copy="0"]`) as HTMLElement | null;
+    if (!target) return;
+    setIsPaused(true);
+    target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, [selectedCategory]);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
     setIsPaused(true);
@@ -120,6 +129,8 @@ export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCatego
           return (
             <div
               key={`${cat.id}-${idx}`}
+              data-cat={cat.id}
+              data-copy={idx < items.length ? '0' : '1'}
               onClick={() => onSelectCategory(cat.id as ProductCategory | 'all')}
               className={`group relative flex-shrink-0 w-[150px] sm:w-[200px] md:w-[220px] aspect-square p-4 sm:p-6 rounded-[2rem] border transition-colors duration-300 flex flex-col items-center justify-center gap-3 sm:gap-5 overflow-hidden ${
                 isSelected

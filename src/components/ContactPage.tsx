@@ -112,7 +112,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                 {companyInfo.socialLinks && (
                   <div className="mt-8 pt-6 border-t border-white/10">
                     <span className="text-slate-300 text-xs block mb-4">شبکه‌های اجتماعی:</span>
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
                       <SocialIconLink
                         href={companyInfo.socialLinks.instagram}
                         label="اینستاگرام"
@@ -255,8 +255,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                               <div className="absolute inset-0 bg-gradient-to-t from-[#001c3d] via-[#001c3d]/60 to-transparent z-10" />
                             </div>
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10 pointer-events-none" />
-                            <div className="relative z-20 mt-auto p-6 sm:p-10 lg:p-12 flex flex-col w-full text-right pointer-events-auto">
-                                <p className="text-3xl sm:text-4xl font-black text-white mb-5 leading-tight">
+                            <div className="relative z-20 mt-auto p-6 sm:p-10 lg:p-12 flex flex-col w-full items-center text-center sm:items-stretch sm:text-right pointer-events-auto">
+                                <p className="text-2xl sm:text-4xl font-black text-white mb-5 leading-tight">
                                   {activeLocation.title || (activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : 'شعبه')}
                                 </p>
                                 <a
@@ -271,7 +271,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                                   href={neshanMapsUrl(activeLocation.address, (activeLocation as any).lat, (activeLocation as any).lng)}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="inline-flex items-center gap-2 self-start mb-6 px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-sm hover:bg-amber-300"
+                                  className="inline-flex items-center gap-2 self-center sm:self-start mb-6 px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-sm hover:bg-amber-300"
                                 >
                                   <MapPin className="w-4 h-4" />
                                   مشاهده روی نقشه نشان

@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LazyImage } from "./LazyImage";
 import { LazyHeroImage } from './LazyHeroImage';
-import { 
-  ChevronLeft, 
-  Building2, 
+import {
+  ChevronLeft,
+  Building2,
   Factory,
   Fan,
   Pill,
@@ -29,6 +29,7 @@ interface HeroProps {
 
 export interface CircleCategoryCard {
   id: ProductCategory;
+  to: string;
   title: string;
   categoryEn: string;
   icon: React.ElementType;
@@ -81,6 +82,7 @@ const Hero: React.FC<HeroProps> = ({
   onOpenAiAssistant,
   children,
 }) => {
+  const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const cardsSectionRef = useRef<HTMLDivElement>(null);
 
@@ -116,7 +118,8 @@ const Hero: React.FC<HeroProps> = ({
 
   const categoryCards: CircleCategoryCard[] = [
     {
-      id: 'heating',
+      id: 'silo',
+      to: '/services/srv-machinery-manufacturing',
       title: 'ماشین‌آلات خوراک',
       categoryEn: 'Feed Machinery',
       icon: Factory,
@@ -129,7 +132,8 @@ const Hero: React.FC<HeroProps> = ({
       bgImage: '/images/service_feed_machinery.webp'
     },
     {
-      id: 'ventilation',
+      id: 'feeding',
+      to: '/products/feeding',
       title: 'تجهیزات مرغداری',
       categoryEn: 'Farm Equipment',
       icon: Fan,
@@ -143,6 +147,7 @@ const Hero: React.FC<HeroProps> = ({
     },
     {
       id: 'cooling',
+      to: '/services/poultry-hall-fitout',
       title: 'سوله و سالن صنعتی',
       categoryEn: 'Turnkey Shed',
       icon: Building2,
@@ -156,6 +161,7 @@ const Hero: React.FC<HeroProps> = ({
     },
     {
       id: 'other',
+      to: '/products/other',
       title: 'خوراک و مکمل',
       categoryEn: 'Feed & Supplements',
       icon: Pill,
@@ -203,16 +209,15 @@ const Hero: React.FC<HeroProps> = ({
             alt="شرکت طیوران صنعت پویا"
             isActive
           />
-          {/* Subtle gradient to ensure text readability but keep image prominent */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/40 to-slate-950/90 z-10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50 z-10" />
-          <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_rgba(2,6,23,0.78)_0%,_rgba(2,6,23,0.45)_48%,_transparent_74%)]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#003F86]/25 via-[#003F86]/35 to-slate-950/75 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#003F86]/30 via-transparent to-[#003F86]/30 z-10" />
+          <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_rgba(0,63,134,0.42)_0%,_rgba(0,63,134,0.18)_48%,_transparent_74%)]" />
         </div>
 
         {/* Minimalist Centered Content */}
         <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-5xl mx-auto w-full mt-[-8vh] sm:mt-[-5vh] hero-fade">
           <div className="relative w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
-            <div className="absolute inset-0 rounded-[2rem] bg-slate-950/70 pointer-events-none" aria-hidden="true" />
+            <div className="absolute inset-0 rounded-[2rem] bg-[#003F86]/45 backdrop-blur-[2px] pointer-events-none" aria-hidden="true" />
             <div className="relative">
           <div className="hero-pill inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-7 border border-amber-300/50 bg-amber-400/15 font-black">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse" />
@@ -309,7 +314,15 @@ const Hero: React.FC<HeroProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 w-full">
                   
                   {categoryCards.map((card, idx) => (
-                    <ServiceCard key={idx} idx={idx} card={card} onClick={() => onSelectCategory(card.id)} />
+                    <ServiceCard
+                      key={idx}
+                      idx={idx}
+                      card={card}
+                      onClick={() => {
+                        if (card.to.startsWith('/products/')) onSelectCategory(card.id);
+                        else navigate(card.to);
+                      }}
+                    />
                   ))}
                 </div>
 
