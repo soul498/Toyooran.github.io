@@ -15,6 +15,16 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-09-24 — برگشت متن مجله به قبل از صف Ready 1–5
+
+- مالک: توسعه
+- فایل‌ها: `src/data/mockData.ts`
+- URLها: `/magazine/how-to-calculate-ventilation-capacity`، `/magazine/comparison-of-heating-systems`، `/magazine/introduction-to-pouya-butterfly-feeder`
+- تغییر: فقط عنوان، خلاصه و بدنهٔ این سه مقاله به متن قبل از `eedfdd3` برگشت. لینک محصول (`ts-*`)، ساختار صفحه، Brief و کامپوننت‌ها دست نخورده‌اند.
+- دلیل/Issue: درخواست برگشت متن‌های عوض‌شده در آن commit
+- Verify: lint
+- نتیجه پس از انتشار: در همین commit
+
 ## 2026-09-22 — Accessibility صفحه اصلی (نام کنترل، کنتراست، heading)
 
 - مالک: توسعه
