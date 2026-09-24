@@ -71,6 +71,12 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   grep -q 'font-src' server.ts || fail "CSP font-src missing"
   redir="$(curl -sI --max-time 5 http://127.0.0.1:3000/services/srv-turnkey-shed | awk 'NR==1{print $2}')"
   test "$redir" = "301" || fail "service alias must 301"
+  nested="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/heating/not-a-page | awk 'NR==1{print $2}')"
+  test "$nested" = "301" || fail "nested category path must 301, got ${nested}"
+  nested_loc="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/heating/not-a-page | awk 'tolower($1)==\"location:\"{print $2}' | tr -d '\r')"
+  echo "$nested_loc" | grep -q '/products/heating$' || fail "nested category must redirect to /products/heating"
+  junk="$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/products/no-such-cat/x || true)"
+  test "$junk" = "404" || fail "unknown nested product path must 404, got ${junk}"
   ok "live HTTP SEO"
 else
   echo "check-seo: skip live HTTP (app not on :3000)"

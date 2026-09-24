@@ -102,6 +102,10 @@ export function decodePathname(pathname: string): string {
   }
 }
 
+export function publicSegments(pathname: string): string[] {
+  return decodePathname(stripQuery(pathname)).split("/").filter(Boolean);
+}
+
 export function canonicalPath(pathname: string): string {
   return `${CANONICAL_ORIGIN}${pathname === "/" ? "/" : pathname}`;
 }
@@ -142,15 +146,35 @@ export function findProduct(slug: string, source: SeoCatalog | Product[]): Produ
 export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | null {
   const path = decodePathname(stripQuery(pathname));
   if (SEO_REDIRECTS[path]) return SEO_REDIRECTS[path];
-  if (path.startsWith("/products/")) {
-    const slug = path.split("/")[2] || "";
-    if (isCategorySlug(slug, catalog)) return null;
+  const parts = publicSegments(path);
+
+  if (parts[0] === "products" && parts.length >= 2) {
+    const slug = parts[1];
+    if (isCategorySlug(slug, catalog)) {
+      const leaf = `/products/${slug}`;
+      return leaf !== path ? leaf : null;
+    }
     const product = findProduct(slug, catalog);
     if (!product) return null;
     const canonical = publicProductPath(product);
-    // Compare decoded forms so percent-encoded Persian slugs are not 301'd to themselves.
-    if (canonical !== path) return canonical;
+    return canonical !== path ? canonical : null;
   }
+
+  if (parts[0] === "services" && parts.length >= 2) {
+    const service = findService(parts[1], catalog);
+    if (!service) return null;
+    const leaf = publicServicePath(service);
+    return leaf !== path ? leaf : null;
+  }
+
+  if (parts[0] === "magazine" && parts.length > 2) {
+    if (catalog.articles.some((a) => a.id === parts[1])) return `/magazine/${parts[1]}`;
+  }
+
+  if (parts[0] === "projects" && parts.length > 2) {
+    if (catalog.projects.some((p) => p.id === parts[1])) return `/projects/${parts[1]}`;
+  }
+
   return null;
 }
 
@@ -400,7 +424,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
     });
   }
 
-  if (path.startsWith("/services/")) {
+  if (path.startsWith("/services/") && publicSegments(path).length === 2) {
     const slug = path.split("/")[2];
     const service = findService(slug, catalog);
     if (service) {
@@ -467,7 +491,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
     });
   }
 
-  if (path.startsWith("/products/")) {
+  if (path.startsWith("/products/") && publicSegments(path).length === 2) {
     const slug = decodePathname(path.split("/")[2] || "");
     const category = categoryMeta(slug, catalog);
     if (category && isCategorySlug(slug, catalog)) {
@@ -551,7 +575,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
     });
   }
 
-  if (path.startsWith("/projects/")) {
+  if (path.startsWith("/projects/") && publicSegments(path).length === 2) {
     const project = catalog.projects.find((p) => p.id === path.split("/")[2]);
     if (project) {
       return okDoc({
@@ -594,7 +618,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
     });
   }
 
-  if (path.startsWith("/magazine/")) {
+  if (path.startsWith("/magazine/") && publicSegments(path).length === 2) {
     const article = catalog.articles.find((a) => a.id === path.split("/")[2]);
     if (article) {
       const relatedService = article.relatedServiceId
@@ -733,23 +757,22 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
 
 export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolean {
   const path = decodePathname(stripQuery(pathname));
+  const parts = publicSegments(path);
   if (["/", "/products", "/services", "/projects", "/magazine", "/about", "/contact", "/rnd", "/admin", "/login", "/dashboard"].includes(path)) {
     return true;
   }
   if (path.startsWith("/admin") || path.startsWith("/login") || path.startsWith("/dashboard") || path.startsWith("/crm")) {
     return true;
   }
-  if (path.startsWith("/magazine/") && catalog.articles.some((a) => a.id === path.split("/")[2])) return true;
-  if (path.startsWith("/products/")) {
-    const slug = path.split("/")[2] || "";
+  if (parts.length !== 2) return false;
+  if (parts[0] === "magazine") return catalog.articles.some((a) => a.id === parts[1]);
+  if (parts[0] === "products") {
+    const slug = parts[1];
     if (isCategorySlug(slug, catalog)) return true;
-    if (catalog.products.some((p) => p.id === slug || p.code === slug || productSeoSlug(p) === slug)) return true;
+    return catalog.products.some((p) => p.id === slug || p.code === slug || productSeoSlug(p) === slug);
   }
-  if (path.startsWith("/services/")) {
-    const slug = path.split("/")[2];
-    if (findService(slug, catalog)) return true;
-  }
-  if (path.startsWith("/projects/") && catalog.projects.some((p) => p.id === path.split("/")[2])) return true;
+  if (parts[0] === "services") return Boolean(findService(parts[1], catalog));
+  if (parts[0] === "projects") return catalog.projects.some((p) => p.id === parts[1]);
   return false;
 }
 
