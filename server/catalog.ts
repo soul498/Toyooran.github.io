@@ -43,7 +43,7 @@ function asCompany(): CompanyInfo {
 export function loadSeoCatalog(): SeoCatalog {
   return {
     products: mergeSeedById<Product>("products", PRODUCTS),
-    services: mergeSeedById<Service>("services", SERVICES),
+    services: overlaySeedOnly<Service>("services", SERVICES),
     projects: mergeSeedById<Project>("projects", PROJECTS),
     articles: overlaySeedOnly<Article>("articles", ARTICLES),
     categories: asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[]),

@@ -4,10 +4,6 @@ import { LazyImage } from "./LazyImage";
 import { LazyHeroImage } from './LazyHeroImage';
 import {
   ChevronLeft,
-  Building2,
-  Factory,
-  Fan,
-  Pill,
   ShieldCheck,
   PhoneCall,
   Package,
@@ -16,6 +12,7 @@ import {
 } from '../icons';
 import { PageSection, ProductCategory } from '../types';
 import { isLiteDevice } from '../lib/device';
+import { LANDING_SERVICE_CARDS } from '../data/landingServiceCards';
 
 interface HeroProps {
   cmsHero?: import('../types').HeroCms;
@@ -116,64 +113,7 @@ const Hero: React.FC<HeroProps> = ({
     }
   };
 
-  const categoryCards: CircleCategoryCard[] = [
-    {
-      id: 'silo',
-      to: '/services/srv-machinery-manufacturing',
-      title: 'ماشین‌آلات خوراک',
-      categoryEn: 'Feed Machinery',
-      icon: Factory,
-      desc: 'پرس پلت، اکسترودر، میکرودایزینگ و آسیاب میکسر',
-      badge: 'کارخانجات خوراک',
-      accentColor: '#003F86',
-      badgeBg: 'bg-blue-50',
-      badgeText: 'text-[#003F86]',
-      specs: ['پرس پلت ۲ الی ۲۰ تن/ساعت', 'میکرودایزینگ دقیق افزودنی‌ها'],
-      bgImage: '/images/service_feed_machinery.webp'
-    },
-    {
-      id: 'feeding',
-      to: '/products/feeding',
-      title: 'تجهیزات مرغداری',
-      categoryEn: 'Farm Equipment',
-      icon: Fan,
-      desc: 'بشقاب پروانه‌ای FDA، آبخوری نیپل و جت هیتر',
-      badge: 'تاییدیه FDA آمریکا',
-      accentColor: '#FF9F14',
-      badgeBg: 'bg-amber-50',
-      badgeText: 'text-amber-700',
-      specs: ['بشقاب پروانه‌ای لیسانس آمریکا', 'جت هیتر و سیستم‌های گرمایشی'],
-      bgImage: '/images/service_farm_equipment.webp'
-    },
-    {
-      id: 'cooling',
-      to: '/services/poultry-hall-fitout',
-      title: 'سوله و سالن صنعتی',
-      categoryEn: 'Turnkey Shed',
-      icon: Building2,
-      desc: 'طراحی، ساخت سازه و تجهیز کامل سالن',
-      badge: 'اجرای صفر تا صد',
-      accentColor: '#003F86',
-      badgeBg: 'bg-emerald-50',
-      badgeText: 'text-emerald-700',
-      specs: ['سازه‌های سبک و بهداشتی', 'عایق‌بندی و هوابندی کامل'],
-      bgImage: '/images/service_turnkey_shed.webp'
-    },
-    {
-      id: 'other',
-      to: '/products/other',
-      title: 'خوراک و مکمل',
-      categoryEn: 'Feed & Supplements',
-      icon: Pill,
-      desc: 'کنسانتره تخصصی، پریمیکس و روغن خام سویا',
-      badge: 'فرمولاسیون علمی',
-      accentColor: '#FF9F14',
-      badgeBg: 'bg-purple-50',
-      badgeText: 'text-purple-700',
-      specs: ['کنسانتره گوشتی و تخم‌گذار', 'پریمیکس دامی و روغن‌های گیاهی'],
-      bgImage: '/images/service_supplements.webp'
-    },
-  ];
+  const categoryCards = LANDING_SERVICE_CARDS;
 
   return (
     <div className="w-full relative min-h-screen bg-slate-950">
@@ -229,7 +169,7 @@ const Hero: React.FC<HeroProps> = ({
           <h1
             className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.15] tracking-tight drop-shadow-2xl mb-6"
           >
-            {cmsHero?.title || 'طیوران صنعت پویا'}
+            تجهیز و نوسازی سالن مرغداری
           </h1>
 
           <p className="text-sm sm:text-base lg:text-xl text-slate-100 leading-relaxed max-w-2xl font-light drop-shadow-lg mb-10 mx-auto">
@@ -289,24 +229,13 @@ const Hero: React.FC<HeroProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           
           {/* Section Title Header */}
-          <div className="w-full mb-6 text-center sm:text-right flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-4">
-            <div>
-              <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60 inline-block mb-1.5">
-                دسته‌بندی تخصصی طیوران صنعت پویا
-              </span>
-              <h2 className="text-xl sm:text-2xl font-black text-[#003F86]">
-                طراحی، ساخت و تجهیز پروژه‌های صنعتی در دام، طیور و آبزیان
-              </h2>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => onNavigate('contact')}
-              className="self-center sm:self-auto text-xs bg-white hover:bg-slate-100 text-[#003F86] font-bold px-4 py-2.5 min-h-11 rounded-xl border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <PhoneCall className="w-4 h-4 text-amber-500" />
-              <span>ارتباط با واحد فروش و مهندسی</span>
-            </button>
+          <div className="w-full mb-6 text-center sm:text-right border-b border-slate-200/80 pb-4">
+            <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60 inline-block mb-1.5">
+              دسته‌بندی تخصصی طیوران صنعت پویا
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-[#003F86]">
+              طراحی، ساخت و تجهیز پروژه‌های صنعتی در دام، طیور و آبزیان
+            </h2>
           </div>
 
           {/* 🎨 Dribbble-Worthy High-Fidelity Magic Cards */}
@@ -318,10 +247,7 @@ const Hero: React.FC<HeroProps> = ({
                       key={idx}
                       idx={idx}
                       card={card}
-                      onClick={() => {
-                        if (card.to.startsWith('/products/')) onSelectCategory(card.id);
-                        else navigate(card.to);
-                      }}
+                      onClick={() => navigate(card.to)}
                     />
                   ))}
                 </div>

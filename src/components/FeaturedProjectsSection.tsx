@@ -16,7 +16,7 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
         subtitle="نمونه‌کارهای تجهیز سالن و خطوط خوراک به‌زودی در این بخش منتشر می‌شود"
       />
       <UnderConstruction
-        title="این بخش در حال بارگزاری هست"
+        title="درحال بارگزاری..."
         description="آرشیو پروژه‌های واقعی در حال آماده‌سازی است. برای بازدید از سالن اجراشده یا دریافت مشخصات فنی، از صفحه تماس درخواست مشاوره بدهید."
       />
     </section>

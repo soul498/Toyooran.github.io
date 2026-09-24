@@ -8,10 +8,10 @@ export const ProjectPage: React.FC<{ onOpenConsultation?: (title: string) => voi
     <div className="min-h-screen bg-blueprint-light">
       <PageBanner
         title="پروژه‌ها"
-        subtitle="این بخش در حال بارگزاری هست"
+        subtitle="درحال بارگزاری..."
       />
       <UnderConstruction
-        title="این بخش در حال بارگزاری هست"
+        title="درحال بارگزاری..."
         description="جزئیات پروژه‌ها به‌زودی منتشر می‌شود. برای مشاوره تجهیز سالن از صفحه تماس اقدام کنید."
       />
       <div className="text-center pb-16">

@@ -1,6 +1,7 @@
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../types";
 import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
+import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
@@ -103,6 +104,11 @@ export function decodePathname(pathname: string): string {
 
 export function canonicalPath(pathname: string): string {
   return `${CANONICAL_ORIGIN}${pathname === "/" ? "/" : pathname}`;
+}
+
+function listedServices(catalog: SeoCatalog): Service[] {
+  const byId = new Map(catalog.services.map((s) => [s.id, s]));
+  return PUBLIC_SERVICE_IDS.map((id) => byId.get(id)).filter((s): s is Service => Boolean(s));
 }
 
 export function publicServicePath(service: Service): string {
@@ -347,8 +353,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path === "/") {
-    const serviceLinks = catalog.services
-      .slice(0, 6)
+    const serviceLinks = listedServices(catalog)
       .map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`)
       .join("");
     return okDoc({
@@ -356,7 +361,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       title: "طیوران صنعت پویا | تجهیز و نوسازی سالن مرغداری",
       description:
         "طراحی، تأمین تجهیزات و اجرای نوسازی سالن مرغداری: تهویه، گرمایش، دانخوری و آبخوری. استعلام فنی از طیوران صنعت پویا.",
-      h1: "طیوران صنعت پویا",
+      h1: "تجهیز و نوسازی سالن مرغداری",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>طیوران صنعت پویا طراحی، تأمین تجهیزات و اجرای نوسازی سالن مرغداری را انجام می‌دهد. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
@@ -382,7 +387,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path === "/services") {
-    const links = catalog.services.map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`).join("");
+    const links = listedServices(catalog).map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`).join("");
     return okDoc({
       path,
       title: "خدمات طراحی و تجهیز مرغداری | طیوران صنعت پویا",
@@ -402,9 +407,9 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       const isFitout = slug === FITOUT_SLUG || service.id === FITOUT_SERVICE_ID;
       const canonicalServicePath = publicServicePath(service);
       const title = isFitout
-        ? "نوسازی و تجهیز کامل سالن مرغداری | طیوران صنعت پویا"
+        ? "تجهیز و نوسازی سالن مرغداری | طیوران صنعت پویا"
         : `${service.title} | طیوران صنعت پویا`;
-      const h1 = isFitout ? "نوسازی و تجهیز کامل سالن مرغداری" : service.title;
+      const h1 = isFitout ? "تجهیز و نوسازی سالن مرغداری" : service.title;
       const description = isFitout
         ? "محاسبه ظرفیت، انتخاب تجهیزات و اجرای نوسازی سالن گوشتی/تخم‌گذار. بازدید و پیشنهاد فنی."
         : service.tagline;

@@ -151,27 +151,27 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
             </p>
             <ul className="space-y-3">
               <li>
-                <Link to="/services" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                <Link to="/services/srv-machinery-manufacturing" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  ماشین‌آلات کارخانجات خوراک
+                  ماشین‌آلات خوراک
                 </Link>
               </li>
               <li>
-                <Link to="/products" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                <Link to="/services/srv-poultry-equipment-supply" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  تجهیزات مدرن مرغداری
+                  تجهیزات مرغداری
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                <Link to="/services/poultry-hall-fitout" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  سازه‌ها و سوله‌های صنعتی
+                  تجهیز و نوسازی سالن مرغداری
                 </Link>
               </li>
               <li>
-                <Link to="/products" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                <Link to="/services/srv-feed-formulation-pharma" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  مواد اولیه و مکمل‌های دارویی
+                  خوراک و مکمل
                 </Link>
               </li>
             </ul>

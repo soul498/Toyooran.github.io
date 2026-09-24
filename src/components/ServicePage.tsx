@@ -15,7 +15,7 @@ export const ServicePage: React.FC<{ onOpenConsultation: (title: string) => void
   const service = services.find((s) => s.id === resolved);
   if (!service) return <NotFoundPage />;
   const isFitout = serviceId === "poultry-hall-fitout" || service.id === "srv-turnkey-shed";
-  const h1 = isFitout ? "نوسازی و تجهیز کامل سالن مرغداری" : service.title;
+  const h1 = isFitout ? "تجهیز و نوسازی سالن مرغداری" : service.title;
   const relatedProjects = projects.filter((p) => service.sampleProjectIds.includes(p.id));
 
   return (

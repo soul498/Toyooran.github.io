@@ -299,6 +299,13 @@ export const PROJECTS: Project[] = [
   }
 ];
 
+export const PUBLIC_SERVICE_IDS = [
+  'srv-machinery-manufacturing',
+  'srv-poultry-equipment-supply',
+  'srv-turnkey-shed',
+  'srv-feed-formulation-pharma',
+] as const;
+
 export const SERVICES: Service[] = [
   {
     id: 'srv-turnkey-shed',
@@ -689,7 +696,7 @@ export const TESTIMONIALS_AND_PROOF = [
 ];
 
 export const DEFAULT_HERO_CMS = {
-  title: 'طیوران صنعت پویا',
+  title: 'تجهیز و نوسازی سالن مرغداری',
   subtitle: 'طراح، مجری و مشاور توسعه و بهره‌برداری پروژه‌های صنعت دام، طیور و آبزیان',
   pillText: 'با نیم قرن تجربه و بیش از ۲۰۰ پروژه ملی و بین‌المللی',
   ctaPrimaryText: 'محصولات و تجهیزات',
