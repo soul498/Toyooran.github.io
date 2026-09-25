@@ -41,30 +41,39 @@ export interface CircleCategoryCard {
 
 
 
-export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void }> = ({ card, idx, onClick }) => {
+export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void }> = ({ card, onClick }) => {
   const Icon = card.icon;
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={`مشاهده جزئیات ${card.title}`}
-      className="relative group w-full h-[320px] sm:h-[360px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 hover:border-blue-500/50 transition-colors cursor-pointer text-right"
+      aria-label={card.title}
+      className="service-card relative w-full h-[280px] sm:h-[320px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 cursor-pointer"
     >
-      <div className="absolute inset-[2px] rounded-[calc(2rem-2px)] bg-[#001c3d] z-10 overflow-hidden flex flex-col p-6">
+      <div className="absolute inset-[2px] rounded-[calc(2rem-2px)] bg-[#001c3d] z-10 overflow-hidden flex flex-col items-center justify-center p-6">
         {card.bgImage && (
-          <div className="absolute inset-0 z-0 opacity-50 pointer-events-none">
-            <LazyImage src={card.bgImage} alt="" className="w-full h-full" imgClassName="w-full h-full object-cover" width={800} height={800} />
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <LazyImage
+              src={card.bgImage}
+              alt=""
+              className="w-full h-full bg-transparent"
+              imgClassName="service-card-photo w-full h-full object-cover opacity-50"
+              width={800}
+              height={800}
+            />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-[#001c3d]/40 via-[#001c3d]/70 to-[#001c3d]/95 z-0 pointer-events-none" />
-        <div className="relative z-20 flex-1 flex flex-col items-center justify-center text-center">
-          <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-4">
+        <div className="service-card-wash absolute inset-0 z-[1] pointer-events-none" />
+        <div className="relative z-20 flex flex-col items-center justify-center text-center px-2">
+          <div className="service-card-icon w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-5">
             <Icon className="w-7 h-7 text-amber-400" aria-hidden="true" />
           </div>
-          <p className="text-lg font-black text-white mb-2">{card.title}</p>
-          <p className="text-xs text-slate-300 leading-relaxed px-2">{card.desc}</p>
+          <p className="service-card-title text-xl sm:text-2xl font-black tracking-tight text-white leading-snug">
+            {card.title}
+          </p>
+          <span className="service-card-rule mt-4 h-[2px] w-12 bg-amber-400 rounded-full" aria-hidden="true" />
         </div>
-        <div className="relative z-20 text-center text-xs font-bold text-amber-300 pb-1">مشاهده جزئیات</div>
       </div>
     </button>
   );
