@@ -169,7 +169,7 @@ const Hero: React.FC<HeroProps> = ({
           <h1
             className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.15] tracking-tight drop-shadow-2xl mb-6"
           >
-            تجهیز و نوسازی سالن مرغداری
+            {cmsHero?.title || 'طیوران صنعت پویا'}
           </h1>
 
           <p className="text-sm sm:text-base lg:text-xl text-slate-100 leading-relaxed max-w-2xl font-light drop-shadow-lg mb-10 mx-auto">
