@@ -113,17 +113,9 @@ export const ArticlesTab: React.FC = () => {
             <span>مجله فنی و پایگاه دانش تخصصی ({articles.length})</span>
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            مدیریت مقالات علمی، راهنماهای تهویه، استانداردهای ضریب تبدیل و آموزش تجهیزات
+            فقط همین هفت موضوع مجله؛ موضوع جدید اضافه نمی‌شود.
           </p>
         </div>
-
-        <button
-          onClick={openCreateModal}
-          className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md transition-all shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>افزودن مقاله جدید</span>
-        </button>
       </div>
 
       {/* Filter and Search */}

@@ -447,7 +447,7 @@ export const SERVICES: Service[] = [
 export const ARTICLES: Article[] = [
   {
     id: 'how-to-calculate-ventilation-capacity',
-    title: 'چگونه ظرفیت تهویه سالن مرغداری را محاسبه کنیم؟ (راهنمای جامع)',
+    title: 'چگونه ظرفیت تهویه سالن را محاسبه کنیم؟',
     category: 'technical-guide',
     categoryLabel: 'راهنمای فنی مهندسی',
     readTime: '۱۲ دقیقه',
@@ -484,7 +484,7 @@ export const ARTICLES: Article[] = [
   },
   {
     id: 'common-mistakes-in-poultry-design',
-    title: '۵ اشتباه رایج در طراحی سالن مرغداری که به قیمت ورشکستگی تمام می‌شود',
+    title: 'اشتباهات رایج در طراحی سالن مرغداری',
     category: 'technical-guide',
     categoryLabel: 'راهنمای فنی مهندسی',
     readTime: '۱۰ دقیقه',
@@ -515,7 +515,7 @@ export const ARTICLES: Article[] = [
   },
   {
     id: 'comparison-of-heating-systems',
-    title: 'مقایسه جامع سیستم‌های گرمایشی: جت هیتر بهتر است یا سیستم تابشی؟',
+    title: 'مقایسه سیستم‌های گرمایشی',
     category: 'technical-guide',
     categoryLabel: 'راهنمای فنی مهندسی',
     readTime: '۱۱ دقیقه',
@@ -547,7 +547,7 @@ export const ARTICLES: Article[] = [
   },
   {
     id: 'introduction-to-pouya-butterfly-feeder',
-    title: 'معرفی جامع دانخوری پروانه‌ای پویا تحت لیسانس آمریکا (استاندارد FDA)',
+    title: 'معرفی دانخوری پروانه‌ای پویا',
     category: 'product-guide',
     categoryLabel: 'معرفی محصول',
     readTime: '۸ دقیقه',
@@ -580,7 +580,7 @@ export const ARTICLES: Article[] = [
   },
   {
     id: 'case-study-implemented-project',
-    title: 'مطالعه موردی: تجهیز صفر تا صد مجتمع گوشتی ۱۰۰ هزار قطعه‌ای در قزوین',
+    title: 'مطالعه موردی یک پروژه اجراشده',
     category: 'case-study',
     categoryLabel: 'مطالعه موردی',
     readTime: '۱۵ دقیقه',
@@ -614,7 +614,7 @@ export const ARTICLES: Article[] = [
   },
   {
     id: 'cost-and-components-of-equipping-a-hall',
-    title: 'تحلیل هزینه و اجزای تجهیز یک سالن مرغداری استاندارد در سال ۱۴۰۳',
+    title: 'هزینه و اجزای تجهیز یک سالن',
     category: 'business',
     categoryLabel: 'اقتصاد و مدیریت',
     readTime: '۱۰ دقیقه',
@@ -641,7 +641,7 @@ export const ARTICLES: Article[] = [
   },
   {
     id: 'before-and-after-renovation',
-    title: 'قبل و بعد از نوسازی یک مرغداری: معجزه مکانیزاسیون در کاهش تلفات',
+    title: 'قبل و بعد از نوسازی یک واحد',
     category: 'case-study',
     categoryLabel: 'مطالعه موردی',
     readTime: '۹ دقیقه',

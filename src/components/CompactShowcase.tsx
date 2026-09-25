@@ -143,7 +143,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
               </div>
               <div>
                 <p className="font-black text-xl text-slate-800 tracking-tight">مجله تخصصی</p>
-                <span className="text-[10px] sm:text-[11px] text-slate-600 font-bold block mt-0.5 uppercase tracking-wider">مقالات و اخبار صنعت</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-600 font-bold block mt-0.5">هفت راهنمای سالن مرغداری</span>
               </div>
             </div>
             <span

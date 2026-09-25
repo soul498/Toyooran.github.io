@@ -32,7 +32,10 @@ import {
 function reconcileMagazineArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored) || !stored.length) return ARTICLES;
   const byId = new Map(stored.filter((item) => item?.id).map((item) => [item.id, item]));
-  return ARTICLES.map((seed) => byId.get(seed.id) ?? seed);
+  return ARTICLES.map((seed) => {
+    const overlay = byId.get(seed.id);
+    return overlay ? { ...overlay, id: seed.id, title: seed.title } : seed;
+  });
 }
 
 interface DataContextType {
@@ -274,16 +277,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Article CRUD
-  const addArticle = (article: Article) => {
-    setArticles(prev => [article, ...prev]);
+  const addArticle = (_article: Article) => {
+    setArticles(ARTICLES);
   };
 
   const updateArticle = (id: string, updated: Partial<Article>) => {
-    setArticles(prev => prev.map(a => (a.id === id ? { ...a, ...updated } : a)));
+    const allowed = new Set(ARTICLES.map((a) => a.id));
+    if (!allowed.has(id)) return;
+    setArticles((prev) => prev.map((a) => (a.id === id ? { ...a, ...updated, id, title: ARTICLES.find((s) => s.id === id)?.title ?? a.title } : a)));
   };
 
-  const deleteArticle = (id: string) => {
-    setArticles(prev => prev.filter(a => a.id !== id));
+  const deleteArticle = (_id: string) => {
+    setArticles(ARTICLES);
   };
 
   // Category CRUD

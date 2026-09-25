@@ -20,12 +20,22 @@ function mergeSeedById<T extends { id: string }>(key: string, seed: T[]): T[] {
   return extras.length ? [...seed, ...extras] : seed;
 }
 
-/** CMS may edit the 7 magazine seeds; extra articles are dropped from SEO catalog. */
 function overlaySeedOnly<T extends { id: string }>(key: string, seed: T[]): T[] {
   const overlay = asArray<T>(key, []);
   if (!overlay.length) return seed;
   const overlayById = new Map(overlay.filter((item) => item?.id).map((item) => [item.id, item]));
   return seed.map((item) => overlayById.get(item.id) ?? item);
+}
+
+/** CMS may edit the 7 magazine seeds; extra articles are dropped. Titles stay on the seed list. */
+function overlayArticles(seed: Article[]): Article[] {
+  const overlay = asArray<Article>("articles", []);
+  if (!overlay.length) return seed;
+  const overlayById = new Map(overlay.filter((item) => item?.id).map((item) => [item.id, item]));
+  return seed.map((item) => {
+    const stored = overlayById.get(item.id);
+    return stored ? { ...stored, id: item.id, title: item.title } : item;
+  });
 }
 
 function asCompany(): CompanyInfo {
@@ -45,7 +55,7 @@ export function loadSeoCatalog(): SeoCatalog {
     products: mergeSeedById<Product>("products", PRODUCTS),
     services: overlaySeedOnly<Service>("services", SERVICES),
     projects: mergeSeedById<Project>("projects", PROJECTS),
-    articles: overlaySeedOnly<Article>("articles", ARTICLES),
+    articles: overlayArticles(ARTICLES),
     categories: asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[]),
     company: asCompany(),
     collectionUpdatedAt: {
