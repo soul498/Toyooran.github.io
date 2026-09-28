@@ -316,7 +316,7 @@ async function startServer() {
         maxAge: "7d",
         setHeaders(res, filePath) {
           if (/[/\\]images[/\\]/.test(filePath)) {
-            res.setHeader("Cache-Control", "public, max-age=604800");
+            res.setHeader("Cache-Control", "public, max-age=3600, must-revalidate");
             return;
           }
           if (/\.(webp|avif|jpg|jpeg|png|svg|woff2)$/i.test(filePath)) {

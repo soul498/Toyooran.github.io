@@ -3,6 +3,7 @@ import { Product } from '../types';
 export const PRODUCTS: Product[] = [
   {
     "id": "ts-001",
+    "isFeatured": true,
     "code": "TS-001",
     "name": "هیتر گازی انرژی مدل GH 0625",
     "nameEn": "",
@@ -53,12 +54,13 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-001"
+      "TS-001"
     ],
     "catalogPdfName": "Catalog_TS-001.pdf"
   },
   {
     "id": "ts-002",
+    "isFeatured": true,
     "code": "TS-002",
     "name": "فن سیرکوله صنعتی کولاک گستر (KGY Circulation Fan)",
     "nameEn": "",
@@ -100,12 +102,13 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-002"
+      "TS-002"
     ],
     "catalogPdfName": "Catalog_TS-002.pdf"
   },
   {
     "id": "ts-003",
+    "isFeatured": true,
     "code": "TS-003",
     "name": "هیتر ایستاده صنعتی کولاک گستر مدل ECO300",
     "nameEn": "",
@@ -151,12 +154,13 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-003"
+      "TS-003"
     ],
     "catalogPdfName": "Catalog_TS-003.pdf"
   },
   {
     "id": "ts-004",
+    "isFeatured": true,
     "code": "TS-004",
     "name": "هیتر ایستاده صنعتی کولاک گستر مدل ECO250 (سه‌فاز)",
     "nameEn": "",
@@ -194,7 +198,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-004"
+      "TS-004"
     ],
     "catalogPdfName": "Catalog_TS-004.pdf"
   },
@@ -241,7 +245,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-005"
+      "TS-005"
     ],
     "catalogPdfName": "Catalog_TS-005.pdf"
   },
@@ -284,7 +288,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-006"
+      "TS-006"
     ],
     "catalogPdfName": "Catalog_TS-006.pdf"
   },
@@ -327,7 +331,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-007"
+      "TS-007"
     ],
     "catalogPdfName": "Catalog_TS-007.pdf"
   },
@@ -370,7 +374,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-008"
+      "TS-008"
     ],
     "catalogPdfName": "Catalog_TS-008.pdf"
   },
@@ -421,7 +425,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-009"
+      "TS-009"
     ],
     "catalogPdfName": "Catalog_TS-009.pdf"
   },
@@ -472,7 +476,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-010"
+      "TS-010"
     ],
     "catalogPdfName": "Catalog_TS-010.pdf"
   },
@@ -519,7 +523,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-011"
+      "TS-011"
     ],
     "catalogPdfName": "Catalog_TS-011.pdf"
   },
@@ -567,7 +571,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-012"
+      "TS-012"
     ],
     "catalogPdfName": "Catalog_TS-012.pdf"
   },
@@ -610,7 +614,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-013"
+      "TS-013"
     ],
     "catalogPdfName": "Catalog_TS-013.pdf",
     "relatedArticleIds": ["introduction-to-pouya-butterfly-feeder"]
@@ -650,7 +654,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-014"
+      "TS-014"
     ],
     "catalogPdfName": "Catalog_TS-014.pdf"
   },
@@ -689,7 +693,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-015"
+      "TS-015"
     ],
     "catalogPdfName": "Catalog_TS-015.pdf"
   },
@@ -732,7 +736,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-016"
+      "TS-016"
     ],
     "catalogPdfName": "Catalog_TS-016.pdf"
   },
@@ -779,7 +783,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-017"
+      "TS-017"
     ],
     "catalogPdfName": "Catalog_TS-017.pdf"
   },
@@ -822,7 +826,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-018"
+      "TS-018"
     ],
     "catalogPdfName": "Catalog_TS-018.pdf"
   },
@@ -861,7 +865,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-019"
+      "TS-019"
     ],
     "catalogPdfName": "Catalog_TS-019.pdf"
   },
@@ -899,7 +903,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-020"
+      "TS-020"
     ],
     "catalogPdfName": "Catalog_TS-020.pdf"
   },
@@ -938,7 +942,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-021"
+      "TS-021"
     ],
     "catalogPdfName": "Catalog_TS-021.pdf"
   },
@@ -972,7 +976,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-022"
+      "TS-022"
     ],
     "catalogPdfName": "Catalog_TS-022.pdf"
   },
@@ -1011,7 +1015,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-023"
+      "TS-023"
     ],
     "catalogPdfName": "Catalog_TS-023.pdf"
   },
@@ -1062,7 +1066,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-024"
+      "TS-024"
     ],
     "catalogPdfName": "Catalog_TS-024.pdf"
   },
@@ -1105,7 +1109,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-025"
+      "TS-025"
     ],
     "catalogPdfName": "Catalog_TS-025.pdf"
   },
@@ -1152,7 +1156,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-026"
+      "TS-026"
     ],
     "catalogPdfName": "Catalog_TS-026.pdf"
   },
@@ -1195,7 +1199,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-027"
+      "TS-027"
     ],
     "catalogPdfName": "Catalog_TS-027.pdf"
   },
@@ -1238,7 +1242,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-028"
+      "TS-028"
     ],
     "catalogPdfName": "Catalog_TS-028.pdf"
   },
@@ -1285,7 +1289,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-029"
+      "TS-029"
     ],
     "catalogPdfName": "Catalog_TS-029.pdf"
   },
@@ -1332,7 +1336,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-030"
+      "TS-030"
     ],
     "catalogPdfName": "Catalog_TS-030.pdf"
   },
@@ -1375,7 +1379,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-031"
+      "TS-031"
     ],
     "catalogPdfName": "Catalog_TS-031.pdf"
   },
@@ -1414,7 +1418,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-032"
+      "TS-032"
     ],
     "catalogPdfName": "Catalog_TS-032.pdf"
   },
@@ -1457,7 +1461,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-033"
+      "TS-033"
     ],
     "catalogPdfName": "Catalog_TS-033.pdf"
   },
@@ -1495,7 +1499,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-034"
+      "TS-034"
     ],
     "catalogPdfName": "Catalog_TS-034.pdf"
   },
@@ -1534,7 +1538,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-035"
+      "TS-035"
     ],
     "catalogPdfName": "Catalog_TS-035.pdf"
   },
@@ -1573,7 +1577,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-036"
+      "TS-036"
     ],
     "catalogPdfName": "Catalog_TS-036.pdf"
   },
@@ -1616,7 +1620,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-037"
+      "TS-037"
     ],
     "catalogPdfName": "Catalog_TS-037.pdf"
   },
@@ -1655,7 +1659,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-038"
+      "TS-038"
     ],
     "catalogPdfName": "Catalog_TS-038.pdf"
   },
@@ -1698,7 +1702,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-039"
+      "TS-039"
     ],
     "catalogPdfName": "Catalog_TS-039.pdf"
   },
@@ -1745,7 +1749,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-040"
+      "TS-040"
     ],
     "catalogPdfName": "Catalog_TS-040.pdf"
   },
@@ -1788,7 +1792,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-041"
+      "TS-041"
     ],
     "catalogPdfName": "Catalog_TS-041.pdf"
   },
@@ -1827,7 +1831,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-042"
+      "TS-042"
     ],
     "catalogPdfName": "Catalog_TS-042.pdf"
   },
@@ -1870,7 +1874,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-043"
+      "TS-043"
     ],
     "catalogPdfName": "Catalog_TS-043.pdf"
   },
@@ -1913,7 +1917,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-044"
+      "TS-044"
     ],
     "catalogPdfName": "Catalog_TS-044.pdf"
   },
@@ -1956,7 +1960,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-045"
+      "TS-045"
     ],
     "catalogPdfName": "Catalog_TS-045.pdf"
   },
@@ -2003,7 +2007,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-046"
+      "TS-046"
     ],
     "catalogPdfName": "Catalog_TS-046.pdf"
   },
@@ -2042,7 +2046,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-047"
+      "TS-047"
     ],
     "catalogPdfName": "Catalog_TS-047.pdf"
   },
@@ -2085,7 +2089,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-048"
+      "TS-048"
     ],
     "catalogPdfName": "Catalog_TS-048.pdf"
   },
@@ -2128,7 +2132,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-049"
+      "TS-049"
     ],
     "catalogPdfName": "Catalog_TS-049.pdf"
   },
@@ -2171,7 +2175,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-050"
+      "TS-050"
     ],
     "catalogPdfName": "Catalog_TS-050.pdf"
   },
@@ -2214,7 +2218,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-051"
+      "TS-051"
     ],
     "catalogPdfName": "Catalog_TS-051.pdf"
   },
@@ -2253,7 +2257,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-052"
+      "TS-052"
     ],
     "catalogPdfName": "Catalog_TS-052.pdf"
   },
@@ -2292,7 +2296,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-053"
+      "TS-053"
     ],
     "catalogPdfName": "Catalog_TS-053.pdf"
   },
@@ -2331,7 +2335,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-054"
+      "TS-054"
     ],
     "catalogPdfName": "Catalog_TS-054.pdf"
   },
@@ -2374,7 +2378,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-055"
+      "TS-055"
     ],
     "catalogPdfName": "Catalog_TS-055.pdf"
   },
@@ -2413,7 +2417,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-056"
+      "TS-056"
     ],
     "catalogPdfName": "Catalog_TS-056.pdf"
   },
@@ -2452,7 +2456,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-057"
+      "TS-057"
     ],
     "catalogPdfName": "Catalog_TS-057.pdf"
   },
@@ -2495,7 +2499,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-058"
+      "TS-058"
     ],
     "catalogPdfName": "Catalog_TS-058.pdf"
   },
@@ -2538,7 +2542,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-059"
+      "TS-059"
     ],
     "catalogPdfName": "Catalog_TS-059.pdf"
   },
@@ -2581,7 +2585,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-060"
+      "TS-060"
     ],
     "catalogPdfName": "Catalog_TS-060.pdf"
   },
@@ -2624,7 +2628,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-061"
+      "TS-061"
     ],
     "catalogPdfName": "Catalog_TS-061.pdf"
   },
@@ -2671,7 +2675,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-062"
+      "TS-062"
     ],
     "catalogPdfName": "Catalog_TS-062.pdf"
   },
@@ -2714,7 +2718,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-063"
+      "TS-063"
     ],
     "catalogPdfName": "Catalog_TS-063.pdf"
   },
@@ -2757,7 +2761,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-064"
+      "TS-064"
     ],
     "catalogPdfName": "Catalog_TS-064.pdf"
   },
@@ -2804,7 +2808,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-065"
+      "TS-065"
     ],
     "catalogPdfName": "Catalog_TS-065.pdf"
   },
@@ -2847,7 +2851,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-066"
+      "TS-066"
     ],
     "catalogPdfName": "Catalog_TS-066.pdf"
   },
@@ -2886,7 +2890,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-067"
+      "TS-067"
     ],
     "catalogPdfName": "Catalog_TS-067.pdf"
   },
@@ -2925,7 +2929,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-068"
+      "TS-068"
     ],
     "catalogPdfName": "Catalog_TS-068.pdf"
   },
@@ -2964,7 +2968,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-069"
+      "TS-069"
     ],
     "catalogPdfName": "Catalog_TS-069.pdf"
   },
@@ -3007,7 +3011,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-070"
+      "TS-070"
     ],
     "catalogPdfName": "Catalog_TS-070.pdf"
   },
@@ -3046,7 +3050,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-071"
+      "TS-071"
     ],
     "catalogPdfName": "Catalog_TS-071.pdf"
   },
@@ -3089,7 +3093,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-072"
+      "TS-072"
     ],
     "catalogPdfName": "Catalog_TS-072.pdf"
   },
@@ -3135,7 +3139,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-073"
+      "TS-073"
     ],
     "catalogPdfName": "Catalog_TS-073.pdf"
   },
@@ -3182,7 +3186,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-074"
+      "TS-074"
     ],
     "catalogPdfName": "Catalog_TS-074.pdf"
   },
@@ -3224,7 +3228,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-075"
+      "TS-075"
     ],
     "catalogPdfName": "Catalog_TS-075.pdf"
   },
@@ -3266,7 +3270,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-076"
+      "TS-076"
     ],
     "catalogPdfName": "Catalog_TS-076.pdf"
   },
@@ -3308,7 +3312,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-077"
+      "TS-077"
     ],
     "catalogPdfName": "Catalog_TS-077.pdf"
   },
@@ -3350,7 +3354,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-078"
+      "TS-078"
     ],
     "catalogPdfName": "Catalog_TS-078.pdf"
   },
@@ -3396,7 +3400,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-079"
+      "TS-079"
     ],
     "catalogPdfName": "Catalog_TS-079.pdf"
   },
@@ -3442,7 +3446,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-080"
+      "TS-080"
     ],
     "catalogPdfName": "Catalog_TS-080.pdf"
   },
@@ -3476,7 +3480,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-081"
+      "TS-081"
     ],
     "catalogPdfName": "Catalog_TS-081.pdf"
   },
@@ -3519,7 +3523,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-082"
+      "TS-082"
     ],
     "catalogPdfName": "Catalog_TS-082.pdf"
   },
@@ -3562,7 +3566,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-083"
+      "TS-083"
     ],
     "catalogPdfName": "Catalog_TS-083.pdf"
   },
@@ -3600,7 +3604,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-084"
+      "TS-084"
     ],
     "catalogPdfName": "Catalog_TS-084.pdf"
   },
@@ -3643,7 +3647,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-085"
+      "TS-085"
     ],
     "catalogPdfName": "Catalog_TS-085.pdf"
   },
@@ -3686,7 +3690,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-086"
+      "TS-086"
     ],
     "catalogPdfName": "Catalog_TS-086.pdf"
   },
@@ -3725,7 +3729,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-087"
+      "TS-087"
     ],
     "catalogPdfName": "Catalog_TS-087.pdf"
   },
@@ -3764,7 +3768,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-088"
+      "TS-088"
     ],
     "catalogPdfName": "Catalog_TS-088.pdf"
   },
@@ -3798,7 +3802,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-089"
+      "TS-089"
     ],
     "catalogPdfName": "Catalog_TS-089.pdf"
   },
@@ -3841,7 +3845,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-090"
+      "TS-090"
     ],
     "catalogPdfName": "Catalog_TS-090.pdf"
   },
@@ -3880,7 +3884,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-091"
+      "TS-091"
     ],
     "catalogPdfName": "Catalog_TS-091.pdf"
   },
@@ -3914,7 +3918,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-092"
+      "TS-092"
     ],
     "catalogPdfName": "Catalog_TS-092.pdf"
   },
@@ -3952,7 +3956,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-093"
+      "TS-093"
     ],
     "catalogPdfName": "Catalog_TS-093.pdf"
   },
@@ -3986,7 +3990,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-094"
+      "TS-094"
     ],
     "catalogPdfName": "Catalog_TS-094.pdf"
   },
@@ -4025,7 +4029,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-095"
+      "TS-095"
     ],
     "catalogPdfName": "Catalog_TS-095.pdf"
   },
@@ -4059,7 +4063,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-096"
+      "TS-096"
     ],
     "catalogPdfName": "Catalog_TS-096.pdf"
   },
@@ -4093,7 +4097,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-097"
+      "TS-097"
     ],
     "catalogPdfName": "Catalog_TS-097.pdf"
   },
@@ -4132,7 +4136,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-098"
+      "TS-098"
     ],
     "catalogPdfName": "Catalog_TS-098.pdf"
   },
@@ -4171,7 +4175,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-099"
+      "TS-099"
     ],
     "catalogPdfName": "Catalog_TS-099.pdf"
   },
@@ -4205,7 +4209,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-100"
+      "TS-100"
     ],
     "catalogPdfName": "Catalog_TS-100.pdf"
   },
@@ -4239,7 +4243,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-101"
+      "TS-101"
     ],
     "catalogPdfName": "Catalog_TS-101.pdf"
   },
@@ -4273,7 +4277,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-102"
+      "TS-102"
     ],
     "catalogPdfName": "Catalog_TS-102.pdf"
   },
@@ -4316,7 +4320,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-103"
+      "TS-103"
     ],
     "catalogPdfName": "Catalog_TS-103.pdf"
   },
@@ -4359,7 +4363,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-104"
+      "TS-104"
     ],
     "catalogPdfName": "Catalog_TS-104.pdf"
   },
@@ -4397,7 +4401,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-105"
+      "TS-105"
     ],
     "catalogPdfName": "Catalog_TS-105.pdf"
   },
@@ -4439,7 +4443,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-106"
+      "TS-106"
     ],
     "catalogPdfName": "Catalog_TS-106.pdf"
   },
@@ -4477,7 +4481,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-107"
+      "TS-107"
     ],
     "catalogPdfName": "Catalog_TS-107.pdf"
   },
@@ -4524,7 +4528,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-108"
+      "TS-108"
     ],
     "catalogPdfName": "Catalog_TS-108.pdf"
   },
@@ -4567,7 +4571,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-109"
+      "TS-109"
     ],
     "catalogPdfName": "Catalog_TS-109.pdf"
   },
@@ -4610,7 +4614,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-110"
+      "TS-110"
     ],
     "catalogPdfName": "Catalog_TS-110.pdf"
   },
@@ -4649,7 +4653,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-111"
+      "TS-111"
     ],
     "catalogPdfName": "Catalog_TS-111.pdf"
   },
@@ -4687,7 +4691,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-112"
+      "TS-112"
     ],
     "catalogPdfName": "Catalog_TS-112.pdf"
   },
@@ -4730,7 +4734,7 @@ export const PRODUCTS: Product[] = [
       }
     ],
     "models": [
-      "KT-113"
+      "TS-113"
     ],
     "catalogPdfName": "Catalog_TS-113.pdf"
   }

@@ -1,5 +1,5 @@
 /** Bump when replacing files under /images (especially product WebP). */
-export const MEDIA_VERSION = "b7c574633f";
+export const MEDIA_VERSION = "p4img-20260928";
 
 export function withMediaVersion(src: string | undefined | null): string {
   if (!src) return "";
