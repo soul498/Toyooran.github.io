@@ -17,7 +17,10 @@ grep -q 'CANONICAL_ORIGIN = "https://www.toyooran.com"' src/seo/resolveSeo.ts ||
 grep -q 'injectSeoTags' server.ts || fail "injectSeoTags not used in server.ts"
 grep -q 'seo-prerender' server/seo.ts || fail "prerender block missing"
 grep -q 'Disallow: /admin' server/seo.ts || fail "robots admin disallow missing"
+grep -q 'Disallow: /crm' server/seo.ts || fail "robots crm disallow missing"
 grep -q 'Disallow: /api/' server/seo.ts || fail "robots api disallow missing"
+grep -q 'isPrivateAppPath' server/seo.ts || fail "private path helper missing"
+grep -q 'X-Robots-Tag' server.ts || fail "X-Robots-Tag missing on HTML responses"
 grep -q 'lang="fa-IR"' index.html || fail "index.html lang"
 grep -q 'name="viewport"' index.html || fail "index.html viewport"
 grep -q 'id="root"' index.html || fail "index.html #root"
@@ -40,11 +43,27 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   echo "$html" | grep -q 'GTM-5Q5PWTTK' || fail "live HTML missing GTM container"
   robots="$(curl_id http://127.0.0.1:3000/robots.txt)"
   echo "$robots" | grep -q 'Disallow: /admin' || fail "live robots"
+  echo "$robots" | grep -q 'Disallow: /crm' || fail "live robots missing /crm"
+  gpt_block="$(echo "$robots" | awk 'BEGIN{p=0} /^User-agent: GPTBot/{p=1} p&&/^User-agent:/&&!/GPTBot/{p=0} p')"
+  echo "$gpt_block" | grep -q 'Disallow: /admin' || fail "GPTBot must disallow /admin"
+  echo "$gpt_block" | grep -q 'Disallow: /crm' || fail "GPTBot must disallow /crm"
   sitemap="$(curl_id http://127.0.0.1:3000/sitemap.xml)"
   echo "$sitemap" | grep -q 'www.toyooran.com' || fail "live sitemap"
   echo "$sitemap" | grep -q '/rnd' || fail "sitemap missing /rnd"
   echo "$sitemap" | grep -q 'poultry-hall-fitout' || fail "sitemap missing fitout slug"
   if echo "$sitemap" | grep -q 'srv-turnkey-shed'; then fail "sitemap still has non-canonical service id"; fi
+  if echo "$sitemap" | grep -Eq '/admin|/crm'; then fail "sitemap must not list /admin or /crm"; fi
+  for private_path in /admin /crm; do
+    code="$(curl -sS --max-time 5 -D /tmp/seo-private.hdr -o /tmp/seo-private.html -w '%{http_code}' -H 'Accept-Encoding: identity' "http://127.0.0.1:3000${private_path}" || true)"
+    test "$code" = "200" || fail "${private_path} should stay 200 for the private app, got ${code}"
+    grep -qi 'X-Robots-Tag: noindex' /tmp/seo-private.hdr || fail "${private_path} missing X-Robots-Tag"
+    grep -q 'noindex' /tmp/seo-private.html || fail "${private_path} missing noindex"
+    if grep -q 'rel="canonical"' /tmp/seo-private.html; then fail "${private_path} must not have canonical"; fi
+    if grep -q 'application/ld+json' /tmp/seo-private.html; then fail "${private_path} must not have JSON-LD"; fi
+    if grep -q 'seo-prerender' /tmp/seo-private.html; then fail "${private_path} must not prerender public content"; fi
+    if grep -q 'property="og:url"' /tmp/seo-private.html; then fail "${private_path} must not leak og:url"; fi
+  done
+  echo "$html" | grep -q 'index, follow' || fail "homepage must remain indexable"
   code404="$(curl -sS --max-time 5 -H 'Accept-Encoding: identity' -o /tmp/seo-404.html -w '%{http_code}' http://127.0.0.1:3000/this-page-does-not-exist-seo || true)"
   test "$code404" = "404" || fail "unknown path must 404"
   grep -q 'noindex' /tmp/seo-404.html || fail "404 missing noindex"

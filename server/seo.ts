@@ -9,9 +9,10 @@ import {
   seoRedirectFor,
   sitemapEntries,
   stripQuery,
+  isPrivateAppPath,
 } from "../src/seo/resolveSeo";
 
-export { CANONICAL_ORIGIN, stripQuery, canonicalPath, resolveSeo, seoRedirectFor, llmsTxt };
+export { CANONICAL_ORIGIN, stripQuery, canonicalPath, resolveSeo, seoRedirectFor, llmsTxt, isPrivateAppPath };
 
 export function isKnownPublicPath(pathname: string): boolean {
   return isKnownWithCatalog(pathname, loadSeoCatalog());
@@ -29,6 +30,12 @@ function ensureViewport(html: string): string {
   return html.replace("<head>", `<head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />`);
 }
 
+function stripSocialMeta(html: string): string {
+  return html
+    .replace(/<meta[^>]*(?:property|name)="(?:og|twitter):[^"]*"[^>]*>\s*/gi, "")
+    .replace(/<link[^>]*rel="canonical"[^>]*>\s*/gi, "");
+}
+
 export function injectSeoTags(html: string, reqPath: string): string {
   const path = stripQuery(reqPath);
   const doc = resolveSeo(path, loadSeoCatalog());
@@ -44,6 +51,16 @@ export function injectSeoTags(html: string, reqPath: string): string {
   } else {
     out = out.replace("</head>", `  <meta name="description" content="${escapeHtml(doc.description)}" />\n  </head>`);
   }
+
+  if (isPrivateAppPath(path)) {
+    out = stripSocialMeta(out);
+    const privateMeta = `    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="googlebot" content="noindex, nofollow, noarchive" />
+`;
+    out = out.replace("</head>", `${privateMeta}  </head>`);
+    return out;
+  }
+
   const robots = `    <meta name="robots" content="${doc.robots}" />\n`;
   const canonical = doc.canonicalHref
     ? `    <link rel="canonical" href="${doc.canonicalHref}" />\n`
@@ -75,26 +92,35 @@ ${robots}${jsonLd}`;
   return out;
 }
 
-export function robotsTxt(): string {
-  return `User-agent: *
-Allow: /
-Disallow: /admin
+function robotsPrivateDisallows(): string {
+  return `Disallow: /admin
 Disallow: /login
 Disallow: /dashboard
 Disallow: /crm
-Disallow: /api/
+Disallow: /api/`;
+}
+
+export function robotsTxt(): string {
+  const disallows = robotsPrivateDisallows();
+  return `User-agent: *
+Allow: /
+${disallows}
 
 User-agent: GPTBot
 Allow: /
+${disallows}
 
 User-agent: OAI-SearchBot
 Allow: /
+${disallows}
 
 User-agent: Claude-SearchBot
 Allow: /
+${disallows}
 
 User-agent: PerplexityBot
 Allow: /
+${disallows}
 
 Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml
 # AI/citation: ${CANONICAL_ORIGIN}/llms.txt

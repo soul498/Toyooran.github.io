@@ -110,6 +110,13 @@ export function canonicalPath(pathname: string): string {
   return `${CANONICAL_ORIGIN}${pathname === "/" ? "/" : pathname}`;
 }
 
+export const PRIVATE_APP_PREFIXES = ["/admin", "/login", "/dashboard", "/crm", "/api"] as const;
+
+export function isPrivateAppPath(pathname: string): boolean {
+  const path = decodePathname(stripQuery(pathname));
+  return PRIVATE_APP_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+}
+
 function listedServices(catalog: SeoCatalog): Service[] {
   const byId = new Map(catalog.services.map((s) => [s.id, s]));
   return PUBLIC_SERVICE_IDS.map((id) => byId.get(id)).filter((s): s is Service => Boolean(s));
@@ -362,16 +369,15 @@ function okDoc(partial: Omit<SeoDoc, "robots" | "canonicalHref"> & { path: strin
 export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   const path = decodePathname(stripQuery(pathname));
   const company = catalog.company;
-  const privatePrefixes = ["/admin", "/login", "/dashboard", "/crm"];
-  if (privatePrefixes.some((p) => path === p || path.startsWith(`${p}/`))) {
+  if (isPrivateAppPath(path)) {
     return {
       title: "ورود مدیریت | طیوران صنعت پویا",
       description: "بخش خصوصی سامانه طیوران صنعت پویا.",
       h1: "ورود مدیریت",
       ogType: "website",
-      body: "<p>این مسیر عمومی نیست.</p>",
+      body: "",
       jsonLd: [],
-      robots: "noindex, nofollow",
+      robots: "noindex, nofollow, noarchive",
       canonicalHref: null,
     };
   }
@@ -729,19 +735,6 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
     });
   }
 
-  if (path === "/crm" || path.startsWith("/crm/")) {
-    return {
-      title: "سامانه CRM | طیوران صنعت پویا",
-      description: "سامانه داخلی مدیریت ارتباط با مشتریان طیوران صنعت پویا.",
-      h1: "سامانه CRM",
-      ogType: "website",
-      body: "",
-      jsonLd: [],
-      robots: "noindex, nofollow",
-      canonicalHref: null,
-    };
-  }
-
   if (path === "/rnd") {
     return okDoc({
       path,
@@ -803,7 +796,7 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
   ];
   const seen = new Set(urls.map((u) => u.loc));
   const add = (loc: string, priority: string, lastmod?: string) => {
-    if (seen.has(loc)) return;
+    if (isPrivateAppPath(loc) || seen.has(loc)) return;
     seen.add(loc);
     urls.push({ loc, priority, lastmod });
   };

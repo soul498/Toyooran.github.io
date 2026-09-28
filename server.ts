@@ -6,7 +6,7 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, publicTurnstileSiteKey, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
-import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, llmsTxt, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
+import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxt, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
 import { loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
 import { gzipResponses } from "./server/gzip";
@@ -278,12 +278,20 @@ async function startServer() {
         
         const finalHtml = injectSeoTags(template, url);
         const isKnownRoute = isKnownPublicPath(url);
-        if (!isKnownRoute && url !== '/') {
-           res.status(404).set({ 'Content-Type': 'text/html', 'Cache-Control': 'no-store' }).end(finalHtml);
-           return;
+        const headers: Record<string, string> = { "Content-Type": "text/html" };
+        if (!isKnownRoute && url !== "/") {
+          headers["Cache-Control"] = "no-store";
+          headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+          res.status(404).set(headers).end(finalHtml);
+          return;
         }
-
-        res.status(200).set({ 'Content-Type': 'text/html', 'Cache-Control': 'public, max-age=120, s-maxage=600, stale-while-revalidate=86400' }).end(finalHtml);
+        if (isPrivateAppPath(url)) {
+          headers["Cache-Control"] = "no-store";
+          headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+        } else {
+          headers["Cache-Control"] = "public, max-age=120, s-maxage=600, stale-while-revalidate=86400";
+        }
+        res.status(200).set(headers).end(finalHtml);
       } catch (e: any) {
         vite.ssrFixStacktrace(e);
         next(e);
@@ -324,12 +332,20 @@ async function startServer() {
       let template = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
       const finalHtml = injectSeoTags(template, url);
       const isKnownRoute = isKnownPublicPath(url);
-      if (!isKnownRoute && url !== '/') {
-         res.status(404).set({ 'Content-Type': 'text/html', 'Cache-Control': 'no-store' }).send(finalHtml);
-         return;
+      const headers: Record<string, string> = { "Content-Type": "text/html" };
+      if (!isKnownRoute && url !== "/") {
+        headers["Cache-Control"] = "no-store";
+        headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+        res.status(404).set(headers).send(finalHtml);
+        return;
       }
-
-      res.status(200).set({ 'Content-Type': 'text/html', 'Cache-Control': 'public, max-age=120, s-maxage=600, stale-while-revalidate=86400' }).send(finalHtml);
+      if (isPrivateAppPath(url)) {
+        headers["Cache-Control"] = "no-store";
+        headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+      } else {
+        headers["Cache-Control"] = "public, max-age=120, s-maxage=600, stale-while-revalidate=86400";
+      }
+      res.status(200).set(headers).send(finalHtml);
     });
   }
 
