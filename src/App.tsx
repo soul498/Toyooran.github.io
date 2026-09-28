@@ -163,13 +163,9 @@ const MainAppInner: React.FC = () => {
     return (
       <Suspense fallback={<div className="min-h-screen bg-slate-950" dir="rtl" />}>
         {isAuthenticated ? (
-          <CrmApp
-            standalone
-            onBackToAdmin={() => navigate('/admin')}
-            onViewPublicSite={navigateToPublic}
-          />
+          <CrmApp />
         ) : (
-          <AdminLogin onBackToSite={navigateToPublic} />
+          <AdminLogin mode="crm" />
         )}
       </Suspense>
     );

@@ -16,10 +16,11 @@ import { useData } from '../context/DataContext';
 import { Turnstile } from '@marsidev/react-turnstile';
 
 interface AdminLoginProps {
-  onBackToSite: () => void;
+  onBackToSite?: () => void;
+  mode?: 'admin' | 'crm';
 }
 
-export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
+export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'admin' }) => {
   const { login, verifyMfa } = useData();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -66,11 +67,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
     }
   };
 
-  const handleQuickFill = (user: string, pass: string) => {
-    setUsername(user);
-    setPassword(pass);
-    setError(null);
-  };
+  const isCrm = mode === 'crm';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#00224B] to-slate-950 text-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden font-['Estedad',sans-serif]" dir="rtl">
@@ -82,7 +79,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
       <div className="absolute top-1/4 -right-20 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Return to Public Site Button */}
+      {onBackToSite ? (
       <div className="absolute top-6 right-6 z-20">
         <button
           onClick={onBackToSite}
@@ -92,6 +89,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
           <span>بازگشت به سایت عمومی</span>
         </button>
       </div>
+      ) : null}
 
       <div className="w-full max-w-md relative z-10">
         
@@ -108,7 +106,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
             طیوران صنعت پویا
           </h1>
           <p className="text-xs sm:text-sm text-blue-200/80 font-medium mt-1">
-            سامانه مدیریت جامع و اختصاصی محتوا (Admin CMS)
+            {isCrm ? 'سامانه فروش و ارتباط با مشتریان' : 'سامانه مدیریت جامع و اختصاصی محتوا (Admin CMS)'}
           </p>
         </div>
 
@@ -118,11 +116,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
           <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-amber-400" />
-              <span className="text-sm font-bold text-white">ورود به پنل راهبری</span>
+              <span className="text-sm font-bold text-white">{isCrm ? 'ورود کارشناسان فروش' : 'ورود به پنل راهبری'}</span>
             </div>
+            {isCrm ? null : (
             <span className="text-[11px] bg-blue-500/10 text-blue-300 border border-blue-500/20 px-2.5 py-0.5 rounded-full font-mono font-medium">
               V3.0 SECURE
             </span>
+            )}
           </div>
 
           {error && (
@@ -185,7 +185,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite }) => {
               ) : (
                 <>
                   <LogIn className="w-4 h-4" />
-                  <span>ورود به پنل مدیریت</span>
+                  <span>{isCrm ? 'ورود به CRM' : 'ورود به پنل مدیریت'}</span>
                 </>
               )}
             </button>

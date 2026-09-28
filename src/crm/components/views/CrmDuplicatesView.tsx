@@ -42,9 +42,9 @@ export const CrmDuplicatesView: React.FC = () => {
             <CopyCheck className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white">اسکن و پاک‌سازی هوشمند مخاطبان تکراری</h3>
+            <h3 className="text-sm font-bold text-white">شماره‌های تکراری</h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              سیستم به صورت خودکار شماره‌های تلفن را فارغ از فرمت ذخیره‌سازی (+98، 0098، فاصله‌ها) ارزیابی کرده و موارد تکراری را نمایش می‌دهد.
+              مخاطبینی که شماره تماس یکسان دارند اینجا دیده می‌شوند و می‌توانید ادغام کنید.
             </p>
           </div>
         </div>

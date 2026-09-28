@@ -59,7 +59,7 @@ export const CrmPipelineView: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="جستجوی نام مشتری، شماره تماس، فارم یا استان..."
+            placeholder="جستجوی نام، شماره تماس، شرکت یا استان..."
             className="w-full bg-slate-950 border border-slate-800 rounded-xl pr-10 pl-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
           />
         </div>

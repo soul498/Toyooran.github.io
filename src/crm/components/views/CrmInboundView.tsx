@@ -37,9 +37,9 @@ export const CrmInboundView: React.FC = () => {
           <Sparkles className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-white">سرنخ‌های خودکار ورودی وب‌سایت</h3>
+          <h3 className="text-sm font-bold text-white">سرنخ‌های فرم سایت</h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            استعلام‌های ثبت‌شده در فرم‌های مشاوره مهندسی و پیش‌فاکتور آنلاین وب‌سایت را با یک کلیک به پرونده رسمی فروش در CRM تبدیل کنید.
+            درخواست مشاوره و استعلام قیمت ثبت‌شده از سایت؛ می‌توانید به پرونده فروش تبدیل کنید.
           </p>
         </div>
       </div>

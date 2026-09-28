@@ -61,7 +61,7 @@ export const CrmContactsView: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="جستجوی نام، تلفن، فارم، برچسب‌ها یا استان..."
+            placeholder="جستجوی نام، تلفن، شرکت، برچسب یا استان..."
             className="w-full bg-slate-950 border border-slate-800 rounded-xl pr-10 pl-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
           />
         </div>
@@ -116,7 +116,7 @@ export const CrmContactsView: React.FC = () => {
           <table className="w-full text-right text-xs text-slate-300 border-collapse">
             <thead>
               <tr className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-bold">
-                <th className="p-3.5">نام مشتری / فارم</th>
+                <th className="p-3.5">نام / شرکت</th>
                 <th className="p-3.5">شماره تماس</th>
                 <th className="p-3.5">استان / موقعیت</th>
                 <th className="p-3.5">ظرفیت سالن</th>
@@ -130,7 +130,7 @@ export const CrmContactsView: React.FC = () => {
               {filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-500">
-                    هیچ مشتری یا فارمی با این مشخصات یافت نشد.
+                    هیچ مخاطبی با این مشخصات یافت نشد.
                   </td>
                 </tr>
               ) : (
@@ -153,6 +153,7 @@ export const CrmContactsView: React.FC = () => {
                     </td>
 
                     <td className="p-3.5">
+                      {customer.phoneNumber ? (
                       <a
                         href={`tel:${customer.phoneNumber}`}
                         onClick={(e) => e.stopPropagation()}
@@ -161,6 +162,9 @@ export const CrmContactsView: React.FC = () => {
                         <Phone className="w-3 h-3 text-emerald-400" />
                         <span>{formatPhoneNumberDisplay(customer.phoneNumber)}</span>
                       </a>
+                      ) : (
+                        <span className="text-slate-600">-</span>
+                      )}
                     </td>
 
                     <td className="p-3.5">
