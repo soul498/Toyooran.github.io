@@ -7,6 +7,7 @@ import { PageSection, Product, Project, Service, Article, ProductCategory } from
 
 const AdminLogin = lazy(() => import('./admin/AdminLogin').then((m) => ({ default: m.AdminLogin })));
 const AdminPanel = lazy(() => import('./admin/AdminPanel').then((m) => ({ default: m.AdminPanel })));
+const CrmApp = lazy(() => import('./crm/CrmApp').then((m) => ({ default: m.CrmApp })));
 const ProductPage = lazy(() => import('./components/ProductPage').then((m) => ({ default: m.ProductPage })));
 const ProductCatalogSection = lazy(() => import('./components/ProductCatalogSection').then((m) => ({ default: m.ProductCatalogSection })));
 const ServicePage = lazy(() => import('./components/ServicePage').then((m) => ({ default: m.ServicePage })));
@@ -157,6 +158,22 @@ const MainAppInner: React.FC = () => {
       handleSelectProduct(found);
     }
   };
+
+  if (location.pathname === '/crm' || location.pathname.startsWith('/crm/')) {
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-slate-950" dir="rtl" />}>
+        {isAuthenticated ? (
+          <CrmApp
+            standalone
+            onBackToAdmin={() => navigate('/admin')}
+            onViewPublicSite={navigateToPublic}
+          />
+        ) : (
+          <AdminLogin onBackToSite={navigateToPublic} />
+        )}
+      </Suspense>
+    );
+  }
 
   // If Admin Route: render Admin Login or Admin Dashboard
   if (location.pathname.startsWith('/admin')) {

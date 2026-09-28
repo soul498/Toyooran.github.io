@@ -238,6 +238,24 @@ export interface AdminUser {
 }
 
 
+export type PipelineStage =
+  | 'new_lead'
+  | 'contacted'
+  | 'consulting'
+  | 'proposal'
+  | 'negotiation'
+  | 'won'
+  | 'lost';
+
+export interface FollowUpRecord {
+  id: string;
+  date: string;
+  note: string;
+  performedBy?: string;
+  status: 'pending' | 'completed' | 'cancelled';
+  priority?: 'high' | 'medium' | 'low';
+}
+
 export interface CustomerContact {
   id: string;
   fullName: string;
@@ -248,6 +266,18 @@ export interface CustomerContact {
   source: 'quote' | 'consultation' | 'manual' | string;
   notes?: string;
   createdAt: string;
+  nextFollowUpDate?: string;
+  nextFollowUpTime?: string;
+  nextFollowUpNote?: string;
+  followUpPriority?: 'high' | 'medium' | 'low';
+  followUpStatus?: 'pending' | 'completed' | 'cancelled' | 'none';
+  lastFollowUpDate?: string;
+  followUpHistory?: FollowUpRecord[];
+  tags?: string[];
+  pipelineStage?: PipelineStage | string;
+  dealValue?: string;
+  farmCapacity?: string;
+  province?: string;
 }
 
 export interface MediaItem {

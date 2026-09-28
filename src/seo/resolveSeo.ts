@@ -729,6 +729,19 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
     });
   }
 
+  if (path === "/crm" || path.startsWith("/crm/")) {
+    return {
+      title: "سامانه CRM | طیوران صنعت پویا",
+      description: "سامانه داخلی مدیریت ارتباط با مشتریان طیوران صنعت پویا.",
+      h1: "سامانه CRM",
+      ogType: "website",
+      body: "",
+      jsonLd: [],
+      robots: "noindex, nofollow",
+      canonicalHref: null,
+    };
+  }
+
   if (path === "/rnd") {
     return okDoc({
       path,
