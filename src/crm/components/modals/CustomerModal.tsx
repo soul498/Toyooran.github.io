@@ -20,9 +20,9 @@ import {
 } from '../../lucide';
 import { useCrm } from '../../hooks/useCrm';
 import { CustomerContact, PipelineStage } from '../../types/crm.types';
-import { PIPELINE_STAGES, PROVINCES_LIST, CONTACT_STAGE_OPTIONS } from '../common/crmConstants';
+import { PROVINCES_LIST, CONTACT_STAGE_OPTIONS } from '../common/crmConstants';
 import { formatPhoneNumberDisplay, toPersianDigits } from '../../utils/crmPhoneUtils';
-import { formatToShamsiDateTime, formatToShamsi, getTodayDateString } from '../../utils/crmDateUtils';
+import { formatToShamsiDateTime } from '../../utils/crmDateUtils';
 import { isPersonaContact } from '../../utils/crmRecords';
 
 export const CustomerModal: React.FC = () => {
