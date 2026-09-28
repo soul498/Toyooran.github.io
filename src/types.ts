@@ -239,6 +239,7 @@ export interface AdminUser {
 
 
 export type PipelineStage =
+  | 'directory'
   | 'new_lead'
   | 'contacted'
   | 'consulting'
@@ -278,6 +279,7 @@ export interface CustomerContact {
   dealValue?: string;
   farmCapacity?: string;
   province?: string;
+  linkedInboundIds?: string[];
 }
 
 export interface MediaItem {

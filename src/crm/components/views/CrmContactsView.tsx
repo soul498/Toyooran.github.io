@@ -10,9 +10,10 @@ import {
 } from '../../lucide';
 import { useCrm } from '../../hooks/useCrm';
 import { CustomerContact } from '../../types/crm.types';
-import { PIPELINE_STAGES, PROVINCES_LIST } from '../common/crmConstants';
+import { PROVINCES_LIST, CONTACT_STAGE_OPTIONS } from '../common/crmConstants';
 import { formatPhoneNumberDisplay, toPersianDigits } from '../../utils/crmPhoneUtils';
 import { formatToShamsi } from '../../utils/crmDateUtils';
+import { isDirectoryContact, isPersonaContact } from '../../utils/crmRecords';
 
 export const CrmContactsView: React.FC = () => {
   const {
@@ -25,11 +26,20 @@ export const CrmContactsView: React.FC = () => {
     setProvinceFilter,
     openNewCustomerModal,
     openEditCustomerModal,
+    openLeadFromContact,
+    startLeadFromPersona,
     deleteCustomer
   } = useCrm();
 
-  const getStageBadge = (stageId?: string) => {
-    const s = PIPELINE_STAGES.find(item => item.id === stageId) || PIPELINE_STAGES[0];
+  const getStageBadge = (customer: CustomerContact) => {
+    if (isPersonaContact(customer)) {
+      return (
+        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
+          پرسونا / الگو
+        </span>
+      );
+    }
+    const s = CONTACT_STAGE_OPTIONS.find((item) => item.id === (customer.pipelineStage || 'new_lead')) || CONTACT_STAGE_OPTIONS[0];
     return (
       <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${s.badgeBg}`}>
         <span className={`w-1.5 h-1.5 rounded-full ${s.color.replace('text-', 'bg-')}`} />
@@ -72,8 +82,8 @@ export const CrmContactsView: React.FC = () => {
               onChange={(e) => setStageFilter(e.target.value)}
               className="bg-transparent text-xs text-white focus:outline-none cursor-pointer"
             >
-              <option value="all" className="bg-slate-900">همه مراحل فروش</option>
-              {PIPELINE_STAGES.map(s => (
+              <option value="all" className="bg-slate-900">همه وضعیت‌ها</option>
+              {CONTACT_STAGE_OPTIONS.map(s => (
                 <option key={s.id} value={s.id} className="bg-slate-900">{s.title}</option>
               ))}
             </select>
@@ -183,7 +193,7 @@ export const CrmContactsView: React.FC = () => {
                     </td>
 
                     <td className="p-3.5">
-                      {getStageBadge(customer.pipelineStage)}
+                      {getStageBadge(customer)}
                     </td>
 
                     <td className="p-3.5 font-mono text-amber-400">
@@ -203,6 +213,23 @@ export const CrmContactsView: React.FC = () => {
                         >
                           <Edit3 className="w-3.5 h-3.5" />
                         </button>
+                        {isPersonaContact(customer) ? (
+                          <button
+                            onClick={() => startLeadFromPersona(customer)}
+                            className="px-2 py-1 rounded-lg text-[10px] font-bold text-blue-400 hover:bg-slate-800"
+                            title="سرنخ واقعی از روی این الگو"
+                          >
+                            ساخت سرنخ
+                          </button>
+                        ) : isDirectoryContact(customer) ? (
+                          <button
+                            onClick={() => openLeadFromContact(customer, 'new_lead')}
+                            className="px-2 py-1 rounded-lg text-[10px] font-bold text-blue-400 hover:bg-slate-800"
+                            title="همین مخاطب وارد پایپ‌لاین شود"
+                          >
+                            تبدیل به سرنخ
+                          </button>
+                        ) : null}
                         <button
                           onClick={(e) => handleDelete(e, customer)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-all"

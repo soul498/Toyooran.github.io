@@ -3,12 +3,15 @@ import { BarChart3, TrendingUp, Award, Layers, MapPin } from '../../lucide';
 import { useCrm } from '../../hooks/useCrm';
 import { PIPELINE_STAGES } from '../common/crmConstants';
 import { toPersianDigits } from '../../utils/crmPhoneUtils';
+import { isPipelineCard, isPersonaContact, resolvePipelineStage } from '../../utils/crmRecords';
 
 export const CrmReportsView: React.FC = () => {
   const { customers, stats } = useCrm();
 
+  const dealCustomers = (customers || []).filter((c) => isPipelineCard(c));
+
   const provinceCounts = (customers || []).reduce<{ [key: string]: number }>((acc, c) => {
-    if (!c.province) return acc;
+    if (!c.province || isPersonaContact(c)) return acc;
     acc[c.province] = (acc[c.province] || 0) + 1;
     return acc;
   }, {});
@@ -17,8 +20,8 @@ export const CrmReportsView: React.FC = () => {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6);
 
-  const wonCount = (customers || []).filter(c => c.pipelineStage === 'won').length;
-  const lostCount = (customers || []).filter(c => c.pipelineStage === 'lost').length;
+  const wonCount = dealCustomers.filter(c => c.pipelineStage === 'won').length;
+  const lostCount = dealCustomers.filter(c => c.pipelineStage === 'lost').length;
   const closedCount = wonCount + lostCount;
   const winRate = closedCount > 0 ? Math.round((wonCount / closedCount) * 100) : 0;
 
@@ -82,14 +85,14 @@ export const CrmReportsView: React.FC = () => {
               <h3 className="text-xs font-black text-white">توزیع قیف فروش</h3>
             </div>
             <span className="text-xs text-slate-400">
-              {toPersianDigits(customers.length)} مخاطب
+              {toPersianDigits(dealCustomers.length)} فرصت
             </span>
           </div>
 
           <div className="space-y-3">
             {PIPELINE_STAGES.map(stage => {
-              const count = (customers || []).filter(c => (c.pipelineStage || 'new_lead') === stage.id).length;
-              const pct = customers.length > 0 ? Math.round((count / customers.length) * 100) : 0;
+              const count = dealCustomers.filter((c) => resolvePipelineStage(c) === stage.id).length;
+              const pct = dealCustomers.length > 0 ? Math.round((count / dealCustomers.length) * 100) : 0;
 
               return (
                 <div key={stage.id} className="space-y-1 text-xs">

@@ -19,6 +19,7 @@ import { PipelineStage, CustomerContact } from '../../types/crm.types';
 import { PIPELINE_STAGES } from '../common/crmConstants';
 import { formatPhoneNumberDisplay, toPersianDigits } from '../../utils/crmPhoneUtils';
 import { formatToShamsi, getFollowUpUrgency } from '../../utils/crmDateUtils';
+import { isPipelineCard, resolvePipelineStage } from '../../utils/crmRecords';
 
 export const CrmPipelineView: React.FC = () => {
   const {
@@ -33,7 +34,7 @@ export const CrmPipelineView: React.FC = () => {
   } = useCrm();
 
   const getStageCustomers = (stageId: PipelineStage) => {
-    return filteredCustomers.filter(c => (c.pipelineStage || 'new_lead') === stageId);
+    return filteredCustomers.filter((c) => isPipelineCard(c) && resolvePipelineStage(c) === stageId);
   };
 
   const handleMoveStage = async (e: React.MouseEvent, customer: CustomerContact, direction: 'next' | 'prev') => {

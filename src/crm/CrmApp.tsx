@@ -16,6 +16,13 @@ const CrmMainWorkspace: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
+      <p className="crm-glossary">
+        <strong>مخاطب</strong> فرد یا فارم در بانک اطلاعاتی است.
+        {' '}
+        <strong>سرنخ</strong> همان مخاطب است وقتی فرصت فروش باز دارد؛ از لیست مخاطبین انتخاب می‌شود، پرونده جدا ساخته نمی‌شود.
+        {' '}
+        <strong>سرنخ سایت</strong> فرم پرشده است تا به یک مخاطب وصل شود.
+      </p>
       <CrmNavTabs />
       <div className="min-h-[480px]">
         {activeTab === 'pipeline' && <CrmPipelineView />}

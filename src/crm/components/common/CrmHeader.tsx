@@ -26,7 +26,7 @@ export const CrmHeader: React.FC = () => {
       <div className="crm-header-inner">
         <div className="crm-wordmark">
           CRM فروش
-          <span>پایپ‌لاین، پیگیری و بانک مخاطبین</span>
+          <span>مخاطب در بانک؛ سرنخ در پایپ‌لاین</span>
         </div>
 
         <div className="crm-meta">

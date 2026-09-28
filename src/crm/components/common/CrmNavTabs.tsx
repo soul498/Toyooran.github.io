@@ -22,6 +22,8 @@ export const CrmNavTabs: React.FC = () => {
     { id: 'reports', label: 'گزارش' }
   ];
 
+  const isDirectoryTab = activeTab === 'contacts';
+
   return (
     <div className="crm-toolbar">
       <nav className="crm-tabs" aria-label="بخش‌های CRM">
@@ -55,10 +57,10 @@ export const CrmNavTabs: React.FC = () => {
         </button>
         <button
           type="button"
-          onClick={() => openNewCustomerModal('new_lead')}
+          onClick={() => openNewCustomerModal(isDirectoryTab ? 'directory' : 'new_lead')}
           className="crm-btn crm-btn-primary"
         >
-          مخاطب جدید
+          {isDirectoryTab ? 'مخاطب جدید' : 'سرنخ جدید'}
         </button>
       </div>
     </div>

@@ -29,6 +29,7 @@ import {
   INITIAL_MEDIA
 } from '../data/mockData';
 import { CRM_PERSONAS } from '../crm/data/personas';
+import { migrateCustomerRecord } from '../crm/utils/crmRecords';
 
 function reconcileMagazineArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored) || !stored.length) return ARTICLES;
@@ -223,7 +224,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setConsultationRequests(state.consultations.value.filter((item: { id?: string }) => !fakeLeadIds.has(item?.id || "")));
         }
         if (Array.isArray(state.customers.value) && state.customers.value.length) {
-          setCustomers(state.customers.value);
+          setCustomers(state.customers.value.map((item: CustomerContact) => migrateCustomerRecord(item)));
         } else {
           setCustomers(CRM_PERSONAS);
         }

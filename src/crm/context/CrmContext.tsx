@@ -14,6 +14,14 @@ import {
 } from '../types/crm.types';
 import { detectAllDuplicateGroups, normalizePhoneNumber } from '../utils/crmPhoneUtils';
 import { getFollowUpUrgency, formatToShamsiDateTime } from '../utils/crmDateUtils';
+import {
+  findContactByPhone,
+  isOpenInbound,
+  isOpenLead,
+  isPersonaContact,
+  isPipelineCard,
+  resolvePipelineStage
+} from '../utils/crmRecords';
 
 interface CrmContextType {
   // State
@@ -39,6 +47,8 @@ interface CrmContextType {
   openNewCustomerModal: (prefillStage?: PipelineStage) => void;
   openEditCustomerModal: (customer: CustomerContact) => void;
   closeCustomerModal: () => void;
+  openLeadFromContact: (customer: CustomerContact, stage?: PipelineStage) => Promise<void>;
+  startLeadFromPersona: (persona: CustomerContact) => void;
 
   // Actions
   addCustomer: (customer: Omit<CustomerContact, 'id' | 'createdAt'>) => Promise<CustomerContact>;
@@ -47,10 +57,12 @@ interface CrmContextType {
   addFollowUpLog: (customerId: string, record: Omit<FollowUpRecord, 'id'>, customNotes?: string) => Promise<void>;
   updatePipelineStage: (customerId: string, stage: PipelineStage) => Promise<void>;
   convertInboundToCustomer: (
-    inbound: QuoteRequestItem | ConsultationRequestItem, 
-    type: 'quote' | 'consultation'
+    inbound: QuoteRequestItem | ConsultationRequestItem,
+    type: 'quote' | 'consultation',
+    targetContactId?: string
   ) => Promise<CustomerContact>;
   mergeDuplicates: (targetId: string, sourceIds: string[]) => Promise<void>;
+  findContactByPhoneNumber: (phone?: string) => CustomerContact | undefined;
 
   // Calculated Stats
   stats: CrmStats;
@@ -68,6 +80,10 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     deleteCustomer: persistCustomerDelete,
     quoteRequests = [],
     consultationRequests = [],
+    updateQuoteStatus,
+    updateConsultationStatus,
+    updateQuoteAdminNotes,
+    updateConsultationAdminNotes,
   } = useData();
 
   const notify = useCallback((payload: { type?: string; message: string }) => {
@@ -137,15 +153,79 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsCustomerModalOpen(false);
   }, []);
 
+  const openLeadFromContact = useCallback(async (customer: CustomerContact, stage: PipelineStage = 'new_lead') => {
+    if (isPersonaContact(customer)) return;
+    const nextStage = stage === 'directory' ? 'new_lead' : stage;
+    await baseUpdateCustomer(customer.id, { pipelineStage: nextStage });
+    setSelectedCustomer({ ...customer, pipelineStage: nextStage });
+    setIsCustomerModalOpen(true);
+    notify({
+      type: 'success',
+      message: `«${customer.fullName}» سرنخ شد و در پایپ‌لاین قرار گرفت.`
+    });
+  }, [baseUpdateCustomer, notify]);
+
+  const startLeadFromPersona = useCallback((persona: CustomerContact) => {
+    setSelectedCustomer({
+      id: '',
+      fullName: '',
+      phoneNumber: '',
+      companyName: '',
+      role: persona.role || '',
+      source: 'manual',
+      notes: persona.notes || '',
+      createdAt: new Date().toISOString(),
+      pipelineStage: 'new_lead',
+      dealValue: '',
+      farmCapacity: '',
+      province: '',
+      tags: [...(persona.tags || []).filter((tag) => tag !== 'پرسونا'), 'از پرسونا'],
+      followUpPriority: persona.followUpPriority || 'medium',
+      followUpStatus: 'none',
+      followUpHistory: [],
+      nextFollowUpDate: new Date().toISOString().split('T')[0],
+      nextFollowUpTime: '10:00',
+      nextFollowUpNote: `سرنخ ساخته‌شده از پرسونای «${persona.fullName}»`
+    });
+    setIsCustomerModalOpen(true);
+  }, []);
+
   // CRUD Operations Wrapper
   const addCustomer = useCallback(async (customerData: Omit<CustomerContact, 'id' | 'createdAt'>): Promise<CustomerContact> => {
+    const existing = findContactByPhone(customers, customerData.phoneNumber);
+    if (existing) {
+      const keepStage = isOpenLead(existing) && customerData.pipelineStage === 'directory'
+        ? resolvePipelineStage(existing)
+        : customerData.pipelineStage;
+      const updates: Partial<CustomerContact> = {
+        ...customerData,
+        pipelineStage: keepStage,
+        phoneNumber: existing.phoneNumber || customerData.phoneNumber,
+        fullName: customerData.fullName || existing.fullName,
+        notes: [existing.notes, customerData.notes].filter(Boolean).join('\n---\n'),
+        tags: Array.from(new Set([...(existing.tags || []), ...(customerData.tags || [])])),
+        followUpHistory: [
+          ...(customerData.followUpHistory || []),
+          ...(existing.followUpHistory || [])
+        ]
+      };
+      await baseUpdateCustomer(existing.id, updates);
+      notify({
+        type: 'info',
+        message: `شماره تکراری بود؛ اطلاعات روی مخاطب «${existing.fullName}» ذخیره شد.`
+      });
+      return { ...existing, ...updates };
+    }
+
     const newCustomer = await baseAddCustomer(customerData);
     notify({
       type: 'success',
-      message: `مخاطب جدید «${customerData.fullName}» با موفقیت افزوده شد.`
+      message: customerData.pipelineStage === 'directory'
+        ? `مخاطب «${customerData.fullName}» در بانک اطلاعاتی ثبت شد.`
+        : `سرنخ «${customerData.fullName}» در پایپ‌لاین ثبت شد.`
     });
     return newCustomer;
-  }, [baseAddCustomer, notify]);
+  }, [baseAddCustomer, baseUpdateCustomer, customers, notify]);
 
   const updateCustomer = useCallback(async (id: string, updates: Partial<CustomerContact>): Promise<void> => {
     await baseUpdateCustomer(id, updates);
@@ -217,40 +297,113 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [customers, baseUpdateCustomer, notify]);
 
   const updatePipelineStage = useCallback(async (customerId: string, stage: PipelineStage): Promise<void> => {
+    const target = customers.find((item) => item.id === customerId);
+    if (target && isPersonaContact(target)) {
+      notify({ type: 'info', message: 'پرسونا الگو است؛ برای فروش از روی آن سرنخ بسازید، خودش وارد پایپ‌لاین نمی‌شود.' });
+      return;
+    }
     await baseUpdateCustomer(customerId, { pipelineStage: stage });
-  }, [baseUpdateCustomer]);
+  }, [baseUpdateCustomer, customers, notify]);
 
-  // Convert Website Inbound Lead to CRM Customer
+  const findContactByPhoneNumber = useCallback(
+    (phone?: string) => findContactByPhone(customers, phone),
+    [customers]
+  );
+
+  const markInboundLinked = useCallback((
+    inboundId: string,
+    type: 'quote' | 'consultation',
+    customer: CustomerContact
+  ) => {
+    const note = `وصل به مخاطب ${customer.fullName} (${customer.id})`;
+    if (type === 'quote') {
+      updateQuoteStatus(inboundId, 'contacted');
+      updateQuoteAdminNotes(inboundId, note);
+    } else {
+      updateConsultationStatus(inboundId, 'contacted');
+      updateConsultationAdminNotes(inboundId, note);
+    }
+  }, [updateConsultationAdminNotes, updateConsultationStatus, updateQuoteAdminNotes, updateQuoteStatus]);
+
   const convertInboundToCustomer = useCallback(async (
     inbound: QuoteRequestItem | ConsultationRequestItem,
-    type: 'quote' | 'consultation'
+    type: 'quote' | 'consultation',
+    targetContactId?: string
   ): Promise<CustomerContact> => {
     const isQuote = type === 'quote';
-    const data = inbound.formData as any;
-    
+    const data = inbound.formData as {
+      fullName?: string;
+      phoneNumber?: string;
+      email?: string;
+      companyName?: string;
+      additionalNotes?: string;
+      message?: string;
+      capacity?: string;
+      projectCapacity?: string;
+      deliveryLocation?: string;
+      location?: string;
+    };
+
+    const inboundNote = `ثبت فرم سایت (${isQuote ? 'استعلام قیمت' : 'مشاوره'}): ${data.additionalNotes || data.message || 'بدون یادداشت'}\nظرفیت: ${data.capacity || data.projectCapacity || 'مشخص نشده'}\nموقعیت: ${data.deliveryLocation || data.location || ''}`;
+
+    const matched = targetContactId
+      ? customers.find((item) => item.id === targetContactId)
+      : findContactByPhone(customers, data.phoneNumber);
+
+    if (matched && !isPersonaContact(matched)) {
+      const nextStage = isPipelineCard(matched) ? resolvePipelineStage(matched) : 'new_lead';
+      const updates: Partial<CustomerContact> = {
+        phoneNumber: matched.phoneNumber || data.phoneNumber || '',
+        email: matched.email || data.email || '',
+        companyName: matched.companyName || data.companyName || '',
+        farmCapacity: matched.farmCapacity || data.capacity || data.projectCapacity || '',
+        province: matched.province || data.deliveryLocation || data.location || '',
+        notes: [matched.notes, inboundNote].filter(Boolean).join('\n---\n'),
+        tags: Array.from(new Set([...(matched.tags || []), isQuote ? 'استعلام سایت' : 'مشاوره سایت'])),
+        pipelineStage: nextStage,
+        linkedInboundIds: Array.from(new Set([...(matched.linkedInboundIds || []), inbound.id])),
+        followUpPriority: matched.followUpPriority || 'high',
+        followUpStatus: matched.nextFollowUpDate ? matched.followUpStatus : 'pending',
+        nextFollowUpDate: matched.nextFollowUpDate || new Date().toISOString().split('T')[0],
+        nextFollowUpTime: matched.nextFollowUpTime || '10:00',
+        nextFollowUpNote: matched.nextFollowUpNote || 'پیگیری فرم ورودی سایت'
+      };
+      await baseUpdateCustomer(matched.id, updates);
+      markInboundLinked(inbound.id, type, matched);
+      const merged = { ...matched, ...updates };
+      setSelectedCustomer(merged);
+      setIsCustomerModalOpen(true);
+      notify({
+        type: 'success',
+        message: `فرم به مخاطب «${matched.fullName}» وصل شد و در پایپ‌لاین قرار گرفت.`
+      });
+      return merged;
+    }
+
     const newCustomerData: Omit<CustomerContact, 'id' | 'createdAt'> = {
       fullName: data.fullName || 'سرنخ ورودی وب‌سایت',
       phoneNumber: data.phoneNumber || '',
       email: data.email || '',
       companyName: data.companyName || '',
-      role: 'مشتری وب‌سایت',
+      role: '',
       source: isQuote ? 'استعلام قیمت سایت' : 'درخواست مشاوره فنی سایت',
-      notes: `ثبت اولیه از فرم وب‌سایت: ${data.additionalNotes || data.message || 'بدون یادداشت'}\nظرفیت: ${data.capacity || data.projectCapacity || 'مشخص نشده'}\nموقعیت: ${data.deliveryLocation || data.location || ''}`,
+      notes: inboundNote,
       pipelineStage: 'new_lead',
       dealValue: '',
       farmCapacity: data.capacity || data.projectCapacity || '',
       province: data.deliveryLocation || data.location || '',
-      tags: [isQuote ? 'استعلام سایت' : 'مشاوره سایت', 'سرنخ جدید'],
+      tags: [isQuote ? 'استعلام سایت' : 'مشاوره سایت'],
+      linkedInboundIds: [inbound.id],
       nextFollowUpDate: new Date().toISOString().split('T')[0],
       nextFollowUpTime: '10:00',
-      nextFollowUpNote: 'تماس اولیه جهت ارزیابی نیاز و معرفی تجهیزات',
+      nextFollowUpNote: 'تماس اولیه بابت فرم سایت',
       followUpPriority: 'high',
       followUpStatus: 'pending',
       followUpHistory: [
         {
           id: `fup_${Date.now()}`,
           date: new Date().toISOString(),
-          note: `ثبت فرم ورودی وب‌سایت (${isQuote ? 'استعلام قیمت کاتالوگ' : 'درخواست مشاوره تخصصی'})`,
+          note: `ثبت فرم ورودی وب‌سایت (${isQuote ? 'استعلام قیمت' : 'مشاوره'})`,
           status: 'completed',
           priority: 'high'
         }
@@ -258,12 +411,15 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     const created = await baseAddCustomer(newCustomerData);
+    markInboundLinked(inbound.id, type, created);
     notify({
       type: 'success',
-      message: `سرنخ «${newCustomerData.fullName}» با موفقیت به مشتریان CRM اضافه شد.`
+      message: `سرنخ «${newCustomerData.fullName}» ساخته شد و در پایپ‌لاین قرار گرفت.`
     });
+    setSelectedCustomer(created);
+    setIsCustomerModalOpen(true);
     return created;
-  }, [baseAddCustomer, notify]);
+  }, [baseAddCustomer, baseUpdateCustomer, customers, markInboundLinked, notify]);
 
   // Merge duplicate contacts
   const mergeDuplicates = useCallback(async (targetId: string, sourceIds: string[]): Promise<void> => {
@@ -324,7 +480,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     let overdueFup = 0;
 
     safeList.forEach(c => {
-      // Deal values
+      if (isPersonaContact(c) || !isPipelineCard(c)) return;
       const val = parseFloat((c.dealValue || '0').replace(/[^0-9.]/g, '')) || 0;
       if (c.pipelineStage === 'won') {
         wonSum += val;
@@ -332,7 +488,6 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         dealSum += val;
       }
 
-      // Follow-up urgency
       if (c.followUpStatus !== 'completed' && c.nextFollowUpDate) {
         const u = getFollowUpUrgency(c.nextFollowUpDate, c.nextFollowUpTime, c.followUpStatus);
         if (u.urgency === 'today') todayFup++;
@@ -340,8 +495,10 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     });
 
-    const activeStages = ['new_lead', 'contacted', 'consulting', 'proposal', 'negotiation'];
-    const activeLeads = safeList.filter(c => activeStages.includes(c.pipelineStage || 'new_lead')).length;
+    const activeLeads = safeList.filter((c) => isOpenLead(c)).length;
+    const openInbound =
+      (quoteRequests || []).filter((item) => isOpenInbound(item.status)).length +
+      (consultationRequests || []).filter((item) => isOpenInbound(item.status)).length;
 
     return {
       totalContacts: safeList.length,
@@ -350,8 +507,8 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       wonDealValue: wonSum,
       todayFollowUps: todayFup,
       overdueFollowUps: overdueFup,
-      duplicateCount: duplicateGroups.reduce((acc, g) => acc + g.customers.length, 0),
-      inboundLeadsCount: (quoteRequests?.length || 0) + (consultationRequests?.length || 0)
+      duplicateCount: duplicateGroups.length,
+      inboundLeadsCount: openInbound
     };
   }, [customers, duplicateGroups, quoteRequests, consultationRequests]);
 
@@ -413,6 +570,8 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         openNewCustomerModal,
         openEditCustomerModal,
         closeCustomerModal,
+        openLeadFromContact,
+        startLeadFromPersona,
         addCustomer,
         updateCustomer,
         deleteCustomer,
@@ -420,6 +579,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updatePipelineStage,
         convertInboundToCustomer,
         mergeDuplicates,
+        findContactByPhoneNumber,
         stats,
         duplicateGroups,
         filteredCustomers

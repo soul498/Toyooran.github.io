@@ -20,9 +20,10 @@ import {
 } from '../../lucide';
 import { useCrm } from '../../hooks/useCrm';
 import { CustomerContact, PipelineStage } from '../../types/crm.types';
-import { PIPELINE_STAGES, PROVINCES_LIST } from '../common/crmConstants';
+import { PIPELINE_STAGES, PROVINCES_LIST, CONTACT_STAGE_OPTIONS } from '../common/crmConstants';
 import { formatPhoneNumberDisplay, toPersianDigits } from '../../utils/crmPhoneUtils';
 import { formatToShamsiDateTime, formatToShamsi, getTodayDateString } from '../../utils/crmDateUtils';
+import { isPersonaContact } from '../../utils/crmRecords';
 
 export const CustomerModal: React.FC = () => {
   const {
@@ -32,12 +33,14 @@ export const CustomerModal: React.FC = () => {
     addCustomer,
     updateCustomer,
     deleteCustomer,
-    addFollowUpLog
+    addFollowUpLog,
+    customers
   } = useCrm();
 
   const [form, setForm] = useState<Partial<CustomerContact>>({});
   const [newLogNote, setNewLogNote] = useState<string>('');
   const [newTagInput, setNewTagInput] = useState<string>('');
+  const [pickerQuery, setPickerQuery] = useState('');
 
   useEffect(() => {
     if (selectedCustomer) {
@@ -47,16 +50,33 @@ export const CustomerModal: React.FC = () => {
     }
     setNewLogNote('');
     setNewTagInput('');
+    setPickerQuery('');
   }, [selectedCustomer]);
 
   if (!isCustomerModalOpen || !form) return null;
 
   const isNew = !form.id;
+  const isLeadForm = (form.pipelineStage || 'new_lead') !== 'directory';
+  const pickerResults = (isNew && pickerQuery.trim()
+    ? customers.filter((item) => {
+        if (isPersonaContact(item)) return false;
+        const q = pickerQuery.toLowerCase().trim();
+        return (
+          (item.fullName || '').toLowerCase().includes(q) ||
+          (item.phoneNumber || '').includes(q) ||
+          (item.companyName || '').toLowerCase().includes(q)
+        );
+      }).slice(0, 6)
+    : []);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.fullName || !form.phoneNumber) {
-      alert('لطفاً نام مشتری و شماره تماس را وارد فرمایید.');
+    if (!form.fullName) {
+      alert('نام مخاطب را وارد کنید.');
+      return;
+    }
+    if (isLeadForm && !form.phoneNumber) {
+      alert('برای سرنخ فروش، شماره تماس لازم است تا پیگیری ممکن باشد.');
       return;
     }
 
@@ -167,10 +187,14 @@ export const CustomerModal: React.FC = () => {
             </div>
             <div>
               <h3 className="text-base font-black text-white">
-                {isNew ? 'ثبت مخاطب و پرونده جدید فروش' : `پرونده مشتری: ${form.fullName || ''}`}
+                {isNew
+                  ? (isLeadForm ? 'ثبت سرنخ فروش' : 'ثبت مخاطب در بانک')
+                  : form.fullName || 'پرونده'}
               </h3>
               <p className="text-xs text-slate-400">
-                مشخصات فارم، مرحله معامله، خط لوله فروش و سوابق پیگیری
+                {isLeadForm
+                  ? 'سرنخ یعنی فرصت فروش روی یک مخاطب؛ می‌توانید مخاطب موجود را انتخاب کنید.'
+                  : 'مخاطب فقط در بانک می‌ماند تا وقتی به سرنخ تبدیل شود.'}
               </p>
             </div>
           </div>
@@ -198,6 +222,40 @@ export const CustomerModal: React.FC = () => {
         {/* Modal Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-6 scrollbar-thin">
           <form id="customer-form" onSubmit={handleSave} className="space-y-6">
+
+            {isNew && isLeadForm && (
+              <div className="crm-picker">
+                <label className="text-[11px] text-slate-400 block mb-1">انتخاب از مخاطبین موجود</label>
+                <input
+                  type="search"
+                  value={pickerQuery}
+                  onChange={(e) => setPickerQuery(e.target.value)}
+                  placeholder="نام، شرکت یا شماره را جستجو کنید..."
+                />
+                {pickerResults.length > 0 && (
+                  <div className="crm-picker-list">
+                    {pickerResults.map((contact) => (
+                      <button
+                        key={contact.id}
+                        type="button"
+                        className="crm-picker-item"
+                        onClick={() => setForm({
+                          ...contact,
+                          pipelineStage: form.pipelineStage && form.pipelineStage !== 'directory'
+                            ? form.pipelineStage
+                            : 'new_lead'
+                        })}
+                      >
+                        {contact.fullName}
+                        <span className="block text-[10px] text-slate-500">
+                          {formatPhoneNumberDisplay(contact.phoneNumber)} {contact.companyName || ''}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* Grid 1: Basic Info */}
             <div>
@@ -220,10 +278,12 @@ export const CustomerModal: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">شماره تماس همراه *</label>
+                  <label className="text-[11px] text-slate-400 block mb-1">
+                    شماره تماس همراه {isLeadForm ? '*' : ''}
+                  </label>
                   <input
                     type="tel"
-                    required
+                    required={isLeadForm}
                     value={form.phoneNumber || ''}
                     onChange={(e) => setForm(prev => ({ ...prev, phoneNumber: e.target.value }))}
                     placeholder="۰۹۱۲۳۴۵۶۷۸۹"
@@ -253,13 +313,13 @@ export const CustomerModal: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">مرحله فعلی فروش</label>
+                  <label className="text-[11px] text-slate-400 block mb-1">وضعیت در CRM</label>
                   <select
                     value={form.pipelineStage || 'new_lead'}
                     onChange={(e) => setForm(prev => ({ ...prev, pipelineStage: e.target.value as PipelineStage }))}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
                   >
-                    {PIPELINE_STAGES.map(s => (
+                    {CONTACT_STAGE_OPTIONS.map(s => (
                       <option key={s.id} value={s.id}>{s.title}</option>
                     ))}
                   </select>
@@ -268,10 +328,11 @@ export const CustomerModal: React.FC = () => {
                 <div>
                   <label className="text-[11px] text-slate-400 block mb-1">استان محل سالن</label>
                   <select
-                    value={form.province || 'مازندران'}
+                    value={form.province || ''}
                     onChange={(e) => setForm(prev => ({ ...prev, province: e.target.value }))}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
                   >
+                    <option value="">انتخاب نشده</option>
                     {PROVINCES_LIST.map(p => (
                       <option key={p} value={p}>{p}</option>
                     ))}
@@ -530,7 +591,7 @@ export const CustomerModal: React.FC = () => {
               className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-black transition-all shadow-lg shadow-amber-400/20"
             >
               <Save className="w-4 h-4" />
-              <span>{isNew ? 'ثبت نهایی مخاطب' : 'ذخیره تغییرات'}</span>
+              <span>{isNew ? (isLeadForm ? 'ثبت سرنخ' : 'ثبت مخاطب') : 'ذخیره تغییرات'}</span>
             </button>
           </div>
         </div>

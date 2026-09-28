@@ -1,5 +1,14 @@
 import { PipelineStageConfig } from '../../types/crm.types';
 
+export const DIRECTORY_STAGE: PipelineStageConfig = {
+  id: 'directory',
+  title: 'بانک مخاطبین (بدون سرنخ)',
+  desc: 'فقط دفترچه تماس؛ هنوز فرصت فروش باز نیست',
+  color: 'text-slate-400',
+  badgeBg: 'bg-slate-800 text-slate-400',
+  borderCol: 'border-slate-800'
+};
+
 export const PIPELINE_STAGES: PipelineStageConfig[] = [
   { id: 'new_lead', title: 'سرنخ جدید', desc: 'استعلام سایت و تماس اولیه', color: 'text-blue-400', badgeBg: 'bg-blue-500/10 text-blue-300', borderCol: 'border-blue-500/30' },
   { id: 'contacted', title: 'ارزیابی و صلاحیت‌سنجی', desc: 'احراز نیاز، ظرفیت فارم و شرایط', color: 'text-blue-400', badgeBg: 'bg-blue-500/10 text-blue-300', borderCol: 'border-blue-500/30' },
@@ -33,3 +42,5 @@ export const PROVINCES_LIST = [
   'لرستان',
   'سایر استان‌ها'
 ];
+
+export const CONTACT_STAGE_OPTIONS: PipelineStageConfig[] = [DIRECTORY_STAGE, ...PIPELINE_STAGES];
