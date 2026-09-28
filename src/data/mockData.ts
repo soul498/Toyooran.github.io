@@ -716,77 +716,9 @@ export const DEFAULT_AI_CONFIG = {
   ]
 };
 
-export const INITIAL_QUOTES = [
-  {
-    id: 'quote-101',
-    createdAt: '۱۴۰۳/۰۸/۱۲ - ۱۱:۳۰',
-    status: 'new' as const,
-    formData: {
-      projectType: 'مرغداری گوشتی ۳۰ هزار قطعه‌ای',
-      targetCategory: 'feeding' as const,
-      selectedEquipment: ['بشقاب پروانه‌ای Butterfly Concepts', 'خطوط انتقال دان اوگر', 'سیلو ذخیره دان ۱۵ تن'],
-      capacity: '۳۰,۰۰۰ قطعه',
-      deliveryLocation: 'مازندران، آمل',
-      companyName: 'مزرعه پرورشی طبرستان',
-      fullName: 'مهندس سعید میرزایی',
-      phoneNumber: '09112255880',
-      additionalNotes: 'نیاز به برآورد قیمت خط کامل دانخوری بشقابی با موتور گیربکس اروپایی داریم. لطفا استعلام قیمت رسمی ارسال فرمایید.',
-      hasAttachment: false,
-    },
-    adminNotes: 'نیاز به بررسی موجودی خطوط اوگر با مهندس فروش'
-  },
-  {
-    id: 'quote-102',
-    createdAt: '۱۴۰۳/۰۸/۱۰ - ۱۴:۱۵',
-    status: 'in_progress' as const,
-    formData: {
-      projectType: 'کارخانه خوراک دام و طیور',
-      targetCategory: 'heating' as const,
-      selectedEquipment: ['دستگاه پرس پلت صنعتی', 'سیستم میکرودایزینگ ریزمغذی‌ها', 'کاندیشنر دوجداره استیل'],
-      capacity: '۱۰ تن در ساعت',
-      deliveryLocation: 'خراسان رضوی، نیشابور',
-      companyName: 'کارخانه خوراک شرق نوین',
-      fullName: 'دکتر علیرضا کاظمی',
-      phoneNumber: '09153184490',
-      additionalNotes: 'طرح توسعه کارخانه خوراک داریم و مایل به استعلام دای و رولر ۵۰۸ به همراه کاندیشنر بخار دوجداره هستیم.',
-      hasAttachment: true,
-    },
-    adminNotes: 'کاتالوگ و پیشنهاد فنی از طریق واتساپ ارسال شد. در انتظار تایید مالی.'
-  }
-];
+export const INITIAL_QUOTES: import('../types').QuoteRequestItem[] = [];
 
-export const INITIAL_CONSULTATIONS = [
-  {
-    id: 'cons-201',
-    createdAt: '۱۴۰۳/۰۸/۱۴ - ۰۹:۴۵',
-    status: 'new' as const,
-    formData: {
-      fullName: 'حاج بهروز ناصری',
-      phoneNumber: '09123456789',
-      requestType: 'project-design' as const,
-      projectType: 'فارم تخم‌گذار قفس اتوماتیک',
-      projectCapacity: '۶۰,۰۰۰ سر',
-      location: 'قزوین، بوئین‌زهرا',
-      message: 'می‌خواهیم دو سوله جدید برای پرورش پولت و تخم‌گذار احداث کنیم. درخواست مشاوره حضوری در دفتر تهران یا مشهد داریم.'
-    },
-    adminNotes: ''
-  },
-  {
-    id: 'cons-202',
-    createdAt: '۱۴۰۳/۰۸/۰۹ - ۱۶:۲۰',
-    status: 'contacted' as const,
-    formData: {
-      fullName: 'مهندس حسینی',
-      phoneNumber: '09358899120',
-      requestType: 'efficiency-audit' as const,
-      projectType: 'مرغداری گوشتی ۴ سالنه',
-      projectCapacity: '۴۵,۰۰۰ قطعه',
-      location: 'گرگان',
-      message: 'مشکل عدم یکنواختی دما در انتهای سالن داریم. تهویه تونلی در تابستان جوابگو نیست و نیاز به ممیزی پد سلولزی و اینلت‌ها داریم.'
-    },
-    adminNotes: 'مهندس ناظر در گرگان با ایشان هماهنگ کردند برای بازدید میدانی.'
-  }
-];
+export const INITIAL_CONSULTATIONS: import('../types').ConsultationRequestItem[] = [];
 
 
 export const INITIAL_MEDIA = [

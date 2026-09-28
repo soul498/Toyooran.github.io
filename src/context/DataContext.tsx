@@ -28,6 +28,7 @@ import {
   INITIAL_CONSULTATIONS,
   INITIAL_MEDIA
 } from '../data/mockData';
+import { CRM_PERSONAS } from '../crm/data/personas';
 
 function reconcileMagazineArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored) || !stored.length) return ARTICLES;
@@ -176,7 +177,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [consultationRequests, setConsultationRequests] = useState<ConsultationRequestItem[]>(INITIAL_CONSULTATIONS);
 
-  const [customers, setCustomers] = useState<CustomerContact[]>([]);
+  const [customers, setCustomers] = useState<CustomerContact[]>(CRM_PERSONAS);
   const [mediaLibrary, setMediaLibrary] = useState<MediaItem[]>(INITIAL_MEDIA);
 
   const addCustomer = (customer: CustomerContact) => setCustomers(prev => [customer, ...prev]);
@@ -214,9 +215,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (state.companyInfo.value) setCompanyInfo(state.companyInfo.value);
         if (state.heroCms.value) setHeroCms(state.heroCms.value);
         if (state.aiConfig.value) setAiConfig(state.aiConfig.value);
-        if (state.quotes.value) setQuoteRequests(state.quotes.value);
-        if (state.consultations.value) setConsultationRequests(state.consultations.value);
-        if (state.customers.value) setCustomers(state.customers.value);
+        const fakeLeadIds = new Set(["quote-101", "quote-102", "cons-201", "cons-202"]);
+        if (Array.isArray(state.quotes.value)) {
+          setQuoteRequests(state.quotes.value.filter((item: { id?: string }) => !fakeLeadIds.has(item?.id || "")));
+        }
+        if (Array.isArray(state.consultations.value)) {
+          setConsultationRequests(state.consultations.value.filter((item: { id?: string }) => !fakeLeadIds.has(item?.id || "")));
+        }
+        if (Array.isArray(state.customers.value) && state.customers.value.length) {
+          setCustomers(state.customers.value);
+        } else {
+          setCustomers(CRM_PERSONAS);
+        }
         if (state.media.value) setMediaLibrary(state.media.value);
         setAdminDataReady(true);
       }).catch(() => setAdminDataReady(true));
