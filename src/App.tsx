@@ -161,7 +161,7 @@ const MainAppInner: React.FC = () => {
 
   if (location.pathname === '/crm' || location.pathname.startsWith('/crm/')) {
     return (
-      <Suspense fallback={<div className="min-h-screen bg-slate-950" dir="rtl" />}>
+      <Suspense fallback={<div className="min-h-screen bg-[#f5f5f7]" dir="rtl" />}>
         {isAuthenticated ? (
           <CrmApp />
         ) : (

@@ -1,7 +1,7 @@
 import { PipelineStageConfig } from '../../types/crm.types';
 
 export const PIPELINE_STAGES: PipelineStageConfig[] = [
-  { id: 'new_lead', title: 'سرنخ جدید', desc: 'استعلام سایت و تماس اولیه', color: 'text-amber-400', badgeBg: 'bg-amber-500/10 text-amber-300', borderCol: 'border-amber-500/30' },
+  { id: 'new_lead', title: 'سرنخ جدید', desc: 'استعلام سایت و تماس اولیه', color: 'text-blue-400', badgeBg: 'bg-blue-500/10 text-blue-300', borderCol: 'border-blue-500/30' },
   { id: 'contacted', title: 'ارزیابی و صلاحیت‌سنجی', desc: 'احراز نیاز، ظرفیت فارم و شرایط', color: 'text-blue-400', badgeBg: 'bg-blue-500/10 text-blue-300', borderCol: 'border-blue-500/30' },
   { id: 'consulting', title: 'مشاوره فنی و طراحی', desc: 'محاسبه تهویه، چیدمان خطوط و ابعاد', color: 'text-purple-400', badgeBg: 'bg-purple-500/10 text-purple-300', borderCol: 'border-purple-500/30' },
   { id: 'proposal', title: 'پیش‌فاکتور و استعلام', desc: 'صدور پیش‌فاکتور رسمی و قیمت', color: 'text-cyan-400', badgeBg: 'bg-cyan-500/10 text-cyan-300', borderCol: 'border-cyan-500/30' },

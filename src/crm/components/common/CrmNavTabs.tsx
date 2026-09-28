@@ -1,123 +1,66 @@
 import React from 'react';
-import { 
-  GitMerge, 
-  Clock, 
-  Users, 
-  Sparkles, 
-  CopyCheck, 
-  BarChart3, 
-  Plus,
-  Download
-} from '../../lucide';
 import { useCrm } from '../../hooks/useCrm';
 import { CrmSubTab } from '../../types/crm.types';
 import { toPersianDigits } from '../../utils/crmPhoneUtils';
 import { exportContactsToCsv } from '../../utils/crmExportUtils';
 
 export const CrmNavTabs: React.FC = () => {
-  const { 
-    activeTab, 
-    setActiveTab, 
-    stats, 
+  const {
+    activeTab,
+    setActiveTab,
+    stats,
     openNewCustomerModal,
     customers
   } = useCrm();
 
-  const tabs: { id: CrmSubTab; label: string; icon: any; count?: number; badgeColor?: string }[] = [
-    { 
-      id: 'pipeline', 
-      label: 'پایپ‌لاین فروش', 
-      icon: GitMerge, 
-      count: stats.activeLeads,
-      badgeColor: 'bg-amber-500/20 text-amber-300'
-    },
-    { 
-      id: 'followups', 
-      label: 'پیگیری‌ها', 
-      icon: Clock, 
-      count: (stats.todayFollowUps + stats.overdueFollowUps) || undefined,
-      badgeColor: 'bg-rose-500/20 text-rose-300'
-    },
-    { 
-      id: 'contacts', 
-      label: 'مخاطبین', 
-      icon: Users, 
-      count: stats.totalContacts,
-      badgeColor: 'bg-blue-500/20 text-blue-300'
-    },
-    { 
-      id: 'inbound', 
-      label: 'سرنخ سایت', 
-      icon: Sparkles, 
-      count: stats.inboundLeadsCount || undefined,
-      badgeColor: 'bg-cyan-500/20 text-cyan-300'
-    },
-    { 
-      id: 'duplicates', 
-      label: 'تکراری‌ها', 
-      icon: CopyCheck, 
-      count: stats.duplicateCount > 0 ? stats.duplicateCount : undefined,
-      badgeColor: 'bg-purple-500/20 text-purple-300'
-    },
-    { 
-      id: 'reports', 
-      label: 'گزارش فروش', 
-      icon: BarChart3 
-    }
+  const tabs: { id: CrmSubTab; label: string; count?: number }[] = [
+    { id: 'pipeline', label: 'پایپ‌لاین', count: stats.activeLeads },
+    { id: 'followups', label: 'پیگیری‌ها', count: (stats.todayFollowUps + stats.overdueFollowUps) || undefined },
+    { id: 'contacts', label: 'مخاطبین', count: stats.totalContacts },
+    { id: 'inbound', label: 'سرنخ سایت', count: stats.inboundLeadsCount || undefined },
+    { id: 'duplicates', label: 'تکراری‌ها', count: stats.duplicateCount > 0 ? stats.duplicateCount : undefined },
+    { id: 'reports', label: 'گزارش' }
   ];
 
   return (
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-900/60 p-2 rounded-2xl border border-slate-800/80 shadow-md">
-      
-      {/* Scrollable Horizontal Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-thin">
-        {tabs.map(tab => {
-          const Icon = tab.icon;
+    <div className="crm-toolbar">
+      <nav className="crm-tabs" aria-label="بخش‌های CRM">
+        {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                isActive
-                  ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20 font-black'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
-              }`}
+              className={`crm-tab${isActive ? ' is-active' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-slate-400'}`} />
               <span>{tab.label}</span>
               {tab.count !== undefined && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                  isActive ? 'bg-slate-950/20 text-slate-950' : tab.badgeColor || 'bg-slate-800 text-slate-300'
-                }`}>
-                  {toPersianDigits(tab.count)}
-                </span>
+                <span className="crm-tab-count">{toPersianDigits(tab.count)}</span>
               )}
             </button>
           );
         })}
-      </div>
+      </nav>
 
-      {/* Quick Actions */}
-      <div className="flex items-center gap-2 self-end sm:self-auto">
+      <div className="crm-actions">
         <button
+          type="button"
           onClick={() => exportContactsToCsv(customers)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold border border-slate-700 transition-all"
+          className="crm-btn"
           title="خروجی CSV مخاطبین"
         >
-          <Download className="w-3.5 h-3.5 text-blue-400" />
-          <span className="hidden md:inline">خروجی CSV</span>
+          خروجی CSV
         </button>
-
         <button
+          type="button"
           onClick={() => openNewCustomerModal('new_lead')}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/20 transition-all"
+          className="crm-btn crm-btn-primary"
         >
-          <Plus className="w-4 h-4" />
-          <span>مخاطب جدید</span>
+          مخاطب جدید
         </button>
       </div>
-
     </div>
   );
 };

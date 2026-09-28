@@ -95,10 +95,10 @@ export const CrmPipelineView: React.FC = () => {
           return (
             <div
               key={stage.id}
-              className="flex-shrink-0 w-80 bg-slate-900/70 border border-slate-800/90 rounded-2xl flex flex-col max-h-[750px] shadow-lg shadow-black/20"
+              className="crm-kanban-col flex-shrink-0 w-72 rounded-2xl flex flex-col max-h-[750px]"
             >
               {/* Column Header */}
-              <div className={`p-3.5 border-b border-slate-800/80 rounded-t-2xl ${stage.borderCol} border-t-2`}>
+              <div className="p-3.5">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className={`w-2.5 h-2.5 rounded-full ${stage.color.replace('text-', 'bg-')}`} />
@@ -136,7 +136,7 @@ export const CrmPipelineView: React.FC = () => {
                       <div
                         key={customer.id}
                         onClick={() => openEditCustomerModal(customer)}
-                        className="group bg-slate-950/80 hover:bg-slate-950 border border-slate-800/90 hover:border-amber-400/50 rounded-xl p-3 cursor-pointer transition-all hover:shadow-md hover:shadow-amber-500/5 space-y-2.5"
+                        className="crm-deal-card group rounded-xl p-3 cursor-pointer transition-all space-y-2.5"
                       >
                         {/* Top: Customer Name & Phone */}
                         <div className="flex items-start justify-between gap-2">
@@ -221,10 +221,10 @@ export const CrmPipelineView: React.FC = () => {
               </div>
 
               {/* Bottom Quick Add Card Button */}
-              <div className="p-2 border-t border-slate-800/80 bg-slate-950/40 rounded-b-2xl">
+              <div className="p-2">
                 <button
                   onClick={() => openNewCustomerModal(stage.id)}
-                  className="w-full flex items-center justify-center gap-1 py-1.5 rounded-xl text-[11px] text-slate-400 hover:text-amber-400 hover:bg-slate-800/80 transition-all font-bold"
+                  className="w-full flex items-center justify-center gap-1 py-1.5 rounded-xl text-[11px] text-slate-400 hover:text-blue-400 hover:bg-slate-800/80 transition-all font-bold"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>ثبت در این مرحله</span>

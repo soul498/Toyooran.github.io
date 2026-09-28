@@ -9,14 +9,15 @@ import { CrmInboundView } from './components/views/CrmInboundView';
 import { CrmDuplicatesView } from './components/views/CrmDuplicatesView';
 import { CrmReportsView } from './components/views/CrmReportsView';
 import { CustomerModal } from './components/modals/CustomerModal';
+import './crm.css';
 
 const CrmMainWorkspace: React.FC = () => {
   const { activeTab } = useCrm();
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <CrmNavTabs />
-      <div className="min-h-[500px]">
+      <div className="min-h-[480px]">
         {activeTab === 'pipeline' && <CrmPipelineView />}
         {activeTab === 'followups' && <CrmFollowUpsView />}
         {activeTab === 'contacts' && <CrmContactsView />}
@@ -40,9 +41,9 @@ export const CrmApp: React.FC = () => {
 
   return (
     <CrmProvider>
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-400 selection:text-slate-950" dir="rtl">
+      <div className="crm-app flex flex-col" dir="rtl">
         <CrmHeader />
-        <main className="flex-1 w-full max-w-[1650px] mx-auto p-3 sm:p-6 lg:p-8">
+        <main className="crm-shell flex-1">
           <CrmMainWorkspace />
         </main>
       </div>

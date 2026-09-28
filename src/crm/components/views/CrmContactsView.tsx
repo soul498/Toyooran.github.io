@@ -1,16 +1,12 @@
 import React from 'react';
 import { 
-  Users, 
   Search, 
-  Plus, 
   Phone, 
   Building, 
   MapPin, 
   Trash2, 
   Edit3, 
-  Filter,
-  Layers,
-  ChevronDown
+  Layers
 } from '../../lucide';
 import { useCrm } from '../../hooks/useCrm';
 import { CustomerContact } from '../../types/crm.types';
@@ -101,10 +97,9 @@ export const CrmContactsView: React.FC = () => {
           {/* New Customer Button */}
           <button
             onClick={() => openNewCustomerModal('new_lead')}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold transition-all shadow-md"
+            className="crm-btn crm-btn-primary"
           >
-            <Plus className="w-4 h-4" />
-            <span>مخاطب جدید</span>
+            مخاطب جدید
           </button>
         </div>
 

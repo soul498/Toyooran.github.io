@@ -14,6 +14,7 @@ import {
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { Turnstile } from '@marsidev/react-turnstile';
+import '../crm/crm.css';
 
 interface AdminLoginProps {
   onBackToSite?: () => void;
@@ -68,6 +69,85 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'ad
   };
 
   const isCrm = mode === 'crm';
+
+  if (isCrm) {
+    return (
+      <div className="crm-app crm-login" dir="rtl">
+        <div className="crm-login-card">
+          <h1>ورود فروش</h1>
+          <p className="lead">CRM طیوران صنعت پویا</p>
+
+          {error ? <div className="crm-login-error">{error}</div> : null}
+
+          <form onSubmit={handleSubmit}>
+            {!mfaRequired && (
+              <div className="crm-field">
+                <label htmlFor="crm-username">نام کاربری</label>
+                <input
+                  id="crm-username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
+                  required
+                />
+              </div>
+            )}
+
+            {!mfaRequired && (
+              <div className="crm-field">
+                <label htmlFor="crm-password">رمز عبور</label>
+                <div className="relative">
+                  <input
+                    id="crm-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    required
+                    className="w-full pl-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+                    aria-label={showPassword ? 'پنهان کردن رمز' : 'نمایش رمز'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {mfaRequired ? (
+              <div className="crm-field">
+                <label htmlFor="crm-mfa">کد شش‌رقمی MFA</label>
+                <input
+                  id="crm-mfa"
+                  inputMode="numeric"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                  value={mfaCode}
+                  onChange={(e) => setMfaCode(e.target.value)}
+                  required
+                />
+              </div>
+            ) : turnstileSiteKey ? (
+              <div className="crm-field">
+                <Turnstile siteKey={turnstileSiteKey} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken('')} />
+              </div>
+            ) : null}
+
+            <button type="submit" disabled={isLoading} className="crm-btn crm-btn-primary crm-submit">
+              {isLoading ? 'در حال ورود…' : 'ادامه'}
+            </button>
+          </form>
+
+          <p className="crm-login-foot">نشست امن؛ فقط برای کارشناسان فروش</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#00224B] to-slate-950 text-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden font-['Estedad',sans-serif]" dir="rtl">
