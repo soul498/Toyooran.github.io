@@ -22,6 +22,7 @@ import {
   isPipelineCard,
   resolvePipelineStage
 } from '../utils/crmRecords';
+import { CrmExcelRowInput } from '../utils/crmExcel';
 
 interface CrmContextType {
   // State
@@ -63,6 +64,7 @@ interface CrmContextType {
   ) => Promise<CustomerContact>;
   mergeDuplicates: (targetId: string, sourceIds: string[]) => Promise<void>;
   findContactByPhoneNumber: (phone?: string) => CustomerContact | undefined;
+  importExcelRows: (rows: CrmExcelRowInput[]) => Promise<{ created: number; updated: number; skipped: number }>;
 
   // Calculated Stats
   stats: CrmStats;
@@ -309,6 +311,72 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     (phone?: string) => findContactByPhone(customers, phone),
     [customers]
   );
+
+  const importExcelRows = useCallback(async (rows: CrmExcelRowInput[]) => {
+    let created = 0;
+    let updated = 0;
+    let skipped = 0;
+    const working = [...customers];
+
+    const take = (incoming: string, current?: string) => (incoming !== '' ? incoming : (current || ''));
+
+    for (const [index, row] of rows.entries()) {
+      const byId = row.id ? working.find((item) => item.id === row.id) : undefined;
+      if (byId && isPersonaContact(byId)) {
+        skipped += 1;
+        continue;
+      }
+      const byPhone = findContactByPhone(working, row.phoneNumber);
+      if (byPhone && isPersonaContact(byPhone)) {
+        skipped += 1;
+        continue;
+      }
+      const target = byId || byPhone;
+      const pipelineStage = row.pipelineStage || (target ? resolvePipelineStage(target) : 'directory');
+      const payload: Omit<CustomerContact, 'id' | 'createdAt'> = {
+        fullName: row.fullName,
+        phoneNumber: take(row.phoneNumber, target?.phoneNumber),
+        email: take(row.email, target?.email),
+        companyName: take(row.companyName, target?.companyName),
+        role: take(row.role, target?.role),
+        source: target?.source || 'excel-import',
+        notes: take(row.notes, target?.notes),
+        pipelineStage,
+        dealValue: take(row.dealValue, target?.dealValue),
+        farmCapacity: take(row.farmCapacity, target?.farmCapacity),
+        province: take(row.province, target?.province),
+        tags: row.tags.length ? row.tags : (target?.tags || []),
+        nextFollowUpDate: take(row.nextFollowUpDate, target?.nextFollowUpDate),
+        nextFollowUpTime: take(row.nextFollowUpTime, target?.nextFollowUpTime),
+        nextFollowUpNote: take(row.nextFollowUpNote, target?.nextFollowUpNote),
+        followUpPriority: row.followUpPriority || target?.followUpPriority || 'medium',
+        followUpStatus: take(row.nextFollowUpDate, target?.nextFollowUpDate) ? 'pending' : (target?.followUpStatus || 'none'),
+        followUpHistory: target?.followUpHistory || []
+      };
+
+      if (target) {
+        await baseUpdateCustomer(target.id, payload);
+        const idx = working.findIndex((item) => item.id === target.id);
+        if (idx >= 0) working[idx] = { ...working[idx], ...payload };
+        updated += 1;
+      } else {
+        const createdRecord: CustomerContact = {
+          ...payload,
+          id: `cust-imp-${Date.now()}-${index}`,
+          createdAt: new Date().toISOString()
+        };
+        persistCustomer(createdRecord);
+        working.unshift(createdRecord);
+        created += 1;
+      }
+    }
+
+    notify({
+      type: created || updated ? 'success' : 'info',
+      message: `ورود اکسل: ${created} جدید، ${updated} به‌روزرسانی${skipped ? `، ${skipped} نادیده` : ''}.`
+    });
+    return { created, updated, skipped };
+  }, [baseUpdateCustomer, customers, notify, persistCustomer]);
 
   const markInboundLinked = useCallback((
     inboundId: string,
@@ -580,6 +648,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         convertInboundToCustomer,
         mergeDuplicates,
         findContactByPhoneNumber,
+        importExcelRows,
         stats,
         duplicateGroups,
         filteredCustomers

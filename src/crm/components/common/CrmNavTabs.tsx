@@ -2,15 +2,14 @@ import React from 'react';
 import { useCrm } from '../../hooks/useCrm';
 import { CrmSubTab } from '../../types/crm.types';
 import { toPersianDigits } from '../../utils/crmPhoneUtils';
-import { exportContactsToCsv } from '../../utils/crmExportUtils';
+import { CrmExcelActions } from './CrmExcelActions';
 
 export const CrmNavTabs: React.FC = () => {
   const {
     activeTab,
     setActiveTab,
     stats,
-    openNewCustomerModal,
-    customers
+    openNewCustomerModal
   } = useCrm();
 
   const tabs: { id: CrmSubTab; label: string; count?: number }[] = [
@@ -46,15 +45,8 @@ export const CrmNavTabs: React.FC = () => {
         })}
       </nav>
 
+      <CrmExcelActions />
       <div className="crm-actions">
-        <button
-          type="button"
-          onClick={() => exportContactsToCsv(customers)}
-          className="crm-btn"
-          title="خروجی CSV مخاطبین"
-        >
-          خروجی CSV
-        </button>
         <button
           type="button"
           onClick={() => openNewCustomerModal(isDirectoryTab ? 'directory' : 'new_lead')}

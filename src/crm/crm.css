@@ -359,9 +359,12 @@
   color: var(--crm-accent);
 }
 
-.crm-actions {
-  display: flex;
-  gap: 8px;
+.crm-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
 }
 
 .crm-btn {
