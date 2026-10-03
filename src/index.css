@@ -166,3 +166,63 @@ html {
     transform: none;
   }
 }
+
+/* Television: FHD sets usually expose a ~1920 CSS viewport; some 4K browsers use 2560–3840 and otherwise look like a phone column. */
+@media (min-width: 1920px) and (min-height: 900px) {
+  html {
+    font-size: 18px;
+  }
+  .max-w-7xl {
+    max-width: 1680px;
+  }
+  .max-w-6xl {
+    max-width: 1440px;
+  }
+  .max-w-5xl {
+    max-width: 1280px;
+  }
+  .max-w-4xl {
+    max-width: 1120px;
+  }
+  .max-w-\[1400px\] {
+    max-width: 1680px;
+  }
+  header.fixed.z-50 {
+    top: 1.25rem;
+    width: min(1680px, calc(100vw - 4.5rem));
+    max-width: min(1680px, calc(100vw - 4.5rem));
+  }
+  .service-card {
+    height: 22rem;
+  }
+  #hero-fixed-pinned-section h1 {
+    font-size: clamp(3.4rem, 4vw, 6rem);
+    line-height: 1.12;
+  }
+  a:focus-visible,
+  button:focus-visible {
+    outline: 3px solid #fbbf24;
+    outline-offset: 4px;
+  }
+}
+
+@media (min-width: 2560px) and (min-height: 1200px) {
+  html {
+    font-size: 22px;
+  }
+  .max-w-7xl,
+  .max-w-\[1400px\] {
+    max-width: 2200px;
+  }
+  header.fixed.z-50 {
+    width: min(2200px, calc(100vw - 6rem));
+    max-width: min(2200px, calc(100vw - 6rem));
+  }
+  .service-card {
+    height: 24rem;
+  }
+  .text-\[10px\],
+  .text-\[11px\] {
+    font-size: 0.85rem;
+  }
+}
