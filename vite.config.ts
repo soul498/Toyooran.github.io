@@ -1,18 +1,61 @@
+import crypto from 'crypto';
+import fs from 'fs';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig} from 'vite';
+import {defineConfig, type Plugin} from 'vite';
+import {chrome98Css} from './scripts/chrome98-css.mjs';
+
+function chrome98CssPlugin(): Plugin {
+  const renames: Array<[string, string]> = [];
+  return {
+    name: 'chrome98-css',
+    generateBundle(_options, bundle) {
+      renames.length = 0;
+      for (const item of Object.values(bundle)) {
+        if (item.type !== 'asset' || !item.fileName.endsWith('.css')) continue;
+        const source = typeof item.source === 'string' ? item.source : Buffer.from(item.source).toString('utf8');
+        const next = chrome98Css(source);
+        const hash = crypto.createHash('sha256').update(next).digest('hex').slice(0, 8);
+        const file = item.fileName.split('/').pop() || item.fileName;
+        const renamed = file.replace(/-[A-Za-z0-9_]+\.css$/, `-${hash}.css`);
+        if (renamed !== file) renames.push([file, renamed]);
+        item.source = next;
+        item.fileName = item.fileName.replace(file, renamed);
+      }
+    },
+    writeBundle(options) {
+      if (!renames.length) return;
+      const root = options.dir ? path.resolve(options.dir) : path.resolve('dist');
+      const visit = (dir: string) => {
+        for (const ent of fs.readdirSync(dir, {withFileTypes: true})) {
+          const full = path.join(dir, ent.name);
+          if (ent.isDirectory()) {
+            visit(full);
+            continue;
+          }
+          if (!/\.(html|js|css|map)$/.test(ent.name)) continue;
+          const text = fs.readFileSync(full, 'utf8');
+          let next = text;
+          for (const [from, to] of renames) next = next.split(from).join(to);
+          if (next !== text) fs.writeFileSync(full, next);
+        }
+      };
+      visit(root);
+    },
+  };
+}
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), chrome98CssPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
     },
     build: {
-      target: "es2022",
+      target: "chrome98",
       cssMinify: true,
       cssCodeSplit: true,
       rollupOptions: {
