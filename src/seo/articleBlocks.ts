@@ -63,14 +63,14 @@ export function articleBlocks(content: string[]): ArticleBlock[] {
       continue;
     }
 
-    if (text.startsWith("## ")) {
-      blocks.push({ type: "h2", text: text.slice(3) });
+    if (text.startsWith("### ")) {
+      blocks.push({ type: "h3", text: text.slice(4) });
       i += 1;
       continue;
     }
 
-    if (text.startsWith("### ")) {
-      blocks.push({ type: "h3", text: text.slice(4) });
+    if (text.startsWith("## ")) {
+      blocks.push({ type: "h2", text: text.slice(3) });
       i += 1;
       continue;
     }

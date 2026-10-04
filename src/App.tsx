@@ -62,11 +62,12 @@ const MainAppInner: React.FC = () => {
     products, 
     projects, 
     services, 
-    articles, 
+    articles,
     categories, 
     companyInfo, 
     heroCms 
   } = useData();
+  const publicArticles = articles.filter((article) => article.status !== 'draft');
 
   // Navigation and consultation state
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>('all');
@@ -221,7 +222,7 @@ const MainAppInner: React.FC = () => {
               <Suspense fallback={null}>
               <CompactShowcase 
                 products={products}
-                articles={articles}
+                articles={publicArticles}
                 onNavigate={handleNavigateSection}
                 onSelectProduct={handleSelectProductById}
                 onSelectArticle={(articleId) => navigate(`/magazine/${articleId}`)}
@@ -259,7 +260,7 @@ const MainAppInner: React.FC = () => {
           } />
           <Route path="/magazine" element={
             <MagazineFeed
-              articles={articles}
+              articles={publicArticles}
               onSelectArticle={(article) => {
                 setSelectedArticle(article);
                 navigate(`/magazine/${article.id}`);
@@ -268,7 +269,7 @@ const MainAppInner: React.FC = () => {
           } />
           <Route path="/magazine/:articleId" element={
             <MagazineArticleWrapper
-               articles={articles}
+               articles={publicArticles}
                onBack={() => navigate('/magazine')}
                onSelectProductById={handleSelectProductById}
             />

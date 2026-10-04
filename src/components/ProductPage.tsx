@@ -38,7 +38,8 @@ export const ProductPage: React.FC = () => {
 
   const relatedArticles = articles.filter(
     (article) =>
-      product.relatedArticleIds?.includes(article.id) || article.relatedProductIds?.includes(product.id)
+      article.status !== "draft" &&
+      (product.relatedArticleIds?.includes(article.id) || article.relatedProductIds?.includes(product.id))
   );
 
   return (

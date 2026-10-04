@@ -1,6 +1,7 @@
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../types";
 import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
+import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle } from "./articleMeta";
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
@@ -85,6 +86,7 @@ export type SeoDoc = {
   canonicalHref: string | null;
   notFound?: boolean;
   lastmod?: string;
+  ogImage?: string;
 };
 
 export function stripQuery(rawPath: string): string {
@@ -174,8 +176,11 @@ export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | 
     return leaf !== path ? leaf : null;
   }
 
-  if (parts[0] === "magazine" && parts.length > 2) {
-    if (catalog.articles.some((a) => a.id === parts[1])) return `/magazine/${parts[1]}`;
+  if (parts[0] === "magazine" && parts.length >= 2) {
+    const slug = parts[1];
+    const aliasHit = catalog.articles.find((article) => article.id !== slug && isPublicArticle(article) && article.aliases?.includes(slug));
+    if (aliasHit && parts.length === 2) return `/magazine/${aliasHit.id}`;
+    if (parts.length > 2 && catalog.articles.some((article) => article.id === slug && isPublicArticle(article))) return `/magazine/${slug}`;
   }
 
   if (parts[0] === "projects" && parts.length > 2) {
@@ -253,6 +258,31 @@ function categoryMeta(slug: string, catalog: SeoCatalog) {
 
 function isCategorySlug(slug: string, catalog: SeoCatalog) {
   return Boolean(CATEGORY_SEO[slug] || catalog.categories.some((c) => c.id === slug));
+}
+
+function articleShareImage(image?: string): string | undefined {
+  if (!image || image.startsWith("data:") || image.startsWith("blob:")) return undefined;
+  if (image.startsWith("http://") || image.startsWith("https://")) return image;
+  const path = image.startsWith("/") ? image : `/${image}`;
+  return `${CANONICAL_ORIGIN}${withMediaVersion(path)}`;
+}
+
+function faqEntities(article: Article): { q: string; a: string }[] {
+  if (article.category !== "faq") return [];
+  const blocks = articleBlocks(article.content || []);
+  const pairs: { q: string; a: string }[] = [];
+  let index = 0;
+  while (index < blocks.length) {
+    const question = blocks[index];
+    const answer = blocks[index + 1];
+    if (question?.type === "h3" && answer?.type === "p" && question.text.trim() && answer.text.trim()) {
+      pairs.push({ q: question.text.trim(), a: answer.text.trim() });
+      index += 2;
+      continue;
+    }
+    index += 1;
+  }
+  return pairs;
 }
 
 function articleHtml(article: Article): string {
@@ -611,7 +641,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path === "/magazine") {
-    const links = catalog.articles.map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a></li>`).join("");
+    const links = catalog.articles.filter((article) => isPublicArticle(article)).map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a></li>`).join("");
     return okDoc({
       path,
       title: "مجله تخصصی مرغداری | طیوران صنعت پویا",
@@ -626,7 +656,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
 
   if (path.startsWith("/magazine/") && publicSegments(path).length === 2) {
     const article = catalog.articles.find((a) => a.id === path.split("/")[2]);
-    if (article) {
+    if (article && isPublicArticle(article)) {
       const relatedService = article.relatedServiceId
         ? catalog.services.find((s) => s.id === article.relatedServiceId)
         : undefined;
@@ -645,12 +675,18 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
         ...relatedProducts.map((p) => `<a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a>`),
         `<a href="/contact?cta=article-consult">مشاوره</a>`,
       ].join(" · ");
+      const seoTitle = effectiveSeoTitle(article);
+      const seoDescription = effectiveSeoDescription(article);
+      const shareImage = articleShareImage(article.image);
+      const faqs = faqEntities(article);
       return okDoc({
         path,
-        title: `${article.title} | مجله طیوران صنعت پویا`,
-        description: article.summary,
+        title: seoTitle || `${article.title} | مجله طیوران صنعت پویا`,
+        description: seoDescription || article.summary,
         h1: article.title,
         ogType: "article",
+        robots: article.noindex ? "noindex, follow" : undefined,
+        ogImage: shareImage,
         lastmod: isoDay(article.dateModifiedIso || article.datePublishedIso) || collectionDay(catalog, "articles"),
         body: `${articleHtml(article)}
 <p>نویسنده: ${escapeHtml(article.authorName || "نام نویسنده پس از Brief فنی تکمیل می‌شود")} ${article.authorRole ? `(${escapeHtml(article.authorRole)})` : ""}</p>
@@ -662,7 +698,9 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
           {
             "@type": "Article",
             headline: article.title,
-            description: article.summary,
+            description: seoDescription || article.summary,
+            inLanguage: "fa",
+            image: shareImage,
             datePublished: article.datePublishedIso || undefined,
             dateModified: article.dateModifiedIso || article.datePublishedIso || undefined,
             author: authorNode,
@@ -670,6 +708,18 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
             publisher: { "@id": `${CANONICAL_ORIGIN}/#org` },
             mainEntityOfPage: canonicalPath(path),
           },
+          ...(faqs.length
+            ? [
+                {
+                  "@type": "FAQPage",
+                  mainEntity: faqs.map((item) => ({
+                    "@type": "Question",
+                    name: item.q,
+                    acceptedAnswer: { "@type": "Answer", text: item.a },
+                  })),
+                },
+              ]
+            : []),
           ...(article.id === "how-to-calculate-ventilation-capacity"
             ? [
                 {
@@ -805,6 +855,7 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
   for (const product of catalog.products) add(publicProductPath(product), "0.7", collectionDay(catalog, "products"));
   for (const project of catalog.projects) add(`/projects/${project.id}`, "0.7", collectionDay(catalog, "projects"));
   for (const article of catalog.articles) {
+    if (!isPublicArticle(article) || article.noindex) continue;
     add(`/magazine/${article.id}`, "0.6", isoDay(article.dateModifiedIso || article.datePublishedIso) || collectionDay(catalog, "articles"));
   }
   return urls;
@@ -813,6 +864,10 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
 export function llmsTxt(catalog: SeoCatalog): string {
   const services = catalog.services.map((s) => `- ${publicServicePath(s)} — ${s.title}`).join("\n");
   const cats = catalog.categories.map((c) => `- /products/${c.id} — ${c.title}`).join("\n");
+  const posts = catalog.articles
+    .filter((article) => isPublicArticle(article) && !article.noindex)
+    .map((article) => `- /magazine/${article.id} — ${article.title}`)
+    .join("\n");
   return `# طیوران صنعت پویا
 > تجهیز و نوسازی سالن مرغداری؛ تهویه، گرمایش، دانخوری و آبخوری. دفاتر مشهد و گرگان.
 
@@ -825,6 +880,9 @@ ${services}
 
 ## دسته‌های محصول
 ${cats}
+
+## مجله
+${posts}
 
 ## قواعد استناد
 - اعداد ظرفیت فن و مصرف سوخت را بدون فشار استاتیک، اقلیم و تأیید مهندس نقل نکنید.

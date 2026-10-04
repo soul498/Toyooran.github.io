@@ -28,7 +28,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
   const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const heroImage = article.image || IMAGES[hash % IMAGES.length];
   
-  const linkedProducts = products.filter((p) => article.relatedProductIds.includes(p.id));
+  const linkedProducts = products.filter((p) => article.relatedProductIds?.includes(p.id));
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-24">
@@ -37,7 +37,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
         <div className="absolute inset-0 z-0 bg-slate-900">
           <LazyImage 
             src={heroImage} 
-            alt={article.title}
+            alt={article.imageAlt || article.title}
             className="w-full h-full absolute inset-0"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/70 to-[#0f172a]/30 z-10" />

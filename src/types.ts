@@ -124,6 +124,16 @@ export interface Article {
   reviewerName?: string;
   reviewerRole?: string;
   sources?: ArticleSource[];
+  /** پیش‌نویس روی سایت، سایت‌مپ و نتایج جستجو نمی‌آید. مقدار خالی یعنی منتشرشده. */
+  status?: 'draft' | 'published';
+  seoTitle?: string;
+  seoDescription?: string;
+  focusKeyword?: string;
+  imageAlt?: string;
+  /** اگر true باشد صفحه عمومی است ولی noindex می‌ماند. */
+  noindex?: boolean;
+  /** نامک‌های قبلی برای ریدایرکت ۳۰۱ به آدرس جدید. */
+  aliases?: string[];
 }
 
 export interface CompanyInfo {

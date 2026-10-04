@@ -2,6 +2,7 @@ import { getAdminState, getAdminStateUpdatedAt } from "./auth";
 import { ARTICLES, CATEGORIES_DATA, COMPANY_INFO, PRODUCTS, PROJECTS, SERVICES } from "../src/data/mockData";
 import type { SeoCatalog } from "../src/seo/resolveSeo";
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../src/types";
+import { isPublicArticle } from "../src/seo/articleMeta";
 
 function asArray<T>(key: string, fallback: T[]): T[] {
   try {
@@ -27,15 +28,17 @@ function overlaySeedOnly<T extends { id: string }>(key: string, seed: T[]): T[] 
   return seed.map((item) => overlayById.get(item.id) ?? item);
 }
 
-/** CMS may edit the 7 magazine seeds; extra articles are dropped. Titles stay on the seed list. */
-function overlayArticles(seed: Article[]): Article[] {
-  const overlay = asArray<Article>("articles", []);
-  if (!overlay.length) return seed;
-  const overlayById = new Map(overlay.filter((item) => item?.id).map((item) => [item.id, item]));
-  return seed.map((item) => {
-    const stored = overlayById.get(item.id);
-    return stored ? { ...stored, id: item.id, title: item.title } : item;
-  });
+/** Stored magazine posts are the source of truth. Drafts stay out of the public catalog. */
+export function loadPublicArticles(): Article[] {
+  let stored: Article[] | null = null;
+  try {
+    const value = getAdminState("articles");
+    if (Array.isArray(value)) stored = value as Article[];
+  } catch {
+    stored = null;
+  }
+  const source = stored ?? ARTICLES;
+  return source.filter((item) => item?.id && item?.title && isPublicArticle(item));
 }
 
 function asCompany(): CompanyInfo {
@@ -55,7 +58,7 @@ export function loadSeoCatalog(): SeoCatalog {
     products: mergeSeedById<Product>("products", PRODUCTS),
     services: overlaySeedOnly<Service>("services", SERVICES),
     projects: mergeSeedById<Project>("projects", PROJECTS),
-    articles: overlayArticles(ARTICLES),
+    articles: loadPublicArticles(),
     categories: asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[]),
     company: asCompany(),
     collectionUpdatedAt: {

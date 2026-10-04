@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, publicTurnstileSiteKey, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
 import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxt, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
-import { loadSeoCatalog } from "./server/catalog";
+import { loadPublicArticles, loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
 import { gzipResponses } from "./server/gzip";
 
@@ -49,7 +49,7 @@ async function startServer() {
     }
     next();
   });
-  app.use(express.json({ limit: '100kb' }));
+  app.use(express.json({ limit: '2mb' }));
   app.use(cookieParser());
   app.use(gzipResponses);
   app.use('/api', (req, res, next) => {
@@ -107,6 +107,10 @@ async function startServer() {
     if (JSON.stringify(req.body?.value ?? null).length > 2_000_000) return res.status(413).json({ error: 'داده بیش از حد بزرگ است.' });
     setAdminState(req as any, key, req.body?.value);
     res.status(204).end();
+  });
+  app.get('/api/magazine', (_req, res) => {
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+    res.json({ articles: loadPublicArticles() });
   });
 
   // API Route: Send form submission / consultation to Bale Bot

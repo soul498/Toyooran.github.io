@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   Product,
   Project,
@@ -31,13 +31,9 @@ import {
 import { CRM_PERSONAS } from '../crm/data/personas';
 import { migrateCustomerRecord } from '../crm/utils/crmRecords';
 
-function reconcileMagazineArticles(stored: Article[] | null | undefined): Article[] {
-  if (!Array.isArray(stored) || !stored.length) return ARTICLES;
-  const byId = new Map(stored.filter((item) => item?.id).map((item) => [item.id, item]));
-  return ARTICLES.map((seed) => {
-    const overlay = byId.get(seed.id);
-    return overlay ? { ...overlay, id: seed.id, title: seed.title } : seed;
-  });
+function loadStoredArticles(stored: Article[] | null | undefined): Article[] {
+  if (!Array.isArray(stored)) return ARTICLES;
+  return stored.filter((item) => item?.id && item?.title);
 }
 
 interface DataContextType {
@@ -192,6 +188,25 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [adminDataReady, setAdminDataReady] = useState(false);
   const [csrfToken, setCsrfToken] = useState('');
+  const magazineLockedByAdmin = useRef(false);
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/magazine')
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (cancelled || magazineLockedByAdmin.current) return;
+        if (Array.isArray(data?.articles)) setArticles(data.articles);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  useEffect(() => {
+    if (adminUser) return;
+    magazineLockedByAdmin.current = false;
+    setArticles((current) => (current.some((article) => article.status === 'draft') ? current.filter((article) => article.status !== 'draft') : current));
+  }, [adminUser]);
   const refreshCsrf = async () => { const response = await fetch('/api/auth/csrf', { credentials: 'include' }); const result = await response.json(); setCsrfToken(result.token || ''); return result.token || ''; };
   useEffect(() => {
     fetch('/api/auth/me', { credentials: 'include' })
@@ -204,6 +219,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   useEffect(() => {
     if (!adminUser) { setAdminDataReady(false); return; }
+    magazineLockedByAdmin.current = true;
     const keys = ['products', 'projects', 'services', 'articles', 'categories', 'companyInfo', 'heroCms', 'aiConfig', 'quotes', 'consultations', 'customers', 'media'];
     Promise.all(keys.map(async key => [key, await fetch(`/api/admin/state/${key}`, { credentials: 'include' }).then(response => response.ok ? response.json() : { value: null })] as const))
       .then(entries => {
@@ -211,7 +227,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (state.products.value) setProducts(state.products.value);
         if (state.projects.value) setProjects(state.projects.value);
         if (state.services.value) setServices(state.services.value);
-        if (state.articles.value) setArticles(reconcileMagazineArticles(state.articles.value));
+        if (Array.isArray(state.articles.value)) setArticles(loadStoredArticles(state.articles.value));
         if (state.categories.value) setCategories(state.categories.value);
         if (state.companyInfo.value) setCompanyInfo(state.companyInfo.value);
         if (state.heroCms.value) setHeroCms(state.heroCms.value);
@@ -288,18 +304,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Article CRUD
-  const addArticle = (_article: Article) => {
-    setArticles(ARTICLES);
+  const addArticle = (article: Article) => {
+    setArticles((prev) => [article, ...prev.filter((item) => item.id !== article.id)]);
   };
 
   const updateArticle = (id: string, updated: Partial<Article>) => {
-    const allowed = new Set(ARTICLES.map((a) => a.id));
-    if (!allowed.has(id)) return;
-    setArticles((prev) => prev.map((a) => (a.id === id ? { ...a, ...updated, id, title: ARTICLES.find((s) => s.id === id)?.title ?? a.title } : a)));
+    setArticles((prev) => prev.map((article) => (article.id === id ? { ...article, ...updated } : article)));
   };
 
-  const deleteArticle = (_id: string) => {
-    setArticles(ARTICLES);
+  const deleteArticle = (id: string) => {
+    setArticles((prev) => prev.filter((article) => article.id !== id));
   };
 
   // Category CRUD
@@ -457,7 +471,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (parsed.products) setProducts(parsed.products);
       if (parsed.projects) setProjects(parsed.projects);
       if (parsed.services) setServices(parsed.services);
-      if (parsed.articles) setArticles(reconcileMagazineArticles(parsed.articles));
+      if (parsed.articles) setArticles(loadStoredArticles(parsed.articles));
       if (parsed.categories) setCategories(parsed.categories);
       if (parsed.companyInfo) setCompanyInfo(parsed.companyInfo);
       if (parsed.heroCms) setHeroCms(parsed.heroCms);
