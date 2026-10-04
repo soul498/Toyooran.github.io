@@ -109,7 +109,7 @@ async function startServer() {
     res.status(204).end();
   });
   app.get('/api/magazine', (_req, res) => {
-    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     res.json({ articles: loadPublicArticles() });
   });
 

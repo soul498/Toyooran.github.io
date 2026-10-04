@@ -57,7 +57,8 @@ export const SEO = ({ title, description, ogType = "website", robots, canonicalH
 
 export const SeoHead = () => {
   const { pathname } = useLocation();
-  const { products, projects, services, articles, categories, companyInfo } = useData();
+  const { products, projects, services, articles, categories, companyInfo, magazineReady } = useData();
+  const holdServerSeo = !magazineReady && (pathname === "/magazine" || pathname.startsWith("/magazine/"));
   const catalog: SeoCatalog = {
     products,
     projects,
@@ -68,8 +69,10 @@ export const SeoHead = () => {
   };
   const doc = resolveSeo(pathname, catalog);
   useEffect(() => {
+    if (holdServerSeo) return;
     document.getElementById("seo-prerender")?.remove();
-  }, [pathname]);
+  }, [pathname, holdServerSeo]);
+  if (holdServerSeo) return null;
   return (
     <SEO
       title={doc.title}

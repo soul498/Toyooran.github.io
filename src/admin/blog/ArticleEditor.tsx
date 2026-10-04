@@ -13,6 +13,7 @@ import {
 import type { Article, ArticleSource, Product, Service } from "../../types";
 import { ImagePicker } from "../components/ImagePicker";
 import { CANONICAL_ORIGIN } from "../../seo/resolveSeo";
+import { isSafeHref, isSafeImageSrc } from "../../seo/safeUrl";
 import { effectiveSeoDescription, effectiveSeoTitle } from "../../seo/articleMeta";
 import {
   EditorBlock,
@@ -166,6 +167,22 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
     }
     if (slugTaken(nextSlug, articles, initial?.id || "")) {
       setError("این نامک قبلاً برای نوشته دیگری استفاده شده است.");
+      return;
+    }
+    if (image.trim() && !isSafeImageSrc(image)) {
+      setError("آدرس تصویر شاخص باید مسیر سایت یا لینک http/https باشد.");
+      return;
+    }
+    if (blocks.some((block) => block.type === "img" && block.src.trim() && !isSafeImageSrc(block.src))) {
+      setError("آدرس تصویر داخل متن نامعتبر است.");
+      return;
+    }
+    if (blocks.some((block) => block.type === "cta" && block.label.trim() && block.href.trim() && !isSafeHref(block.href))) {
+      setError("لینک دکمه باید مسیر داخلی مثل /contact یا آدرس http/https باشد.");
+      return;
+    }
+    if (sources.some((source) => source.url?.trim() && !isSafeHref(source.url))) {
+      setError("آدرس منبع باید لینک http یا https باشد.");
       return;
     }
     if (status !== "draft") {
@@ -398,7 +415,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
             <label className="block text-[11px] text-slate-400">متن جایگزین تصویر شاخص
               <input value={imageAlt} onChange={(event) => setImageAlt(event.target.value)} className={fieldClass + " mt-1"} />
             </label>
-            {status !== "draft" && canonicalSlug && (
+            {status !== "draft" && initial && canonicalSlug === initial.id && (
               <a href={`/magazine/${canonicalSlug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[11px] text-amber-300">
                 <ExternalLink className="w-3.5 h-3.5" />
                 مشاهده روی سایت
@@ -567,7 +584,7 @@ const PreviewBlock: React.FC<{ block: EditorBlock }> = ({ block }) => {
       <div className="overflow-x-auto text-xs">
         <table className="w-full border border-slate-200">
           <thead>
-            <tr>{rows[0].map((cell) => <th key={cell} className="border border-slate-200 px-2 py-1">{cell}</th>)}</tr>
+            <tr>{rows[0].map((cell, cellIndex) => <th key={cellIndex} className="border border-slate-200 px-2 py-1">{cell}</th>)}</tr>
           </thead>
           <tbody>
             {rows.slice(1).map((row, index) => (

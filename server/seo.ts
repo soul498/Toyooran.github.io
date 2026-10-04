@@ -76,6 +76,7 @@ ${canonical}    <link rel="preload" as="image" type="image/webp" href="/images/h
     <meta property="og:type" content="${doc.ogType}" />
     <meta property="og:site_name" content="طیوران صنعت پویا" />
     <meta property="og:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
+    <meta name="twitter:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(doc.title)}" />
     <meta name="twitter:description" content="${escapeHtml(doc.description)}" />

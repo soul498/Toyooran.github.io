@@ -5,17 +5,8 @@ import { useData } from '../../context/DataContext';
 import { LazyImage } from '../LazyImage';
 import type { Article } from '../../types';
 import { articleBlocks } from '../../seo/articleBlocks';
-import { publicProductPath } from '../../seo/resolveSeo';
-
-const IMAGES = [
-  '/images/poultry-1.jpg',
-  '/images/factory-1.jpg',
-  '/images/equipment-1.jpg',
-  '/images/tech-1.jpg',
-  '/images/control-1.jpg',
-  '/images/machine-1.jpg',
-  '/images/silo-1.jpg',
-];
+import { publicProductPath, publicServicePath } from '../../seo/resolveSeo';
+import { isSafeHref, isSafeImageSrc } from '../../seo/safeUrl';
 
 interface MagazineArticleProps {
   article: Article;
@@ -24,9 +15,9 @@ interface MagazineArticleProps {
 }
 
 export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBack, onSelectProductById }) => {
-  const { products } = useData();
-  const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const heroImage = article.image || IMAGES[hash % IMAGES.length];
+  const { products, services } = useData();
+  const heroImage = article.image && isSafeImageSrc(article.image) ? article.image : "";
+  const relatedService = article.relatedServiceId ? services.find((service) => service.id === article.relatedServiceId) : undefined;
   
   const linkedProducts = products.filter((p) => article.relatedProductIds?.includes(p.id));
 
@@ -35,11 +26,13 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
       <div className="relative min-h-[240px] md:min-h-[320px] w-full flex flex-col justify-end pt-28 pb-10 overflow-hidden">
         {/* Parallax Background */}
         <div className="absolute inset-0 z-0 bg-slate-900">
+          {heroImage ? (
           <LazyImage 
             src={heroImage} 
             alt={article.imageAlt || article.title}
             className="w-full h-full absolute inset-0"
           />
+          ) : null}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/70 to-[#0f172a]/30 z-10" />
         </div>
 
@@ -106,8 +99,8 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
               if (block.type === "ul") {
                 return (
                   <ul key={idx} className="list-disc list-inside mb-4 mr-4 space-y-2">
-                    {block.items.map((item) => (
-                      <li key={item} className="text-base md:text-lg font-medium text-slate-700">
+                    {block.items.map((item, itemIndex) => (
+                      <li key={`${idx}-${itemIndex}`} className="text-base md:text-lg font-medium text-slate-700">
                         {item}
                       </li>
                     ))}
@@ -115,6 +108,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                 );
               }
               if (block.type === "img") {
+                if (!isSafeImageSrc(block.src)) return null;
                 return (
                   <div key={idx} className="my-10 rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-200 bg-white">
                     <LazyImage src={block.src} alt={block.alt} className="w-full min-h-[250px] md:min-h-[400px]" imgClassName="w-full h-auto object-cover max-h-[600px]" />
@@ -123,6 +117,9 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                 );
               }
               if (block.type === "cta") {
+                if (!isSafeHref(block.href)) return null;
+                const external = /^https?:\/\//i.test(block.href);
+                const buttonClass = "relative z-10 whitespace-nowrap bg-amber-400 hover:bg-amber-500 text-blue-950 px-8 py-3.5 rounded-xl font-black text-sm transition-all shadow-lg shadow-amber-400/20";
                 return (
                   <div key={idx} className="my-10 bg-gradient-to-r from-blue-900 to-[#003F86] rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-blue-900/20 relative overflow-hidden">
                     <div className="absolute inset-0 bg-[url('/images/pattern-circuit.svg')] opacity-10 mix-blend-overlay"></div>
@@ -130,12 +127,11 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                       <h4 className="text-white text-lg md:text-xl font-bold mb-2">نیاز به راهنمایی بیشتر دارید؟</h4>
                       <p className="text-blue-100 text-sm md:text-base font-medium">کارشناسان ما آماده ارائه مشاوره تخصصی و فنی به شما هستند.</p>
                     </div>
-                    <Link
-                      to={block.href}
-                      className="relative z-10 whitespace-nowrap bg-amber-400 hover:bg-amber-500 text-blue-950 px-8 py-3.5 rounded-xl font-black text-sm transition-all shadow-lg shadow-amber-400/20"
-                    >
-                      {block.label}
-                    </Link>
+                    {external ? (
+                      <a href={block.href} className={buttonClass} rel="noopener noreferrer">{block.label}</a>
+                    ) : (
+                      <Link to={block.href} className={buttonClass}>{block.label}</Link>
+                    )}
                   </div>
                 );
               }
@@ -145,8 +141,8 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                     <table className="w-full text-right text-sm text-slate-700">
                       <thead>
                         <tr className="bg-slate-100">
-                          {block.headers.map((cell) => (
-                            <th key={cell} className="py-3 px-4 font-black whitespace-nowrap">{cell}</th>
+                          {block.headers.map((cell, cellIndex) => (
+                            <th key={`${idx}-${cellIndex}`} className="py-3 px-4 font-black whitespace-nowrap">{cell}</th>
                           ))}
                         </tr>
                       </thead>
@@ -164,7 +160,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                 );
               }
               return (
-                <p key={idx} className="mb-6 text-base md:text-lg text-justify font-medium">
+                <p key={idx} className="mb-6 text-base md:text-lg text-justify font-medium whitespace-pre-line">
                   {block.text}
                 </p>
               );
@@ -204,20 +200,20 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
           )}
           
           <div className="mt-10 pt-8 border-t border-slate-200 text-sm text-slate-600 space-y-2">
-            <p>نویسنده: {article.authorName || 'نام نویسنده پس از Brief فنی تکمیل می‌شود'}{article.authorRole ? ` — ${article.authorRole}` : ''}</p>
-            <p>بازبین فنی: {article.reviewerName || 'در انتظار بازبین نام‌دار واحد مهندسی'}</p>
+            {article.authorName ? <p>نویسنده: {article.authorName}{article.authorRole ? ` — ${article.authorRole}` : ''}</p> : null}
+            {article.reviewerName ? <p>بازبین فنی: {article.reviewerName}{article.reviewerRole ? ` — ${article.reviewerRole}` : ''}</p> : null}
             <p>تاریخ انتشار: {article.datePublishedIso || article.date}</p>
             {article.sources?.length ? (
               <ul className="list-disc mr-5">
-                {article.sources.map((source) => (
-                  <li key={source.name}>{source.url ? <a className="text-[#003F86] font-bold" href={source.url}>{source.name}</a> : source.name}</li>
+                {article.sources.map((source, sourceIndex) => (
+                  <li key={`${source.name}-${sourceIndex}`}>{source.url && isSafeHref(source.url) ? <a className="text-[#003F86] font-bold" href={source.url} rel="noopener noreferrer">{source.name}</a> : source.name}</li>
                 ))}
               </ul>
             ) : null}
             <p>
-              <Link className="text-[#003F86] font-bold" to="/products/ventilation">تهویه و هواکش</Link>
-              {' · '}
-              <Link className="text-[#003F86] font-bold" to="/services/poultry-hall-fitout">تجهیز و نوسازی سالن</Link>
+              <Link className="text-[#003F86] font-bold" to={relatedService ? publicServicePath(relatedService) : "/services/poultry-hall-fitout"}>
+                {relatedService ? relatedService.title : "تجهیز و نوسازی سالن"}
+              </Link>
               {' · '}
               <Link className="text-[#003F86] font-bold" to="/contact?cta=article-consult">درخواست مشاوره</Link>
             </p>

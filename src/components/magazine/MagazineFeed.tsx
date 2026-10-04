@@ -15,7 +15,7 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles }) => {
     <div className="min-h-screen relative z-0" id="magazine-feed">
       <PageBanner
         title="مجله تخصصی طیوران صنعت پویا"
-        subtitle="هفت راهنمای تجهیز، تهویه، گرمایش و نوسازی سالن مرغداری"
+        subtitle="راهنماهای تجهیز، تهویه، گرمایش و نوسازی سالن مرغداری"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
@@ -28,12 +28,14 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles }) => {
               <Link to={`/magazine/${article.id}`} className="flex flex-col h-full">
                 <div className="relative h-56 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/10 to-transparent z-10 pointer-events-none" />
+                  {article.image ? (
                   <LazyImage
                     src={article.image}
-                    alt={article.title}
+                    alt={article.imageAlt || article.title}
                     className="w-full h-full"
                     imgClassName="w-full h-full object-cover"
                   />
+                  ) : <div className="w-full h-full bg-slate-200" />}
                 </div>
 
                 <div className="p-7 flex-1 flex flex-col">

@@ -2,6 +2,7 @@ import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } fr
 import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
 import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle } from "./articleMeta";
+import { isSafeHref, isSafeImageSrc } from "./safeUrl";
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
@@ -274,11 +275,22 @@ function faqEntities(article: Article): { q: string; a: string }[] {
   let index = 0;
   while (index < blocks.length) {
     const question = blocks[index];
-    const answer = blocks[index + 1];
-    if (question?.type === "h3" && answer?.type === "p" && question.text.trim() && answer.text.trim()) {
-      pairs.push({ q: question.text.trim(), a: answer.text.trim() });
-      index += 2;
-      continue;
+    if (question?.type === "h3" && question.text.trim()) {
+      const answers: string[] = [];
+      let cursor = index + 1;
+      while (cursor < blocks.length) {
+        const answer = blocks[cursor];
+        if (answer?.type !== "p") break;
+        const text = answer.text.trim();
+        if (!text) break;
+        answers.push(text);
+        cursor += 1;
+      }
+      if (answers.length) {
+        pairs.push({ q: question.text.trim(), a: answers.join(" ") });
+        index = cursor;
+        continue;
+      }
     }
     index += 1;
   }
@@ -290,12 +302,16 @@ function articleHtml(article: Article): string {
     .map((block) => {
       if (block.type === "h2") return `<h2>${escapeHtml(block.text)}</h2>`;
       if (block.type === "h3") return `<h3>${escapeHtml(block.text)}</h3>`;
-      if (block.type === "p") return `<p>${escapeHtml(block.text)}</p>`;
+      if (block.type === "p") return `<p>${escapeHtml(block.text).replace(/\n/g, "<br>")}</p>`;
       if (block.type === "ul") return `<ul>${block.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
       if (block.type === "img") {
+        if (!isSafeImageSrc(block.src)) return "";
         return `<figure><img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.alt)}" /><figcaption>${escapeHtml(block.alt)}</figcaption></figure>`;
       }
-      if (block.type === "cta") return `<p><a href="${escapeHtml(block.href)}">${escapeHtml(block.label)}</a></p>`;
+      if (block.type === "cta") {
+        if (!isSafeHref(block.href)) return "";
+        return `<p><a href="${escapeHtml(block.href)}">${escapeHtml(block.label)}</a></p>`;
+      }
       const head = `<tr>${block.headers.map((cell) => `<th>${escapeHtml(cell)}</th>`).join("")}</tr>`;
       const body = block.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
       return `<table>${head}${body}</table>`;
@@ -664,12 +680,23 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       const authorNode = article.authorName
         ? { "@type": "Person", name: article.authorName, jobTitle: article.authorRole }
         : { "@type": "Organization", name: company.nameFa };
-      const reviewerNode = article.reviewerName
-        ? { "@type": "Person", name: article.reviewerName, jobTitle: article.reviewerRole }
-        : undefined;
+      const citations = (article.sources || [])
+        .filter((source) => source.name.trim())
+        .map((source) => ({
+          "@type": "CreativeWork",
+          name: source.name.trim(),
+          ...(source.url && isSafeHref(source.url) ? { url: source.url.trim() } : {}),
+        }));
       const sourceHtml = (article.sources || [])
-        .map((s) => (s.url ? `<li><a href="${escapeHtml(s.url)}">${escapeHtml(s.name)}</a></li>` : `<li>${escapeHtml(s.name)}</li>`))
+        .filter((source) => source.name.trim())
+        .map((source) => (source.url && isSafeHref(source.url) ? `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.name)}</a></li>` : `<li>${escapeHtml(source.name)}</li>`))
         .join("");
+      const authorHtml = article.authorName
+        ? `<p>نویسنده: ${escapeHtml(article.authorName)}${article.authorRole ? ` (${escapeHtml(article.authorRole)})` : ""}</p>`
+        : "";
+      const reviewerHtml = article.reviewerName
+        ? `<p>بازبین فنی: ${escapeHtml(article.reviewerName)}${article.reviewerRole ? ` (${escapeHtml(article.reviewerRole)})` : ""}</p>`
+        : "";
       const relatedHtml = [
         relatedService ? `<a href="${publicServicePath(relatedService)}">${escapeHtml(relatedService.title)}</a>` : `<a href="/services/${FITOUT_SLUG}">تجهیز سالن</a>`,
         ...relatedProducts.map((p) => `<a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a>`),
@@ -689,8 +716,8 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
         ogImage: shareImage,
         lastmod: isoDay(article.dateModifiedIso || article.datePublishedIso) || collectionDay(catalog, "articles"),
         body: `${articleHtml(article)}
-<p>نویسنده: ${escapeHtml(article.authorName || "نام نویسنده پس از Brief فنی تکمیل می‌شود")} ${article.authorRole ? `(${escapeHtml(article.authorRole)})` : ""}</p>
-<p>بازبین فنی: ${escapeHtml(article.reviewerName || "در انتظار بازبین نام‌دار واحد مهندسی")}</p>
+${authorHtml}
+${reviewerHtml}
 <p>تاریخ انتشار: ${escapeHtml(article.datePublishedIso || article.date)}</p>
 ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
 <p>${relatedHtml}</p>`,
@@ -699,14 +726,14 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
             "@type": "Article",
             headline: article.title,
             description: seoDescription || article.summary,
-            inLanguage: "fa",
-            image: shareImage,
+            inLanguage: "fa-IR",
+            ...(shareImage ? { image: shareImage } : {}),
             datePublished: article.datePublishedIso || undefined,
             dateModified: article.dateModifiedIso || article.datePublishedIso || undefined,
             author: authorNode,
-            ...(reviewerNode ? { reviewer: reviewerNode } : {}),
+            ...(citations.length ? { citation: citations } : {}),
             publisher: { "@id": `${CANONICAL_ORIGIN}/#org` },
-            mainEntityOfPage: canonicalPath(path),
+            mainEntityOfPage: { "@type": "WebPage", "@id": canonicalPath(path) },
           },
           ...(faqs.length
             ? [

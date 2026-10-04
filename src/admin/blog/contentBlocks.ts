@@ -1,4 +1,5 @@
 import { articleBlocks } from "../../seo/articleBlocks";
+import { isSafeHref, isSafeImageSrc } from "../../seo/safeUrl";
 
 export type EditorBlock =
   | { id: string; type: "p"; text: string }
@@ -80,9 +81,9 @@ export function blocksToContent(blocks: EditorBlock[]): string[] {
       for (const item of block.items) {
         if (item.trim()) lines.push(`- ${item.trim()}`);
       }
-    } else if (block.type === "img" && block.src.trim()) {
+    } else if (block.type === "img" && isSafeImageSrc(block.src)) {
       lines.push(`[IMG|${markerSafe(block.src)}|${markerSafe(block.alt) || "تصویر مقاله"}]`);
-    } else if (block.type === "cta" && block.label.trim() && block.href.trim()) {
+    } else if (block.type === "cta" && block.label.trim() && isSafeHref(block.href)) {
       lines.push(`[CTA|${markerSafe(block.label)}|${markerSafe(block.href)}]`);
     } else if (block.type === "table") {
       lines.push(...tableLines(block.source));

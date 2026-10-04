@@ -1,6 +1,6 @@
 import type { Article } from "../../types";
 import { effectiveSeoDescription, effectiveSeoTitle } from "../../seo/articleMeta";
-import { EditorBlock, blockPlainText, contentToBlocks } from "./contentBlocks";
+import { EditorBlock, blockPlainText, contentToBlocks, normalizeSlug } from "./contentBlocks";
 
 export type SeoCheck = {
   id: string;
@@ -117,7 +117,7 @@ export function articleSeoChecks(article: Partial<Article>, blocks?: EditorBlock
     return checks;
   }
 
-  const latinKeyword = /[a-z0-9]/i.test(keyword);
+  const keywordSlug = normalizeSlug(keyword);
   checks.splice(
     2,
     0,
@@ -136,8 +136,8 @@ export function articleSeoChecks(article: Partial<Article>, blocks?: EditorBlock
     {
       id: "keyword-slug",
       label: "نامک مرتبط با کلمه کلیدی",
-      ok: latinKeyword ? slug.includes(keyword.toLowerCase().replace(/\s+/g, "-")) : /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug),
-      detail: latinKeyword ? "عبارت انگلیسی باید داخل نامک باشد" : "برای عبارت فارسی، نامک انگلیسی کوتاه کافی است",
+      ok: keywordSlug ? slug.includes(keywordSlug) : /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug),
+      detail: keywordSlug ? "عبارت انگلیسی باید داخل نامک باشد" : "برای عبارت فارسی، نامک انگلیسی کوتاه کافی است",
     },
     {
       id: "keyword-lead",

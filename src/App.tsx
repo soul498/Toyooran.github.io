@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 const Toaster = lazy(() => import('react-hot-toast').then((m) => ({ default: m.Toaster })));
 import { ScrollProgress } from './components/ScrollProgress';
 import { DataProvider, useData } from './context/DataContext';
@@ -37,9 +37,14 @@ import { publicProductPath } from "./seo/resolveSeo";
 
 const RouteFallback = () => <div className="min-h-[40vh]" aria-hidden="true" />;
 
-const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: any) => {
+const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: { articles: Article[]; onBack: () => void; onSelectProductById: (productId: string) => void }) => {
   const { articleId } = useParams();
-  const article = articles.find((a: any) => a.id === articleId);
+  const { magazineReady } = useData();
+  if (!magazineReady) return <div className="min-h-screen" aria-busy="true" />;
+  const slug = articleId || "";
+  const article = articles.find((item) => item.id === slug);
+  const alias = articles.find((item) => item.id !== slug && item.aliases?.includes(slug));
+  if (alias) return <Navigate to={`/magazine/${alias.id}`} replace />;
   if (!article) return <NotFoundPage />;
   return (
     <MagazineArticle article={article} onBack={onBack} onSelectProductById={onSelectProductById} />
@@ -63,6 +68,7 @@ const MainAppInner: React.FC = () => {
     projects, 
     services, 
     articles,
+    magazineReady,
     categories, 
     companyInfo, 
     heroCms 
@@ -259,6 +265,7 @@ const MainAppInner: React.FC = () => {
             />
           } />
           <Route path="/magazine" element={
+            magazineReady ? (
             <MagazineFeed
               articles={publicArticles}
               onSelectArticle={(article) => {
@@ -266,6 +273,7 @@ const MainAppInner: React.FC = () => {
                 navigate(`/magazine/${article.id}`);
               }}
             />
+            ) : <div className="min-h-screen" aria-busy="true" />
           } />
           <Route path="/magazine/:articleId" element={
             <MagazineArticleWrapper

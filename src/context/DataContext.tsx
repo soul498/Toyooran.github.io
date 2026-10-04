@@ -59,6 +59,7 @@ interface DataContextType {
 
   // Articles
   articles: Article[];
+  magazineReady: boolean;
   addArticle: (article: Article) => void;
   updateArticle: (id: string, article: Partial<Article>) => void;
   deleteArticle: (id: string) => void;
@@ -188,7 +189,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [adminDataReady, setAdminDataReady] = useState(false);
   const [csrfToken, setCsrfToken] = useState('');
+  const [magazineReady, setMagazineReady] = useState(false);
   const magazineLockedByAdmin = useRef(false);
+  const articlesHydrated = useRef(false);
   useEffect(() => {
     let cancelled = false;
     fetch('/api/magazine')
@@ -197,7 +200,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (cancelled || magazineLockedByAdmin.current) return;
         if (Array.isArray(data?.articles)) setArticles(data.articles);
       })
-      .catch(() => undefined);
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled && !magazineLockedByAdmin.current) setMagazineReady(true);
+      });
     return () => {
       cancelled = true;
     };
@@ -220,6 +226,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!adminUser) { setAdminDataReady(false); return; }
     magazineLockedByAdmin.current = true;
+    articlesHydrated.current = false;
     const keys = ['products', 'projects', 'services', 'articles', 'categories', 'companyInfo', 'heroCms', 'aiConfig', 'quotes', 'consultations', 'customers', 'media'];
     Promise.all(keys.map(async key => [key, await fetch(`/api/admin/state/${key}`, { credentials: 'include' }).then(response => response.ok ? response.json() : { value: null })] as const))
       .then(entries => {
@@ -227,7 +234,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (state.products.value) setProducts(state.products.value);
         if (state.projects.value) setProjects(state.projects.value);
         if (state.services.value) setServices(state.services.value);
+        articlesHydrated.current = true;
         if (Array.isArray(state.articles.value)) setArticles(loadStoredArticles(state.articles.value));
+        setMagazineReady(true);
         if (state.categories.value) setCategories(state.categories.value);
         if (state.companyInfo.value) setCompanyInfo(state.companyInfo.value);
         if (state.heroCms.value) setHeroCms(state.heroCms.value);
@@ -246,12 +255,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         if (state.media.value) setMediaLibrary(state.media.value);
         setAdminDataReady(true);
-      }).catch(() => setAdminDataReady(true));
+      }).catch(() => {
+        articlesHydrated.current = false;
+        setMagazineReady(true);
+        setAdminDataReady(true);
+      });
   }, [adminUser]);
   useEffect(() => { saveAdminState('products', products); }, [products, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('projects', projects); }, [projects, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('services', services); }, [services, adminUser, adminDataReady]);
-  useEffect(() => { saveAdminState('articles', articles); }, [articles, adminUser, adminDataReady]);
+  useEffect(() => { if (articlesHydrated.current) saveAdminState('articles', articles); }, [articles, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('categories', categories); }, [categories, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('companyInfo', companyInfo); }, [companyInfo, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('heroCms', heroCms); }, [heroCms, adminUser, adminDataReady]);
@@ -502,6 +515,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateService,
         deleteService,
         articles,
+        magazineReady,
         addArticle,
         updateArticle,
         deleteArticle,
