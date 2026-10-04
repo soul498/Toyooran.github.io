@@ -1,0 +1,23 @@
+---
+description: کار و پوش فقط روی main در Forgejo محلی؛ گیت‌هاب و شاخهٔ جدا ممنوع
+alwaysApply: true
+---
+
+# گیت طیوران
+
+سورس حقیقت Forgejo روی همین سرور است. ریموت `github` آرشیو است و برای کامیت، پوش، پول‌ریکوئست و دیپلوی استفاده نمی‌شود.
+
+- ریپو: `/opt/Toyooran`
+- شاخهٔ کار: فقط `main`
+- پوش: فقط `git push origin main`
+- شاخهٔ جدا نساز و به برنچ دیگر پوش نکن
+
+`origin` همان `https://git.toyooran.com/mhzare/toyooran.git` است (روی سرور به `127.0.0.1:3002` می‌رود). پوش به `origin/main` دیپلوی را از طریق Forgejo Actions اجرا می‌کند.
+
+```bash
+cd /opt/Toyooran
+git checkout main
+git add …
+git commit -m "…"
+git push origin main
+```
