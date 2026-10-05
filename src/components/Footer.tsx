@@ -2,6 +2,7 @@ import React from "react";
 import { AparatIcon } from "./AparatIcon";
 import { Link } from 'react-router-dom';
 import { SocialIconLink } from './SocialIconLink';
+import { baladPlaceFor } from '../lib/baladMaps';
 import { toTelHref, neshanMapsUrl } from '../lib/phone';
 import { 
   Phone, 
@@ -205,7 +206,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                   <div>
                     <span className="block text-[10px] text-slate-300 font-bold mb-1">دفتر مرکزی</span>
                     <a
-                      href={neshanMapsUrl(hq.address, hq.lat, hq.lng)}
+                      href={baladPlaceFor(hq) || neshanMapsUrl(hq.address, hq.lat, hq.lng)}
                       target="_blank"
                       rel="noreferrer"
                       className="text-slate-300 hover:text-amber-400 font-medium text-sm leading-relaxed"

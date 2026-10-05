@@ -1,6 +1,6 @@
 import React from "react";
 import { Building2, Clock, Factory, MapPin } from "../icons";
-import { baladEmbedFor } from "../lib/baladMaps";
+import { baladEmbedFor, baladPlaceFor } from "../lib/baladMaps";
 import { neshanMapsUrl } from "../lib/phone";
 
 type LocationLike = {
@@ -20,7 +20,7 @@ export const LocationDetailPane: React.FC<{
 }> = ({ location, hours }) => {
   const embed = baladEmbedFor(location);
   const title = location.title || (location.type === "headquarter" ? "دفتر مرکزی" : "شعبه");
-  const mapHref = neshanMapsUrl(location.address || "", location.lat, location.lng);
+  const mapHref = baladPlaceFor(location) || neshanMapsUrl(location.address || "", location.lat, location.lng);
 
   return (
     <div className="lg:col-span-8 relative rounded-[2rem] overflow-hidden bg-[#001c3d] border border-white/10 h-[460px] lg:h-full shadow-2xl">
