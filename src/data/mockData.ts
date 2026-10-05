@@ -37,7 +37,8 @@ export const COMPANY_INFO = {
       address: 'مشهد، میدان مادر، مجتمع تجاری ادیب، طبقه ۳، واحد ۴۰۶',
       lat: 36.3263,
       lng: 59.50566,
-      mapEmbedUrl: 'https://neshan.org/maps/@36.3263,59.50566,17z'
+      mapEmbedUrl: 'https://neshan.org/maps/@36.3263,59.50566,17z',
+      baladEmbedUrl: 'https://balad.ir/embed?p=2XXUngg0bK6lAQ'
     },
     {
       id: 'fact-01',
@@ -46,7 +47,8 @@ export const COMPANY_INFO = {
       address: 'مشهد، بلوار میثاق، کارخانجات صنعتی طیوران صنعت پویا',
       lat: 36.3363,
       lng: 59.45566,
-      mapEmbedUrl: 'https://neshan.org/maps/@36.3363,59.45566,17z'
+      mapEmbedUrl: 'https://neshan.org/maps/@36.3363,59.45566,17z',
+      baladEmbedUrl: 'https://balad.ir/embed?p=6CHymGXdZRyn6u'
     },
     {
       id: 'rd-01',
@@ -55,14 +57,16 @@ export const COMPANY_INFO = {
       address: 'گرگان، دانشگاه منابع طبیعی گلستان',
       lat: 36.840243,
       lng: 54.436329,
-      mapEmbedUrl: 'https://neshan.org/maps/@36.840243,54.436329,17z'
+      mapEmbedUrl: 'https://neshan.org/maps/@36.840243,54.436329,17z',
+      baladEmbedUrl: 'https://balad.ir/embed?p=3vQBwlNBZMYwZm'
     },
     {
       id: 'branch-tehran',
       title: 'دفتر بازرگانی گرگان',
       type: 'branch',
       address: 'گرگان، میدان مفتح، ابتدای خیابان جمهوری، کارخانه نوآوری',
-      mapEmbedUrl: 'https://neshan.org/maps#/search/%DA%AF%D8%B1%DA%AF%D8%A7%D9%86%D8%8C%20%D9%85%DB%8C%D8%AF%D8%A7%D9%86%20%D9%85%D9%81%D8%AA%D8%AD'
+      mapEmbedUrl: 'https://neshan.org/maps#/search/%DA%AF%D8%B1%DA%AF%D8%A7%D9%86%D8%8C%20%D9%85%DB%8C%D8%AF%D8%A7%D9%86%20%D9%85%D9%81%D8%AA%D8%AD',
+      baladEmbedUrl: 'https://balad.ir/embed?p=PMzvHKnmzUK1EG'
     }
   ]
 };

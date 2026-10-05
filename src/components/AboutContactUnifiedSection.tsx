@@ -5,7 +5,6 @@ import {
   MapPin, 
   Phone, 
   Mail, 
-  Clock, 
   Instagram, 
   Send, 
   MessageCircle, 
@@ -18,7 +17,8 @@ import {
   Grid
 } from '../icons';
 import { useData } from '../context/DataContext';
-import { toTelHref, neshanMapsUrl } from '../lib/phone';
+import { toTelHref } from '../lib/phone';
+import { LocationDetailPane } from './LocationDetailPane';
 
 export const AboutContactUnifiedSection: React.FC = () => {
   const { companyInfo } = useData();
@@ -162,7 +162,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
 
           {/* BOTTOM ROW: Master-Detail Locations Directory */}
           {locations && locations.length > 0 && (
-            <div className="mt-16 sm:mt-24 relative z-10">
+            <div id="addresses" className="mt-16 sm:mt-24 relative z-10">
               
               <div className="flex items-center gap-6 mb-10">
                 <div className="h-px flex-1 bg-gradient-to-l from-white/20 to-transparent" />
@@ -171,7 +171,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
               </div>
 
               {/* Fixed-Height Container for Scalability */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto lg:h-[500px]">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto lg:h-[560px]">
                 
                 {/* 1. Left Sidebar: Scrollable List of Branches */}
                 <div className="lg:col-span-4 bg-white/5 border border-white/10 rounded-[2rem] p-4 flex flex-col  h-[350px] lg:h-full relative overflow-hidden shadow-2xl">
@@ -215,55 +215,12 @@ export const AboutContactUnifiedSection: React.FC = () => {
                    </div>
                 </div>
 
-                {/* 2. Right Detail View: Active Card */}
-                <div className="lg:col-span-8 relative rounded-[2rem] overflow-hidden bg-[#002d61]/50 border border-white/10 h-[400px] lg:h-full group shadow-2xl">
-                      {activeLocation && (
-                         <div className="absolute inset-0 flex flex-col w-full h-full">
-                            <div className="absolute inset-0 z-0 bg-[#001c3d] overflow-hidden">
-                              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(251,191,36,0.08)_0%,_transparent_70%)]" />
-                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                 <div className="w-32 h-32 border border-amber-500/20 rounded-full flex items-center justify-center bg-white/5">
-                                    {activeLocation.type === 'headquarter' ? <Building2 className="w-12 h-12 text-amber-500/60" /> : 
-                                     activeLocation.type === 'factory' ? <Factory className="w-12 h-12 text-amber-500/60" /> : 
-                                     <MapPin className="w-12 h-12 text-amber-500/60" />}
-                                 </div>
-                              </div>
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#001c3d] via-[#001c3d]/60 to-transparent z-10" />
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10 pointer-events-none" />
-                            <div className="relative z-20 mt-auto p-6 sm:p-10 lg:p-12 flex flex-col w-full items-center text-center sm:items-stretch sm:text-right pointer-events-auto">
-                                <p className="text-2xl sm:text-4xl font-black text-white mb-5 leading-tight">
-                                  {activeLocation.title || (activeLocation.type === 'headquarter' ? 'دفتر مرکزی' : 'شعبه')}
-                                </p>
-                                <a
-                                  href={neshanMapsUrl(activeLocation.address, (activeLocation as any).lat, (activeLocation as any).lng)}
-                                  target="_blank"
-                                  rel="noreferrer"
-                  className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mb-6 font-medium hover:text-amber-400 transition-colors block"
-                                >
-                                  {activeLocation.address}
-                                </a>
-                                <a
-                                  href={neshanMapsUrl(activeLocation.address, (activeLocation as any).lat, (activeLocation as any).lng)}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="inline-flex items-center gap-2 self-center sm:self-start mb-6 px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-sm hover:bg-amber-300"
-                                >
-                                  <MapPin className="w-4 h-4" />
-                                  مشاهده روی نقشه نشان
-                                </a>
-                                <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10">
-                                  {((activeLocation as any).workingHours || (activeLocation.type === 'headquarter' ? companyInfo.workingHours : null)) && (
-                                    <div className="flex items-center gap-2.5 text-sm sm:text-base text-amber-400 font-bold bg-amber-500/10 px-5 py-2.5 rounded-xl border border-amber-500/20">
-                                      <Clock className="w-4.5 h-4.5" />
-                                      <span>{(activeLocation as any).workingHours || companyInfo.workingHours}</span>
-                                    </div>
-                                  )}
-                                </div>
-                            </div>
-                         </div>
-                      )}
-                </div>
+                {activeLocation && (
+                  <LocationDetailPane
+                    location={activeLocation}
+                    hours={(activeLocation as { workingHours?: string }).workingHours || (activeLocation.type === 'headquarter' ? companyInfo.workingHours : null)}
+                  />
+                )}
 
               </div>
             </div>
