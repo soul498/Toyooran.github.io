@@ -9,7 +9,8 @@ import {
 } from '../icons';
 import { Link } from 'react-router-dom';
 import { Product, ProductCategory } from '../types';
-import { categoryIntro, publicProductPath } from '../seo/resolveSeo';
+import { catalogHeading, categoryIntro, publicProductPath } from '../seo/resolveSeo';
+import { useData } from '../context/DataContext';
 import { LazyImage } from './LazyImage';
 import { CategoryMarquee } from './CategoryMarquee';
 
@@ -40,6 +41,8 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
       setLocalCategory(cat);
     }
   };
+  const { categories } = useData();
+  const heading = catalogHeading(selectedCategory, categories as { id: string; title: string }[]);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(() =>
     typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 6
@@ -80,11 +83,11 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
         <div className="max-w-[1400px] mx-auto">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-3xl border border-slate-200 bg-white/95 shadow-sm px-5 py-4 sm:px-7 sm:py-5">
             <div className="text-right min-w-0">
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">تجهیزات مرغداری</h1>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{heading}</h1>
               <p className="text-sm text-slate-600 font-medium mt-1 leading-relaxed">
                 {selectedCategory !== 'all' && categoryIntro(selectedCategory)
                   ? categoryIntro(selectedCategory)
-                  : 'کاتالوگ تهویه، گرمایش، دانخوری و آبخوری — استعلام فنی از طیوران صنعت پویا'}
+                  : 'کاتالوگ تجهیزات دام و طیور: تهویه، گرمایش، دانخوری، آبخوری، قفس و سیلو — استعلام فنی از طیوران صنعت پویا'}
               </p>
             </div>
             <a

@@ -39,7 +39,7 @@ export const LazyImage = ({
       <img
         ref={imgRef}
         src={currentSrc}
-        alt={alt !== undefined ? alt : 'تجهیزات مرغداری طیوران صنعت پویا'}
+        alt={alt !== undefined ? alt : 'تجهیزات دام و طیور طیوران صنعت پویا'}
         width={width}
         height={height}
         loading="lazy"

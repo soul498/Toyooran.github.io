@@ -15,6 +15,15 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-10-06 — H1 اختصاصی هر دسته و حوزه «صنعت دام و طیور» در متن‌های کلی شرکت
+
+- مالک: سئو
+- فایل‌ها: `src/seo/resolveSeo.ts`, `src/components/ProductCatalogSection.tsx`, `src/components/ServicesSection.tsx`, `src/components/CategoryHexSection.tsx`, `src/components/LazyImage.tsx`, `index.html`
+- URLها: `/products`, `/products/{heating,ventilation,drinking,cooling,inlet,feeding,cage,silo,other}`, `/`, `/services`, `/about`, `/contact`, `/llms.txt`
+- تغییر: H1 کلاینت کاتالوگ دیگر هاردکد «تجهیزات مرغداری» نیست؛ از `catalogHeading()` می‌آید که همان H1 پیش‌رندر سرور است. هاب: «تجهیزات صنعت دام و طیور». ورودی CATEGORY_SEO برای cage و other اضافه شد. متن‌های کلی شرکت (عنوان/توضیح خانه، هاب محصولات و خدمات، درباره، تماس، llms.txt) از «فقط مرغداری» به «صنعت دام و طیور» تغییر کرد؛ متن‌های اختصاصی سالن مرغداری حفظ شد.
+- دلیل/Issue: همه دسته‌ها H1 یکسان داشتند و شرکت در کل صنعت دام و طیور فعال است (درخواست مدیر).
+- Verify: lint + build + HTML زنده (Googlebot) + H1 رندرشده با Chrome headless
+
 ## 2026-09-25 — H1 لندینگ دوباره از روی کامپوننت خوانده می‌شود
 
 - مالک: توسعه

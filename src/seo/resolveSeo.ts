@@ -58,7 +58,31 @@ const CATEGORY_SEO: Record<string, { title: string; h1: string; description: str
     description: "سیلو ذخیره دان، خط انتقال دان اوگر و آسیاب میکسر برای سالن مرغداری. استعلام فنی از طیوران صنعت پویا.",
     body: "سیلوهای ذخیره دان، خطوط اوگر و آسیاب میکسر",
   },
+  cage: {
+    title: "قفس مرغ تخمگذار، گوشتی و پولت | طیوران صنعت پویا",
+    h1: "قفس اتوماتیک مرغ تخمگذار، گوشتی و پولت",
+    description: "قفس باتری مرغ تخمگذار، قفس مرغ گوشتی، قفس پولت و آشیانه اتوماتیک. استعلام فنی از طیوران صنعت پویا.",
+    body: "قفس‌های باتری تخمگذار، قفس مرغ گوشتی، قفس پولت و آشیانه اتوماتیک مرغ مادر. نوع سیستم و تعداد طبقه بر اساس نوع گله و ابعاد سالن انتخاب می‌شود.",
+  },
+  other: {
+    title: "سایر تجهیزات و ماشین‌آلات دام و طیور | طیوران صنعت پویا",
+    h1: "سایر تجهیزات و ماشین‌آلات دام و طیور",
+    description: "سایر ادوات، اتوماسیون و ماشین‌آلات تخصصی صنعت دام و طیور. استعلام فنی از طیوران صنعت پویا.",
+    body: "سایر ادوات، اتوماسیون و ماشین‌آلات تخصصی صنعت دام و طیور.",
+  },
 };
+
+/** H1 of the /products hub. The company covers the whole livestock & poultry industry, not only poultry halls. */
+export const PRODUCTS_HUB_H1 = "تجهیزات صنعت دام و طیور";
+
+/**
+ * Single source of truth for the catalog H1 (server prerender and client UI must match).
+ * "all"/empty → hub H1; known category → CATEGORY_SEO h1, else the category's own title.
+ */
+export function catalogHeading(slug: string | undefined, categories: { id: string; title: string }[] = []): string {
+  if (!slug || slug === "all") return PRODUCTS_HUB_H1;
+  return CATEGORY_SEO[slug]?.h1 || categories.find((c) => c.id === slug)?.title || PRODUCTS_HUB_H1;
+}
 
 export const FITOUT_CHECKLIST = [
   "عایق سقف و دیوار و هوابندی سازه",
@@ -259,7 +283,7 @@ function categoryMeta(slug: string, catalog: SeoCatalog) {
   if (!cat) return null;
   return {
     title: `${cat.title} | طیوران صنعت پویا`,
-    h1: cat.title,
+    h1: catalogHeading(slug, catalog.categories),
     description: cat.description,
     body: cat.description,
   };
@@ -505,17 +529,17 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       .join("");
     return okDoc({
       path,
-      title: "طیوران صنعت پویا | تجهیز و نوسازی سالن مرغداری",
+      title: "طیوران صنعت پویا | تجهیزات دام و طیور و نوسازی سالن مرغداری",
       description:
-        "طراحی، تأمین تجهیزات و اجرای نوسازی سالن مرغداری: تهویه، گرمایش، دانخوری و آبخوری. استعلام فنی از طیوران صنعت پویا.",
+        "تأمین تجهیزات صنعت دام و طیور، ماشین‌آلات خوراک و طراحی و نوسازی سالن مرغداری: تهویه، گرمایش، دانخوری و آبخوری. استعلام فنی از طیوران صنعت پویا.",
       h1: "طیوران صنعت پویا",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>طیوران صنعت پویا طراحی، تأمین تجهیزات و اجرای نوسازی سالن مرغداری را انجام می‌دهد. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
+      body: `<p>طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
 <p>تلفن دفتر مشهد: ${escapeHtml(company.phone)} · فروش: ${escapeHtml(company.directSalesPhone || company.phone)}</p>
 <p>${escapeHtml(company.address)}</p>
 <p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>
-<p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات مرغداری</a> · <a href="/contact">درخواست مشاوره</a></p>
+<p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات دام و طیور</a> · <a href="/contact">درخواست مشاوره</a></p>
 <h2>خدمات</h2>
 <ul>${serviceLinks}</ul>
 <h2>دسته‌های تجهیزات</h2>
@@ -538,12 +562,12 @@ ${homeExtras(catalog)}`,
     const links = listedServices(catalog).map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a> — ${escapeHtml(s.tagline)}</li>`).join("");
     return okDoc({
       path,
-      title: "خدمات طراحی و تجهیز مرغداری | طیوران صنعت پویا",
+      title: "خدمات تجهیز دام و طیور و مرغداری | طیوران صنعت پویا",
       description: "از طراحی سالن تا نصب تهویه، گرمایش و سیستم دان. درخواست مشاوره فنی.",
-      h1: "خدمات طراحی، تجهیز و نوسازی مرغداری",
+      h1: "خدمات طراحی و تجهیز صنعت دام و طیور",
       ogType: "website",
       lastmod: collectionDay(catalog, "services"),
-      body: `<p>خدمات مهندسی و اجرایی طیوران صنعت پویا برای سالن مرغداری و کارخانه خوراک.</p><ul>${links}</ul><p><a href="/services/${FITOUT_SLUG}">تجهیز و نوسازی سالن مرغداری</a></p>`,
+      body: `<p>خدمات مهندسی و اجرایی طیوران صنعت پویا در صنعت دام و طیور: سالن مرغداری، کارخانه خوراک و خوراک و مکمل.</p><ul>${links}</ul><p><a href="/services/${FITOUT_SLUG}">تجهیز و نوسازی سالن مرغداری</a></p>`,
       jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "خدمات", path: "/services" }])],
     });
   }
@@ -611,12 +635,12 @@ ${homeExtras(catalog)}`,
       .join("");
     return okDoc({
       path,
-      title: "تجهیزات مرغداری: تهویه، هیتر، دانخوری، آبخوری | طیوران صنعت پویا",
-      description: "کاتالوگ هواکش، جت‌هیتر، دانخوری پروانه‌ای و آبخوری نیپل. استعلام قیمت.",
-      h1: "تجهیزات مرغداری",
+      title: "تجهیزات دام و طیور و مرغداری: تهویه، هیتر، دانخوری، آبخوری | طیوران صنعت پویا",
+      description: "کاتالوگ تجهیزات صنعت دام و طیور: هواکش، جت‌هیتر، دانخوری پروانه‌ای، آبخوری نیپل، قفس و سیلو. استعلام قیمت.",
+      h1: PRODUCTS_HUB_H1,
       ogType: "website",
       lastmod: collectionDay(catalog, "products"),
-      body: `<p>کاتالوگ تجهیزات سالن مرغداری طیوران صنعت پویا.</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">دانلود کاتالوگ PDF</a> · <a href="/contact">استعلام قیمت</a></p>`,
+      body: `<p>کاتالوگ تجهیزات صنعت دام و طیور طیوران صنعت پویا؛ از تهویه، گرمایش، دانخوری و آبخوری سالن مرغداری تا قفس و سیلو.</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">دانلود کاتالوگ PDF</a> · <a href="/contact">استعلام قیمت</a></p>`,
       jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "محصولات", path: "/products" }])],
     });
   }
@@ -865,7 +889,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
     return okDoc({
       path,
       title: "درباره ما | طیوران صنعت پویا",
-      description: "معرفی شرکت طیوران صنعت پویا، دفاتر مشهد و گرگان و حوزه فعالیت تجهیزات مرغداری.",
+      description: "معرفی شرکت طیوران صنعت پویا، دفاتر مشهد و گرگان و حوزه فعالیت در صنعت دام و طیور.",
       h1: "درباره طیوران صنعت پویا",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
@@ -887,8 +911,8 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       .join("");
     return okDoc({
       path,
-      title: "تماس و مشاوره تجهیز مرغداری | طیوران صنعت پویا",
-      description: "درخواست مشاوره فنی برای تجهیز و نوسازی سالن مرغداری.",
+      title: "تماس و مشاوره تجهیزات دام و طیور | طیوران صنعت پویا",
+      description: "درخواست مشاوره فنی برای تجهیزات دام و طیور، ماشین‌آلات خوراک و نوسازی سالن مرغداری.",
       h1: "تماس و درخواست مشاوره",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
@@ -985,7 +1009,7 @@ export function llmsTxt(catalog: SeoCatalog): string {
     .map((article) => `- /magazine/${article.id} — ${article.title}`)
     .join("\n");
   return `# طیوران صنعت پویا
-> تجهیز و نوسازی سالن مرغداری؛ تهویه، گرمایش، دانخوری و آبخوری. دفاتر مشهد و گرگان.
+> تجهیزات صنعت دام و طیور، ماشین‌آلات خوراک و نوسازی سالن مرغداری؛ تهویه، گرمایش، دانخوری و آبخوری. دفاتر مشهد و گرگان.
 
 - سایت: ${CANONICAL_ORIGIN}
 - تماس: ${CANONICAL_ORIGIN}/contact

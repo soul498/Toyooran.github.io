@@ -17,7 +17,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = () => {
   return (
     <section className="min-h-screen relative z-0" id="services-section">
       <PageBanner
-        title="خدمات طراحی، تجهیز و نوسازی مرغداری"
+        title="خدمات طراحی و تجهیز صنعت دام و طیور"
         subtitle="از طراحی سوله تا نصب دانخوری، تهویه و گرمایش — استعلام فنی از طیوران صنعت پویا"
       />
 

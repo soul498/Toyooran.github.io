@@ -55,7 +55,7 @@ export const CategoryHexSection: React.FC<CategoryHexSectionProps> = ({
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#003F86] bg-blue-50 px-3 py-1 rounded-full mb-2 border border-blue-100">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>دسته‌بندی تجهیزات تخصصی مرغداری و خطوط خوراک</span>
+              <span>دسته‌بندی تجهیزات تخصصی دام و طیور و خطوط خوراک</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               محصولات و تجهیزات تخصصی
