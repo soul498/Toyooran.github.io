@@ -191,8 +191,9 @@ export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | 
   return null;
 }
 
-export function escapeHtml(value: string): string {
-  return value
+export function escapeHtml(value: unknown): string {
+  // CMS records may carry null/number fields; a TypeError here used to become an HTTP 500.
+  return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -319,7 +320,20 @@ function articleHtml(article: Article): string {
     .join("\n");
 }
 
-function productBody(product: Product): string {
+function snippet(text: string | undefined, maxWords = 18): string {
+  const words = String(text || "").replace(/\.\.\.$/, "").split(/\s+/).filter(Boolean);
+  return words.length > maxWords ? `${words.slice(0, maxWords).join(" ")}…` : words.join(" ");
+}
+
+function indexableArticles(catalog: SeoCatalog): Article[] {
+  return catalog.articles.filter((a) => isPublicArticle(a) && !a.noindex);
+}
+
+function servicesForCategory(category: string, catalog: SeoCatalog): Service[] {
+  return listedServices(catalog).filter((s) => s.relatedEquipmentCategories?.includes(category));
+}
+
+function productBody(product: Product, catalog?: SeoCatalog): string {
   const specs = (product.specs || [])
     .slice(0, 12)
     .map((s) => `<li>${escapeHtml(s.label)}: ${escapeHtml(s.value)}</li>`)
@@ -334,15 +348,36 @@ function productBody(product: Product): string {
     .join("");
   const feedingCta =
     product.category === "feeding"
-      ? `<p><a href="/contact?cta=feeder-line-count&amp;product=${encodeURIComponent(product.code || product.id)}">محاسبه تعداد خطوط دانخوری</a></p>`
+      ? `<p><a href="/contact">محاسبه تعداد خطوط دانخوری</a></p>`
       : "";
+  const intro = categoryIntro(product.category);
+  const siblings = (catalog?.products || [])
+    .filter((p) => p.category === product.category && p.id !== product.id)
+    .slice(0, 8)
+    .map((p) => `<li><a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a></li>`)
+    .join("");
+  const articles = catalog
+    ? indexableArticles(catalog)
+        .filter((a) => a.relatedProductIds?.includes(product.id) || product.relatedArticleIds?.includes(a.id))
+        .map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a></li>`)
+        .join("")
+    : "";
+  const services = catalog
+    ? servicesForCategory(product.category, catalog)
+        .map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`)
+        .join("")
+    : "";
   return `<p>${escapeHtml(product.fullDescription || product.shortDescription)}</p>
-<p>دسته: <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>
-${specs ? `<h2>مشخصات</h2><ul>${specs}</ul>` : ""}
+<p>کد محصول: ${escapeHtml(product.code || product.id)} · دسته: <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>
+${specs ? `<h2>مشخصات فنی ${escapeHtml(product.name)}</h2><ul>${specs}</ul>` : ""}
 ${advantages ? `<h2>ویژگی‌ها</h2><ul>${advantages}</ul>` : ""}
 ${applications ? `<h2>کاربردها</h2><ul>${applications}</ul>` : ""}
+${intro ? `<h2>نکته انتخاب در ${escapeHtml(product.categoryTitle)}</h2><p>${escapeHtml(intro)}</p>` : ""}
+${articles ? `<h2>راهنمای مرتبط</h2><ul>${articles}</ul>` : ""}
+<h2>خدمات مرتبط</h2><ul><li><a href="/services/${FITOUT_SLUG}">تجهیز و نوسازی سالن مرغداری</a></li>${services}</ul>
+${siblings ? `<h2>محصولات دیگر ${escapeHtml(product.categoryTitle)}</h2><ul>${siblings}</ul>` : ""}
 ${feedingCta}
-<p><a href="/contact?cta=product-quote&amp;product=${encodeURIComponent(product.code || product.id)}">استعلام قیمت و مشخصات فنی</a></p>`;
+<p><a href="/contact">استعلام قیمت و مشخصات فنی ${escapeHtml(product.name)}</a> · <a href="/TSPK_catalog.pdf">دانلود کاتالوگ PDF</a></p>`;
 }
 
 function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string {
@@ -358,8 +393,14 @@ function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string 
     .map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)}</li>`)
     .join("");
   const lead = isFitout ? `<p>${escapeHtml(FITOUT_LEAD)}</p>` : `<p>${escapeHtml(service.tagline)}</p>`;
+  const suitable = (service.suitableFor || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  const relatedCats = (service.relatedEquipmentCategories || [])
+    .map((id) => catalog.categories.find((c) => c.id === id))
+    .filter((c): c is CategoryItem => Boolean(c))
+    .map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.description)}</li>`)
+    .join("");
   const auditLink = isFitout
-    ? ` · <a href="/magazine/before-and-after-renovation">قبل و بعد از نوسازی</a> · <a href="/contact?cta=hall-audit">درخواست ممیزی</a>`
+    ? ` · <a href="/magazine/before-and-after-renovation">قبل و بعد از نوسازی</a> · <a href="/contact">درخواست ممیزی</a>`
     : "";
   return `${lead}
 <p>${escapeHtml(service.problemSolved)}</p>
@@ -367,9 +408,11 @@ function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string 
 <ul>${provide}</ul>
 ${steps ? `<h2>فرایند اجرا</h2><ol>${steps}</ol>` : ""}
 ${checklist}
+${suitable ? `<h2>مناسب برای</h2><ul>${suitable}</ul>` : ""}
+${relatedCats ? `<h2>تجهیزات مرتبط</h2><ul>${relatedCats}</ul>` : ""}
 ${related ? `<h2>پروژه‌های مرتبط</h2><ul>${related}</ul>` : ""}
 ${faqs ? `<h2>پرسش‌های متداول</h2>${faqs}` : ""}
-<p><a href="/contact?cta=service-visit">درخواست بازدید و پیشنهاد فنی</a> · <a href="/products">مشاهده تجهیزات</a>${auditLink}</p>`;
+<p><a href="/contact">درخواست بازدید و پیشنهاد فنی</a> · <a href="/products">مشاهده تجهیزات</a>${auditLink}</p>`;
 }
 
 function projectBody(project: Project): string {
@@ -381,7 +424,28 @@ function projectBody(project: Project): string {
 ${cs ? `<p>${escapeHtml(cs.problem)}</p><p>${escapeHtml(cs.solution)}</p>` : ""}
 ${steps ? `<h2>مراحل</h2><ol>${steps}</ol>` : ""}
 ${results ? `<h2>نتیجه اعلام‌شده</h2><ul>${results}</ul>` : `<ul>${project.servicesProvided.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`}
-<p><a href="/contact?cta=project-consult">مشاوره پروژه مشابه</a></p>`;
+<p><a href="/contact">مشاوره پروژه مشابه</a></p>`;
+}
+
+function homeExtras(catalog: SeoCatalog): string {
+  const fitout = catalog.services.find((s) => s.id === FITOUT_SERVICE_ID);
+  const steps = (fitout?.workflow || []).map((st) => `<li>${escapeHtml(st.title)}: ${escapeHtml(st.description)}</li>`).join("");
+  const featured = catalog.products
+    .filter((p) => p.isFeatured)
+    .slice(0, 8)
+    .map((p) => `<li><a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a> — ${escapeHtml(snippet(p.shortDescription, 14))}</li>`)
+    .join("");
+  const posts = indexableArticles(catalog)
+    .map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a> — ${escapeHtml(snippet(a.summary, 20))}</li>`)
+    .join("");
+  const projects = catalog.projects
+    .map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)}</li>`)
+    .join("");
+  return `<h2>نوسازی و تجهیز کامل سالن مرغداری</h2><p>${escapeHtml(FITOUT_LEAD)}</p>
+${steps ? `<ol>${steps}</ol>` : ""}
+${featured ? `<h2>محصولات پرفروش</h2><ul>${featured}</ul>` : ""}
+${projects ? `<h2>پروژه‌ها</h2><ul>${projects}</ul>` : ""}
+${posts ? `<h2>مجله تخصصی</h2><ul>${posts}</ul>` : ""}`;
 }
 
 function localBusinessNodes(company: CompanyInfo) {
@@ -444,11 +508,12 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
 <p>تلفن دفتر مشهد: ${escapeHtml(company.phone)} · فروش: ${escapeHtml(company.directSalesPhone || company.phone)}</p>
 <p>${escapeHtml(company.address)}</p>
 <p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>
-<p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات مرغداری</a> · <a href="/contact?cta=home-consult">درخواست مشاوره</a></p>
+<p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات مرغداری</a> · <a href="/contact">درخواست مشاوره</a></p>
 <h2>خدمات</h2>
 <ul>${serviceLinks}</ul>
 <h2>دسته‌های تجهیزات</h2>
-<ul>${catalog.categories.map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a></li>`).join("")}</ul>`,
+<ul>${catalog.categories.map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.description)}</li>`).join("")}</ul>
+${homeExtras(catalog)}`,
       jsonLd: [
         orgSchema(company),
         {
@@ -463,7 +528,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path === "/services") {
-    const links = listedServices(catalog).map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`).join("");
+    const links = listedServices(catalog).map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a> — ${escapeHtml(s.tagline)}</li>`).join("");
     return okDoc({
       path,
       title: "خدمات طراحی و تجهیز مرغداری | طیوران صنعت پویا",
@@ -530,7 +595,13 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path === "/products") {
-    const cats = catalog.categories.map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a></li>`).join("");
+    const cats = catalog.categories
+      .map((c) => {
+        const count = catalog.products.filter((p) => p.category === c.id).length;
+        const intro = categoryIntro(c.id);
+        return `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> (${count} محصول) — ${escapeHtml(intro || c.description)}</li>`;
+      })
+      .join("");
     return okDoc({
       path,
       title: "تجهیزات مرغداری: تهویه، هیتر، دانخوری، آبخوری | طیوران صنعت پویا",
@@ -538,7 +609,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       h1: "تجهیزات مرغداری",
       ogType: "website",
       lastmod: collectionDay(catalog, "products"),
-      body: `<p>کاتالوگ تجهیزات سالن مرغداری طیوران صنعت پویا.</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">دانلود کاتالوگ PDF</a> · <a href="/contact?cta=catalog-quote">استعلام قیمت</a></p>`,
+      body: `<p>کاتالوگ تجهیزات سالن مرغداری طیوران صنعت پویا.</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">دانلود کاتالوگ PDF</a> · <a href="/contact">استعلام قیمت</a></p>`,
       jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "محصولات", path: "/products" }])],
     });
   }
@@ -547,10 +618,18 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
     const slug = decodePathname(path.split("/")[2] || "");
     const category = categoryMeta(slug, catalog);
     if (category && isCategorySlug(slug, catalog)) {
-      const items = catalog.products
-        .filter((p) => p.category === slug)
-        .slice(0, 20)
-        .map((p) => `<li><a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a></li>`)
+      const inCategory = catalog.products.filter((p) => p.category === slug);
+      // No slice: every product must have a crawlable link from its category (heating has 37).
+      const items = inCategory
+        .map((p) => `<li><a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a> — ${escapeHtml(snippet(p.shortDescription))}</li>`)
+        .join("");
+      const ids = new Set(inCategory.map((p) => p.id));
+      const catArticles = indexableArticles(catalog)
+        .filter((a) => a.relatedProductIds?.some((id) => ids.has(id)))
+        .map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a></li>`)
+        .join("");
+      const catServices = servicesForCategory(slug, catalog)
+        .map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`)
         .join("");
       return okDoc({
         path,
@@ -559,7 +638,11 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
         h1: category.h1,
         ogType: "website",
         lastmod: collectionDay(catalog, "products"),
-        body: `<p>${escapeHtml(category.body || category.description)}</p><ul>${items}</ul><p><a href="/contact?cta=category-quote">استعلام فنی</a> · <a href="/services/${FITOUT_SLUG}">تجهیز و نوسازی سالن</a></p>`,
+        body: `<p>${escapeHtml(category.body || category.description)}</p>
+<h2>محصولات ${escapeHtml(category.h1)} (${inCategory.length} مورد)</h2><ul>${items}</ul>
+${catArticles ? `<h2>راهنماهای مرتبط</h2><ul>${catArticles}</ul>` : ""}
+${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
+<p><a href="/contact">استعلام فنی</a> · <a href="/services/${FITOUT_SLUG}">تجهیز و نوسازی سالن</a> · <a href="/TSPK_catalog.pdf">کاتالوگ PDF</a></p>`,
         jsonLd: [
           orgSchema(company),
           breadcrumb([
@@ -581,7 +664,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
         h1: product.name,
         ogType: "product",
         lastmod: collectionDay(catalog, "products"),
-        body: productBody(product),
+        body: productBody(product, catalog),
         jsonLd: [
           {
             "@type": "Product",
@@ -614,7 +697,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path === "/projects") {
-    const links = catalog.projects.map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a></li>`).join("");
+    const links = catalog.projects.map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)} · ${escapeHtml(p.capacity)} · ${escapeHtml(p.keyOutcome)}</li>`).join("");
     return okDoc({
       path,
       title: "پروژه‌های تجهیز مرغداری | طیوران صنعت پویا",
@@ -657,7 +740,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path === "/magazine") {
-    const links = catalog.articles.filter((article) => isPublicArticle(article)).map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a></li>`).join("");
+    const links = indexableArticles(catalog).map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a><p>${escapeHtml(a.summary)}</p></li>`).join("");
     return okDoc({
       path,
       title: "مجله تخصصی مرغداری | طیوران صنعت پویا",
@@ -700,7 +783,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       const relatedHtml = [
         relatedService ? `<a href="${publicServicePath(relatedService)}">${escapeHtml(relatedService.title)}</a>` : `<a href="/services/${FITOUT_SLUG}">تجهیز سالن</a>`,
         ...relatedProducts.map((p) => `<a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a>`),
-        `<a href="/contact?cta=article-consult">مشاوره</a>`,
+        `<a href="/contact">مشاوره</a>`,
       ].join(" · ");
       const seoTitle = effectiveSeoTitle(article);
       const seoDescription = effectiveSeoDescription(article);
@@ -786,7 +869,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
 <p>دفتر مشهد: ${escapeHtml(company.address)}</p>
 <p>کارخانه: ${escapeHtml(company.factoryAddress)}</p>
 <p>واحد تحقیق و توسعه گرگان: ${escapeHtml(company.rdAddress || "")}</p>
-<p><a href="/contact?cta=about">درخواست مشاوره تجهیز سالن</a></p>`,
+<p><a href="/contact">درخواست مشاوره تجهیز سالن</a></p>`,
       jsonLd: [orgSchema(company)],
     });
   }
@@ -820,7 +903,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       h1: "تحقیق و توسعه",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>${escapeHtml(company.rdAddress || "")}</p><p><a href="/contact?cta=rnd">ارتباط با واحد فنی</a></p>`,
+      body: `<p>${escapeHtml(company.rdAddress || "")}</p><p><a href="/contact">ارتباط با واحد فنی</a></p>`,
       jsonLd: [orgSchema(company)],
     });
   }
@@ -841,12 +924,11 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
 export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolean {
   const path = decodePathname(stripQuery(pathname));
   const parts = publicSegments(path);
-  if (["/", "/products", "/services", "/projects", "/magazine", "/about", "/contact", "/rnd", "/admin", "/login", "/dashboard"].includes(path)) {
+  if (["/", "/products", "/services", "/projects", "/magazine", "/about", "/contact", "/rnd"].includes(path)) {
     return true;
   }
-  if (path.startsWith("/admin") || path.startsWith("/login") || path.startsWith("/dashboard") || path.startsWith("/crm")) {
-    return true;
-  }
+  // Only the real app prefixes (/admin, /admin/..., /crm/...), not /administrator or /admin.php.
+  if (isPrivateAppPath(path) && !path.startsWith("/api")) return true;
   if (parts.length !== 2) return false;
   if (parts[0] === "magazine") return catalog.articles.some((a) => a.id === parts[1]);
   if (parts[0] === "products") {

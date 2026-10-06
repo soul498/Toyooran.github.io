@@ -14,6 +14,32 @@ import {
 
 export { CANONICAL_ORIGIN, stripQuery, canonicalPath, resolveSeo, seoRedirectFor, llmsTxt, isPrivateAppPath };
 
+const KEEP_QUERY_PARAMS = /^(utm_[a-z]+|gclid|gbraid|wbraid|fbclid|msclkid|_gl|cta|product)$/i;
+
+/**
+ * Returns a normalized path+query for public HTML URLs, or null when nothing changes.
+ * - /index.html -> /
+ * - trailing slash -> no slash (except root)
+ * - drops query params that are not analytics/lead-tracking (e.g. ?s=, ?p=, ?page=, ?sort=)
+ * One hop only: the combined result is returned so callers issue a single 301.
+ */
+export function normalizePublicUrl(originalUrl: string): string | null {
+  const [rawPath, rawQuery = ""] = originalUrl.split("#")[0].split("?");
+  let pathname = rawPath || "/";
+  if (pathname === "/index.html") pathname = "/";
+  if (pathname.length > 1 && pathname.endsWith("/")) pathname = pathname.replace(/\/+$/, "") || "/";
+  if (isPrivateAppPath(pathname)) return null;
+  const params = new URLSearchParams(rawQuery);
+  const kept = new URLSearchParams();
+  params.forEach((value, key) => {
+    if (KEEP_QUERY_PARAMS.test(key)) kept.append(key, value);
+  });
+  const query = kept.toString();
+  const next = query ? `${pathname}?${query}` : pathname;
+  const current = rawQuery ? `${rawPath}?${rawQuery}` : rawPath;
+  return next !== current ? next : null;
+}
+
 export function isKnownPublicPath(pathname: string): boolean {
   return isKnownWithCatalog(pathname, loadSeoCatalog());
 }
@@ -61,6 +87,8 @@ export function injectSeoTags(html: string, reqPath: string): string {
     return out;
   }
 
+  // index.html ships homepage og:title/og:description; drop them so each page has one set.
+  out = stripSocialMeta(out);
   const robots = `    <meta name="robots" content="${doc.robots}" />\n`;
   const canonical = doc.canonicalHref
     ? `    <link rel="canonical" href="${doc.canonicalHref}" />\n`
@@ -94,7 +122,10 @@ ${robots}${jsonLd}`;
 }
 
 function robotsPrivateDisallows(): string {
-  return `Disallow: /admin
+  // /api/magazine is public JSON the SPA needs while Google renders magazine pages;
+  // if it is blocked, the renderer falls back to bundled seed articles and CMS-only posts render as 404.
+  return `Allow: /api/magazine
+Disallow: /admin
 Disallow: /login
 Disallow: /dashboard
 Disallow: /crm
@@ -128,13 +159,17 @@ Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml
 `;
 }
 
+function xmlEscape(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+}
+
 export function sitemapXml(): string {
   const urls = sitemapEntries(loadSeoCatalog());
   const body = urls
     .map((u) => {
       const last = u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : "";
       return `  <url>
-    <loc>${canonicalPath(u.loc)}</loc>${last}
+    <loc>${xmlEscape(encodeURI(canonicalPath(u.loc)))}</loc>${last}
     <changefreq>weekly</changefreq>
     <priority>${u.priority}</priority>
   </url>`;

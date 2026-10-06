@@ -53,7 +53,26 @@ function asCompany(): CompanyInfo {
   return COMPANY_INFO as CompanyInfo;
 }
 
+let cachedCatalog: { at: number; value: SeoCatalog } | null = null;
+const CATALOG_TTL_MS = 5_000;
+
+/**
+ * Cached for a few seconds: every HTML request used to parse the full products/articles JSON
+ * from SQLite 3+ times (redirect check, SEO render, known-route check), plus once per asset.
+ */
 export function loadSeoCatalog(): SeoCatalog {
+  const now = Date.now();
+  if (cachedCatalog && now - cachedCatalog.at < CATALOG_TTL_MS) return cachedCatalog.value;
+  const value = buildSeoCatalog();
+  cachedCatalog = { at: now, value };
+  return value;
+}
+
+export function invalidateSeoCatalog(): void {
+  cachedCatalog = null;
+}
+
+function buildSeoCatalog(): SeoCatalog {
   return {
     products: mergeSeedById<Product>("products", PRODUCTS),
     services: overlaySeedOnly<Service>("services", SERVICES),

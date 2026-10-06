@@ -57,8 +57,7 @@ export const SEO = ({ title, description, ogType = "website", robots, canonicalH
 
 export const SeoHead = () => {
   const { pathname } = useLocation();
-  const { products, projects, services, articles, categories, companyInfo, magazineReady } = useData();
-  const holdServerSeo = !magazineReady && (pathname === "/magazine" || pathname.startsWith("/magazine/"));
+  const { products, projects, services, articles, categories, companyInfo, magazineReady, catalogReady } = useData();
   const catalog: SeoCatalog = {
     products,
     projects,
@@ -68,6 +67,11 @@ export const SeoHead = () => {
     company: companyInfo as CompanyInfo,
   };
   const doc = resolveSeo(pathname, catalog);
+  // Keep the server-rendered head + #seo-prerender until client data is loaded. Before this,
+  // product URLs briefly resolved to the 404 doc (products start as []), which wrote
+  // <meta robots="noindex"> + "صفحه پیدا نشد" into the rendered DOM Googlebot snapshots.
+  const isMagazinePath = pathname === "/magazine" || pathname.startsWith("/magazine/");
+  const holdServerSeo = (!magazineReady && isMagazinePath) || (Boolean(doc.notFound) && !(catalogReady && magazineReady));
   useEffect(() => {
     if (holdServerSeo) return;
     document.getElementById("seo-prerender")?.remove();

@@ -6,8 +6,8 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, publicTurnstileSiteKey, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
-import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxt, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
-import { loadPublicArticles, loadSeoCatalog } from "./server/catalog";
+import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxt, normalizePublicUrl, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
+import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
 import { gzipResponses } from "./server/gzip";
 
@@ -17,6 +17,10 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
   app.disable('x-powered-by');
+  // nginx (and docker bridge) sit in front of Express. Without this, req.ip is the proxy
+  // address for every visitor, so the /api rate limiter becomes one global bucket.
+  // Pair with nginx real_ip (set_real_ip_from <ArvanCloud ranges>) so X-Forwarded-For is the client.
+  app.set('trust proxy', 'loopback, uniquelocal');
   app.use((req, res, next) => {
     const host = (req.hostname || "").toLowerCase();
     if (host === "toyooran.com") {
@@ -24,7 +28,18 @@ async function startServer() {
     }
     next();
   });
+  // One-hop URL normalization for public HTML routes: /index.html, trailing slash, junk query params.
   app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+    if (req.path.startsWith('/api/') || /\.[a-z0-9]{2,5}$/i.test(req.path) && req.path !== '/index.html') return next();
+    const target = normalizePublicUrl(req.originalUrl);
+    if (target && target !== req.originalUrl) return res.redirect(301, `${CANONICAL_ORIGIN}${target}`);
+    next();
+  });
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+    // Static files and API never need the catalog lookup (it used to run for every asset request).
+    if (req.path.startsWith('/api/') || req.path.startsWith('/assets/') || /\.[a-z0-9]{2,5}$/i.test(req.path)) return next();
     const dest = seoRedirectFor(req.path, loadSeoCatalog());
     if (dest) {
       return res.redirect(301, `${CANONICAL_ORIGIN}${dest}`);
@@ -106,6 +121,7 @@ async function startServer() {
     if (!['products', 'projects', 'services', 'articles', 'categories', 'companyInfo', 'heroCms', 'aiConfig', 'quotes', 'consultations', 'customers', 'media'].includes(key)) return res.status(400).json({ error: 'کلید state نامعتبر است.' });
     if (JSON.stringify(req.body?.value ?? null).length > 2_000_000) return res.status(413).json({ error: 'داده بیش از حد بزرگ است.' });
     setAdminState(req as any, key, req.body?.value);
+    invalidateSeoCatalog();
     res.status(204).end();
   });
   app.get('/api/magazine', (_req, res) => {
@@ -330,11 +346,19 @@ async function startServer() {
       })
     );
     
+    const template = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
     app.get(/.*/, (req, res) => {
       const url = stripQuery(req.originalUrl);
-      
-      let template = fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8');
-      const finalHtml = injectSeoTags(template, url);
+      let finalHtml: string;
+      try {
+        finalHtml = injectSeoTags(template, url);
+      } catch (error) {
+        // Never let a malformed CMS record become a hard 500 for Googlebot. 503 + Retry-After is
+        // treated as temporary; the real fix is defensive rendering in resolveSeo.
+        console.error('SEO render failed for', url, error);
+        res.status(503).set({ 'Retry-After': '120', 'Cache-Control': 'no-store', 'Content-Type': 'text/html' }).send(template);
+        return;
+      }
       const isKnownRoute = isKnownPublicPath(url);
       const headers: Record<string, string> = { "Content-Type": "text/html" };
       if (!isKnownRoute && url !== "/") {
@@ -352,6 +376,8 @@ async function startServer() {
       res.status(200).set(headers).send(finalHtml);
     });
   }
+
+  process.on('unhandledRejection', (reason) => console.error('unhandledRejection', reason));
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
