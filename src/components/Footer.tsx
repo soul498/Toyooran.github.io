@@ -160,7 +160,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
               <li>
                 <Link to="/services/srv-poultry-equipment-supply" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  تجهیزات مرغداری
+                  تجهیزات دام و طیور
                 </Link>
               </li>
               <li>

@@ -5,6 +5,7 @@ import { ArrowRight, PhoneCall, Sparkles, Layers, Package, Zap, Settings } from 
 import { LazyImage } from './LazyImage';
 import { NotFoundPage } from './NotFoundPage';
 import { ProductCatalogSection } from './ProductCatalogSection';
+import { RichBlocks } from './RichBlocks';
 import { findProduct, publicProductPath } from '../seo/resolveSeo';
 import { ProductCategory } from '../types';
 
@@ -119,6 +120,9 @@ export const ProductPage: React.FC = () => {
                 <p className="text-slate-600 leading-relaxed text-sm md:text-base font-medium text-justify">
                   {product.fullDescription}
                 </p>
+                {product.details && product.details.length > 0 && (
+                  <RichBlocks blocks={product.details} className="mt-4 space-y-3 text-slate-600 leading-relaxed text-sm md:text-base font-medium text-justify" />
+                )}
               </div>
 
               {/* 6. ویژگی‌های محصول */}

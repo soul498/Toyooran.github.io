@@ -367,7 +367,7 @@ export const SERVICES: Service[] = [
   },
   {
     id: 'srv-poultry-equipment-supply',
-    title: 'تأمین و نصب تجهیزات تخصصی مرغداری',
+    title: 'تأمین و نصب تجهیزات تخصصی دام و طیور',
     tagline: 'تنها تولیدکننده بشقاب‌های پروانه‌ای تحت لیسانس Butterfly Concepts آمریکا با تاییدیه FDA و تجهیزات آبخوری TSPK',
     iconName: 'Wrench',
     problemSolved: 'هدررفت دان، خیس شدن بستر با نیپل‌های نامرغوب و افت بهره‌وری گله در سالن‌های مرغداری.',

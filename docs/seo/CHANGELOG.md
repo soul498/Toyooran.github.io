@@ -15,6 +15,14 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-10-06 — متن معرفی دسته‌های قفس/سیلو/سایر، متن شش محصول، و «تجهیزات دام و طیور» برای خدمت تأمین تجهیزات
+
+- مالک: سئو (پیش‌نویس‌های تأییدشده مدیر محتوا 01–03 و 09–14)
+- فایل‌ها: `src/seo/richText.ts` (جدید)، `src/components/RichBlocks.tsx` (جدید)، `src/seo/resolveSeo.ts`، `src/components/ProductCatalogSection.tsx`، `src/components/ProductPage.tsx`، `src/types.ts`، `src/data/productsData.ts`، `src/data/mockData.ts`، `src/data/landingServiceCards.ts`، `src/components/Footer.tsx`
+- URLها: `/products/cage`، `/products/silo`، `/products/other` و محصولات این دسته‌ها (معرفی دسته در «نکته انتخاب»)، محصولات TS-001/002/003/005/010/015، `/services/srv-poultry-equipment-supply`، `/services`، `/`
+- تغییر: CATEGORY_SEO فیلد `intro` (بلوک‌های متنی) گرفت که هم در #seo-prerender و هم در کاتالوگ کلاینت یکسان رندر می‌شود. Product فیلد اختیاری `details` گرفت. H1 دسته قفس طبق پیش‌نویس «قفس مرغداری». عنوان خدمت `srv-poultry-equipment-supply` و کارت/فوتر به «دام و طیور» تغییر کرد؛ slug ثابت ماند. جاهای خالی [..] و موارد نیازمند تأیید منتشر نشد.
+- Verify: lint + build + HTML زنده (Googlebot) + متن رندرشده با Chrome headless + تطابق H1 در ۱۰ URL کاتالوگ
+
 ## 2026-10-06 — H1 اختصاصی هر دسته و حوزه «صنعت دام و طیور» در متن‌های کلی شرکت
 
 - مالک: سئو

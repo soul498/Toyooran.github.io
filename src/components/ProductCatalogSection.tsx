@@ -9,7 +9,8 @@ import {
 } from '../icons';
 import { Link } from 'react-router-dom';
 import { Product, ProductCategory } from '../types';
-import { catalogHeading, categoryIntro, publicProductPath } from '../seo/resolveSeo';
+import { catalogHeading, categoryIntroBlocks, categoryIntroRich, publicProductPath } from '../seo/resolveSeo';
+import { RichBlocks, RichInline } from './RichBlocks';
 import { useData } from '../context/DataContext';
 import { LazyImage } from './LazyImage';
 import { CategoryMarquee } from './CategoryMarquee';
@@ -85,8 +86,8 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
             <div className="text-right min-w-0">
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{heading}</h1>
               <p className="text-sm text-slate-600 font-medium mt-1 leading-relaxed">
-                {selectedCategory !== 'all' && categoryIntro(selectedCategory)
-                  ? categoryIntro(selectedCategory)
+                {selectedCategory !== 'all' && categoryIntroRich(selectedCategory)
+                  ? <RichInline text={categoryIntroRich(selectedCategory) as string} />
                   : 'کاتالوگ تجهیزات دام و طیور: تهویه، گرمایش، دانخوری، آبخوری، قفس و سیلو — استعلام فنی از طیوران صنعت پویا'}
               </p>
             </div>
@@ -99,6 +100,11 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
               دانلود کاتالوگ
             </a>
           </div>
+          {selectedCategory !== 'all' && categoryIntroBlocks(selectedCategory) && (
+            <div className="mt-4 rounded-3xl border border-slate-200 bg-white/95 shadow-sm px-5 py-5 sm:px-7 sm:py-6 text-right">
+              <RichBlocks blocks={categoryIntroBlocks(selectedCategory)} />
+            </div>
+          )}
         </div>
       </div>
 

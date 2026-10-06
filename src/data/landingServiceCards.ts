@@ -20,7 +20,7 @@ export const LANDING_SERVICE_CARDS = [
     id: 'feeding' as const,
     serviceId: 'srv-poultry-equipment-supply',
     to: '/services/srv-poultry-equipment-supply',
-    title: 'تجهیزات مرغداری',
+    title: 'تجهیزات دام و طیور',
     categoryEn: 'Farm Equipment',
     icon: Fan,
     desc: 'بشقاب پروانه‌ای FDA، آبخوری نیپل و جت هیتر',

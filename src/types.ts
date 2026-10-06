@@ -1,3 +1,4 @@
+import type { RichBlock } from "./seo/richText";
 // UI Sync triggered
 export type PageSection = 'home' | 'projects' | 'products' | 'services' | 'knowledge' | 'magazine' | 'about' | 'contact' | 'magazine-article' | 'rnd';
 
@@ -76,6 +77,8 @@ export interface Product {
   relatedProjectIds?: string[];
   relatedArticleIds?: string[];
   faqs?: { q: string; a: string }[];
+  /** Approved long-form copy under «معرفی محصول»; rendered in #seo-prerender and on the product page. */
+  details?: RichBlock[];
 }
 
 export interface ServiceWorkflowStep {
