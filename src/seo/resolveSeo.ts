@@ -541,7 +541,7 @@ function projectBody(project: Project): string {
   const steps = cs?.processSteps?.map((s) => `<li>${escapeHtml(s.title)}: ${escapeHtml(s.desc)}</li>`).join("") || "";
   const results = cs?.results?.map((r) => `<li>${escapeHtml(r.label)}: ${escapeHtml(r.value)} — ${escapeHtml(r.detail)}</li>`).join("") || "";
   return `<p>${escapeHtml(project.location)} — ${escapeHtml(project.year)} — ظرفیت: ${escapeHtml(project.capacity)}</p>
-<p>${escapeHtml(project.keyOutcome)}</p>
+${project.keyOutcome ? `<p>${escapeHtml(project.keyOutcome)}</p>` : ""}
 ${cs ? `<p>${escapeHtml(cs.problem)}</p><p>${escapeHtml(cs.solution)}</p>` : ""}
 ${steps ? `<h2>مراحل</h2><ol>${steps}</ol>` : ""}
 ${results ? `<h2>نتیجه اعلام‌شده</h2><ul>${results}</ul>` : `<ul>${project.servicesProvided.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`}
@@ -819,7 +819,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
   }
 
   if (path === "/projects") {
-    const links = catalog.projects.map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)} · ${escapeHtml(p.capacity)} · ${escapeHtml(p.keyOutcome)}</li>`).join("");
+    const links = catalog.projects.map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)} · ${escapeHtml(p.capacity)}${p.keyOutcome ? ` · ${escapeHtml(p.keyOutcome)}` : ""}</li>`).join("");
     return okDoc({
       path,
       title: "پروژه‌های تجهیز مرغداری | طیوران صنعت پویا",
@@ -838,7 +838,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
       return okDoc({
         path,
         title: `${project.title} | طیوران صنعت پویا`,
-        description: project.keyOutcome,
+        description: project.keyOutcome || project.caseStudy?.solution || project.title,
         h1: project.title,
         ogType: "article",
         lastmod: collectionDay(catalog, "projects"),
@@ -847,7 +847,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
           {
             "@type": "CreativeWork",
             headline: project.title,
-            description: project.keyOutcome,
+            description: project.keyOutcome || project.caseStudy?.solution || project.title,
             about: project.typeTitle,
             author: { "@id": `${CANONICAL_ORIGIN}/#org` },
           },
@@ -865,9 +865,9 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
     const links = indexableArticles(catalog).map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a><p>${escapeHtml(a.summary)}</p></li>`).join("");
     return okDoc({
       path,
-      title: "مجله تخصصی مرغداری | طیوران صنعت پویا",
+      title: "مجله تخصصی دام و طیور و مرغداری | طیوران صنعت پویا",
       description: "راهنماهای فنی تهویه، گرمایش و تجهیز سالن مرغداری.",
-      h1: "مجله تخصصی مرغداری",
+      h1: "مجله تخصصی دام و طیور",
       ogType: "website",
       lastmod: collectionDay(catalog, "articles"),
       body: `<ul>${links}</ul>`,
@@ -1022,7 +1022,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       path,
       title: "تحقیق و توسعه | طیوران صنعت پویا",
       description: "واحد تحقیق و توسعه طیوران صنعت پویا در گرگان.",
-      h1: "تحقیق و توسعه",
+      h1: "واحد تحقیق و توسعه",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>${escapeHtml(company.rdAddress || "")}</p><p><a href="/contact">ارتباط با واحد فنی</a></p>`,

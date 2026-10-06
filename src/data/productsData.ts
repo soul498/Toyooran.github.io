@@ -3921,8 +3921,8 @@ export const PRODUCTS: Product[] = [
     "category": "feeding",
     "categoryTitle": "بشقاب دانخوری",
     "isIndustrialMachine": false,
-    "shortDescription": "بشقاب دانخوری کوناوی مهندسی معکوس شرکت Chore-Time آمریکا با توری زاویه‌دار منحنی و کفی زائده‌دار جهت به حداقل رساندن پرت دان از سن...",
-    "fullDescription": "بشقاب دانخوری کوناوی مهندسی معکوس شرکت Chore-Time آمریکا با توری زاویه‌دار منحنی و کفی زائده‌دار جهت به حداقل رساندن پرت دان از سن یک‌روزگی.",
+    "shortDescription": "بشقاب دانخوری کوناوی با توری زاویه‌دار منحنی و کفی زائده‌دار جهت به حداقل رساندن پرت دان از سن...",
+    "fullDescription": "بشقاب دانخوری کوناوی با توری زاویه‌دار منحنی و کفی زائده‌دار جهت به حداقل رساندن پرت دان از سن یک‌روزگی.",
     "image": "/images/products/TS-091.webp",
     "gallery": [
       "/images/products/TS-091.webp"

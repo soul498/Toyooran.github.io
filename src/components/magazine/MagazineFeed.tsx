@@ -14,7 +14,7 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles }) => {
   return (
     <div className="min-h-screen relative z-0" id="magazine-feed">
       <PageBanner
-        title="مجله تخصصی طیوران صنعت پویا"
+        title="مجله تخصصی دام و طیور"
         subtitle="راهنماهای تجهیز، تهویه، گرمایش و نوسازی سالن مرغداری"
       />
 

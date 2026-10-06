@@ -38,7 +38,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
       `}</style>
       
       <PageBanner
-        title="تماس با ما"
+        title="تماس و درخواست مشاوره"
         subtitle="مشاوره رایگان، استعلام قیمت و ارتباط با دفتر مشهد و واحد فنی گرگان"
       />
 

@@ -12,7 +12,7 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
   return (
     <section className="min-h-screen relative z-0" id="projects-section">
       <PageBanner
-        title="پروژه‌های اجرا شده"
+        title="پروژه‌های اجراشده"
         subtitle="نمونه‌کارهای تجهیز سالن و خطوط خوراک به‌زودی در این بخش منتشر می‌شود"
       />
       <UnderConstruction

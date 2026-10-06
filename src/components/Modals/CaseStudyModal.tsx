@@ -121,12 +121,12 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
                 </p>
               </div>
             </div>
-          ) : (
+          ) : project.keyOutcome ? (
             <div className="bg-slate-50 p-4 rounded-3xl border border-slate-200">
               <h4 className="text-xs font-bold text-slate-800 mb-1">دستاورد کلیدی پروژه:</h4>
               <p className="text-sm text-slate-700">{project.keyOutcome}</p>
             </div>
-          )}
+          ) : null}
 
           {/* Process Steps */}
           {caseStudy?.processSteps && (

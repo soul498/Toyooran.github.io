@@ -15,6 +15,14 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-10-06 — حذف ادعاهای گارانتی ۲۴ ماهه، FCR ۱.۵۱، «صفر شدن نیاز به سینی دان» و Chore-Time؛ یکسان‌سازی H1
+
+- مالک: سئو (تأیید مدیر)
+- فایل‌ها: `src/data/mockData.ts`، `src/data/productsData.ts`، `src/seo/resolveSeo.ts`، `src/components/ProjectPage.tsx`، `src/components/FeaturedProjectsSection.tsx`، `src/components/magazine/MagazineFeed.tsx`، `src/components/ContactPage.tsx`، `src/components/Modals/CaseStudyModal.tsx` + DB (projects، services، products) با بکاپ `backups/manual-before-claims2-20261006-164422.sqlite`
+- URLها: `/services/srv-poultry-equipment-supply`، `/projects`، `/projects/*`، محصول TS-091 (کوناوی)، `/magazine`، `/contact`، `/rnd`
+- تغییر: ادعاهای بالا حذف شد (keyOutcome پروژه نوین خالی شد؛ meta آن به solution برمی‌گردد). H1 پیش‌رندر و مرورگر یکی شد: مجله «مجله تخصصی دام و طیور»، پروژه‌ها «پروژه‌های اجراشده»، صفحه پروژه = نام پروژه، تماس «تماس و درخواست مشاوره»، R&D «واحد تحقیق و توسعه».
+- Verify: lint + build + اسکن H1 همه URLهای sitemap + HTML زنده و Chrome headless
+
 ## 2026-10-06 — حذف ادعای «تنها تولیدکننده / لیسانس Butterfly Concepts / تاییدیه FDA»
 
 - مالک: سئو (تأیید مدیر)
