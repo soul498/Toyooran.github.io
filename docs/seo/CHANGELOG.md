@@ -15,6 +15,14 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-10-06 — حذف ادعای «تنها تولیدکننده / لیسانس Butterfly Concepts / تاییدیه FDA»
+
+- مالک: سئو (تأیید مدیر)
+- فایل‌ها: `src/data/mockData.ts`، `src/data/landingServiceCards.ts`، `src/admin/tabs/ProjectsTab.tsx` + دیتابیس (admin_state: projects، services، articles، companyInfo، aiConfig) با بکاپ `backups/manual-before-claims-cleanup-20261006-162633.sqlite`
+- URLها: `/`، `/services`، `/services/srv-poultry-equipment-supply`، `/about`، `/projects/*`، `/magazine/introduction-to-pouya-butterfly-feeder`، `/llms.txt`، چت‌بات
+- تغییر: ادعای انحصار، لیسانس آمریکایی، برند Butterfly Concepts و تاییدیه FDA از همه متن‌های عمومی حذف شد و جمله‌ها به حالت خنثی بازنویسی شد؛ `fdaLicense` خالی شد. عنوان خدمت در DB هم «…دام و طیور» شد. slugها/idها ثابت ماندند.
+- Verify: lint + build + HTML زنده (Googlebot) + Chrome headless
+
 ## 2026-10-06 — متن معرفی دسته‌های قفس/سیلو/سایر، متن شش محصول، و «تجهیزات دام و طیور» برای خدمت تأمین تجهیزات
 
 - مالک: سئو (پیش‌نویس‌های تأییدشده مدیر محتوا 01–03 و 09–14)
