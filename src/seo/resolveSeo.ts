@@ -389,9 +389,23 @@ function articleShareImage(image?: string): string | undefined {
   return `${CANONICAL_ORIGIN}${withMediaVersion(path)}`;
 }
 
+const FAQ_HEADING_RE = /^(پرسش‌های متداول|پرسش های متداول|سؤالات متداول|سوالات متداول)/;
+
+/**
+ * Q&A pairs for FAQPage JSON-LD: every h3 + following paragraphs in a "faq" article,
+ * or only inside a "پرسش‌های متداول" h2 section of any other article.
+ * Text is the same visible copy with inline markup stripped.
+ */
 function faqEntities(article: Article): { q: string; a: string }[] {
-  if (article.category !== "faq") return [];
-  const blocks = articleBlocks(article.content || []);
+  const all = articleBlocks(article.content || []);
+  let blocks = all;
+  if (article.category !== "faq") {
+    const start = all.findIndex((b) => b.type === "h2" && FAQ_HEADING_RE.test(b.text.trim()));
+    if (start < 0) return [];
+    const rest = all.slice(start + 1);
+    const end = rest.findIndex((b) => b.type === "h2");
+    blocks = end < 0 ? rest : rest.slice(0, end);
+  }
   const pairs: { q: string; a: string }[] = [];
   let index = 0;
   while (index < blocks.length) {
@@ -402,13 +416,13 @@ function faqEntities(article: Article): { q: string; a: string }[] {
       while (cursor < blocks.length) {
         const answer = blocks[cursor];
         if (answer?.type !== "p") break;
-        const text = answer.text.trim();
+        const text = inlinePlain(answer.text).trim();
         if (!text) break;
         answers.push(text);
         cursor += 1;
       }
       if (answers.length) {
-        pairs.push({ q: question.text.trim(), a: answers.join(" ") });
+        pairs.push({ q: inlinePlain(question.text).trim(), a: answers.join(" ") });
         index = cursor;
         continue;
       }
@@ -422,9 +436,9 @@ function articleHtml(article: Article): string {
   return articleBlocks(article.content)
     .map((block) => {
       if (block.type === "h2") return `<h2>${escapeHtml(block.text)}</h2>`;
-      if (block.type === "h3") return `<h3>${escapeHtml(block.text)}</h3>`;
-      if (block.type === "p") return `<p>${escapeHtml(block.text).replace(/\n/g, "<br>")}</p>`;
-      if (block.type === "ul") return `<ul>${block.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+      if (block.type === "h3") return `<h3>${inlineToHtml(block.text)}</h3>`;
+      if (block.type === "p") return `<p>${inlineToHtml(block.text).replace(/\n/g, "<br>")}</p>`;
+      if (block.type === "ul") return `<ul>${block.items.map((item) => `<li>${inlineToHtml(item)}</li>`).join("")}</ul>`;
       if (block.type === "img") {
         if (!isSafeImageSrc(block.src)) return "";
         return `<figure><img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.alt)}" /><figcaption>${escapeHtml(block.alt)}</figcaption></figure>`;
@@ -433,8 +447,8 @@ function articleHtml(article: Article): string {
         if (!isSafeHref(block.href)) return "";
         return `<p><a href="${escapeHtml(block.href)}">${escapeHtml(block.label)}</a></p>`;
       }
-      const head = `<tr>${block.headers.map((cell) => `<th>${escapeHtml(cell)}</th>`).join("")}</tr>`;
-      const body = block.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
+      const head = `<tr>${block.headers.map((cell) => `<th>${inlineToHtml(cell)}</th>`).join("")}</tr>`;
+      const body = block.rows.map((row) => `<tr>${row.map((cell) => `<td>${inlineToHtml(cell)}</td>`).join("")}</tr>`).join("");
       return `<table>${head}${body}</table>`;
     })
     .join("\n");

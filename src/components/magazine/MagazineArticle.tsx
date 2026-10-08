@@ -7,6 +7,7 @@ import type { Article } from '../../types';
 import { articleBlocks } from '../../seo/articleBlocks';
 import { publicProductPath, publicServicePath } from '../../seo/resolveSeo';
 import { isSafeHref, isSafeImageSrc } from '../../seo/safeUrl';
+import { RichInline } from '../RichBlocks';
 
 interface MagazineArticleProps {
   article: Article;
@@ -92,7 +93,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
               if (block.type === "h3") {
                 return (
                   <h3 key={idx} className="text-xl font-bold text-slate-800 mt-8 mb-4">
-                    {block.text}
+                    <RichInline text={block.text} />
                   </h3>
                 );
               }
@@ -101,7 +102,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                   <ul key={idx} className="list-disc list-inside mb-4 mr-4 space-y-2">
                     {block.items.map((item, itemIndex) => (
                       <li key={`${idx}-${itemIndex}`} className="text-base md:text-lg font-medium text-slate-700">
-                        {item}
+                        <RichInline text={item} />
                       </li>
                     ))}
                   </ul>
@@ -142,7 +143,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                       <thead>
                         <tr className="bg-slate-100">
                           {block.headers.map((cell, cellIndex) => (
-                            <th key={`${idx}-${cellIndex}`} className="py-3 px-4 font-black whitespace-nowrap">{cell}</th>
+                            <th key={`${idx}-${cellIndex}`} className="py-3 px-4 font-black whitespace-nowrap"><RichInline text={cell} /></th>
                           ))}
                         </tr>
                       </thead>
@@ -150,7 +151,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                         {block.rows.map((row, rowIdx) => (
                           <tr key={rowIdx} className="border-t border-slate-100 even:bg-slate-50">
                             {row.map((cell, cellIdx) => (
-                              <td key={`${rowIdx}-${cellIdx}`} className="py-3 px-4 align-top">{cell}</td>
+                              <td key={`${rowIdx}-${cellIdx}`} className="py-3 px-4 align-top"><RichInline text={cell} /></td>
                             ))}
                           </tr>
                         ))}
@@ -161,7 +162,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
               }
               return (
                 <p key={idx} className="mb-6 text-base md:text-lg text-justify font-medium whitespace-pre-line">
-                  {block.text}
+                  <RichInline text={block.text} />
                 </p>
               );
             })}

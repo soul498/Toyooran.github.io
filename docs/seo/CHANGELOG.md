@@ -15,6 +15,14 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-10-08 — انتشار مقاله «مقایسه دانخوری پروانه‌ای، بشقابی و زنجیری»
+
+- مالک: سئو (تأیید مدیر)
+- فایل‌ها: `src/data/mockData.ts` (ARTICLES)، `public/images/feeder-types-comparison.webp`، `src/seo/resolveSeo.ts`، `src/components/magazine/MagazineArticle.tsx` + DB (admin_state.articles) با بکاپ `backups/manual-before-article-feeder-*.sqlite`
+- URLها: `/magazine/feeder-types-comparison` (جدید)، `/magazine`، `/sitemap.xml`
+- تغییر: مقاله از پیش‌نویس ۱۸ منتشر شد (title/meta/H1/alt از پیش‌نویس، منابع Ross و Cobb در فیلد sources). رندر مقاله‌ها حالا `**bold**` و لینک داخلی `[متن](/path)` را در پاراگراف، فهرست، H3 و سلول جدول، هم در پیش‌رندر و هم در مرورگر، رندر می‌کند. FAQPage JSON-LD برای بخش «پرسش‌های متداول» هر مقاله (نه فقط دسته faq) از همان متن قابل‌مشاهده ساخته می‌شود.
+- Verify: lint + build + HTML زنده (status، H1، canonical، JSON-LD، تصویر، sitemap) + Chrome headless + ارسال مجدد sitemap و URL Inspection در GSC
+
 ## 2026-10-06 — حذف ادعاهای گارانتی ۲۴ ماهه، FCR ۱.۵۱، «صفر شدن نیاز به سینی دان» و Chore-Time؛ یکسان‌سازی H1
 
 - مالک: سئو (تأیید مدیر)
