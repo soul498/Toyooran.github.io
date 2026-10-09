@@ -13,6 +13,24 @@
   src: url("/fonts/estedad-700.woff2") format("woff2");
 }
 
+/* Latin glyphs (Ross, Cobb, …) for article pages: the self-hosted Estedad files are Arabic-only subsets. */
+@font-face {
+  font-family: "Estedad Latin";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("/fonts/estedad-latin-400.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Estedad Latin";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500 900;
+  src: url("/fonts/estedad-latin-700.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @theme {
   --font-sans: "Estedad", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
@@ -225,4 +243,12 @@ html {
   .text-\[11px\] {
     font-size: 0.85rem;
   }
+}
+
+/* Magazine article page: Persian + Latin from the same Estedad family. */
+.article-page {
+  font-family: "Estedad", "Estedad Latin", ui-sans-serif, system-ui, sans-serif;
+}
+.article-page .article-body strong {
+  font-weight: 800;
 }

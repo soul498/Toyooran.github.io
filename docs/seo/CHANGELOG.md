@@ -15,6 +15,15 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-10-09 — بازطراحی قالب صفحه مقاله مجله
+
+- مالک: سئو/فرانت (تأیید مدیر)
+- فایل‌ها: `src/components/magazine/MagazineArticle.tsx`، `src/index.css`، `public/fonts/estedad-latin-400.woff2`، `public/fonts/estedad-latin-700.woff2`، `src/data/mockData.ts` + محتوای DB از CMS API (`PUT /api/cms/v1/articles/feeder-types-comparison`، بکاپ خودکار `backups/cms-api-articles-2026-10-09T11-02-07-838Z.sqlite`)
+- URLها: همه `/magazine/*` (فقط صفحه جزئیات مقاله)
+- تغییر: هدر روشن بدون تصویر پس‌زمینه (H1 کوچک‌تر، همان متن)؛ تصویر شاخص در کادر گرد با `<img>` واقعی، width/height=1200×630، eager + fetchpriority=high (تصویر [IMG] تکراری اول بدنه در کلاینت نمایش داده نمی‌شود)؛ ستون متن ~۷۲۰px؛ پاراگراف‌ها وزن عادی، راست‌چین، line-height 1.9، فقط **bold** پررنگ؛ فونت لاتین Estedad (زیرمجموعه لاتین) فقط در صفحه مقاله؛ جدول ۱۵px، سرستون برند، ستون اول پررنگ، zebra و در موبایل (<640px) کارت به‌ازای هر ستون؛ «کی مناسب است/نیست» + فهرست به‌صورت دو کادر سبز/کهربایی کنار هم؛ CTA میانی «استعلام خط دانخوری» بعد از جدول مقاله مقایسه دانخوری.
+- invariantها: پیش‌رندر، H1، title/meta، JSON-LD و sitemap تغییری نکردند.
+- Verify: lint + build + اسکرین‌شات قبل/بعد ۱۳۶۶ و ۴۰۰ + بررسی ۸ مقاله (یک H1، H1 پیش‌رندر = مرورگر، هش JSON-LD قبل/بعد)
+
 ## 2026-10-08 — انتشار مقاله «مقایسه دانخوری پروانه‌ای، بشقابی و زنجیری»
 
 - مالک: سئو (تأیید مدیر)
