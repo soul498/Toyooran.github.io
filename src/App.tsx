@@ -1,4 +1,5 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { sortArticlesNewestFirst } from './seo/articleMeta';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 const Toaster = lazy(() => import('react-hot-toast').then((m) => ({ default: m.Toaster })));
 import { ScrollProgress } from './components/ScrollProgress';
@@ -73,7 +74,7 @@ const MainAppInner: React.FC = () => {
     companyInfo, 
     heroCms 
   } = useData();
-  const publicArticles = articles.filter((article) => article.status !== 'draft');
+  const publicArticles = useMemo(() => sortArticlesNewestFirst(articles.filter((article) => article.status !== 'draft')), [articles]);
 
   // Navigation and consultation state
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>('all');

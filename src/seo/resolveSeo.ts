@@ -1,7 +1,7 @@
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../types";
 import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
-import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle } from "./articleMeta";
+import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle, sortArticlesNewestFirst } from "./articleMeta";
 import { isSafeHref, isSafeImageSrc } from "./safeUrl";
 import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richText";
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
@@ -460,7 +460,7 @@ function snippet(text: string | undefined, maxWords = 18): string {
 }
 
 function indexableArticles(catalog: SeoCatalog): Article[] {
-  return catalog.articles.filter((a) => isPublicArticle(a) && !a.noindex);
+  return sortArticlesNewestFirst(catalog.articles.filter((a) => isPublicArticle(a) && !a.noindex));
 }
 
 function servicesForCategory(category: string, catalog: SeoCatalog): Service[] {

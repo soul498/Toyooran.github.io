@@ -15,6 +15,14 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-10-09 — ترتیب مقاله‌ها: جدیدترین اول
+
+- مالک: سئو/فرانت (درخواست مدیر)
+- فایل‌ها: `src/seo/articleMeta.ts` (`articlePublishDay`، `sortArticlesNewestFirst`)، `server/catalog.ts`، `src/seo/resolveSeo.ts`، `src/App.tsx`
+- URLها: `/magazine`، `/api/magazine`، ویجت‌های مقاله صفحه اصلی و دسته‌ها، پیش‌رندر فهرست‌ها
+- تغییر: مقاله‌ها همه‌جا بر اساس `datePublishedIso` (در نبود آن، تاریخ شمسی/میلادی `date`) نزولی مرتب می‌شوند، مستقل از ترتیب آرایه DB.
+- Verify: lint + build + `/magazine` در مرورگر و HTML گوگل‌بات (اولین مقاله = feeder-types-comparison)
+
 ## 2026-10-09 — بازطراحی قالب صفحه مقاله مجله
 
 - مالک: سئو/فرانت (تأیید مدیر)

@@ -2,7 +2,7 @@ import { getAdminState, getAdminStateUpdatedAt } from "./auth";
 import { ARTICLES, CATEGORIES_DATA, COMPANY_INFO, PRODUCTS, PROJECTS, SERVICES } from "../src/data/mockData";
 import type { SeoCatalog } from "../src/seo/resolveSeo";
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../src/types";
-import { isPublicArticle } from "../src/seo/articleMeta";
+import { isPublicArticle, sortArticlesNewestFirst } from "../src/seo/articleMeta";
 
 function asArray<T>(key: string, fallback: T[]): T[] {
   try {
@@ -38,7 +38,7 @@ export function loadPublicArticles(): Article[] {
     stored = null;
   }
   const source = stored ?? ARTICLES;
-  return source.filter((item) => item?.id && item?.title && isPublicArticle(item));
+  return sortArticlesNewestFirst(source.filter((item) => item?.id && item?.title && isPublicArticle(item)));
 }
 
 function asCompany(): CompanyInfo {
