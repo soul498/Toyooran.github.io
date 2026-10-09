@@ -10,6 +10,7 @@ import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, isPrivateAppPath, l
 import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
 import { gzipResponses } from "./server/gzip";
+import { cmsApiRouter } from "./server/cmsApi";
 
 dotenv.config();
 
@@ -67,6 +68,7 @@ async function startServer() {
   app.use(express.json({ limit: '2mb' }));
   app.use(cookieParser());
   app.use(gzipResponses);
+  app.use("/api/cms/v1", cmsApiRouter);
   app.use('/api', (req, res, next) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && !req.path.startsWith('/auth/login') && !req.path.startsWith('/consultation') && !verifyCsrf(req)) return res.status(403).json({ error: 'CSRF token نامعتبر است.' });
     next();
