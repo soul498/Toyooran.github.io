@@ -230,6 +230,20 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
               </div>
             )}
 
+          {/* Full crawlable list of this category's products (grid above loads progressively) */}
+          {selectedCategory !== 'all' && !searchQuery && filteredProducts.length > 0 && (
+            <nav aria-label={`فهرست محصولات ${heading}`} className="mt-10 bg-white/80 rounded-3xl border border-slate-200 p-6">
+              <h2 className="text-base font-black text-slate-900 mb-3">فهرست کامل محصولات این دسته</h2>
+              <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1.5">
+                {filteredProducts.map((p) => (
+                  <li key={p.id} className="text-sm leading-7">
+                    <Link to={publicProductPath(p)} className="text-[#003F86] hover:underline font-bold">{p.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+
           {/* Lazy Load Trigger */}
           {visibleCount < filteredProducts.length && (
             <div ref={loadMoreRef} className="w-full h-20 flex items-center justify-center mt-8">

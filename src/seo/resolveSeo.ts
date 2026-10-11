@@ -3,6 +3,7 @@ import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
 import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle, sortArticlesNewestFirst } from "./articleMeta";
 import { isSafeHref, isSafeImageSrc } from "./safeUrl";
+import { homePriorityProducts, relatedInCategory } from "./internalLinks";
 import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richText";
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 
@@ -485,9 +486,7 @@ function productBody(product: Product, catalog?: SeoCatalog): string {
       ? `<p><a href="/contact">محاسبه تعداد خطوط دانخوری</a></p>`
       : "";
   const intro = categoryIntro(product.category);
-  const siblings = (catalog?.products || [])
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 8)
+  const siblings = (catalog ? relatedInCategory(product, catalog.products, 6) : [])
     .map((p) => `<li><a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a></li>`)
     .join("");
   const articles = catalog
@@ -501,7 +500,9 @@ function productBody(product: Product, catalog?: SeoCatalog): string {
         .map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`)
         .join("")
     : "";
-  return `<p>${escapeHtml(product.fullDescription || product.shortDescription)}</p>
+  const crumbs = `<nav aria-label="مسیر صفحه"><a href="/">خانه</a> › <a href="/products">محصولات</a> › <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a> › ${escapeHtml(product.name)}</nav>`;
+  return `${crumbs}
+<p>${escapeHtml(product.fullDescription || product.shortDescription)}</p>
 ${blocksToHtml(product.details)}
 <p>کد محصول: ${escapeHtml(product.code || product.id)} · دسته: <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>
 ${specs ? `<h2>مشخصات فنی ${escapeHtml(product.name)}</h2><ul>${specs}</ul>` : ""}
@@ -562,6 +563,9 @@ ${results ? `<h2>نتیجه اعلام‌شده</h2><ul>${results}</ul>` : `<ul>
 <p><a href="/contact">مشاوره پروژه مشابه</a></p>`;
 }
 
+export const HOME_LINKS_CATEGORIES_HEADING = "دسته‌های تجهیزات دام و طیور";
+export const HOME_LINKS_PRODUCTS_HEADING = "محصولات پرکاربرد";
+
 function homeExtras(catalog: SeoCatalog): string {
   const fitout = catalog.services.find((s) => s.id === FITOUT_SERVICE_ID);
   const steps = (fitout?.workflow || []).map((st) => `<li>${escapeHtml(st.title)}: ${escapeHtml(st.description)}</li>`).join("");
@@ -576,8 +580,16 @@ function homeExtras(catalog: SeoCatalog): string {
   const projects = catalog.projects
     .map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)}</li>`)
     .join("");
+  const catLinks = catalog.categories
+    .map((c) => `<li><a href="/products/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a></li>`)
+    .join("");
+  const popular = homePriorityProducts(catalog.products)
+    .map((p) => `<li><a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a></li>`)
+    .join("");
   return `<h2>نوسازی و تجهیز کامل سالن مرغداری</h2><p>${escapeHtml(FITOUT_LEAD)}</p>
 ${steps ? `<ol>${steps}</ol>` : ""}
+${catLinks ? `<h2>${HOME_LINKS_CATEGORIES_HEADING}</h2><ul>${catLinks}</ul>` : ""}
+${popular ? `<h2>${HOME_LINKS_PRODUCTS_HEADING}</h2><ul>${popular}</ul>` : ""}
 ${featured ? `<h2>محصولات پرفروش</h2><ul>${featured}</ul>` : ""}
 ${projects ? `<h2>پروژه‌ها</h2><ul>${projects}</ul>` : ""}
 ${posts ? `<h2>مجله تخصصی</h2><ul>${posts}</ul>` : ""}`;

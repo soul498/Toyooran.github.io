@@ -11,6 +11,7 @@ import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./serv
 import { appendLead, leadsToCsv } from "./server/leads";
 import { gzipResponses } from "./server/gzip";
 import { cmsApiRouter } from "./server/cmsApi";
+import { legacySpamGone } from "./server/legacySpam";
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ async function startServer() {
   // address for every visitor, so the /api rate limiter becomes one global bucket.
   // Pair with nginx real_ip (set_real_ip_from <ArvanCloud ranges>) so X-Forwarded-For is the client.
   app.set('trust proxy', 'loopback, uniquelocal');
+  // Legacy spam URLs (old hack): 410 Gone before host/URL normalization and SPA fallback.
+  app.use(legacySpamGone);
   app.use((req, res, next) => {
     const host = (req.hostname || "").toLowerCase();
     if (host === "toyooran.com") {

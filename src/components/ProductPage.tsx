@@ -7,6 +7,7 @@ import { NotFoundPage } from './NotFoundPage';
 import { ProductCatalogSection } from './ProductCatalogSection';
 import { RichBlocks } from './RichBlocks';
 import { findProduct, publicProductPath } from '../seo/resolveSeo';
+import { relatedInCategory } from '../seo/internalLinks';
 import { ProductCategory } from '../types';
 
 const CATEGORY_IDS: ProductCategory[] = ['heating', 'ventilation', 'drinking', 'cooling', 'inlet', 'feeding', 'cage', 'silo', 'other'];
@@ -43,17 +44,23 @@ export const ProductPage: React.FC = () => {
       (product.relatedArticleIds?.includes(article.id) || article.relatedProductIds?.includes(product.id))
   );
 
+  const relatedProducts = relatedInCategory(product, products, 6);
+
   return (
     <div className="pt-32 pb-24 bg-slate-50 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Breadcrumb / Back button */}
-        <Link
-          to="/products"
-          className="flex items-center gap-2 text-slate-500 hover:text-[#003F86] transition-colors mb-8 text-sm font-bold bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 w-fit"
-        >
-          <ArrowRight className="w-4 h-4" />
-          <span>بازگشت به محصولات</span>
-        </Link>
+        {/* Breadcrumb */}
+        <nav aria-label="مسیر صفحه" className="mb-8 text-sm font-bold bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 w-fit max-w-full">
+          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-slate-500">
+            <li><Link to="/" className="hover:text-[#003F86] transition-colors">خانه</Link></li>
+            <li aria-hidden="true">›</li>
+            <li><Link to="/products" className="hover:text-[#003F86] transition-colors">محصولات</Link></li>
+            <li aria-hidden="true">›</li>
+            <li><Link to={`/products/${product.category}`} className="hover:text-[#003F86] transition-colors">{product.categoryTitle}</Link></li>
+            <li aria-hidden="true">›</li>
+            <li className="text-slate-700 truncate max-w-[16rem]" aria-current="page">{product.name}</li>
+          </ol>
+        </nav>
 
         <div className="bg-white rounded-[3rem] shadow-xl border border-slate-200 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
@@ -204,6 +211,23 @@ export const ProductPage: React.FC = () => {
             </div>
           </div>
         </div>
+        {relatedProducts.length > 0 ? (
+          <div className="mt-8 bg-white rounded-3xl border border-slate-200 p-6">
+            <h2 className="text-lg font-black text-slate-900 mb-4">محصولات دیگر {product.categoryTitle}</h2>
+            <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2">
+              {relatedProducts.map((item) => (
+                <li key={item.id}>
+                  <Link className="text-[#003F86] font-bold text-sm hover:underline" to={publicProductPath(item)}>
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Link className="inline-block mt-4 text-sm font-bold text-slate-600 hover:text-[#003F86]" to={`/products/${product.category}`}>
+              همه محصولات {product.categoryTitle}
+            </Link>
+          </div>
+        ) : null}
         {relatedArticles.length > 0 ? (
           <div className="mt-8 bg-white rounded-3xl border border-slate-200 p-6">
             <h2 className="text-lg font-black text-slate-900 mb-4">راهنمای مرتبط</h2>

@@ -15,6 +15,15 @@
 - Verify: lint / build / raw HTML / status / canonical / schema / sitemap
 - نتیجه پس از انتشار:
 
+## 2026-10-11 — 410 برای URLهای اسپم قدیمی + لینک‌سازی داخلی برای اولویت خزش
+
+- مالک: سئو (تأیید مدیر)
+- فایل‌ها: `server/legacySpam.ts`، `server.ts`، `scripts/test-legacy-spam.ts`، `package.json` (`test:legacy-spam`)، `src/seo/internalLinks.ts`، `src/seo/resolveSeo.ts`، `src/components/PopularLinksSection.tsx`، `src/App.tsx`، `src/components/ProductPage.tsx`، `src/components/ProductCatalogSection.tsx` + محتوای ۸ مقاله از CMS API (بکاپ خودکار هر PUT در `backups/cms-api-articles-*.sqlite`)
+- URLها: `/?goods/…`، `/?jp/…`، `/?detail/…`، `/?sitemapindex…`، `/0x<hex>/` (۴۱۰)؛ `/`، `/products/*`، `/magazine/*`
+- تغییر: پاسخ 410 Gone با صفحه کوچک noindex و هدر `X-Robots-Tag: noindex, nofollow` برای کوئری بدون کلید روی صفحه اصلی (goods/، jp/، detail/، sitemapindex؛ شکل %2F هم) و مسیر `^/0x[0-9a-f]+/?$`، قبل از نرمال‌سازی URL و SPA. صفحه اصلی: بخش «دسته‌های تجهیزات دام و طیور» و «محصولات پرکاربرد» (۱۲ محصول) در پیش‌رندر و مرورگر. صفحه دسته: فهرست کامل لینک محصولات دسته در مرورگر (گرید تدریجی بارگذاری می‌شد). صفحه محصول: breadcrumb لینک‌دار (پیش‌رندر + مرورگر) و ۶ محصول هم‌دسته‌ی مجاور به‌جای ۸ محصول اول دسته (پخش یکنواخت لینک). مقاله‌ها: ۲ تا ۴ لینک درون‌متنی به دسته/محصول روی عبارت‌های موجود.
+- invariantها: یک H1، H1 پیش‌رندر = مرورگر، title/meta بدون تغییر.
+- Verify: test:legacy-spam + lint + build + curl زنده (۴۱۰ و ۲۰۰) + شمارش inlink پیش‌رندر قبل/بعد + GSC
+
 ## 2026-10-09 — ترتیب مقاله‌ها: جدیدترین اول
 
 - مالک: سئو/فرانت (درخواست مدیر)

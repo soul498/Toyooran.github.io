@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "check:seo": "bash scripts/check-seo-contract.sh"
+    "check:seo": "bash scripts/check-seo-contract.sh",
+    "test:legacy-spam": "tsx scripts/test-legacy-spam.ts"
   },
   "dependencies": {
     "@fontsource/estedad": "^5.3.0",

@@ -20,6 +20,7 @@ const MagazineArticle = lazy(() => import('./components/magazine/MagazineArticle
 const AboutPage = lazy(() => import('./components/AboutPage').then((m) => ({ default: m.AboutPage })));
 const RnDPage = lazy(() => import('./components/RnDPage').then((m) => ({ default: m.RnDPage })));
 const ContactPage = lazy(() => import('./components/ContactPage').then((m) => ({ default: m.ContactPage })));
+const PopularLinksSection = lazy(() => import('./components/PopularLinksSection').then((m) => ({ default: m.PopularLinksSection })));
 const CompactShowcase = lazy(() => import('./components/CompactShowcase').then((m) => ({ default: m.CompactShowcase })));
 const AboutContactUnifiedSection = lazy(() => import('./components/AboutContactUnifiedSection').then((m) => ({ default: m.AboutContactUnifiedSection })));
 const CaseStudyModal = lazy(() => import('./components/Modals/CaseStudyModal').then((m) => ({ default: m.CaseStudyModal })));
@@ -234,6 +235,7 @@ const MainAppInner: React.FC = () => {
                 onSelectProduct={handleSelectProductById}
                 onSelectArticle={(articleId) => navigate(`/magazine/${articleId}`)}
               />
+              <PopularLinksSection />
               <AboutContactUnifiedSection />
               </Suspense>
             </Hero>
