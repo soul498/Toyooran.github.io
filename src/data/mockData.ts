@@ -14,7 +14,7 @@ export const COMPANY_INFO = {
   technicalSupportPhone: '۰۹۱۱۵۱۱۶۲۵۸',
   website: 'www.toyooran.com',
   address: 'مشهد، میدان مادر، مجتمع تجاری ادیب، طبقه ۳، واحد ۴۰۶',
-  rdAddress: 'گرگان، دانشگاه منابع طبیعی گلستان، ساختمان دفتر تحقیق و توسعه، همکاری‌های علمی و بین‌الملل',
+  rdAddress: 'گرگان، بلوار بهشتی، دانشگاه منابع طبیعی گرگان',
   factoryAddress: 'مشهد، بلوار میثاق، کارخانجات صنعتی طیوران صنعت پویا',
   workingHours: 'شنبه تا چهارشنبه ۸:۰۰ الی ۱۷:۰۰ | پنج‌شنبه‌ها ۸:۰۰ الی ۱۳:۰۰',
   fdaLicense: '',
@@ -38,35 +38,17 @@ export const COMPANY_INFO = {
       lat: 36.3263,
       lng: 59.50566,
       mapEmbedUrl: 'https://neshan.org/maps/@36.3263,59.50566,17z',
-      baladEmbedUrl: 'https://balad.ir/embed?p=2XXUngg0bK6lAQ'
-    },
-    {
-      id: 'fact-01',
-      title: 'کارخانه صنعتی و خط تولید',
-      type: 'factory',
-      address: 'مشهد، بلوار میثاق، کارخانجات صنعتی طیوران صنعت پویا',
-      lat: 36.3363,
-      lng: 59.45566,
-      mapEmbedUrl: 'https://neshan.org/maps/@36.3363,59.45566,17z',
       baladEmbedUrl: 'https://balad.ir/embed?p=6CHymGXdZRyn6u'
     },
     {
       id: 'rd-01',
-      title: 'دفتر تحقیق و توسعه (R&D)',
+      title: 'دانشگاه منابع طبیعی گرگان',
       type: 'rd',
-      address: 'گرگان، دانشگاه منابع طبیعی گلستان',
-      lat: 36.840243,
-      lng: 54.436329,
-      mapEmbedUrl: 'https://neshan.org/maps/@36.840243,54.436329,17z',
-      baladEmbedUrl: 'https://balad.ir/embed?p=3vQBwlNBZMYwZm'
-    },
-    {
-      id: 'branch-tehran',
-      title: 'دفتر بازرگانی گرگان',
-      type: 'branch',
-      address: 'گرگان، میدان مفتح، ابتدای خیابان جمهوری، کارخانه نوآوری',
-      mapEmbedUrl: 'https://neshan.org/maps#/search/%DA%AF%D8%B1%DA%AF%D8%A7%D9%86%D8%8C%20%D9%85%DB%8C%D8%AF%D8%A7%D9%86%20%D9%85%D9%81%D8%AA%D8%AD',
-      baladEmbedUrl: 'https://balad.ir/embed?p=PMzvHKnmzUK1EG'
+      address: 'گرگان، بلوار بهشتی',
+      lat: 36.8428141,
+      lng: 54.4407077,
+      mapEmbedUrl: 'https://neshan.org/maps/@36.8428141,54.4407077,17z',
+      baladEmbedUrl: 'https://balad.ir/embed?p=2mnxzJeK25Qq8Q'
     }
   ]
 };
