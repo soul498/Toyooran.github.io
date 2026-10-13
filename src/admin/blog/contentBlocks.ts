@@ -8,6 +8,7 @@ export type EditorBlock =
   | { id: string; type: "ul"; items: string[] }
   | { id: string; type: "img"; src: string; alt: string }
   | { id: string; type: "cta"; label: string; href: string }
+  | { id: string; type: "products"; ids: string }
   | { id: string; type: "table"; source: string };
 
 let sequence = 0;
@@ -36,6 +37,7 @@ export function contentToBlocks(content: string[] | undefined): EditorBlock[] {
     if (block.type === "ul") return { id, type: "ul", items: block.items.length ? [...block.items] : [""] };
     if (block.type === "img") return { id, type: "img", src: block.src, alt: block.alt };
     if (block.type === "cta") return { id, type: "cta", label: block.label, href: block.href };
+    if (block.type === "products") return { id, type: "products", ids: block.ids.join(",") };
     if (block.type === "table") {
       const lines = [block.headers.join(" | "), ...block.rows.map((row) => row.join(" | "))];
       return { id, type: "table", source: lines.join("\n") };
@@ -85,6 +87,9 @@ export function blocksToContent(blocks: EditorBlock[]): string[] {
       lines.push(`[IMG|${markerSafe(block.src)}|${markerSafe(block.alt) || "تصویر مقاله"}]`);
     } else if (block.type === "cta" && block.label.trim() && isSafeHref(block.href)) {
       lines.push(`[CTA|${markerSafe(block.label)}|${markerSafe(block.href)}]`);
+    } else if (block.type === "products") {
+      const ids = block.ids.split(",").map((x) => x.replace(/[^A-Za-z0-9-]/g, "")).filter(Boolean);
+      if (ids.length) lines.push(`[PRODUCTS|${ids.join(",")}]`);
     } else if (block.type === "table") {
       lines.push(...tableLines(block.source));
     }
@@ -99,6 +104,7 @@ export function blockPlainText(blocks: EditorBlock[]): string {
       if (block.type === "table") return block.source.replace(/\|/g, " ");
       if (block.type === "img") return block.alt;
       if (block.type === "cta") return block.label;
+      if (block.type === "products") return "";
       return block.text;
     })
     .join(" ");

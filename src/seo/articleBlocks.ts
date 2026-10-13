@@ -5,6 +5,7 @@ export type ArticleBlock =
   | { type: "ul"; items: string[] }
   | { type: "img"; src: string; alt: string }
   | { type: "cta"; label: string; href: string }
+  | { type: "products"; ids: string[] }
   | { type: "table"; headers: string[]; rows: string[][] };
 
 function splitCells(line: string): string[] {
@@ -59,6 +60,14 @@ export function articleBlocks(content: string[]): ArticleBlock[] {
     const cta = text.match(/^\[CTA\|([^|]+)\|([^\]]+)\]$/);
     if (cta) {
       blocks.push({ type: "cta", label: cta[1], href: cta[2] });
+      i += 1;
+      continue;
+    }
+
+    const products = text.match(/^\[PRODUCTS\|([^\]|]+)\]$/);
+    if (products) {
+      const ids = products[1].split(",").map((id) => id.trim()).filter(Boolean);
+      if (ids.length) blocks.push({ type: "products", ids });
       i += 1;
       continue;
     }

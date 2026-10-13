@@ -10,6 +10,7 @@ import { isSafeHref, isSafeImageSrc } from '../../seo/safeUrl';
 import { inlinePlain } from '../../seo/richText';
 import { withMediaVersion } from '../../lib/mediaUrl';
 import { RichInline } from '../RichBlocks';
+import { resolveProductCards, PRODUCT_CARDS_HEADING, PRODUCT_CARD_IMG } from '../../seo/productCards';
 
 interface MagazineArticleProps {
   article: Article;
@@ -114,6 +115,30 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
           <LazyImage src={block.src} alt={block.alt} className="w-full min-h-[250px] md:min-h-[400px]" imgClassName="w-full h-auto object-cover max-h-[600px]" />
           {block.alt && <p className="text-center text-sm text-slate-500 py-3 font-medium bg-slate-50">{block.alt}</p>}
         </div>
+      );
+    }
+    if (block.type === "products") {
+      const cards = resolveProductCards(block.ids, products);
+      if (!cards.length) return null;
+      return (
+        <section key={idx} aria-label={PRODUCT_CARDS_HEADING} className="my-10 rounded-2xl bg-amber-50 border border-amber-300 border-s-4 border-s-amber-400 p-4 md:p-6">
+          <h2 className="text-xl font-black text-slate-900 mb-4">{PRODUCT_CARDS_HEADING}</h2>
+          <ul className="flex sm:grid sm:grid-cols-3 gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1">
+            {cards.map((card) => (
+              <li key={card.id} className="snap-start shrink-0 w-[75%] sm:w-auto flex flex-col bg-white rounded-xl border border-amber-200 overflow-hidden">
+                {card.image ? (
+                  <img src={withMediaVersion(card.image)} alt={card.name} width={PRODUCT_CARD_IMG.width} height={PRODUCT_CARD_IMG.height} loading="lazy" decoding="async" className="w-full h-auto aspect-video object-cover bg-slate-100" />
+                ) : null}
+                <div className="flex flex-col flex-1 p-4 gap-2">
+                  <h3 className="text-[15px] font-black leading-[1.7] text-slate-900">{card.name}</h3>
+                  {card.model ? <p className="text-[13px] text-slate-500">مدل: {card.model}</p> : null}
+                  {card.spec ? <p className="text-[13px] leading-[1.8] text-slate-700">{card.spec}</p> : null}
+                  <a href={card.href} className="mt-auto inline-block text-center bg-amber-400 hover:bg-amber-500 text-blue-950 font-black text-sm rounded-lg px-4 py-2.5">مشاهده محصول</a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       );
     }
     if (block.type === "cta") {

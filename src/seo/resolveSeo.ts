@@ -1,6 +1,7 @@
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../types";
 import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
+import { resolveProductCards, PRODUCT_CARDS_HEADING, PRODUCT_CARD_IMG } from "./productCards";
 import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle, sortArticlesNewestFirst } from "./articleMeta";
 import { isSafeHref, isSafeImageSrc } from "./safeUrl";
 import { homePriorityProducts, relatedInCategory } from "./internalLinks";
@@ -433,7 +434,7 @@ function faqEntities(article: Article): { q: string; a: string }[] {
   return pairs;
 }
 
-function articleHtml(article: Article): string {
+function articleHtml(article: Article, products: Product[] = []): string {
   return articleBlocks(article.content)
     .map((block) => {
       if (block.type === "h2") return `<h2>${escapeHtml(block.text)}</h2>`;
@@ -443,6 +444,14 @@ function articleHtml(article: Article): string {
       if (block.type === "img") {
         if (!isSafeImageSrc(block.src)) return "";
         return `<figure><img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.alt)}" /><figcaption>${escapeHtml(block.alt)}</figcaption></figure>`;
+      }
+      if (block.type === "products") {
+        const cards = resolveProductCards(block.ids, products);
+        if (!cards.length) return "";
+        const items = cards
+          .map((c) => `<li>${c.image ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.name)}" width="${PRODUCT_CARD_IMG.width}" height="${PRODUCT_CARD_IMG.height}" loading="lazy" decoding="async" />` : ""}<h3><a href="${escapeHtml(c.href)}">${escapeHtml(c.name)}</a></h3>${c.model ? `<p>مدل: ${escapeHtml(c.model)}</p>` : ""}${c.spec ? `<p>${escapeHtml(c.spec)}</p>` : ""}<a href="${escapeHtml(c.href)}">مشاهده محصول</a></li>`)
+          .join("");
+        return `<section aria-label="${PRODUCT_CARDS_HEADING}"><h2>${PRODUCT_CARDS_HEADING}</h2><ul>${items}</ul></section>`;
       }
       if (block.type === "cta") {
         if (!isSafeHref(block.href)) return "";
@@ -946,7 +955,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
         robots: article.noindex ? "noindex, follow" : undefined,
         ogImage: shareImage,
         lastmod: isoDay(article.dateModifiedIso || article.datePublishedIso) || collectionDay(catalog, "articles"),
-        body: `${articleHtml(article)}
+        body: `${articleHtml(article, catalog.products)}
 ${authorHtml}
 ${reviewerHtml}
 <p>تاریخ انتشار: ${escapeHtml(article.datePublishedIso || article.date)}</p>
