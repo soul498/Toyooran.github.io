@@ -12,7 +12,7 @@ const BALAD_BY_ID: Record<string, { src: string; title: string }> = {
   },
   "rd-01": {
     src: "https://balad.ir/embed?p=2mnxzJeK25Qq8Q",
-    title: "مشاهده «دانشگاه منابع طبیعی گرگان» روی نقشه بلد",
+    title: "مشاهده «دفتر تحقیق و توسعه» روی نقشه بلد",
   },
 };
 

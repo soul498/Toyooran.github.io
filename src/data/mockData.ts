@@ -42,7 +42,7 @@ export const COMPANY_INFO = {
     },
     {
       id: 'rd-01',
-      title: 'دانشگاه منابع طبیعی گرگان',
+      title: 'دفتر تحقیق و توسعه',
       type: 'rd',
       address: 'گرگان، بلوار بهشتی',
       lat: 36.8428141,
