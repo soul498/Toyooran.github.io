@@ -120,6 +120,8 @@ export interface Article {
   content: string[];
   image?: string;
   tags?: string[];
+  /** Fixed topic tag slug (see src/seo/topics.ts). */
+  topic?: string;
   relatedProductIds: string[];
   relatedServiceId?: string;
   authorName?: string;

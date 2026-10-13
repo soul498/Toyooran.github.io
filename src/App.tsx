@@ -16,6 +16,7 @@ const ProjectPage = lazy(() => import('./components/ProjectPage').then((m) => ({
 const ServicesSection = lazy(() => import('./components/ServicesSection').then((m) => ({ default: m.ServicesSection })));
 const FeaturedProjectsSection = lazy(() => import('./components/FeaturedProjectsSection').then((m) => ({ default: m.FeaturedProjectsSection })));
 const MagazineFeed = lazy(() => import('./components/magazine/MagazineFeed').then((m) => ({ default: m.MagazineFeed })));
+const MagazineTopic = lazy(() => import('./components/magazine/MagazineTopic').then((m) => ({ default: m.MagazineTopic })));
 const MagazineArticle = lazy(() => import('./components/magazine/MagazineArticle').then((m) => ({ default: m.MagazineArticle })));
 const AboutPage = lazy(() => import('./components/AboutPage').then((m) => ({ default: m.AboutPage })));
 const RnDPage = lazy(() => import('./components/RnDPage').then((m) => ({ default: m.RnDPage })));
@@ -277,6 +278,9 @@ const MainAppInner: React.FC = () => {
               }}
             />
             ) : <div className="min-h-screen" aria-busy="true" />
+          } />
+          <Route path="/magazine/topic/:topicSlug" element={
+            magazineReady ? <MagazineTopic articles={publicArticles} notFound={<NotFoundPage />} /> : <div className="min-h-screen" aria-busy="true" />
           } />
           <Route path="/magazine/:articleId" element={
             <MagazineArticleWrapper

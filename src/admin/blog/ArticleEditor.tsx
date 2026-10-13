@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { MAGAZINE_TOPICS } from "../../seo/topics";
 import {
   AlertCircle,
   ArrowDown,
@@ -81,6 +82,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
   const [imageAlt, setImageAlt] = useState(initial?.imageAlt || "");
   const [date, setDate] = useState(initial?.date || new Date().toLocaleDateString("fa-IR"));
   const [tagsText, setTagsText] = useState(initial?.tags?.join("، ") || "");
+  const [topic, setTopic] = useState(initial?.topic || "");
   const [authorName, setAuthorName] = useState(initial?.authorName || "");
   const [authorRole, setAuthorRole] = useState(initial?.authorRole || "");
   const [reviewerName, setReviewerName] = useState(initial?.reviewerName || "");
@@ -215,6 +217,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       image: image.trim() || undefined,
       imageAlt: imageAlt.trim() || undefined,
       tags: tagsText.split(/[،,]/).map((tag) => tag.trim()).filter(Boolean),
+      topic: topic || undefined,
       relatedProductIds,
       relatedServiceId: relatedServiceId || undefined,
       authorName: authorName.trim() || undefined,
@@ -408,7 +411,13 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
             <label className="block text-[11px] text-slate-400">چکیده
               <textarea value={summary} onChange={(event) => setSummary(event.target.value)} rows={3} className={fieldClass + " mt-1 leading-6"} />
             </label>
-            <label className="block text-[11px] text-slate-400">برچسب‌ها
+            <label className="block text-[11px] text-slate-400">برچسب موضوعی ثابت (صفحهٔ موضوع)
+              <select value={topic} onChange={(event) => setTopic(event.target.value)} className={fieldClass + " mt-1"}>
+                <option value="">بدون موضوع</option>
+                {MAGAZINE_TOPICS.map((t) => <option key={t.slug} value={t.slug}>{t.label}</option>)}
+              </select>
+            </label>
+            <label className="block text-[11px] text-slate-400">برچسب‌های متغیر (۲ تا ۵ مورد)
               <input value={tagsText} onChange={(event) => setTagsText(event.target.value)} className={fieldClass + " mt-1"} placeholder="تهویه، مرغداری" />
             </label>
             <ImagePicker label="تصویر شاخص" value={image} onChange={setImage} />

@@ -1,6 +1,7 @@
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../types";
 import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
+import { MAGAZINE_TOPICS, findTopic, topicPath } from "./topics";
 import { resolveProductCards, PRODUCT_CARDS_HEADING, PRODUCT_CARD_IMG } from "./productCards";
 import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle, sortArticlesNewestFirst } from "./articleMeta";
 import { isSafeHref, isSafeImageSrc } from "./safeUrl";
@@ -464,6 +465,16 @@ function articleHtml(article: Article, products: Product[] = []): string {
     .join("\n");
 }
 
+function articleTagsHtml(article: Article): string {
+  const topic = findTopic(article.topic);
+  const parts: string[] = [];
+  if (topic) parts.push(`<p>موضوع: <a href="${topicPath(topic)}">${escapeHtml(topic.label)}</a></p>`);
+  if (article.categoryLabel) parts.push(`<p>دسته: ${escapeHtml(article.categoryLabel)}</p>`);
+  const tags = (article.tags || []).filter(Boolean);
+  if (tags.length) parts.push(`<p>برچسب‌ها: ${tags.map((t) => escapeHtml(t)).join("، ")}</p>`);
+  return parts.join("\n");
+}
+
 function snippet(text: string | undefined, maxWords = 18): string {
   const words = String(text || "").replace(/\.\.\.$/, "").split(/\s+/).filter(Boolean);
   return words.length > maxWords ? `${words.slice(0, maxWords).join(" ")}…` : words.join(" ");
@@ -910,6 +921,25 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
     });
   }
 
+  if (path.startsWith("/magazine/topic/") && publicSegments(path).length === 3) {
+    const topic = findTopic(publicSegments(path)[2]);
+    if (topic) {
+      const list = indexableArticles(catalog).filter((a) => a.topic === topic.slug);
+      const links = list.map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a><p>${escapeHtml(a.summary)}</p></li>`).join("");
+      const others = MAGAZINE_TOPICS.filter((t) => t.slug !== topic.slug).map((t) => `<a href="${topicPath(t)}">${escapeHtml(t.label)}</a>`).join(" · ");
+      return okDoc({
+        path,
+        title: topic.title,
+        description: topic.intro,
+        h1: topic.h1,
+        ogType: "website",
+        lastmod: collectionDay(catalog, "articles"),
+        body: `<p>${escapeHtml(topic.intro)}</p><ul>${links}</ul><p>موضوعات دیگر: ${others} · <a href="/magazine">همهٔ مقالات مجله</a></p>`,
+        jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "مجله", path: "/magazine" }, { name: topic.label, path: topicPath(topic) }])],
+      });
+    }
+  }
+
   if (path.startsWith("/magazine/") && publicSegments(path).length === 2) {
     const article = catalog.articles.find((a) => a.id === path.split("/")[2]);
     if (article && isPublicArticle(article)) {
@@ -956,6 +986,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
         ogImage: shareImage,
         lastmod: isoDay(article.dateModifiedIso || article.datePublishedIso) || collectionDay(catalog, "articles"),
         body: `${articleHtml(article, catalog.products)}
+${articleTagsHtml(article)}
 ${authorHtml}
 ${reviewerHtml}
 <p>تاریخ انتشار: ${escapeHtml(article.datePublishedIso || article.date)}</p>
@@ -1086,6 +1117,7 @@ export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolea
   }
   // Only the real app prefixes (/admin, /admin/..., /crm/...), not /administrator or /admin.php.
   if (isPrivateAppPath(path) && !path.startsWith("/api")) return true;
+  if (parts.length === 3 && parts[0] === "magazine" && parts[1] === "topic") return Boolean(findTopic(parts[2]));
   if (parts.length !== 2) return false;
   if (parts[0] === "magazine") return catalog.articles.some((a) => a.id === parts[1]);
   if (parts[0] === "products") {
@@ -1120,6 +1152,7 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
   for (const service of catalog.services) add(publicServicePath(service), "0.8", collectionDay(catalog, "services"));
   for (const product of catalog.products) add(publicProductPath(product), "0.7", collectionDay(catalog, "products"));
   for (const project of catalog.projects) add(`/projects/${project.id}`, "0.7", collectionDay(catalog, "projects"));
+  for (const topic of MAGAZINE_TOPICS) add(topicPath(topic), "0.5", collectionDay(catalog, "articles"));
   for (const article of catalog.articles) {
     if (!isPublicArticle(article) || article.noindex) continue;
     add(`/magazine/${article.id}`, "0.6", isoDay(article.dateModifiedIso || article.datePublishedIso) || collectionDay(catalog, "articles"));

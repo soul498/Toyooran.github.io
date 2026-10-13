@@ -88,7 +88,7 @@ export function blocksToContent(blocks: EditorBlock[]): string[] {
     } else if (block.type === "cta" && block.label.trim() && isSafeHref(block.href)) {
       lines.push(`[CTA|${markerSafe(block.label)}|${markerSafe(block.href)}]`);
     } else if (block.type === "products") {
-      const ids = block.ids.split(",").map((x) => x.replace(/[^A-Za-z0-9-]/g, "")).filter(Boolean);
+      const ids = block.ids.split(",").map((x) => x.replace(/[|\]\[]/g, "").trim()).filter(Boolean);
       if (ids.length) lines.push(`[PRODUCTS|${ids.join(",")}]`);
     } else if (block.type === "table") {
       lines.push(...tableLines(block.source));

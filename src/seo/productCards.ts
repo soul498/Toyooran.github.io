@@ -10,17 +10,20 @@ export type ProductCard = { id: string; name: string; model?: string; spec?: str
 
 const SKIP_SPEC = /^(مدل|برند|کد|قیمت|رنگ)/;
 
-function keySpec(product: Product): string | undefined {
+function keySpec(product: Product, prefer?: string): string | undefined {
   const specs = (product as any).specs as { label?: string; value?: string }[] | undefined;
-  const spec = (specs || []).find((s) => s?.label && s?.value && !SKIP_SPEC.test(s.label.trim()) && !/قیمت|تومان|ریال/.test(s.value));
+  const preferred = prefer ? (specs || []).find((s) => s?.label && s?.value && s.label.trim().startsWith(prefer)) : undefined;
+  const spec = preferred || (specs || []).find((s) => s?.label && s?.value && !SKIP_SPEC.test(s.label.trim()) && !/قیمت|تومان|ریال/.test(s.value));
   return spec ? `${spec.label!.trim()}: ${spec.value!.trim()}` : undefined;
 }
 
-/** Resolves `[PRODUCTS|id,id]` ids against live product data; unknown ids are skipped, max 3. */
+/** Resolves `[PRODUCTS|id,id:spec label]` ids against live product data; unknown ids are skipped, max 3. */
 export function resolveProductCards(ids: string[], products: Product[]): ProductCard[] {
   const cards: ProductCard[] = [];
   for (const raw of ids) {
-    const id = raw.trim().toLowerCase();
+    const [rawId, ...rest] = raw.split(":");
+    const id = rawId.trim().toLowerCase();
+    const prefer = rest.join(":").trim() || undefined;
     const product = products.find((p) => p.id === id || p.code?.toLowerCase() === id);
     if (!product || cards.some((c) => c.id === product.id)) continue;
     const model = ((product as any).specs || []).find((s: any) => /^مدل/.test(String(s?.label || "")))?.value;
@@ -28,7 +31,7 @@ export function resolveProductCards(ids: string[], products: Product[]): Product
       id: product.id,
       name: product.name,
       model: model && !product.name.includes(model) ? model : undefined,
-      spec: keySpec(product),
+      spec: keySpec(product, prefer),
       image: product.image && isSafeImageSrc(product.image) ? product.image : undefined,
       href: publicProductPath(product),
     });

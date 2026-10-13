@@ -10,6 +10,7 @@ import { isSafeHref, isSafeImageSrc } from '../../seo/safeUrl';
 import { inlinePlain } from '../../seo/richText';
 import { withMediaVersion } from '../../lib/mediaUrl';
 import { RichInline } from '../RichBlocks';
+import { findTopic, topicPath } from '../../seo/topics';
 import { resolveProductCards, PRODUCT_CARDS_HEADING, PRODUCT_CARD_IMG } from '../../seo/productCards';
 
 interface MagazineArticleProps {
@@ -58,6 +59,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
 
   const linkedProducts = products.filter((p) => article.relatedProductIds?.includes(p.id));
   const items = groupBlocks(articleBlocks(article.content));
+  const topic = findTopic(article.topic);
 
   const renderItem = (block: RenderItem, idx: number): React.ReactNode => {
     if (block.type === 'fitGroup') {
@@ -236,9 +238,6 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-slate-500 text-sm font-medium mb-4">
-            <span className="bg-amber-400 text-blue-950 px-3.5 py-1 rounded-full text-xs font-bold">
-              {article.categoryLabel}
-            </span>
             <span className="flex items-center gap-1.5">
               <Calendar className="w-4 h-4" /> {article.date}
             </span>
@@ -329,10 +328,18 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
               <Link className="text-[#003F86] font-bold" to="/contact?cta=article-consult">درخواست مشاوره</Link>
             </p>
           </div>
-          <div className="mt-16 pt-8 flex flex-wrap items-center gap-2">
-             <Tag className="w-5 h-5 text-slate-400 mr-2" />
-             {(article.tags && article.tags.length > 0 ? article.tags : ['دانش فنی', 'صنعت طیور', 'تجهیزات']).map(tag => (
-               <span key={tag} className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-200 cursor-pointer transition-colors">
+          <div className="mt-16 pt-8 border-t border-slate-200 flex flex-wrap items-center gap-2" aria-label="برچسب‌های مقاله">
+             <Tag className="w-5 h-5 text-slate-400 me-1" />
+             {topic ? (
+               <Link to={topicPath(topic)} className="bg-amber-400 hover:bg-amber-500 text-blue-950 text-xs font-black px-3.5 py-1.5 rounded-full">
+                 {topic.label}
+               </Link>
+             ) : null}
+             {article.categoryLabel ? (
+               <span className="bg-[#E8F0FA] text-[#003F86] text-xs font-bold px-3 py-1.5 rounded-full">{article.categoryLabel}</span>
+             ) : null}
+             {(article.tags || []).map(tag => (
+               <span key={tag} className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-200">
                  {tag}
                </span>
              ))}
