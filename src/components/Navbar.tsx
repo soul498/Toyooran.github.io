@@ -79,10 +79,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Logo Mark: Full Image */}
           <div className="h-10 sm:h-12 flex items-center justify-center relative group-hover:-translate-y-0.5 transition-transform duration-300">
              <img 
-               src="/images/logo-wide.png" 
+               src="/images/logo-mark.png" 
                alt="طیوران صنعت پویا"
-               width={180}
-               height={48}
+               width={62}
+               height={50}
                className="h-full w-auto object-contain"
              />
           </div>
@@ -162,7 +162,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-white shadow-sm z-10">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-auto min-w-[2.5rem] bg-slate-100 rounded-lg flex items-center justify-center px-2 py-1 shadow-inner border border-slate-200/50">
-                  <img src="/images/logo-wide.png" alt="طیوران صنعت پویا" className="w-full h-full object-contain " width={80} height={40} />
+                  <img src="/images/logo-mark.png" alt="طیوران صنعت پویا" className="h-10 w-auto object-contain" width={50} height={40} />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-lg font-black text-[#003F86]">TSPK</span>
