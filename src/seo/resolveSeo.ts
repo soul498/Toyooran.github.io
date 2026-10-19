@@ -583,10 +583,29 @@ ${results ? `<h2>نتیجه اعلام‌شده</h2><ul>${results}</ul>` : `<ul>
 <p><a href="/contact">مشاوره پروژه مشابه</a></p>`;
 }
 
-export const HOME_LINKS_CATEGORIES_HEADING = "دسته‌های تجهیزات دام و طیور";
+/**
+ * Homepage H2s in visible render order. Single source of truth: the components
+ * (Hero drawer, CategoryBand, bestsellers slider, contact card) and the
+ * #seo-prerender body both read this list, so prerender H2s == visible H2s.
+ */
+export const HOME_H2S = [
+  { key: "services", text: "طراحی، ساخت و تجهیز پروژه‌های صنعتی در دام، طیور و آبزیان" },
+  { key: "categories", text: "دسته‌های تجهیزات دام و طیور" },
+  { key: "bestsellers", text: "محصولات پرفروش" },
+  { key: "contact", text: "مشاوره و استعلام فنی تجهیز سالن دام و طیور", lines: ["مشاوره و استعلام فنی", "تجهیز سالن دام و طیور"] },
+] as const;
+export type HomeH2Key = (typeof HOME_H2S)[number]["key"];
+export function homeH2(key: HomeH2Key): string {
+  return HOME_H2S.find((h) => h.key === key)!.text;
+}
+export const HOME_CONTACT_H2_LINES = HOME_H2S[3].lines;
+
+export const HOME_LINKS_CATEGORIES_HEADING = homeH2("categories");
+/** Label (not a heading) for the priority products merged into the bestsellers slider. */
 export const HOME_LINKS_PRODUCTS_HEADING = "محصولات پرکاربرد";
 
-function homeExtras(catalog: SeoCatalog): string {
+/** Homepage prerender body: one section per visible H2, internal links kept under the nearest one. */
+function homeBody(catalog: SeoCatalog, serviceLinks: string, intro: string, contact: string): string {
   const fitout = catalog.services.find((s) => s.id === FITOUT_SERVICE_ID);
   const steps = (fitout?.workflow || []).map((st) => `<li>${escapeHtml(st.title)}: ${escapeHtml(st.description)}</li>`).join("");
   const featured = catalog.products
@@ -601,18 +620,24 @@ function homeExtras(catalog: SeoCatalog): string {
     .map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)}</li>`)
     .join("");
   const catLinks = catalog.categories
-    .map((c) => `<li><a href="/products/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a></li>`)
+    .map((c) => `<li><a href="/products/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.description)}</li>`)
     .join("");
   const popular = homePriorityProducts(catalog.products)
     .map((p) => `<li><a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a></li>`)
     .join("");
-  return `<h2>نوسازی و تجهیز کامل سالن مرغداری</h2><p>${escapeHtml(FITOUT_LEAD)}</p>
+  const sections: Record<HomeH2Key, string> = {
+    services: `<ul>${serviceLinks}</ul>
+<p>${escapeHtml(FITOUT_LEAD)}</p>
 ${steps ? `<ol>${steps}</ol>` : ""}
-${catLinks ? `<h2>${HOME_LINKS_CATEGORIES_HEADING}</h2><ul>${catLinks}</ul>` : ""}
-${popular ? `<h2>${HOME_LINKS_PRODUCTS_HEADING}</h2><ul>${popular}</ul>` : ""}
-${featured ? `<h2>محصولات پرفروش</h2><ul>${featured}</ul>` : ""}
-${projects ? `<h2>پروژه‌ها</h2><ul>${projects}</ul>` : ""}
-${posts ? `<h2>مجله تخصصی</h2><ul>${posts}</ul>` : ""}`;
+${projects ? `<p>پروژه‌ها</p><ul>${projects}</ul>` : ""}`,
+    categories: catLinks ? `<ul>${catLinks}</ul>` : "",
+    bestsellers: `${featured ? `<ul>${featured}</ul>` : ""}
+${popular ? `<p>${HOME_LINKS_PRODUCTS_HEADING}</p><ul>${popular}</ul>` : ""}
+${posts ? `<p>مجله تخصصی</p><ul>${posts}</ul>` : ""}`,
+    contact,
+  };
+  return `${intro}
+${HOME_H2S.map((h) => `<h2>${escapeHtml(h.text)}</h2>\n${sections[h.key]}`).join("\n")}`;
 }
 
 function localBusinessNodes(company: CompanyInfo) {
@@ -671,16 +696,15 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       h1: "طیوران صنعت پویا",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
-<p>تلفن دفتر مشهد: ${escapeHtml(company.phone)} · فروش: ${escapeHtml(company.directSalesPhone || company.phone)}</p>
+      body: homeBody(
+        catalog,
+        serviceLinks,
+        `<p>طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
+<p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات دام و طیور</a> · <a href="/contact">درخواست مشاوره</a></p>`,
+        `<p>تلفن دفتر مشهد: ${escapeHtml(company.phone)} · فروش: ${escapeHtml(company.directSalesPhone || company.phone)}</p>
 <p>${escapeHtml(company.address)}</p>
-<p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>
-<p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات دام و طیور</a> · <a href="/contact">درخواست مشاوره</a></p>
-<h2>خدمات</h2>
-<ul>${serviceLinks}</ul>
-<h2>دسته‌های تجهیزات</h2>
-<ul>${catalog.categories.map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.description)}</li>`).join("")}</ul>
-${homeExtras(catalog)}`,
+<p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>`,
+      ),
       jsonLd: [
         orgSchema(company),
         {

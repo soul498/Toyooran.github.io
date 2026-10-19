@@ -13,6 +13,7 @@ import {
 import { PageSection, ProductCategory } from '../types';
 import { isLiteDevice } from '../lib/device';
 import { LANDING_SERVICE_CARDS } from '../data/landingServiceCards';
+import { homeH2 } from '../seo/resolveSeo';
 
 interface HeroProps {
   cmsHero?: import('../types').HeroCms;
@@ -271,7 +272,7 @@ const Hero: React.FC<HeroProps> = ({
               دسته‌بندی تخصصی طیوران صنعت پویا
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-[#003F86]">
-              طراحی، ساخت و تجهیز پروژه‌های صنعتی در دام، طیور و آبزیان
+              {homeH2('services')}
             </h2>
           </div>
 

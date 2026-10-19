@@ -20,7 +20,7 @@ import {
   MoreHorizontal,
 } from '../icons';
 import { Product, Article, CategoryItem } from '../types';
-import { publicProductPath, HOME_LINKS_CATEGORIES_HEADING, HOME_LINKS_PRODUCTS_HEADING } from '../seo/resolveSeo';
+import { publicProductPath, homeH2, HOME_LINKS_PRODUCTS_HEADING } from '../seo/resolveSeo';
 import { homePriorityProducts } from '../seo/internalLinks';
 import { useData } from '../context/DataContext';
 import { withViewTransition } from '../lib/motion';
@@ -126,7 +126,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                   <Zap className="w-6 h-6" fill="currentColor" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="font-black text-xl sm:text-2xl text-white tracking-tight">محصولات پرفروش</h2>
+                  <h2 className="font-black text-xl sm:text-2xl text-white tracking-tight">{homeH2('bestsellers')}</h2>
                   <p className="text-[11px] sm:text-xs font-bold text-amber-300/90 mt-1">
                     {HOME_LINKS_PRODUCTS_HEADING} در همین اسلاید
                   </p>
@@ -294,7 +294,7 @@ const CategoryBand: React.FC<{ categories: CategoryItem[]; onNavigate: (path: st
     <div className="flex items-end justify-between gap-4 mb-5">
       <div>
         <h2 id="home-popular-links" className="font-black text-xl sm:text-2xl text-slate-900 tracking-tight">
-          {HOME_LINKS_CATEGORIES_HEADING}
+          {homeH2('categories')}
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 font-bold mt-1">دسته‌بندی محصولات تجهیزات دام و طیور</p>
       </div>

@@ -20,6 +20,7 @@ import { useData } from '../context/DataContext';
 import { toTelHref } from '../lib/phone';
 import { LocationDetailPane } from './LocationDetailPane';
 import { withViewTransition } from '../lib/motion';
+import { HOME_CONTACT_H2_LINES } from '../seo/resolveSeo';
 
 export const AboutContactUnifiedSection: React.FC = () => {
   const { companyInfo } = useData();
@@ -70,13 +71,13 @@ export const AboutContactUnifiedSection: React.FC = () => {
             <div className="flex flex-col justify-center">
               <span className="text-amber-400 font-black tracking-widest text-xs uppercase mb-6 flex items-center gap-3 drop-shadow-md">
                 <div data-reveal="line" className="w-8 h-px bg-amber-400/50 origin-right" />
-                ارتباط با ما
+                تماس با طیوران صنعت پویا
               </span>
               
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.2] mb-6 drop-shadow-lg">
-                آینده‌ی صنعت را <br/>
+              <h2 className="text-[1.75rem] sm:text-4xl lg:text-[2.25rem] xl:text-5xl font-black text-white leading-[1.3] mb-6 drop-shadow-lg">
+                {HOME_CONTACT_H2_LINES[0]}{' '}<br/>
                 <span className="text-amber-300">
-                  با هم بسازیم.
+                  {HOME_CONTACT_H2_LINES[1]}
                 </span>
               </h2>
               
