@@ -13,6 +13,7 @@ import {
 import { PageSection, ProductCategory } from '../types';
 import { isLiteDevice } from '../lib/device';
 import { LANDING_SERVICE_CARDS } from '../data/landingServiceCards';
+import { homeH2 } from '../seo/resolveSeo';
 
 interface HeroProps {
   cmsHero?: import('../types').HeroCms;
@@ -41,13 +42,16 @@ export interface CircleCategoryCard {
 
 
 
-export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void }> = ({ card, onClick }) => {
+export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void }> = ({ card, idx, onClick }) => {
   const Icon = card.icon;
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={card.title}
+      data-reveal
+      data-anim
+      style={{ '--ri': idx } as React.CSSProperties}
       className="service-card relative w-full h-[280px] sm:h-[320px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 cursor-pointer"
     >
       <div className="absolute inset-[2px] rounded-[calc(2rem-2px)] bg-[#001c3d] z-10 overflow-hidden flex flex-col items-center justify-center p-6">
@@ -65,9 +69,17 @@ export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-[#001c3d]/40 via-[#001c3d]/70 to-[#001c3d]/95 z-0 pointer-events-none" />
         <div className="service-card-wash absolute inset-0 z-[1] pointer-events-none" />
+        <span className="tsp-num" aria-hidden="true">{String(idx + 1).padStart(2, '0')}</span>
+        <span className="tsp-particles" aria-hidden="true">
+          {[0, 1, 2, 3, 4, 5].map((i) => <i key={i} style={{ '--i': i } as React.CSSProperties} />)}
+        </span>
         <div className="relative z-20 flex flex-col items-center justify-center text-center px-2">
-          <div className="service-card-icon w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-5">
-            <Icon className="w-7 h-7 text-amber-400" aria-hidden="true" />
+          <div className="tsp-hud mb-5">
+            <span className="tsp-ring tsp-ring-a tsp-loop" aria-hidden="true" />
+            <span className="tsp-ring tsp-ring-b tsp-loop" aria-hidden="true" />
+            <div className="service-card-icon w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+              <Icon className="w-7 h-7 text-amber-400" aria-hidden="true" />
+            </div>
           </div>
           <p className="service-card-title text-xl sm:text-2xl font-black tracking-tight text-white leading-snug">
             {card.title}
@@ -106,15 +118,28 @@ const Hero: React.FC<HeroProps> = ({
     ? validCmsImages 
     : (isDefaultBg ? defaultImages : [cmsHero.backgroundImage]);
 
+  // Desktop only: slides 2+ (and Ken Burns) are armed after window load so the first
+  // slide stays the sole, un-faded LCP image. Mobile/coarse/reduced-motion keep one image.
+  const [slidesArmed, setSlidesArmed] = useState(false);
+  const spacerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (heroImages.length <= 1 || isLiteDevice()) return;
-    
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    
-    return () => clearInterval(interval);
+    let timer: number | undefined;
+    const arm = () => { timer = window.setTimeout(() => setSlidesArmed(true), 1200); };
+    if (document.readyState === 'complete') arm();
+    else window.addEventListener('load', arm, { once: true });
+    return () => { window.removeEventListener('load', arm); if (timer) clearTimeout(timer); };
   }, [heroImages.length]);
+
+  useEffect(() => {
+    if (!slidesArmed) return;
+    const interval = setInterval(() => {
+      // Skip while the tab is hidden or the drawer fully covers the fixed hero.
+      if (document.hidden || spacerRef.current?.classList.contains('is-visible') === false) return;
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [slidesArmed, heroImages.length]);
 
   const scrollToCards = () => {
     if (cardsSectionRef.current) {
@@ -125,17 +150,14 @@ const Hero: React.FC<HeroProps> = ({
   const categoryCards = LANDING_SERVICE_CARDS;
 
   return (
-    <div className="w-full relative min-h-screen bg-slate-950">
+    <div className={`tsp-hero w-full relative min-h-screen bg-slate-950${slidesArmed ? ' tsp-kb-on' : ''}`}>
       <style>{`
         .hero-pill {
-          animation: heroPillGlow 2.8s ease-in-out infinite;
+          box-shadow: 0 0 14px rgba(251,191,36,0.35), 0 0 40px rgba(251,191,36,0.12);
           backdrop-filter: blur(8px);
         }
-        @keyframes heroPillGlow {
-          0%, 100% { box-shadow: 0 0 14px rgba(251,191,36,0.35), 0 0 40px rgba(251,191,36,0.12); }
-          50% { box-shadow: 0 0 28px rgba(251,191,36,0.7), 0 0 72px rgba(251,191,36,0.28); }
-        }
         .hero-fade { animation: heroFadeUp 0.7s ease-out both; }
+        @media (prefers-reduced-motion: reduce) { .hero-fade { animation: none; } }
         @keyframes heroFadeUp {
           from { opacity: 0; transform: translateY(14px); }
           to { opacity: 1; transform: translateY(0); }
@@ -152,23 +174,29 @@ const Hero: React.FC<HeroProps> = ({
         
         {/* Full-bleed Background Image with Elegant Vignette */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 bg-slate-950">
-          <LazyHeroImage
-            key={heroImages[currentImageIndex] || heroImages[0]}
-            src={heroImages[currentImageIndex] || heroImages[0]}
-            alt="شرکت طیوران صنعت پویا"
-            isActive
-          />
+          {heroImages.map((img, i) =>
+            i === 0 || slidesArmed ? (
+              <LazyHeroImage
+                key={`${i}-${img}`}
+                src={img}
+                alt="شرکت طیوران صنعت پویا"
+                className={`tsp-hero-slide tsp-loop${i === currentImageIndex ? ' is-active' : ''}`}
+                isActive={i === currentImageIndex}
+                priority={i === 0}
+              />
+            ) : null,
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-[#003F86]/25 via-[#003F86]/35 to-slate-950/75 z-10" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#003F86]/30 via-transparent to-[#003F86]/30 z-10" />
           <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_rgba(0,63,134,0.42)_0%,_rgba(0,63,134,0.18)_48%,_transparent_74%)]" />
         </div>
 
         {/* Minimalist Centered Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-5xl mx-auto w-full mt-[-8vh] sm:mt-[-5vh] hero-fade">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-5xl mx-auto w-full mt-[-8vh] sm:mt-[-5vh]">
           <div className="relative w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
             <div className="absolute inset-0 rounded-[2rem] bg-[#003F86]/45 backdrop-blur-[2px] pointer-events-none" aria-hidden="true" />
             <div className="relative">
-          <div className="hero-pill inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-7 border border-amber-300/50 bg-amber-400/15 font-black">
+          <div className="hero-pill hero-fade inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-7 border border-amber-300/50 bg-amber-400/15 font-black">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse" />
             <span className="text-sm sm:text-base text-white tracking-wide drop-shadow-[0_0_12px_rgba(251,191,36,0.55)]">
               {cmsHero?.pillText || 'با نیم قرن تجربه و بیش از ۲۰۰ پروژه ملی و بین‌المللی'}
@@ -181,11 +209,11 @@ const Hero: React.FC<HeroProps> = ({
             {cmsHero?.title || 'طیوران صنعت پویا'}
           </h1>
 
-          <p className="text-sm sm:text-base lg:text-xl text-slate-100 leading-relaxed max-w-2xl font-light drop-shadow-lg mb-10 mx-auto">
+          <p className="hero-fade text-sm sm:text-base lg:text-xl text-slate-100 leading-relaxed max-w-2xl font-light drop-shadow-lg mb-10 mx-auto" style={{ animationDelay: '120ms' }}>
             {cmsHero?.subtitle}
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+          <div className="hero-fade flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto" style={{ animationDelay: '200ms' }}>
             <Link
               to="/products"
               className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-[#FF9F14] hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold px-8 py-3.5 rounded-full text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/20 hover:-translate-y-1 transition-all"
@@ -221,7 +249,7 @@ const Hero: React.FC<HeroProps> = ({
       {/* ========================================================================= */}
       {/* 2. INVISIBLE SCROLL SPACER (Fits exact viewport height) */}
       {/* ========================================================================= */}
-      <div className="w-full h-[100dvh] pointer-events-none" />
+      <div ref={spacerRef} data-anim className="tsp-hero-spacer w-full h-[100dvh] pointer-events-none" />
 
       {/* ========================================================================= */}
       {/* 3. SLIDING DRAWER / COVER SHEET */}
@@ -238,12 +266,13 @@ const Hero: React.FC<HeroProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           
           {/* Section Title Header */}
-          <div className="w-full mb-6 text-center sm:text-right border-b border-slate-200/80 pb-4">
+          <div className="relative w-full mb-6 text-center sm:text-right border-b border-slate-200/80 pb-4">
+            <span data-reveal="line" aria-hidden="true" className="absolute -bottom-px right-0 h-[2px] w-24 bg-amber-400 rounded-full origin-right" />
             <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60 inline-block mb-1.5">
               دسته‌بندی تخصصی طیوران صنعت پویا
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-[#003F86]">
-              طراحی، ساخت و تجهیز پروژه‌های صنعتی در دام، طیور و آبزیان
+              {homeH2('services')}
             </h2>
           </div>
 
@@ -253,7 +282,7 @@ const Hero: React.FC<HeroProps> = ({
                   
                   {categoryCards.map((card, idx) => (
                     <ServiceCard
-                      key={idx}
+                      key={card.to || idx}
                       idx={idx}
                       card={card}
                       onClick={() => navigate(card.to)}
@@ -264,13 +293,15 @@ const Hero: React.FC<HeroProps> = ({
                 {/* Ultra-Wide Premium Brand Banner */}
                 <button
                   type="button"
+                  data-reveal
+                  data-anim
                   className="mt-8 relative group w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 p-8 sm:p-10 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 text-right"
                   onClick={onOpenConsultation}
                   aria-label="ثبت درخواست مشاوره"
                 >
                     {/* Animated geometric background */}
-                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.08)_0%,_transparent_70%)] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/2 pointer-events-none tsp-drift tsp-loop" />
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.08)_0%,_transparent_70%)] translate-y-1/2 -translate-x-1/2 pointer-events-none tsp-drift tsp-drift-b tsp-loop" />
 
                     <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
                        <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-right gap-6">
@@ -289,7 +320,7 @@ const Hero: React.FC<HeroProps> = ({
                        </div>
 
                        <div className="w-full lg:w-auto shrink-0 mt-4 lg:mt-0">
-                         <span className="w-full lg:w-auto bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-8 py-4 rounded-2xl inline-flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(251,191,36,0.3)]">
+                         <span className="tsp-sheen w-full lg:w-auto bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-8 py-4 rounded-2xl inline-flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(251,191,36,0.3)]">
                             <span className="text-sm">ثبت درخواست مشاوره</span>
                             <span className="w-8 h-8 rounded-full bg-slate-950/10 flex items-center justify-center group-hover:translate-x-[-4px] transition-transform">
                                <ArrowLeft className="w-4 h-4" />
@@ -301,7 +332,7 @@ const Hero: React.FC<HeroProps> = ({
               </div>
 
           {/* Bottom Quick Feature Strip */}
-          <div className="relative z-10 w-full mt-6">
+          <div data-reveal className="relative z-10 w-full mt-6">
             <div className="bg-white/90  border border-slate-200/90 rounded-3xl p-3 sm:px-5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 shadow-2xs">
               
               <div className="flex items-center gap-4">
