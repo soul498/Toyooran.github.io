@@ -23,7 +23,7 @@ export const LocationDetailPane: React.FC<{
   const mapHref = baladPlaceFor(location) || neshanMapsUrl(location.address || "", location.lat, location.lng);
 
   return (
-    <div className="lg:col-span-8 relative rounded-[2rem] overflow-hidden bg-[#001c3d] border border-white/10 h-[460px] lg:h-full shadow-2xl">
+    <div data-anim className="tsp-branch lg:col-span-8 relative rounded-[2rem] overflow-hidden bg-[#001c3d] border border-white/10 h-[460px] lg:h-full shadow-2xl">
       <div className="absolute inset-0">
         {embed ? (
           <iframe
@@ -47,6 +47,11 @@ export const LocationDetailPane: React.FC<{
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#001c3d] via-[#001c3d]/60 to-transparent z-10 pointer-events-none" />
+      </div>
+      <div className="tsp-rings" aria-hidden="true">
+        <span className="tsp-loop" />
+        <span className="tsp-loop" />
+        <span className="tsp-loop" />
       </div>
       <div className="relative z-20 mt-auto h-full flex flex-col justify-end p-6 sm:p-10 lg:p-12 items-center text-center sm:items-stretch sm:text-right">
         <p className="text-2xl sm:text-4xl font-black text-white mb-4 leading-tight drop-shadow-lg">{title}</p>

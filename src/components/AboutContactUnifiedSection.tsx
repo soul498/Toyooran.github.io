@@ -19,6 +19,7 @@ import {
 import { useData } from '../context/DataContext';
 import { toTelHref } from '../lib/phone';
 import { LocationDetailPane } from './LocationDetailPane';
+import { withViewTransition } from '../lib/motion';
 
 export const AboutContactUnifiedSection: React.FC = () => {
   const { companyInfo } = useData();
@@ -56,11 +57,11 @@ export const AboutContactUnifiedSection: React.FC = () => {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Massive Dark Cinematic Card */}
-        <div className="bg-[#001c3d] rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-12 lg:p-16 relative overflow-hidden flex flex-col shadow-[0_30px_60px_rgba(0,0,0,0.1)]">
+        <div data-anim className="bg-[#001c3d] rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-12 lg:p-16 relative overflow-hidden flex flex-col shadow-[0_30px_60px_rgba(0,0,0,0.1)]">
           
           {/* Ambient Background Magic */}
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,_rgba(0,63,134,0.15)_0%,_transparent_70%)] translate-y-1/3 -translate-x-1/3 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/3 pointer-events-none tsp-drift tsp-loop" />
+          <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,_rgba(0,63,134,0.15)_0%,_transparent_70%)] translate-y-1/3 -translate-x-1/3 pointer-events-none tsp-drift tsp-drift-b tsp-loop" />
           <div className="absolute inset-0 bg-[url('/images/cubes.png')] opacity-[0.03] pointer-events-none" />
 
           {/* TOP ROW: Manifesto & Core Contacts */}
@@ -68,7 +69,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
             {/* Left: Manifesto */}
             <div className="flex flex-col justify-center">
               <span className="text-amber-400 font-black tracking-widest text-xs uppercase mb-6 flex items-center gap-3 drop-shadow-md">
-                <div className="w-8 h-px bg-amber-400/50" />
+                <div data-reveal="line" className="w-8 h-px bg-amber-400/50 origin-right" />
                 ارتباط با ما
               </span>
               
@@ -190,7 +191,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                           <button
                             key={loc.id || idx}
                             type="button"
-                            onClick={() => setActiveLocationIndex(idx)}
+                            onClick={() => withViewTransition(() => setActiveLocationIndex(idx))}
                             aria-current={isActive ? 'true' : undefined}
                             className={`w-full text-right flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border ${
                               isActive
