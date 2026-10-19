@@ -6,7 +6,7 @@ function webpFor(src: string): string | null {
   return null;
 }
 
-export const LazyHeroImage: React.FC<{ src: string, alt?: string, className?: string, isActive: boolean }> = ({ src, alt, className, isActive }) => {
+export const LazyHeroImage: React.FC<{ src: string, alt?: string, className?: string, isActive: boolean, priority?: boolean }> = ({ src, alt, className, isActive, priority = isActive }) => {
   const webp = webpFor(src);
   const mobileSrcSet = src.includes("hero-final-1")
     ? "/images/hero-final-1-480.webp 480w, /images/hero-final-1-800.webp 800w, /images/hero-final-1.webp 1400w"
@@ -26,9 +26,9 @@ export const LazyHeroImage: React.FC<{ src: string, alt?: string, className?: st
           alt={label}
           width={1400}
           height={1750}
-          loading={isActive ? "eager" : "lazy"}
-          decoding={isActive ? "sync" : "async"}
-          fetchPriority={isActive ? "high" : "low"}
+          loading={priority ? "eager" : "lazy"}
+          decoding={priority ? "sync" : "async"}
+          fetchPriority={priority ? "high" : "low"}
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
       </picture>
