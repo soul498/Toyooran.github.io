@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LazyImage } from './LazyImage';
 import {
@@ -20,10 +20,9 @@ import {
   MoreHorizontal,
 } from '../icons';
 import { Product, Article, CategoryItem } from '../types';
-import { publicProductPath, homeH2, HOME_LINKS_PRODUCTS_HEADING } from '../seo/resolveSeo';
+import { publicProductPath, HOME_LINKS_CATEGORIES_HEADING, HOME_LINKS_PRODUCTS_HEADING } from '../seo/resolveSeo';
 import { homePriorityProducts } from '../seo/internalLinks';
 import { useData } from '../context/DataContext';
-import { withViewTransition } from '../lib/motion';
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   LayoutGrid,
@@ -74,7 +73,6 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
   const featuredArticles = articles.slice(0, 3);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [paused, setPaused] = useState(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (currentSlide >= slides.length) setCurrentSlide(0);
@@ -84,8 +82,6 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
     if (slides.length < 2 || paused) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const timer = setInterval(() => {
-      // Autoplay only while the slider is on screen and the tab is visible.
-      if (document.hidden || sliderRef.current?.classList.contains('is-visible') === false) return;
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 7000);
     return () => clearInterval(timer);
@@ -93,7 +89,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
 
   const go = (delta: number) => {
     if (slides.length === 0) return;
-    withViewTransition(() => setCurrentSlide((prev) => (prev + delta + slides.length) % slides.length));
+    setCurrentSlide((prev) => (prev + delta + slides.length) % slides.length);
   };
 
   return (
@@ -104,8 +100,6 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         <div
-          ref={sliderRef}
-          data-anim
           className="lg:col-span-7 relative rounded-[2.5rem] p-1 overflow-hidden shadow-2xl shadow-blue-900/20"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
@@ -113,11 +107,6 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
           onBlur={() => setPaused(false)}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-[#003F86] to-indigo-900" />
-          <div className="tsp-aurora" aria-hidden="true">
-            <span className="tsp-loop" />
-            <span className="tsp-loop" />
-            <span className="tsp-loop" />
-          </div>
 
           <div className="relative z-10 bg-slate-900/30 rounded-[2.2rem] h-full border border-white/10 flex flex-col p-6 sm:p-10 overflow-hidden">
             <div className="flex items-center justify-between mb-6 sm:mb-8 gap-3">
@@ -126,7 +115,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                   <Zap className="w-6 h-6" fill="currentColor" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="font-black text-xl sm:text-2xl text-white tracking-tight">{homeH2('bestsellers')}</h2>
+                  <h2 className="font-black text-xl sm:text-2xl text-white tracking-tight">محصولات پرفروش</h2>
                   <p className="text-[11px] sm:text-xs font-bold text-amber-300/90 mt-1">
                     {HOME_LINKS_PRODUCTS_HEADING} در همین اسلاید
                   </p>
@@ -144,7 +133,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
               </button>
             </div>
 
-            <div className="tsp-slide-stage flex-1 relative min-h-[250px] sm:min-h-[300px]">
+            <div className="flex-1 relative min-h-[250px] sm:min-h-[300px]">
               {slides.map((product, idx) => {
                 const active = idx === currentSlide;
                 const showImage = active || idx === (currentSlide + 1) % slides.length;
@@ -152,14 +141,14 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                   <Link
                     key={product.id}
                     to={publicProductPath(product)}
-                    className={`tsp-slide group w-full flex flex-col md:flex-row items-center gap-6 sm:gap-10 text-inherit no-underline ${
+                    className={`w-full flex flex-col md:flex-row items-center gap-6 sm:gap-10 text-inherit no-underline ${
                       active ? 'relative' : 'absolute inset-0 opacity-0 pointer-events-none'
                     }`}
                     aria-label={`مشاهده محصول ${product.name}`}
                     aria-hidden={active ? undefined : true}
                     tabIndex={active ? undefined : -1}
                   >
-                    <div className="tsp-zoom w-48 sm:w-56 md:w-64 shrink-0 relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 border border-white/10">
+                    <div className="w-48 sm:w-56 md:w-64 shrink-0 relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 border border-white/10">
                       {showImage && (
                         <LazyImage
                           src={product.image}
@@ -207,7 +196,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                     <button
                       key={product.id}
                       type="button"
-                      onClick={() => withViewTransition(() => setCurrentSlide(idx))}
+                      onClick={() => setCurrentSlide(idx)}
                       aria-label={`اسلاید ${faNum(idx + 1)}: ${product.name}`}
                       aria-current={currentSlide === idx ? 'true' : undefined}
                       className="min-w-8 min-h-11 flex items-center justify-center shrink-0"
@@ -236,7 +225,6 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
           <Link
             to="/magazine"
             onClick={() => onNavigate('magazine')}
-            data-reveal
             className="bg-white rounded-[2rem] p-4 sm:p-5 flex items-center justify-between shadow-xl shadow-slate-200/40 border border-slate-100 shrink-0 no-underline text-inherit"
             aria-label="ورود به مجله تخصصی"
           >
@@ -255,17 +243,15 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
           </Link>
 
           <div className="flex flex-col gap-3 sm:gap-4 flex-1">
-            {featuredArticles.map((article, idx) => (
+            {featuredArticles.map((article) => (
               <button
                 key={article.id}
-                data-reveal
-                style={{ '--ri': idx + 1 } as React.CSSProperties}
                 type="button"
                 onClick={() => onSelectArticle(article.id)}
                 aria-label={`مشاهده مقاله ${article.title}`}
                 className="flex items-center gap-4 bg-white rounded-[1.5rem] p-3 sm:p-4 cursor-pointer border border-slate-100 hover:border-slate-200 transition-colors group w-full text-right"
               >
-                <div className="tsp-zoom w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-xl overflow-hidden relative">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-xl overflow-hidden relative">
                   <LazyImage src={article.image} alt={article.title} className="w-full h-full" imgClassName="w-full h-full object-cover" width={192} height={192} />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -294,7 +280,7 @@ const CategoryBand: React.FC<{ categories: CategoryItem[]; onNavigate: (path: st
     <div className="flex items-end justify-between gap-4 mb-5">
       <div>
         <h2 id="home-popular-links" className="font-black text-xl sm:text-2xl text-slate-900 tracking-tight">
-          {homeH2('categories')}
+          {HOME_LINKS_CATEGORIES_HEADING}
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 font-bold mt-1">دسته‌بندی محصولات تجهیزات دام و طیور</p>
       </div>
@@ -308,13 +294,13 @@ const CategoryBand: React.FC<{ categories: CategoryItem[]; onNavigate: (path: st
       </Link>
     </div>
     <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-      {categories.map((category, idx) => {
+      {categories.map((category) => {
         const Icon = CATEGORY_ICONS[category.icon] || LayoutGrid;
         return (
-          <li key={category.id} data-reveal style={{ '--ri': idx % 5 } as React.CSSProperties}>
+          <li key={category.id}>
             <Link
               to={`/products/${category.id}`}
-              className="tsp-lift group flex items-center gap-3 h-full rounded-2xl border border-slate-100 bg-slate-50/80 px-3 py-3 no-underline text-inherit hover:border-[#003F86]/25 hover:bg-white"
+              className="group flex items-center gap-3 h-full rounded-2xl border border-slate-100 bg-slate-50/80 px-3 py-3 no-underline text-inherit hover:border-[#003F86]/25 hover:bg-white"
             >
               <span className="w-11 h-11 shrink-0 rounded-xl bg-white text-[#003F86] border border-slate-100 flex items-center justify-center group-hover:bg-[#003F86] group-hover:text-white group-hover:border-[#003F86]">
                 <Icon className="w-5 h-5" aria-hidden="true" />
