@@ -1,9 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LazyImage } from "./LazyImage";
-import { Newspaper, Clock, ArrowLeft, ChevronLeft, Zap } from '../icons';
-import { Product, Article } from '../types';
-import { publicProductPath } from '../seo/resolveSeo';
+import { LazyImage } from './LazyImage';
+import {
+  Newspaper,
+  Clock,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  LayoutGrid,
+  Box,
+  Thermometer,
+  Fan,
+  Droplets,
+  Snowflake,
+  Wind,
+  Wheat,
+  Database,
+  MoreHorizontal,
+} from '../icons';
+import { Product, Article, CategoryItem } from '../types';
+import { publicProductPath, HOME_LINKS_CATEGORIES_HEADING, HOME_LINKS_PRODUCTS_HEADING } from '../seo/resolveSeo';
+import { homePriorityProducts } from '../seo/internalLinks';
+import { useData } from '../context/DataContext';
+
+const CATEGORY_ICONS: Record<string, React.ElementType> = {
+  LayoutGrid,
+  Box,
+  Thermometer,
+  Fan,
+  Droplets,
+  Snowflake,
+  Wind,
+  Wheat,
+  Database,
+  MoreHorizontal,
+};
 
 interface CompactShowcaseProps {
   products: Product[];
@@ -13,124 +45,183 @@ interface CompactShowcaseProps {
   onSelectArticle: (articleId: string) => void;
 }
 
+/** Bestsellers stay first. Priority products that are not already featured are appended. */
+export function showcaseSlides(products: Product[]): Product[] {
+  const featured = products.filter((product) => product.isFeatured);
+  const popular = homePriorityProducts(products);
+  const seen = new Set<string>();
+  const slides: Product[] = [];
+  for (const product of [...featured, ...popular]) {
+    if (seen.has(product.id)) continue;
+    seen.add(product.id);
+    slides.push(product);
+  }
+  if (slides.length > 0) return slides;
+  return products.slice(0, 4);
+}
+
+const faNum = (value: number) => value.toLocaleString('fa-IR');
+
 export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
   products,
   articles,
   onNavigate,
-  onSelectArticle
+  onSelectArticle,
 }) => {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    if (products && products.length > 0) {
-      const featured = products.filter(p => p.isFeatured);
-      setFeaturedProducts(featured.length > 0 ? featured.slice(0, 4) : products.slice(0, 4));
-    }
-  }, [products]);
-
+  const { categories } = useData();
+  const slides = useMemo(() => showcaseSlides(products), [products]);
   const featuredArticles = articles.slice(0, 3);
-  
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-  // Auto-slide functionality
   useEffect(() => {
-    if (featuredProducts.length === 0) return;
+    if (currentSlide >= slides.length) setCurrentSlide(0);
+  }, [currentSlide, slides.length]);
+
+  useEffect(() => {
+    if (slides.length < 2 || paused) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % featuredProducts.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 7000);
     return () => clearInterval(timer);
-  }, [featuredProducts.length]);
+  }, [paused, slides.length]);
+
+  const go = (delta: number) => {
+    if (slides.length === 0) return;
+    setCurrentSlide((prev) => (prev + delta + slides.length) % slides.length);
+  };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-24 mt-12">
+    <section className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-24 mt-12 space-y-6 lg:space-y-8">
+      {categories.length > 0 && (
+        <CategoryBand categories={categories} onNavigate={onNavigate} />
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-        
-        {/* Dynamic Product Slider (takes 7 cols) */}
-        <div className="lg:col-span-7 relative rounded-[2.5rem] p-1 overflow-hidden group shadow-2xl shadow-blue-900/20">
-          {/* Animated Background Gradient (Aurora style) */}
+        <div
+          className="lg:col-span-7 relative rounded-[2.5rem] p-1 overflow-hidden shadow-2xl shadow-blue-900/20"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={() => setPaused(false)}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-[#003F86] to-indigo-900" />
-          
-          <div className="relative z-10 bg-slate-900/30 backdrop-blur-2xl rounded-[2.2rem] h-full border border-white/10 flex flex-col p-6 sm:p-10 overflow-hidden">
-            
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6 sm:mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md text-amber-400 flex items-center justify-center border border-white/20 shadow-inner shadow-white/10">
+
+          <div className="relative z-10 bg-slate-900/30 rounded-[2.2rem] h-full border border-white/10 flex flex-col p-6 sm:p-10 overflow-hidden">
+            <div className="flex items-center justify-between mb-6 sm:mb-8 gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-12 h-12 shrink-0 rounded-2xl bg-white/10 text-amber-400 flex items-center justify-center border border-white/20">
                   <Zap className="w-6 h-6" fill="currentColor" />
                 </div>
-                <div>
-                  <p className="font-black text-xl sm:text-2xl text-white tracking-tight">محصولات پرفروش</p>
-                  <span className="text-[10px] sm:text-[11px] font-bold text-amber-400/90 mt-1 block tracking-wider uppercase">پیشنهادهای ویژه</span>
+                <div className="min-w-0">
+                  <h2 className="font-black text-xl sm:text-2xl text-white tracking-tight">محصولات پرفروش</h2>
+                  <p className="text-[11px] sm:text-xs font-bold text-amber-300/90 mt-1">
+                    {HOME_LINKS_PRODUCTS_HEADING} در همین اسلاید
+                  </p>
                 </div>
               </div>
-              <button 
+              <button
                 type="button"
                 onClick={() => onNavigate('products')}
                 aria-label="مشاهده همه محصولات"
-                className="min-h-11 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs font-bold text-white bg-white/10 hover:bg-white hover:text-[#003F86] flex items-center gap-2 transition-all duration-300 backdrop-blur-md border border-white/20 hover:border-transparent group/btn"
+                className="min-h-11 shrink-0 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs font-bold text-white bg-white/10 hover:bg-white hover:text-[#003F86] flex items-center gap-2 transition-colors border border-white/20 hover:border-transparent"
               >
                 <span className="hidden sm:inline">مشاهده همه</span>
                 <span className="sm:hidden">همه</span>
-                <ArrowLeft className="w-4 h-4 group-hover/btn:-translate-x-1 transition-transform" />
+                <ArrowLeft className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Slider Content */}
-            <div className="flex-1 relative flex items-center justify-center min-h-[250px] sm:min-h-[300px]">
-                {featuredProducts.length > 0 && (
+            <div className="flex-1 relative min-h-[250px] sm:min-h-[300px]">
+              {slides.map((product, idx) => {
+                const active = idx === currentSlide;
+                const showImage = active || idx === (currentSlide + 1) % slides.length;
+                return (
                   <Link
-                    to={publicProductPath(featuredProducts[currentSlide])}
-                    className="w-full flex flex-col md:flex-row items-center gap-6 sm:gap-10 cursor-pointer group/slide text-inherit no-underline"
-                    aria-label={`مشاهده محصول ${featuredProducts[currentSlide].name}`}
+                    key={product.id}
+                    to={publicProductPath(product)}
+                    className={`w-full flex flex-col md:flex-row items-center gap-6 sm:gap-10 text-inherit no-underline ${
+                      active ? 'relative' : 'absolute inset-0 opacity-0 pointer-events-none'
+                    }`}
+                    aria-label={`مشاهده محصول ${product.name}`}
+                    aria-hidden={active ? undefined : true}
+                    tabIndex={active ? undefined : -1}
                   >
                     <div className="w-48 sm:w-56 md:w-64 shrink-0 relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 border border-white/10">
-                      <LazyImage 
-                         src={featuredProducts[currentSlide].image} 
-                         alt={featuredProducts[currentSlide].name} 
-                         className="w-full h-full relative z-10" 
-                         imgClassName="w-full h-full object-cover"
-                         width={400}
-                         height={300}
-                       />
+                      {showImage && (
+                        <LazyImage
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full relative z-10"
+                          imgClassName="w-full h-full object-cover"
+                          width={400}
+                          height={300}
+                        />
+                      )}
                     </div>
-                    
                     <div className="flex-1 text-center md:text-right flex flex-col items-center md:items-start">
-                      <span className="inline-block px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-[10px] font-black tracking-wider mb-3 sm:mb-4">
-                        {featuredProducts[currentSlide].categoryTitle}
+                      <span className="inline-flex items-center gap-2 mb-3 sm:mb-4">
+                        <span className="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-[10px] font-black">
+                          {product.categoryTitle}
+                        </span>
+                        <span className="px-3 py-1 rounded-full text-[10px] font-black bg-white/10 text-white border border-white/15">
+                          {product.isFeatured ? 'پرفروش' : 'پرکاربرد'}
+                        </span>
                       </span>
                       <p className="text-xl sm:text-3xl lg:text-4xl font-black text-white leading-tight mb-4 sm:mb-6">
-                        {featuredProducts[currentSlide].name}
+                        {product.name}
                       </p>
                       <div className="flex items-center gap-2 text-slate-200 text-xs sm:text-sm font-medium">
                         مشاهده جزئیات و مشخصات فنی <ChevronLeft className="w-4 h-4" aria-hidden="true" />
                       </div>
                     </div>
                   </Link>
-                )}
+                );
+              })}
             </div>
 
-            {/* Slider Dots */}
-            <div className="flex items-center justify-center gap-3 mt-6 sm:mt-8 z-20" role="tablist" aria-label="اسلاید محصولات">
-              {featuredProducts.map((product, idx) => (
+            {slides.length > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8 z-20">
                 <button
-                  key={product.id || idx}
                   type="button"
-                  onClick={(e) => { e.stopPropagation(); setCurrentSlide(idx); }}
-                  aria-label={`اسلاید ${idx + 1}: ${product.name}`}
-                  aria-current={currentSlide === idx ? 'true' : undefined}
-                  className="min-w-11 min-h-11 flex items-center justify-center"
+                  onClick={() => go(-1)}
+                  aria-label="اسلاید قبلی"
+                  className="min-w-11 min-h-11 rounded-full bg-white/10 text-white border border-white/15 flex items-center justify-center hover:bg-white hover:text-[#003F86]"
                 >
-                  <span className={`block h-1.5 sm:h-2 rounded-full transition-all duration-500 ${currentSlide === idx ? 'w-8 sm:w-10 bg-amber-400' : 'w-2 bg-white/40 hover:bg-white/60'}`} />
+                  <ChevronRight className="w-5 h-5" />
                 </button>
-              ))}
-            </div>
-
+                <div className="flex items-center gap-1.5 overflow-x-auto max-w-[16rem] sm:max-w-xs px-1" role="tablist" aria-label="اسلاید محصولات">
+                  {slides.map((product, idx) => (
+                    <button
+                      key={product.id}
+                      type="button"
+                      onClick={() => setCurrentSlide(idx)}
+                      aria-label={`اسلاید ${faNum(idx + 1)}: ${product.name}`}
+                      aria-current={currentSlide === idx ? 'true' : undefined}
+                      className="min-w-8 min-h-11 flex items-center justify-center shrink-0"
+                    >
+                      <span className={`block h-1.5 rounded-full transition-all ${currentSlide === idx ? 'w-6 bg-amber-400' : 'w-1.5 bg-white/40'}`} />
+                    </button>
+                  ))}
+                </div>
+                <span className="text-xs font-bold text-white/80 tabular-nums min-w-[3.5rem] text-center">
+                  {faNum(currentSlide + 1)}/{faNum(slides.length)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => go(1)}
+                  aria-label="اسلاید بعدی"
+                  className="min-w-11 min-h-11 rounded-full bg-white/10 text-white border border-white/15 flex items-center justify-center hover:bg-white hover:text-[#003F86]"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Dynamic Articles Column (takes 5 cols) - BENTO DESIGN */}
         <div className="lg:col-span-5 flex flex-col gap-4 h-full">
-          {/* Floating Modern Header */}
           <Link
             to="/magazine"
             onClick={() => onNavigate('magazine')}
@@ -138,7 +229,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
             aria-label="ورود به مجله تخصصی"
           >
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-amber-400 rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-amber-400/30">
+              <div className="w-12 h-12 bg-amber-400 rounded-[1.25rem] flex items-center justify-center text-white">
                 <Newspaper className="w-6 h-6" />
               </div>
               <div>
@@ -146,16 +237,13 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                 <span className="text-[10px] sm:text-[11px] text-slate-600 font-bold block mt-0.5">هفت راهنمای سالن مرغداری</span>
               </div>
             </div>
-            <span
-              className="min-w-11 min-h-11 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center shadow-sm border border-slate-100"
-            >
+            <span className="min-w-11 min-h-11 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center border border-slate-100">
               <ArrowLeft className="w-5 h-5" aria-hidden="true" />
             </span>
           </Link>
 
-          {/* Vertical Articles List */}
           <div className="flex flex-col gap-3 sm:gap-4 flex-1">
-            {featuredArticles.slice(0, 3).map((article) => (
+            {featuredArticles.map((article) => (
               <button
                 key={article.id}
                 type="button"
@@ -166,8 +254,6 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
                 <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-xl overflow-hidden relative">
                   <LazyImage src={article.image} alt={article.title} className="w-full h-full" imgClassName="w-full h-full object-cover" width={192} height={192} />
                 </div>
-                
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <span className="text-[10px] sm:text-xs font-black text-amber-500 mb-1 sm:mb-1.5 block">
                     {article.categoryLabel}
@@ -185,5 +271,50 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
           </div>
         </div>
       </div>
+    </section>
+  );
+};
+
+const CategoryBand: React.FC<{ categories: CategoryItem[]; onNavigate: (path: string) => void }> = ({ categories, onNavigate }) => (
+  <div className="rounded-[2rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/40 p-5 sm:p-7">
+    <div className="flex items-end justify-between gap-4 mb-5">
+      <div>
+        <h2 id="home-popular-links" className="font-black text-xl sm:text-2xl text-slate-900 tracking-tight">
+          {HOME_LINKS_CATEGORIES_HEADING}
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-500 font-bold mt-1">دسته‌بندی محصولات تجهیزات دام و طیور</p>
+      </div>
+      <Link
+        to="/products"
+        onClick={() => onNavigate('products')}
+        className="shrink-0 min-h-11 inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-[#003F86] no-underline"
+      >
+        کاتالوگ
+        <ArrowLeft className="w-4 h-4" />
+      </Link>
     </div>
-  );};
+    <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      {categories.map((category) => {
+        const Icon = CATEGORY_ICONS[category.icon] || LayoutGrid;
+        return (
+          <li key={category.id}>
+            <Link
+              to={`/products/${category.id}`}
+              className="group flex items-center gap-3 h-full rounded-2xl border border-slate-100 bg-slate-50/80 px-3 py-3 no-underline text-inherit hover:border-[#003F86]/25 hover:bg-white"
+            >
+              <span className="w-11 h-11 shrink-0 rounded-xl bg-white text-[#003F86] border border-slate-100 flex items-center justify-center group-hover:bg-[#003F86] group-hover:text-white group-hover:border-[#003F86]">
+                <Icon className="w-5 h-5" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[13px] sm:text-sm font-black text-slate-800 leading-snug">{category.title}</span>
+                {category.productCount ? (
+                  <span className="block text-[10px] font-bold text-slate-500 mt-0.5">{faNum(category.productCount)} محصول</span>
+                ) : null}
+              </span>
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+);
