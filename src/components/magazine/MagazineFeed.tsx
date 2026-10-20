@@ -1,7 +1,6 @@
 import React from 'react';
 import { Clock, Calendar, ChevronLeft } from '../../icons';
 import { Link } from 'react-router-dom';
-import { PageBanner } from '../PageBanner';
 import { LazyImage } from '../LazyImage';
 import type { Article } from '../../types';
 
@@ -13,10 +12,7 @@ interface MagazineFeedProps {
 export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles }) => {
   return (
     <div className="min-h-screen relative z-0" id="magazine-feed">
-      <PageBanner
-        title="مجله تخصصی دام و طیور"
-        subtitle="راهنماهای تجهیز، تهویه، گرمایش و نوسازی سالن مرغداری"
-      />
+      {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

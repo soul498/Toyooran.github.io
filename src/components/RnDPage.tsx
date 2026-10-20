@@ -1,14 +1,10 @@
 import React from 'react';
-import { PageBanner } from './PageBanner';
 import { UnderConstruction } from './UnderConstruction';
 
 export const RnDPage: React.FC = () => {
   return (
     <div className="bg-blueprint-light min-h-screen">
-      <PageBanner
-        title="واحد تحقیق و توسعه"
-        subtitle="بومی‌سازی تجهیزات مرغداری و خطوط خوراک با همکاری دانشگاه منابع طبیعی گلستان"
-      />
+      {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
       <div className="w-full relative z-10">
         <UnderConstruction 
           title="دپارتمان تحقیق و توسعه در حال تجهیز است" 

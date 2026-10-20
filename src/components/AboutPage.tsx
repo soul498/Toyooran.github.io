@@ -2,7 +2,6 @@ import React from 'react';
 import { LazyImage } from './LazyImage';
 import { Building2, CheckCircle2, Factory, Globe2 } from '../icons';
 import { SEO } from './SEO';
-import { PageBanner } from './PageBanner';
 import { toTelHref } from '../lib/phone';
 
 export const AboutPage: React.FC = () => {
@@ -13,10 +12,7 @@ export const AboutPage: React.FC = () => {
         description="مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان."
       />
 
-      <PageBanner
-        title="درباره طیوران صنعت پویا"
-        subtitle="مشاور، طراح و مجری پروژه‌های دام، طیور و آبزیان با بیش از ۵۰ سال تجربه"
-      />
+      {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full pb-24">
         

@@ -1,5 +1,4 @@
 import React from 'react';
-import { PageBanner } from './PageBanner';
 import { UnderConstruction } from './UnderConstruction';
 
 interface FeaturedProjectsSectionProps {
@@ -11,10 +10,7 @@ interface FeaturedProjectsSectionProps {
 export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = () => {
   return (
     <section className="min-h-screen relative z-0" id="projects-section">
-      <PageBanner
-        title="پروژه‌های اجراشده"
-        subtitle="نمونه‌کارهای تجهیز سالن و خطوط خوراک به‌زودی در این بخش منتشر می‌شود"
-      />
+      {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
       <UnderConstruction
         title="درحال بارگزاری..."
         description="آرشیو پروژه‌های واقعی در حال آماده‌سازی است. برای بازدید از سالن اجراشده یا دریافت مشخصات فنی، از صفحه تماس درخواست مشاوره بدهید."

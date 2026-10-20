@@ -31,13 +31,24 @@ const AiEngineerAssistantModal = lazy(() => import('./components/AiEngineerAssis
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
+import { PageBanner } from './components/PageBanner';
+import { pageHeroFor } from './data/pageHeroes';
 const CustomCursor = lazy(() => import('./components/CustomCursor').then((m) => ({ default: m.CustomCursor })));
 import { NotFoundPage } from './components/NotFoundPage';
 import { useParams } from 'react-router-dom';
 import { SeoHead } from "./components/SEO";
 import { publicProductPath } from "./seo/resolveSeo";
 
-const RouteFallback = () => <div className="min-h-[40vh]" aria-hidden="true" />;
+// Reserve a full viewport while a lazy route loads so the footer never paints in view and then jumps (CLS).
+const RouteFallback = () => <div className="min-h-[100svh]" aria-hidden="true" />;
+
+// Section hero for nav routes, rendered outside the route Suspense so it (and its H1, the LCP)
+// paints on the first commit and is not re-mounted when the lazy page chunk arrives.
+const RouteHero = () => {
+  const { pathname } = useLocation();
+  const hero = pageHeroFor(pathname);
+  return hero ? <PageBanner {...hero} /> : null;
+};
 
 const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: { articles: Article[]; onBack: () => void; onSelectProductById: (productId: string) => void }) => {
   const { articleId } = useParams();
@@ -216,6 +227,7 @@ const MainAppInner: React.FC = () => {
 
       {/* Main Content by Section */}
       <main id="main-content" className="flex-1">
+        <RouteHero />
         <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={

@@ -252,3 +252,17 @@ html {
 .article-page .article-body strong {
   font-weight: 800;
 }
+
+/* Section hero (PageBanner): only the scroll cue moves; the H1 and pill are never animated
+   (the route fallback renders the same hero first, so entrance effects would replay on swap). */
+@keyframes page-hero-cue {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(200%); }
+}
+.page-hero-cue-bar { animation: page-hero-cue 1.5s linear infinite; }
+@media (max-height: 560px) {
+  .page-hero-cue { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-hero-cue-bar { animation: none; }
+}
