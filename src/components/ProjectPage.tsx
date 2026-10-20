@@ -15,6 +15,7 @@ export const ProjectPage: React.FC<{ onOpenConsultation?: (title: string) => voi
   return (
     <div className="min-h-screen bg-blueprint-light">
       <PageBanner
+        compact
         title={project?.title || "پروژه‌ها"}
         subtitle={subtitle}
       />

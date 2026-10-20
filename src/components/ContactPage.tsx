@@ -39,6 +39,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
       
       <PageBanner
         title="تماس و درخواست مشاوره"
+        highlight="درخواست مشاوره"
+        eyebrow="ارتباط هوشمند با طیوران صنعت پویا"
+        eyebrowIcon={Phone}
         subtitle="مشاوره رایگان، استعلام قیمت و ارتباط با دفتر مشهد و واحد فنی گرگان"
       />
 

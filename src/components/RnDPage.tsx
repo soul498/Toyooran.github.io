@@ -1,4 +1,5 @@
 import React from 'react';
+import { FlaskConical } from '../icons';
 import { PageBanner } from './PageBanner';
 import { UnderConstruction } from './UnderConstruction';
 
@@ -7,6 +8,9 @@ export const RnDPage: React.FC = () => {
     <div className="bg-blueprint-light min-h-screen">
       <PageBanner
         title="واحد تحقیق و توسعه"
+        highlight="تحقیق و توسعه"
+        eyebrow="آینده صنعت دام و طیور"
+        eyebrowIcon={FlaskConical}
         subtitle="بومی‌سازی تجهیزات مرغداری و خطوط خوراک با همکاری دانشگاه منابع طبیعی گلستان"
       />
       <div className="w-full relative z-10">

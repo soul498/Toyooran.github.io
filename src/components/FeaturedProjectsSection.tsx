@@ -1,4 +1,5 @@
 import React from 'react';
+import { FileCheck } from '../icons';
 import { PageBanner } from './PageBanner';
 import { UnderConstruction } from './UnderConstruction';
 
@@ -13,6 +14,9 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
     <section className="min-h-screen relative z-0" id="projects-section">
       <PageBanner
         title="پروژه‌های اجراشده"
+        highlight="اجراشده"
+        eyebrow="مطالعات موردی"
+        eyebrowIcon={FileCheck}
         subtitle="نمونه‌کارهای تجهیز سالن و خطوط خوراک به‌زودی در این بخش منتشر می‌شود"
       />
       <UnderConstruction

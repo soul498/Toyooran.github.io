@@ -15,6 +15,9 @@ export const AboutPage: React.FC = () => {
 
       <PageBanner
         title="درباره طیوران صنعت پویا"
+        highlight="طیوران صنعت"
+        eyebrow="توسعه صنعتی و تجهیزات مدرن"
+        eyebrowIcon={Building2}
         subtitle="مشاور، طراح و مجری پروژه‌های دام، طیور و آبزیان با بیش از ۵۰ سال تجربه"
       />
 

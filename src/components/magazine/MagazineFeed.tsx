@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Calendar, ChevronLeft } from '../../icons';
+import { Clock, Calendar, ChevronLeft, Sparkles } from '../../icons';
 import { Link } from 'react-router-dom';
 import { PageBanner } from '../PageBanner';
 import { LazyImage } from '../LazyImage';
@@ -15,6 +15,9 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles }) => {
     <div className="min-h-screen relative z-0" id="magazine-feed">
       <PageBanner
         title="مجله تخصصی دام و طیور"
+        highlight="دام و طیور"
+        eyebrow="مجله تخصصی طیوران صنعت پویا"
+        eyebrowIcon={Sparkles}
         subtitle="راهنماهای تجهیز، تهویه، گرمایش و نوسازی سالن مرغداری"
       />
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ServiceCard } from './Hero';
+import { Sparkles } from '../icons';
 import { PageBanner } from './PageBanner';
 import { LANDING_SERVICE_CARDS } from '../data/landingServiceCards';
 
@@ -18,6 +19,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = () => {
     <section className="min-h-screen relative z-0" id="services-section">
       <PageBanner
         title="خدمات طراحی و تجهیز صنعت دام و طیور"
+        highlight="دام و طیور"
+        eyebrow="خدمات مهندسی و اجرایی"
+        eyebrowIcon={Sparkles}
         subtitle="از طراحی سوله تا نصب دانخوری، تهویه و گرمایش — استعلام فنی از طیوران صنعت پویا"
       />
 
