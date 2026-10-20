@@ -54,7 +54,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
       icon: Building2,
       tab: 'projects' as AdminTab,
       bgGradient: 'from-amber-500 to-amber-700',
-      tag: 'مطالعه موردی'
+      tag: 'گزارش پروژه'
     },
     {
       title: 'درخواست‌های استعلام قیمت',

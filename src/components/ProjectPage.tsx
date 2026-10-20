@@ -11,7 +11,7 @@ export const ProjectPage: React.FC<{ onOpenConsultation?: (title: string) => voi
   const project = projects.find((p) => p.id === projectId);
   const subtitle = project
     ? [project.location, project.capacity].filter(Boolean).join(" · ")
-    : "درحال بارگزاری...";
+    : "در حال بارگذاری…";
   return (
     <div className="min-h-screen bg-blueprint-light">
       <PageBanner

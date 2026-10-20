@@ -7,6 +7,7 @@ import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle, sortArticl
 import { isSafeHref, isSafeImageSrc } from "./safeUrl";
 import { homePriorityProducts, relatedInCategory } from "./internalLinks";
 import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richText";
+import { SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
@@ -329,7 +330,7 @@ function orgSchema(company: CompanyInfo) {
     name: company.nameFa,
     alternateName: company.nameEn,
     url: CANONICAL_ORIGIN,
-    telephone: company.phone,
+    telephone: SALES_PHONE_E164,
     email: company.email || undefined,
     address: {
       "@type": "PostalAddress",
@@ -621,7 +622,7 @@ function localBusinessNodes(company: CompanyInfo) {
     "@type": loc.type === "factory" ? "LocalBusiness" : loc.type === "rd" ? "LocalBusiness" : "LocalBusiness",
     name: `${company.nameFa} — ${loc.title}`,
     parentOrganization: { "@id": `${CANONICAL_ORIGIN}/#org` },
-    telephone: company.phone,
+    telephone: SALES_PHONE_E164,
     address: {
       "@type": "PostalAddress",
       addressCountry: "IR",
@@ -672,7 +673,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
-<p>تلفن دفتر مشهد: ${escapeHtml(company.phone)} · فروش: ${escapeHtml(company.directSalesPhone || company.phone)}</p>
+<p>تلفن: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
 <p>${escapeHtml(company.address)}</p>
 <p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>
 <p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات دام و طیور</a> · <a href="/contact">درخواست مشاوره</a></p>

@@ -1,4 +1,5 @@
 import type React from 'react';
+import { SALES_PHONE_DISPLAY } from './contact';
 import { Building2, FileCheck, FlaskConical, Phone, Sparkles, type IconProps } from '../icons';
 
 export interface PageHeroConfig {
@@ -7,6 +8,9 @@ export interface PageHeroConfig {
   highlight?: string;
   eyebrow?: string;
   eyebrowIcon?: React.ComponentType<IconProps>;
+  /** Optional call to action under the subtitle (internal route, tel: link or #anchor). */
+  cta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
 }
 
 /**
@@ -20,42 +24,48 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
     highlight: 'دام و طیور',
     eyebrow: 'خدمات مهندسی و اجرایی',
     eyebrowIcon: Sparkles,
-    subtitle: 'از طراحی سوله تا نصب دانخوری، تهویه و گرمایش — استعلام فنی از طیوران صنعت پویا',
+    subtitle: 'چهار حوزهٔ خدمت: ماشین‌آلات خوراک، تأمین و نصب تجهیزات، ساخت و نوسازی سالن، و خوراک و مکمل؛ با نیم قرن تجربه در صنعت دام و طیور.',
+    cta: { label: 'درخواست مشاورهٔ رایگان', href: '/contact' },
   },
   '/projects': {
     title: 'پروژه‌های اجراشده',
     highlight: 'اجراشده',
-    eyebrow: 'مطالعات موردی',
+    eyebrow: 'گزارش پروژه‌ها',
     eyebrowIcon: FileCheck,
-    subtitle: 'نمونه‌کارهای تجهیز سالن و خطوط خوراک به‌زودی در این بخش منتشر می‌شود',
+    subtitle: 'گزارش پروژه‌های تجهیز سالن و خطوط خوراک به‌زودی در این بخش منتشر می‌شود؛ برای دریافت مشخصات فنی، درخواست مشاوره ثبت کنید.',
+    cta: { label: 'درخواست مشاورهٔ رایگان', href: '/contact' },
   },
   '/magazine': {
     title: 'مجله تخصصی دام و طیور',
     highlight: 'دام و طیور',
-    eyebrow: 'مجله تخصصی طیوران صنعت پویا',
+    eyebrow: 'مجلهٔ تخصصی طیوران صنعت پویا',
     eyebrowIcon: Sparkles,
-    subtitle: 'راهنماهای تجهیز، تهویه، گرمایش و نوسازی سالن مرغداری',
+    subtitle: 'راهنماهای فنی انتخاب، نصب و نگهداری تجهیزات مرغداری: تهویه، گرمایش، دانخوری، آبخوری و نوسازی سالن',
   },
   '/about': {
     title: 'درباره طیوران صنعت پویا',
-    highlight: 'طیوران صنعت',
-    eyebrow: 'توسعه صنعتی و تجهیزات مدرن',
+    highlight: 'طیوران صنعت پویا',
+    eyebrow: 'درباره شرکت',
     eyebrowIcon: Building2,
-    subtitle: 'مشاور، طراح و مجری پروژه‌های دام، طیور و آبزیان با بیش از ۵۰ سال تجربه',
+    subtitle: 'مشاور، طراح و مجری پروژه‌های دام، طیور و آبزیان با بیش از ۵۰ سال تجربه و ۲۰۰ پروژهٔ ملی و بین‌المللی',
+    cta: { label: 'درخواست مشاورهٔ رایگان', href: '/contact' },
   },
   '/rnd': {
     title: 'واحد تحقیق و توسعه',
     highlight: 'تحقیق و توسعه',
-    eyebrow: 'آینده صنعت دام و طیور',
+    eyebrow: 'تحقیق و توسعه',
     eyebrowIcon: FlaskConical,
     subtitle: 'بومی‌سازی تجهیزات مرغداری و خطوط خوراک با همکاری دانشگاه منابع طبیعی گلستان',
+    cta: { label: 'تماس با واحد فنی', href: '/contact' },
   },
   '/contact': {
     title: 'تماس و درخواست مشاوره',
     highlight: 'درخواست مشاوره',
-    eyebrow: 'ارتباط هوشمند با طیوران صنعت پویا',
+    eyebrow: 'پاسخ کارشناس فنی طیوران صنعت پویا',
     eyebrowIcon: Phone,
-    subtitle: 'مشاوره رایگان، استعلام قیمت و ارتباط با دفتر مشهد و واحد فنی گرگان',
+    subtitle: `مشاورهٔ رایگان و استعلام قیمت؛ فرم را تکمیل کنید یا با \u2066${SALES_PHONE_DISPLAY}\u2069 تماس بگیرید.`,
+    cta: { label: 'تماس تلفنی', href: 'tel:+989151126258' },
+    secondaryCta: { label: 'تکمیل فرم', href: '#consultation-form' },
   },
 };
 

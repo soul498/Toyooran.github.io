@@ -83,7 +83,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
       {/* Header */}
       <div className="relative z-10 mb-8 text-center sm:text-right">
         <h3 className="text-xl sm:text-2xl font-black text-slate-800 mb-2">درخواست مشاوره تخصصی</h3>
-        <p className="text-sm text-slate-500 font-medium">لطفاً فرم زیر را تکمیل کنید تا کارشناسان ما در اسرع وقت با شما تماس بگیرند.</p>
+        <p className="text-sm text-slate-500 font-medium">لطفاً فرم زیر را تکمیل کنید تا کارشناسان طیوران صنعت پویا در اولین فرصت با شما تماس بگیرند.</p>
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col justify-center">
@@ -94,7 +94,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
             </div>
             <h4 className="text-xl font-black text-slate-800 mb-2">درخواست شما ثبت شد!</h4>
             <p className="text-sm text-slate-500 text-center max-w-xs leading-relaxed">
-              کارشناسان طیوران صنعت پویا به زودی برای مشاوره رایگان با شما تماس خواهند گرفت.
+              کارشناسان طیوران صنعت پویا به‌زودی برای مشاوره رایگان با شما تماس خواهند گرفت.
             </p>
           </div>
         ) : (
@@ -236,7 +236,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                   </svg>
                 ) : (
                   <>
-                    <span>ثبت درخواست مشاوره رایگان</span>
+                    <span>ثبت درخواست مشاورهٔ رایگان</span>
                     <Send className="w-4 h-4 -mr-1 rotate-180 group-hover:-translate-x-1 transition-transform" />
                   </>
                 )}

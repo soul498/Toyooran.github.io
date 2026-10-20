@@ -17,7 +17,7 @@ import {
   Grid
 } from '../icons';
 import { useData } from '../context/DataContext';
-import { toTelHref } from '../lib/phone';
+import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { LocationDetailPane } from './LocationDetailPane';
 
 export const AboutContactUnifiedSection: React.FC = () => {
@@ -25,8 +25,6 @@ export const AboutContactUnifiedSection: React.FC = () => {
   const [activeLocationIndex, setActiveLocationIndex] = useState(0);
   
   // Clean Data Extractions
-  const officePhone = companyInfo.phone || '۰۵۱-۳۶۶۶۵۶۰۰';
-  const salesPhone = companyInfo.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸';
   const email = companyInfo.email || 'info@pooyapoultry.com';
   const locations = companyInfo.locations || [];
   
@@ -69,7 +67,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
             <div className="flex flex-col justify-center">
               <span className="text-amber-400 font-black tracking-widest text-xs uppercase mb-6 flex items-center gap-3 drop-shadow-md">
                 <div className="w-8 h-px bg-amber-400/50" />
-                ارتباط با ما
+                ارتباط با طیوران صنعت پویا
               </span>
               
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.2] mb-6 drop-shadow-lg">
@@ -93,10 +91,8 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
                   </div>
                   <div>
-                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mb-1 uppercase tracking-wider">دفتر مرکزی</span>
-                    <a href={toTelHref(officePhone)} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{officePhone}</a>
-                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mt-3 mb-1 uppercase tracking-wider">مشاوره و فروش</span>
-                    <a href={toTelHref(salesPhone)} className="block text-lg sm:text-xl text-white font-black hover:text-amber-400 transition-colors" dir="ltr" style={{ textAlign: 'right' }}>{salesPhone}</a>
+                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mb-1 uppercase tracking-wider">مشاوره و فروش</span>
+                    <a href={SALES_PHONE_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{SALES_PHONE_DISPLAY}</a>
                   </div>
                 </div>
               </div>
@@ -109,7 +105,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                   <SocialIconLink
                     href={companyInfo.socialLinks?.instagram}
                     label="اینستاگرام"
-                    comingSoon="به زودی صفحه اینستاگرام ما راه‌اندازی می‌شود"
+                    comingSoon="صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300"
                   >
                     <Instagram className="w-4 h-4" aria-hidden="true" />
@@ -117,7 +113,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                   <SocialIconLink
                     href={companyInfo.socialLinks?.telegram}
                     label="تلگرام"
-                    comingSoon="به زودی کانال تلگرام ما راه‌اندازی می‌شود"
+                    comingSoon="کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0088cc] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
                     <Send className="w-4 h-4 ml-0.5" aria-hidden="true" />
@@ -125,7 +121,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                   <SocialIconLink
                     href={companyInfo.socialLinks?.aparat}
                     label="آپارات"
-                    comingSoon="به زودی کانال آپارات ما راه‌اندازی می‌شود"
+                    comingSoon="کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#263238] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300"
                   >
                     <AparatIcon className="w-4 h-4" />
@@ -133,7 +129,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                   <SocialIconLink
                     href={companyInfo.socialLinks?.rubika}
                     label="روبیکا"
-                    comingSoon="به زودی کانال روبیکا ما راه‌اندازی می‌شود"
+                    comingSoon="کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
                     <Grid className="w-4 h-4" aria-hidden="true" />
@@ -141,7 +137,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                   <SocialIconLink
                     href={companyInfo.socialLinks?.youtube}
                     label="یوتیوب"
-                    comingSoon="به زودی کانال یوتیوب ما راه‌اندازی می‌شود"
+                    comingSoon="کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#ff0000] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300"
                   >
                     <Youtube className="w-4 h-4" aria-hidden="true" />
@@ -149,7 +145,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                   <SocialIconLink
                     href={companyInfo.socialLinks?.linkedin}
                     label="لینکدین"
-                    comingSoon="به زودی صفحه لینکدین ما راه‌اندازی می‌شود"
+                    comingSoon="صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0a66c2] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
                     <Linkedin className="w-4 h-4" aria-hidden="true" />

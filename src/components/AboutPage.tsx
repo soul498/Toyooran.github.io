@@ -2,7 +2,7 @@ import React from 'react';
 import { LazyImage } from './LazyImage';
 import { Building2, CheckCircle2, Factory, Globe2 } from '../icons';
 import { SEO } from './SEO';
-import { toTelHref } from '../lib/phone';
+import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 
 export const AboutPage: React.FC = () => {
   return (
@@ -42,7 +42,7 @@ export const AboutPage: React.FC = () => {
               </h2>
               
               <p className="text-slate-600 leading-relaxed text-sm sm:text-base mb-8 text-justify font-medium">
-                شرکت طیوران صنعت پویا با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان، مجری بیش از ۲۰۰ پروژه ملی و بین‌المللی است. ما به عنوان یک مرجع تخصصی، راهکارهای جامع توسعه، طراحی، ساخت و تجهیز کامل سوله و کارخانجات را ارائه می‌دهیم.
+                شرکت طیوران صنعت پویا با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان، مجری بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی است و راهکارهای جامع توسعه، طراحی، ساخت و تجهیز کامل سوله و کارخانه‌ها را ارائه می‌کند.
               </p>
 
               <div className="space-y-6 mb-10">
@@ -79,13 +79,8 @@ export const AboutPage: React.FC = () => {
               
               <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/60 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-sm">
                  <div className="text-slate-700 text-sm font-bold flex items-center gap-2">
-                   تلفن دفتر مرکزی:
-                   <a href={toTelHref('۰۵۱-۳۶۶۶۵۶۰۰')} className="font-mono text-[#003F86] text-base hover:underline" dir="ltr">۰۵۱-۳۶۶۶۵۶۰۰</a>
-                 </div>
-                 <div className="w-px h-6 bg-slate-200 hidden sm:block"></div>
-                 <div className="text-slate-700 text-sm font-bold flex items-center gap-2">
-                   مشاوره فروش:
-                   <a href={toTelHref('۰۹۱۵۱۱۲۶۲۵۸')} className="font-mono text-[#003F86] text-base hover:underline" dir="ltr">۰۹۱۵۱۱۲۶۲۵۸</a>
+                   مشاوره و فروش:
+                   <a href={SALES_PHONE_TEL} className="font-mono text-[#003F86] text-base hover:underline" dir="ltr">{SALES_PHONE_DISPLAY}</a>
                  </div>
               </div>
 

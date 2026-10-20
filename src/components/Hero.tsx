@@ -79,6 +79,12 @@ export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void
   );
 };
 
+/** Legacy CMS labels from before the copy update map to the new CTA labels (formal, third person). */
+const heroCtaPrimary = (text?: string) =>
+  !text || text === 'محصولات و تجهیزات' ? 'درخواست مشاورهٔ رایگان' : text;
+const heroCtaSecondary = (text?: string) =>
+  !text || text === 'تماس با ما' || text === 'ارتباط با مهندسین' ? 'مشاهدهٔ محصولات' : text;
+
 const Hero: React.FC<HeroProps> = ({
   cmsHero,
   onNavigate,
@@ -171,7 +177,7 @@ const Hero: React.FC<HeroProps> = ({
           <div className="hero-pill inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-7 border border-amber-300/50 bg-amber-400/15 font-black">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse" />
             <span className="text-sm sm:text-base text-white tracking-wide drop-shadow-[0_0_12px_rgba(251,191,36,0.55)]">
-              {cmsHero?.pillText || 'با نیم قرن تجربه و بیش از ۲۰۰ پروژه ملی و بین‌المللی'}
+              {cmsHero?.pillText || 'نیم قرن تجربه · بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی'}
             </span>
           </div>
 
@@ -187,19 +193,19 @@ const Hero: React.FC<HeroProps> = ({
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
             <Link
-              to="/products"
+              to="/contact"
               className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-[#FF9F14] hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold px-8 py-3.5 rounded-full text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/20 hover:-translate-y-1 transition-all"
             >
-              <Package className="w-4 h-4" aria-hidden="true" />
-              <span>{cmsHero?.ctaPrimaryText || 'محصولات و تجهیزات'}</span>
+              <PhoneCall className="w-4 h-4" aria-hidden="true" />
+              <span>{heroCtaPrimary(cmsHero?.ctaPrimaryText)}</span>
             </Link>
 
             <Link
-              to="/contact"
+              to="/products"
               className="w-full sm:w-auto bg-slate-950 hover:bg-slate-900 text-white font-bold px-8 py-3.5 rounded-full text-sm sm:text-base flex items-center justify-center gap-2 border-[1.5px] border-white/40  transform-gpu will-change-transform shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
             >
-              <PhoneCall className="w-4 h-4 text-amber-400" aria-hidden="true" />
-              <span>{cmsHero?.ctaSecondaryText === 'ارتباط با مهندسین' ? 'تماس با ما' : (cmsHero?.ctaSecondaryText || 'تماس با ما')}</span>
+              <Package className="w-4 h-4 text-amber-400" aria-hidden="true" />
+              <span>{heroCtaSecondary(cmsHero?.ctaSecondaryText)}</span>
             </Link>
           </div>
             </div>
@@ -210,9 +216,8 @@ const Hero: React.FC<HeroProps> = ({
           type="button"
           className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer z-10 bg-transparent border-0 min-w-6 min-h-11"
           onClick={scrollToCards}
-          aria-label="اسکرول به دسته‌بندی‌ها"
+          aria-label="رفتن به بخش بعد"
         >
-          <span className="text-[10px] sm:text-xs tracking-widest text-white font-medium">اسکرول کنید</span>
           <ChevronLeft className="w-5 h-5 text-amber-400 -rotate-90 animate-bounce" aria-hidden="true" />
         </button>
 
@@ -282,7 +287,7 @@ const Hero: React.FC<HeroProps> = ({
                           </div>
                           
                           <div>
-                             <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 tracking-widest uppercase mb-1.5 block drop-shadow-md">Engineering Excellence</span>
+                             <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 tracking-widest uppercase mb-1.5 block drop-shadow-md">مهندسی و اجرا</span>
                              <p className="text-2xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg mb-2">شرکت طیوران صنعت پویا</p>
                              <p className="text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed font-medium">از طراحی و ساخت تا تجهیز و بهره‌برداری؛ راهکاری یکپارچه برای پروژه‌های صنعت دام، طیور و آبزیان</p>
                           </div>
@@ -321,7 +326,7 @@ const Hero: React.FC<HeroProps> = ({
                   onClick={() => onNavigate('contact')}
                   className="text-[#003F86] hover:text-amber-500 font-bold flex items-center gap-1 transition-colors cursor-pointer min-h-11"
                 >
-                  <span>تماس با ما</span>
+                  <span>تماس</span>
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
               </div>

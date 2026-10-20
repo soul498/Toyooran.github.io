@@ -204,7 +204,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               استعلام قیمت رسمی برای {product.code}
             </h4>
             <p className="text-xs text-slate-300 font-light mt-0.5">
-              جهت دریافت قیمت روز و استعلام، با ما تماس بگیرید.
+              برای دریافت قیمت روز و استعلام، با طیوران صنعت پویا تماس بگیرید.
             </p>
           </div>
           <div className="flex items-center gap-2.5 w-full sm:w-auto">

@@ -7,7 +7,7 @@ import {
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
-import { toTelHref } from '../lib/phone';
+import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { LocationDetailPane } from './LocationDetailPane';
 
 interface ContactPageProps {
@@ -63,33 +63,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-300 block text-xs mb-1">تلفن دفتر مرکزی:</span>
-                      <a href={toTelHref(companyInfo.phone)} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
-                        {companyInfo.phone}
-                      </a>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-400/30 hover:bg-white/10 transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-blue-400/10 text-blue-400 flex items-center justify-center shrink-0 shadow-inner shadow-blue-400/20">
-                      <Phone className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-slate-300 block text-xs mb-1">واحد فروش و استعلام:</span>
-                      <a href={toTelHref(companyInfo.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸')} className="font-mono font-bold text-white text-base hover:text-blue-400 transition-colors drop-shadow-md" dir="ltr">
-                        {companyInfo.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸'}
-                      </a>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-400/30 hover:bg-white/10 transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-400/10 text-emerald-400 flex items-center justify-center shrink-0">
-                      <Phone className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-slate-300 block text-xs mb-1">پشتیبانی فنی:</span>
-                      <a href={toTelHref(companyInfo.technicalSupportPhone || '۰۹۱۱۵۱۱۶۲۵۸')} className="font-mono font-bold text-white text-base hover:text-emerald-400 transition-colors" dir="ltr">
-                        {companyInfo.technicalSupportPhone || '۰۹۱۱۵۱۱۶۲۵۸'}
+                      <span className="text-slate-300 block text-xs mb-1">تلفن فروش، استعلام و پشتیبانی:</span>
+                      <a href={SALES_PHONE_TEL} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
+                        {SALES_PHONE_DISPLAY}
                       </a>
                     </div>
                   </div>
@@ -99,7 +75,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Clock className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-300 block text-xs mb-1">ساعات پاسخگویی مهندسین:</span>
+                      <span className="text-slate-300 block text-xs mb-1">ساعات پاسخگویی مهندسان:</span>
                       <span className="text-slate-200 text-sm">{companyInfo.workingHours}</span>
                     </div>
                   </div>
@@ -113,7 +89,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <SocialIconLink
                         href={companyInfo.socialLinks.instagram}
                         label="اینستاگرام"
-                        comingSoon="به زودی صفحه اینستاگرام ما راه‌اندازی می‌شود"
+                        comingSoon="صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group"
                       >
                         <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -121,7 +97,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <SocialIconLink
                         href={companyInfo.socialLinks.telegram}
                         label="تلگرام"
-                        comingSoon="به زودی کانال تلگرام ما راه‌اندازی می‌شود"
+                        comingSoon="کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group"
                       >
                         <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -129,7 +105,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <SocialIconLink
                         href={companyInfo.socialLinks.aparat}
                         label="آپارات"
-                        comingSoon="به زودی کانال آپارات ما راه‌اندازی می‌شود"
+                        comingSoon="کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
                       >
                         <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -137,7 +113,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <SocialIconLink
                         href={companyInfo.socialLinks.rubika}
                         label="روبیکا"
-                        comingSoon="به زودی کانال روبیکا ما راه‌اندازی می‌شود"
+                        comingSoon="کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
                       >
                         <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -145,7 +121,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <SocialIconLink
                         href={companyInfo.socialLinks.youtube}
                         label="یوتیوب"
-                        comingSoon="به زودی کانال یوتیوب ما راه‌اندازی می‌شود"
+                        comingSoon="کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
                       >
                         <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -153,7 +129,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <SocialIconLink
                         href={companyInfo.socialLinks.linkedin}
                         label="لینکدین"
-                        comingSoon="به زودی صفحه لینکدین ما راه‌اندازی می‌شود"
+                        comingSoon="صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0077b5] hover:border-transparent transition-all duration-300 group"
                       >
                         <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -166,7 +142,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
           </div>
           
           {/* Main Free Consultation Form (7 Cols) */}
-          <div className="xl:col-span-7 h-full">
+          <div id="consultation-form" className="xl:col-span-7 h-full scroll-mt-24">
             <FreeConsultationForm 
               initialSubject={initialSubject}
               initialProduct={initialProduct}

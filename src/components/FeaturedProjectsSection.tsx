@@ -13,7 +13,7 @@ export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = (
       {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
       <UnderConstruction
         title="درحال بارگزاری..."
-        description="آرشیو پروژه‌های واقعی در حال آماده‌سازی است. برای بازدید از سالن اجراشده یا دریافت مشخصات فنی، از صفحه تماس درخواست مشاوره بدهید."
+        description="آرشیو گزارش پروژه‌ها در حال آماده‌سازی است. برای دریافت مشخصات فنی، از صفحهٔ تماس درخواست مشاوره ثبت کنید."
       />
     </section>
   );

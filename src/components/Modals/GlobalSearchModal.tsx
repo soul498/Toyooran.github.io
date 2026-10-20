@@ -144,7 +144,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-[#003F86] mb-3">
                     <Layers className="w-4 h-4" />
-                    <span>پروژه‌ها و مطالعات موردی ({results.projects.length}):</span>
+                    <span>گزارش پروژه‌ها ({results.projects.length}):</span>
                   </div>
                   <div className="space-y-2">
                     {results.projects.map((pr) => (
