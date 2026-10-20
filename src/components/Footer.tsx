@@ -3,7 +3,8 @@ import { AparatIcon } from "./AparatIcon";
 import { Link } from 'react-router-dom';
 import { SocialIconLink } from './SocialIconLink';
 import { baladPlaceFor } from '../lib/baladMaps';
-import { toTelHref, neshanMapsUrl } from '../lib/phone';
+import { neshanMapsUrl } from '../lib/phone';
+import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { 
   Phone, 
   Mail, 
@@ -31,19 +32,19 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, onOpenConsultation, onOpenQuote, companyInfo, categories }) => {
   const navigation = [
     { title: 'صفحه اصلی', path: '/' },
-    { title: 'درباره ما', path: '/about' },
+    { title: 'درباره شرکت', path: '/about' },
     { title: 'پروژه‌ها', path: '/projects' },
     { title: 'محصولات', path: '/products' },
     { title: 'خدمات', path: '/services' },
     { title: 'مجله', path: '/magazine' },
-    { title: 'تماس با ما', path: '/contact' },
+    { title: 'تماس', path: '/contact' },
   ];
 
   
 
   const hq = companyInfo?.locations?.find(loc => loc.type === 'headquarter');
 
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear().toLocaleString('fa-IR', { useGrouping: false });
 
   return (
     <footer className="relative w-full bg-[#020b18] pt-20 pb-6 overflow-hidden border-t border-white/5 z-20">
@@ -70,7 +71,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                </div>
             </div>
             <p className="text-slate-300 text-sm leading-relaxed font-medium mb-8 max-w-sm">
-              شرکت طیوران صنعت پویا، با بیش از 50 سال سابقه، پیشگام در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانجات خوراک دام و طیور در خاورمیانه است.
+              شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.
             </p>
             
             {/* Social Links */}
@@ -78,7 +79,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
               <SocialIconLink
                 href={companyInfo?.socialLinks?.instagram}
                 label="اینستاگرام"
-                comingSoon="به زودی صفحه اینستاگرام ما راه‌اندازی می‌شود"
+                comingSoon="صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group"
               >
                 <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -86,7 +87,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
               <SocialIconLink
                 href={companyInfo?.socialLinks?.telegram}
                 label="تلگرام"
-                comingSoon="به زودی کانال تلگرام ما راه‌اندازی می‌شود"
+                comingSoon="کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group"
               >
                 <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -94,7 +95,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
               <SocialIconLink
                 href={companyInfo?.socialLinks?.aparat}
                 label="آپارات"
-                comingSoon="به زودی کانال آپارات ما راه‌اندازی می‌شود"
+                comingSoon="کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
               >
                 <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -102,7 +103,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
               <SocialIconLink
                 href={companyInfo?.socialLinks?.rubika}
                 label="روبیکا"
-                comingSoon="به زودی کانال روبیکا ما راه‌اندازی می‌شود"
+                comingSoon="کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
               >
                 <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -110,7 +111,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
               <SocialIconLink
                 href={companyInfo?.socialLinks?.youtube}
                 label="یوتیوب"
-                comingSoon="به زودی کانال یوتیوب ما راه‌اندازی می‌شود"
+                comingSoon="کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
               >
                 <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -118,7 +119,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
               <SocialIconLink
                 href={companyInfo?.socialLinks?.linkedin}
                 label="لینکدین"
-                comingSoon="به زودی صفحه لینکدین ما راه‌اندازی می‌شود"
+                comingSoon="صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0a66c2] hover:border-transparent transition-all duration-300 group"
               >
                 <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -191,10 +192,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                   <Phone className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="space-y-1">
-                  <span className="block text-[10px] text-slate-300 font-bold">تلفن دفتر مرکزی</span>
-                  <a href={toTelHref(companyInfo?.phone || '۰۵۱-۳۶۶۶۵۶۰۰')} className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{companyInfo?.phone || '۰۵۱-۳۶۶۶۵۶۰۰'}</a>
-                  <span className="block text-[10px] text-slate-300 font-bold pt-2">تلفن مشاوره و فروش</span>
-                  <a href={toTelHref(companyInfo?.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸')} className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{companyInfo?.directSalesPhone || '۰۹۱۵۱۱۲۶۲۵۸'}</a>
+                  <span className="block text-[10px] text-slate-300 font-bold">تلفن مشاوره و فروش</span>
+                  <a href={SALES_PHONE_TEL} className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{SALES_PHONE_DISPLAY}</a>
                 </div>
               </div>
               
@@ -227,7 +226,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
         {/* Copyright & Credits */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-300">
           <p>
-            © {currentYear} تمامی حقوق این وب‌سایت متعلق به طیوران صنعت پویا می‌باشد. طراحی و توسعه توسط <strong className="text-slate-200 font-black">هزارتو</strong>.
+            © {currentYear} تمامی حقوق این وب‌سایت متعلق به طیوران صنعت پویا است. طراحی و توسعه توسط <strong className="text-slate-200 font-black">هزارتو</strong>.
           </p>
           <div className="flex items-center gap-4">
              <span>قوانین و مقررات</span>

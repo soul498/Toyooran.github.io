@@ -152,7 +152,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
           <div className="absolute inset-0 bg-[url('/images/pattern-circuit.svg')] opacity-10 mix-blend-overlay"></div>
           <div className="relative z-10 flex-1">
             <h4 className="text-white text-lg md:text-xl font-bold mb-2">نیاز به راهنمایی بیشتر دارید؟</h4>
-            <p className="text-blue-100 text-sm md:text-base font-medium">کارشناسان ما آماده ارائه مشاوره تخصصی و فنی به شما هستند.</p>
+            <p className="text-blue-100 text-sm md:text-base font-medium">کارشناسان طیوران صنعت پویا آمادهٔ ارائهٔ مشاورهٔ تخصصی و فنی هستند.</p>
           </div>
           {external ? (
             <a href={block.href} className={buttonClass} rel="noopener noreferrer">{block.label}</a>

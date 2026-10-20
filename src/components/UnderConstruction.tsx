@@ -8,7 +8,7 @@ interface UnderConstructionProps {
 
 export const UnderConstruction: React.FC<UnderConstructionProps> = ({
   title = "در حال آماده‌سازی و بارگذاری...",
-  description = "ما در حال ارتقاء و تکمیل این بخش با اطلاعات جدید، تصاویر باکیفیت و امکانات پیشرفته هستیم. به زودی با تجربه کاربری کامل‌تری در خدمت شما خواهیم بود."
+  description = "این بخش در حال تکمیل است و به‌زودی منتشر می‌شود."
 }) => {
   return (
     <div className="w-full relative py-8 px-4 sm:px-6 lg:px-8 z-10">

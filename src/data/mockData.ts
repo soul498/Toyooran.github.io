@@ -9,9 +9,9 @@ export const COMPANY_INFO = {
   completedProjects: '۲۰۰+',
   activeProvinces: 'ملی و بین‌المللی',
   customerSatisfaction: '۹۸٪',
-  phone: '۰۵۱-۳۶۶۶۵۶۰۰',
-  directSalesPhone: '۰۹۱۵۱۱۲۶۲۵۸',
-  technicalSupportPhone: '۰۹۱۱۵۱۱۶۲۵۸',
+  phone: '+۹۸ ۹۱۵ ۱۱۲ ۶۲۵۸',
+  directSalesPhone: '+۹۸ ۹۱۵ ۱۱۲ ۶۲۵۸',
+  technicalSupportPhone: '+۹۸ ۹۱۵ ۱۱۲ ۶۲۵۸',
   website: 'www.toyooran.com',
   address: 'مشهد، میدان مادر، مجتمع تجاری ادیب، طبقه ۳، واحد ۴۰۶',
   rdAddress: 'گرگان، بلوار بهشتی، دانشگاه منابع طبیعی گرگان',
@@ -678,9 +678,9 @@ export const ARTICLES: Article[] = [
   },
   {
     id: 'case-study-implemented-project',
-    title: 'مطالعه موردی یک پروژه اجراشده',
+    title: 'گزارش یک پروژهٔ اجراشده',
     category: 'case-study',
-    categoryLabel: 'مطالعه موردی',
+    categoryLabel: 'گزارش پروژه',
     readTime: '۱۵ دقیقه',
     date: '۱۴۰۳/۰۵/۲۰',
     image: '/images/article_casestudy_1787988026030.jpg',
@@ -741,7 +741,7 @@ export const ARTICLES: Article[] = [
     id: 'before-and-after-renovation',
     title: 'قبل و بعد از نوسازی یک واحد',
     category: 'case-study',
-    categoryLabel: 'مطالعه موردی',
+    categoryLabel: 'گزارش پروژه',
     readTime: '۹ دقیقه',
     date: '۱۴۰۳/۰۴/۲۸',
     image: '/images/article_renovation_1787988050732.jpg',
@@ -795,10 +795,10 @@ export const TESTIMONIALS_AND_PROOF = [
 
 export const DEFAULT_HERO_CMS = {
   title: 'طیوران صنعت پویا',
-  subtitle: 'طراح، مجری و مشاور توسعه و بهره‌برداری پروژه‌های صنعت دام، طیور و آبزیان',
-  pillText: 'با نیم قرن تجربه و بیش از ۲۰۰ پروژه ملی و بین‌المللی',
-  ctaPrimaryText: 'محصولات و تجهیزات',
-  ctaSecondaryText: 'تماس با ما',
+  subtitle: 'طیوران صنعت پویا تجهیزات تهویه، گرمایش، دانخوری و آبخوری را تأمین و نصب می‌کند و ماشین‌آلات خط خوراک دام، طیور و آبزیان را طراحی و می‌سازد.',
+  pillText: 'نیم قرن تجربه · بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی',
+  ctaPrimaryText: 'درخواست مشاورهٔ رایگان',
+  ctaSecondaryText: 'مشاهدهٔ محصولات',
   backgroundImage: '/images/hero-1.jpg'
 };
 

@@ -2,11 +2,11 @@ import React from 'react';
 import { Download } from '../icons';
 import { catalogHeading, categoryIntroRich } from '../seo/resolveSeo';
 import { CATALOG_PDF_HREF } from '../data/pageHeroes';
-import { PageBanner } from './PageBanner';
+import { HeroCta, PageBanner } from './PageBanner';
 import { RichInline } from './RichBlocks';
 
 const SHOP_SUBTITLE =
-  'کاتالوگ تجهیزات دام و طیور: تهویه، گرمایش، دانخوری، آبخوری، قفس و سیلو — استعلام فنی از طیوران صنعت پویا';
+  'تهویه، گرمایش، دانخوری، آبخوری، قفس و سیلو؛ مشخصات فنی هر محصول را ببینید و برای قیمت روز استعلام بگیرید.';
 
 /**
  * Section hero for /products (same look as the other nav routes). Rendered by App outside the
@@ -24,14 +24,17 @@ export const ShopHero: React.FC<{
       highlight="دام و طیور"
       subtitle={rich ? <RichInline text={rich} /> : SHOP_SUBTITLE}
       topSlot={
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
         <a
           href={CATALOG_PDF_HREF}
           download="TSPK_catalog.pdf"
-          className="page-hero-cta inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#003F86] text-white font-bold text-sm px-6 py-3 mb-6 shadow-lg shadow-blue-900/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+          className="page-hero-cta inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#003F86] text-white font-bold text-sm px-6 py-3 shadow-lg shadow-blue-900/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
         >
           <Download className="w-4 h-4" aria-hidden="true" />
-          دانلود کاتالوگ
+          دانلود کاتالوگ (PDF، ۸٫۶ مگابایت)
         </a>
+        <HeroCta label="استعلام قیمت" href="/contact" />
+        </div>
       }
     />
   );

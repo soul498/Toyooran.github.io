@@ -126,7 +126,7 @@ const STORAGE_KEYS = {
   SERVICES: 'toyooran_services_v3',
   ARTICLES: 'toyooran_articles_v4',
   CATEGORIES: 'toyooran_categories_v4',
-  COMPANY_INFO: 'toyooran_company_v5',
+  COMPANY_INFO: 'toyooran_company_v6',
   HERO_CMS: 'toyooran_hero_cms_v3',
   AI_CONFIG: 'toyooran_ai_config_v3',
   QUOTES: 'toyooran_quotes_v3',

@@ -26,7 +26,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({
         <div className="sticky top-0 bg-white/95  border-b border-slate-200 p-4 sm:p-6 flex items-center justify-between z-20">
           <div className="flex items-center gap-3">
             <span className="bg-[#003F86] text-white text-xs font-bold px-3 py-1 rounded-lg">
-              مطالعه موردی تخصصی (Case Study)
+              گزارش فنی پروژه
             </span>
             <span className="text-xs text-slate-500 font-medium hidden sm:inline">
               {project.typeTitle}
