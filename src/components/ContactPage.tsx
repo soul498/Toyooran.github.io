@@ -7,6 +7,7 @@ import {
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
+import { PAGE_HEROES } from '../data/pageHeroes';
 import { PageBanner } from './PageBanner';
 import { toTelHref } from '../lib/phone';
 import { LocationDetailPane } from './LocationDetailPane';
@@ -37,13 +38,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
         .dir-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.4); }
       `}</style>
       
-      <PageBanner
-        title="تماس و درخواست مشاوره"
-        highlight="درخواست مشاوره"
-        eyebrow="ارتباط هوشمند با طیوران صنعت پویا"
-        eyebrowIcon={Phone}
-        subtitle="مشاوره رایگان، استعلام قیمت و ارتباط با دفتر مشهد و واحد فنی گرگان"
-      />
+      <PageBanner {...PAGE_HEROES['/contact']} />
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
 

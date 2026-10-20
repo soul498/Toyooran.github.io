@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileCheck } from '../icons';
+import { PAGE_HEROES } from '../data/pageHeroes';
 import { PageBanner } from './PageBanner';
 import { UnderConstruction } from './UnderConstruction';
 
@@ -12,13 +12,7 @@ interface FeaturedProjectsSectionProps {
 export const FeaturedProjectsSection: React.FC<FeaturedProjectsSectionProps> = () => {
   return (
     <section className="min-h-screen relative z-0" id="projects-section">
-      <PageBanner
-        title="پروژه‌های اجراشده"
-        highlight="اجراشده"
-        eyebrow="مطالعات موردی"
-        eyebrowIcon={FileCheck}
-        subtitle="نمونه‌کارهای تجهیز سالن و خطوط خوراک به‌زودی در این بخش منتشر می‌شود"
-      />
+      <PageBanner {...PAGE_HEROES['/projects']} />
       <UnderConstruction
         title="درحال بارگزاری..."
         description="آرشیو پروژه‌های واقعی در حال آماده‌سازی است. برای بازدید از سالن اجراشده یا دریافت مشخصات فنی، از صفحه تماس درخواست مشاوره بدهید."

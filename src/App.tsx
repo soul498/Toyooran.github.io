@@ -31,13 +31,22 @@ const AiEngineerAssistantModal = lazy(() => import('./components/AiEngineerAssis
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
+import { PageBanner } from './components/PageBanner';
+import { pageHeroFor } from './data/pageHeroes';
 const CustomCursor = lazy(() => import('./components/CustomCursor').then((m) => ({ default: m.CustomCursor })));
 import { NotFoundPage } from './components/NotFoundPage';
 import { useParams } from 'react-router-dom';
 import { SeoHead } from "./components/SEO";
 import { publicProductPath } from "./seo/resolveSeo";
 
-const RouteFallback = () => <div className="min-h-[40vh]" aria-hidden="true" />;
+// While a lazy route loads, paint its section hero right away (same markup the page renders,
+// so the swap causes no shift) and otherwise reserve a full viewport so the footer never
+// paints in view and then jumps (CLS).
+const RouteFallback = () => {
+  const { pathname } = useLocation();
+  const hero = pageHeroFor(pathname);
+  return hero ? <PageBanner {...hero} /> : <div className="min-h-[100svh]" aria-hidden="true" />;
+};
 
 const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: { articles: Article[]; onBack: () => void; onSelectProductById: (productId: string) => void }) => {
   const { articleId } = useParams();

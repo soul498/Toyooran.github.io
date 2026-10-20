@@ -1,18 +1,12 @@
 import React from 'react';
-import { FlaskConical } from '../icons';
+import { PAGE_HEROES } from '../data/pageHeroes';
 import { PageBanner } from './PageBanner';
 import { UnderConstruction } from './UnderConstruction';
 
 export const RnDPage: React.FC = () => {
   return (
     <div className="bg-blueprint-light min-h-screen">
-      <PageBanner
-        title="واحد تحقیق و توسعه"
-        highlight="تحقیق و توسعه"
-        eyebrow="آینده صنعت دام و طیور"
-        eyebrowIcon={FlaskConical}
-        subtitle="بومی‌سازی تجهیزات مرغداری و خطوط خوراک با همکاری دانشگاه منابع طبیعی گلستان"
-      />
+      <PageBanner {...PAGE_HEROES['/rnd']} />
       <div className="w-full relative z-10">
         <UnderConstruction 
           title="دپارتمان تحقیق و توسعه در حال تجهیز است" 

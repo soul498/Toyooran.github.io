@@ -36,7 +36,7 @@ const scrollPastHero = (e: React.MouseEvent<HTMLButtonElement>) => {
 /**
  * Section hero for nav routes (services, projects, magazine, about, R&D, contact).
  * Restores the pre-fc5fd24 full-height hero look: mesh gradient, pill, big gradient title,
- * scroll cue. CSS only: fixed min-height (no CLS), H1 never animated, motion respects
+ * scroll cue. CSS only: fixed min-height (no CLS), H1 never animated, cue motion respects
  * prefers-reduced-motion.
  */
 export const PageBanner: React.FC<PageBannerProps> = ({
