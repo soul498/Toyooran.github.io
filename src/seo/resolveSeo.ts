@@ -1053,7 +1053,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>${escapeHtml(company.tagline || "")}</p>
 <p>${escapeHtml(company.subTagline || "")}</p>
-<p>تلفن: ${escapeHtml(company.phone)} · فروش: ${escapeHtml(company.directSalesPhone || "")} · پشتیبانی فنی: ${escapeHtml(company.technicalSupportPhone || "")}</p>
+<p>تلفن فروش، استعلام و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
 <p>ساعات کار: ${escapeHtml(company.workingHours)}</p>
 <p>دفتر مشهد: ${escapeHtml(company.address)}</p>
 <p>کارخانه: ${escapeHtml(company.factoryAddress)}</p>
@@ -1074,9 +1074,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       h1: "تماس و درخواست مشاوره",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>تلفن دفتر مشهد: ${escapeHtml(company.phone)}</p>
-<p>فروش: ${escapeHtml(company.directSalesPhone || company.phone)}</p>
-<p>پشتیبانی فنی: ${escapeHtml(company.technicalSupportPhone || "")}</p>
+      body: `<p>تلفن فروش، استعلام و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
 <p>ساعات کار: ${escapeHtml(company.workingHours)}</p>
 <ul>${locHtml}</ul>
 <p><a href="#free-consultation-form">فرم درخواست بازدید و پیشنهاد فنی</a></p>`,
