@@ -3,12 +3,14 @@ import type { IconProps } from '../icons';
 
 interface PageBannerProps {
   title: string;
-  subtitle: string;
+  subtitle: React.ReactNode;
   /** Part of `title` drawn with the brand gradient. The H1 text itself never changes. */
   highlight?: string;
   /** Small pill above the title (decorative, not a heading). */
   eyebrow?: string;
   eyebrowIcon?: React.ComponentType<IconProps>;
+  /** Replaces the pill above the title (e.g. a CTA). */
+  topSlot?: React.ReactNode;
   /** Compact card header (detail pages). Default is the full section hero. */
   compact?: boolean;
   children?: React.ReactNode;
@@ -45,6 +47,7 @@ export const PageBanner: React.FC<PageBannerProps> = ({
   highlight,
   eyebrow,
   eyebrowIcon: EyebrowIcon,
+  topSlot,
   compact,
   children,
 }) => {
@@ -74,12 +77,12 @@ export const PageBanner: React.FC<PageBannerProps> = ({
       </div>
 
       <div className="max-w-4xl mx-auto w-full text-center">
-        {eyebrow && (
+        {topSlot ?? (eyebrow && (
           <div className="page-hero-pill inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 border border-white/50 shadow-sm mb-6">
             {EyebrowIcon && <EyebrowIcon className="w-5 h-5 text-amber-500" aria-hidden="true" />}
             <span className="text-sm font-bold text-slate-800">{eyebrow}</span>
           </div>
-        )}
+        ))}
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight mb-6">
           {renderTitle(title, highlight)}
         </h1>

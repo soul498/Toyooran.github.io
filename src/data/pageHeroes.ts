@@ -61,3 +61,6 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
 
 export const pageHeroFor = (pathname: string): PageHeroConfig | undefined =>
   PAGE_HEROES[pathname.replace(/\/+$/, '') || '/'];
+
+/** Real catalog file: public/TSPK_catalog.pdf, served by server.ts with Content-Disposition: attachment. */
+export const CATALOG_PDF_HREF = '/TSPK_catalog.pdf';

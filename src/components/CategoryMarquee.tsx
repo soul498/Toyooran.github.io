@@ -76,7 +76,11 @@ export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCatego
     const target = container.querySelector(`[data-cat="${selectedCategory}"][data-copy="0"]`) as HTMLElement | null;
     if (!target) return;
     setIsPaused(true);
-    target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    // Center the chip horizontally inside the marquee only; scrollIntoView would also scroll the
+    // page vertically when the marquee sits below the fold (it now follows a full-height hero).
+    const c = container.getBoundingClientRect();
+    const t = target.getBoundingClientRect();
+    container.scrollBy({ left: t.left + t.width / 2 - (c.left + c.width / 2), behavior: 'smooth' });
   }, [selectedCategory]);
 
   const handleMouseDown = (e: React.MouseEvent) => {

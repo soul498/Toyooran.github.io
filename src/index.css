@@ -266,3 +266,12 @@ html {
 @media (prefers-reduced-motion: reduce) {
   .page-hero-cue-bar { animation: none; }
 }
+.page-hero-cta { transition: transform 0.2s ease, opacity 0.2s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .page-hero-cta:hover { transform: translateY(-2px); opacity: 0.92; }
+}
+.page-hero-cta:active { transform: scale(0.98); }
+@media (prefers-reduced-motion: reduce) {
+  .page-hero-cta { transition: none; }
+  .page-hero-cta:hover, .page-hero-cta:active { transform: none; }
+}

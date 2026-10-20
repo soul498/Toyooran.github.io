@@ -4,18 +4,17 @@ import {
   Search,
   PhoneCall,
   ArrowLeft,
-  Filter,
-  Download
+  Filter
 } from '../icons';
 import { Link } from 'react-router-dom';
 import { Product, ProductCategory } from '../types';
-import { catalogHeading, categoryIntroBlocks, categoryIntroRich, publicProductPath } from '../seo/resolveSeo';
-import { RichBlocks, RichInline } from './RichBlocks';
+import { catalogHeading, categoryIntroBlocks, publicProductPath } from '../seo/resolveSeo';
 import { useData } from '../context/DataContext';
+import { RichBlocks } from './RichBlocks';
 import { LazyImage } from './LazyImage';
 import { CategoryMarquee } from './CategoryMarquee';
 
-export const CATALOG_PDF_HREF = '/TSPK_catalog.pdf';
+export { CATALOG_PDF_HREF } from '../data/pageHeroes';
 
 interface ProductCatalogSectionProps {
   products: Product[];
@@ -80,33 +79,16 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
         <div className="absolute top-[30%] right-[30%] w-[40vw] h-[40vw] bg-[radial-gradient(circle_at_center,_rgba(52,211,153,0.12)_0%,_transparent_60%)]" style={{ animationDuration: '12s' }} />
       </div>
 
-      <div className="relative z-10 pt-28 pb-6 px-4 sm:px-6 lg:px-8">
+      {/* Section hero (H1 + catalog download) is rendered by App (ShopHero) above this section. */}
+      {selectedCategory !== 'all' && categoryIntroBlocks(selectedCategory) && (
+      <div className="relative z-10 pt-8 pb-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1400px] mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-3xl border border-slate-200 bg-white/95 shadow-sm px-5 py-4 sm:px-7 sm:py-5">
-            <div className="text-right min-w-0">
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{heading}</h1>
-              <p className="text-sm text-slate-600 font-medium mt-1 leading-relaxed">
-                {selectedCategory !== 'all' && categoryIntroRich(selectedCategory)
-                  ? <RichInline text={categoryIntroRich(selectedCategory) as string} />
-                  : 'کاتالوگ تجهیزات دام و طیور: تهویه، گرمایش، دانخوری، آبخوری، قفس و سیلو — استعلام فنی از طیوران صنعت پویا'}
-              </p>
-            </div>
-            <a
-              href={CATALOG_PDF_HREF}
-              download="TSPK_catalog.pdf"
-              className="shrink-0 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#003F86] hover:bg-blue-800 text-white font-bold text-sm px-5 py-3 shadow-lg shadow-blue-900/20 transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              دانلود کاتالوگ
-            </a>
+          <div className="rounded-3xl border border-slate-200 bg-white/95 shadow-sm px-5 py-5 sm:px-7 sm:py-6 text-right">
+            <RichBlocks blocks={categoryIntroBlocks(selectedCategory)} />
           </div>
-          {selectedCategory !== 'all' && categoryIntroBlocks(selectedCategory) && (
-            <div className="mt-4 rounded-3xl border border-slate-200 bg-white/95 shadow-sm px-5 py-5 sm:px-7 sm:py-6 text-right">
-              <RichBlocks blocks={categoryIntroBlocks(selectedCategory)} />
-            </div>
-          )}
         </div>
       </div>
+      )}
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-16 lg:pb-24 relative z-10">
 
