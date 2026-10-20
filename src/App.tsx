@@ -32,6 +32,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
 import { PageBanner } from './components/PageBanner';
+import { ShopHero } from './components/ShopHero';
 import { pageHeroFor } from './data/pageHeroes';
 const CustomCursor = lazy(() => import('./components/CustomCursor').then((m) => ({ default: m.CustomCursor })));
 import { NotFoundPage } from './components/NotFoundPage';
@@ -44,8 +45,11 @@ const RouteFallback = () => <div className="min-h-[100svh]" aria-hidden="true" /
 
 // Section hero for nav routes, rendered outside the route Suspense so it (and its H1, the LCP)
 // paints on the first commit and is not re-mounted when the lazy page chunk arrives.
-const RouteHero = () => {
+const RouteHero = ({ selectedCategory, categories }: { selectedCategory: string; categories: { id: string; title: string }[] }) => {
   const { pathname } = useLocation();
+  if (pathname.replace(/\/+$/, '') === '/products') {
+    return <ShopHero selectedCategory={selectedCategory} categories={categories} />;
+  }
   const hero = pageHeroFor(pathname);
   return hero ? <PageBanner {...hero} /> : null;
 };
@@ -227,7 +231,7 @@ const MainAppInner: React.FC = () => {
 
       {/* Main Content by Section */}
       <main id="main-content" className="flex-1">
-        <RouteHero />
+        <RouteHero selectedCategory={selectedCategory} categories={categories as { id: string; title: string }[]} />
         <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={
