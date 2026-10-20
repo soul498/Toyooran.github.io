@@ -1,12 +1,10 @@
 import React from 'react';
-import { PAGE_HEROES } from '../data/pageHeroes';
-import { PageBanner } from './PageBanner';
 import { UnderConstruction } from './UnderConstruction';
 
 export const RnDPage: React.FC = () => {
   return (
     <div className="bg-blueprint-light min-h-screen">
-      <PageBanner {...PAGE_HEROES['/rnd']} />
+      {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
       <div className="w-full relative z-10">
         <UnderConstruction 
           title="دپارتمان تحقیق و توسعه در حال تجهیز است" 

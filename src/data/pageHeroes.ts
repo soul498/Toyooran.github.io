@@ -10,9 +10,9 @@ export interface PageHeroConfig {
 }
 
 /**
- * Single source for the section heroes. Used by each page and by the route Suspense
- * fallback in App.tsx, so the hero (and its H1, the LCP) paints before the lazy page
- * chunk arrives. `title` must stay equal to the prerender H1 (src/seo/resolveSeo.ts).
+ * Section heroes for nav routes, rendered by RouteHero in App.tsx outside the route
+ * Suspense, so the hero (and its H1, the LCP) paints before the lazy page chunk arrives.
+ * `title` is the page's only H1 and must stay equal to the prerender H1 (src/seo/resolveSeo.ts).
  */
 export const PAGE_HEROES: Record<string, PageHeroConfig> = {
   '/services': {

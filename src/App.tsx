@@ -39,13 +39,15 @@ import { useParams } from 'react-router-dom';
 import { SeoHead } from "./components/SEO";
 import { publicProductPath } from "./seo/resolveSeo";
 
-// While a lazy route loads, paint its section hero right away (same markup the page renders,
-// so the swap causes no shift) and otherwise reserve a full viewport so the footer never
-// paints in view and then jumps (CLS).
-const RouteFallback = () => {
+// Reserve a full viewport while a lazy route loads so the footer never paints in view and then jumps (CLS).
+const RouteFallback = () => <div className="min-h-[100svh]" aria-hidden="true" />;
+
+// Section hero for nav routes, rendered outside the route Suspense so it (and its H1, the LCP)
+// paints on the first commit and is not re-mounted when the lazy page chunk arrives.
+const RouteHero = () => {
   const { pathname } = useLocation();
   const hero = pageHeroFor(pathname);
-  return hero ? <PageBanner {...hero} /> : <div className="min-h-[100svh]" aria-hidden="true" />;
+  return hero ? <PageBanner {...hero} /> : null;
 };
 
 const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: { articles: Article[]; onBack: () => void; onSelectProductById: (productId: string) => void }) => {
@@ -225,6 +227,7 @@ const MainAppInner: React.FC = () => {
 
       {/* Main Content by Section */}
       <main id="main-content" className="flex-1">
+        <RouteHero />
         <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={

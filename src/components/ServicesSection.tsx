@@ -1,8 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ServiceCard } from './Hero';
-import { PAGE_HEROES } from '../data/pageHeroes';
-import { PageBanner } from './PageBanner';
 import { LANDING_SERVICE_CARDS } from '../data/landingServiceCards';
 
 interface ServicesSectionProps {
@@ -17,7 +15,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = () => {
 
   return (
     <section className="min-h-screen relative z-0" id="services-section">
-      <PageBanner {...PAGE_HEROES['/services']} />
+      {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
         <div className="relative z-10 w-full py-8 lg:py-12">
