@@ -4,6 +4,8 @@
 
 | سند | موضوع |
 |---|---|
+| **[HANDOVER-GUIDE.md](HANDOVER-GUIDE.md)** | **راهنمای جامع صفر تا صد تحویل سرور، معماری، قوانین کارفرما، ویرایش و نگهداری** |
+| **[skills/toyooran-maintainer/SKILL.md](skills/toyooran-maintainer/SKILL.md)** | **اسکیل عملیاتی برای برنامه‌نویس و ایجنت‌های هوش مصنوعی (Playbook توسعه)** |
 | [AGENTS.md](../AGENTS.md) | قوانین ایجنت، مسیر کار، دیپلوی |
 | [source-map.md](source-map.md) | نقشه سورس: هر پوشه/فایل چه می‌کند |
 | [technical-document.md](technical-document.md) | معماری، استک، روت‌ها، API |

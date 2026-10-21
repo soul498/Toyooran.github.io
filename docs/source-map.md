@@ -7,9 +7,15 @@
 | مسیر | نقش |
 |---|---|
 | `server.ts` | فرایند Node: Express، API، تزریق SEO در HTML، استاتیک `dist` در production |
-| `server/seo.ts` | تزریق HTML، robots، sitemap |
+| `server/seo.ts` | تزریق HTML، robots، sitemap، llms.txt |
 | `server/catalog.ts` | کاتالوگ SEO از SQLite با fallback به seed |
+| `server/cmsApi.ts` | API مدیریت محتوا (`/api/cms/v1`) با توکن Bearer، بکاپ خودکار SQLite و لاگ ممیزی |
+| `server/legacySpam.ts` | پاسخ `410 Gone` برای URLهای اسپم قدیمی |
 | `src/seo/resolveSeo.ts` | منبع واحد title/canonical/JSON-LD/prerender |
+| `src/seo/internalLinks.ts` | محصولات پرکاربرد صفحه اصلی (`HOME_PRIORITY_PRODUCT_IDS`) و لینک به محصولات هم‌دسته |
+| `src/lib/mediaUrl.ts` | نسخه‌گذاری و Cache-busting تصاویر محصولات (`MEDIA_VERSION`) |
+| `src/lib/baladMaps.ts` | ساخت لینک و iframe نقشه بلد برای لوکیشن‌های شرکت |
+| `src/lib/device.ts` | تشخیص دستگاه‌های کم‌توان و تلویزیون‌های هوشمند (`isLiteDevice`) |
 | `docs/seo/` | سیستم عملیاتی سئو: قرارداد، استراتژی محتوا، backlog |
 | `server/auth.ts` | SQLite، نشست ادمین، CSRF، نقش‌ها، MFA |
 | `server/leads.ts` | ذخیره lead در فایل JSONL |
@@ -33,8 +39,8 @@
 
 | فایل | صفحه / کار |
 |---|---|
-| `Hero.tsx`, `CompactShowcase.tsx`, `AboutContactUnifiedSection.tsx` | صفحهٔ خانه `/` |
-| `ProductCatalogSection.tsx`, `ProductPage.tsx` | `/products`, `/products/:productId` |
+| `Hero.tsx`, `CompactShowcase.tsx`, `AboutContactUnifiedSection.tsx` | صفحهٔ خانه `/` (شامل هیرو، نوار دسته‌ها، اسلایدر محصولات پرفروش/پرکاربرد، مجله و لوکیشن‌ها) |
+| `ShopHero.tsx`, `ProductCatalogSection.tsx`, `ProductPage.tsx` | `/products`, `/products/:productId` (بنر کاتالوگ، دکمه دانلود کاتالوگ، فیلتر و صفحه محصول) |
 | `ServicesSection.tsx`, `ServicePage.tsx` | `/services`, `/services/:serviceId` |
 | `FeaturedProjectsSection.tsx`, `ProjectPage.tsx` | `/projects`, `/projects/:projectId` |
 | `magazine/MagazineFeed.tsx`, `magazine/MagazineArticle.tsx` | `/magazine`, `/magazine/:articleId` |
