@@ -31,7 +31,7 @@ export const ShopHero: React.FC<{
           className="page-hero-cta inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#003F86] text-white font-bold text-sm px-6 py-3 shadow-lg shadow-blue-900/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
         >
           <Download className="w-4 h-4" aria-hidden="true" />
-          دانلود کاتالوگ (PDF، ۸٫۶ مگابایت)
+          دانلود کاتالوگ
         </a>
         <HeroCta label="استعلام قیمت" href="/contact" />
         </div>
