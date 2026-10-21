@@ -4,6 +4,7 @@
 
 | سند | موضوع |
 |---|---|
+| **[OWNER-HANDOVER-LETTER.md](OWNER-HANDOVER-LETTER.md)** | **نامه و راهنمای تحویل سایت از طرف کارفرما به متخصص بعدی (نقطه شروع مطالعه)** |
 | **[HANDOVER-GUIDE.md](HANDOVER-GUIDE.md)** | **راهنمای جامع صفر تا صد تحویل سرور، معماری، قوانین کارفرما، ویرایش و نگهداری** |
 | **[skills/toyooran-maintainer/SKILL.md](skills/toyooran-maintainer/SKILL.md)** | **اسکیل عملیاتی برای برنامه‌نویس و ایجنت‌های هوش مصنوعی (Playbook توسعه)** |
 | [AGENTS.md](../AGENTS.md) | قوانین ایجنت، مسیر کار، دیپلوی |
