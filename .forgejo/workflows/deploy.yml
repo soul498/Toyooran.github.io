@@ -11,4 +11,16 @@ jobs:
     runs-on: host
     steps:
       - name: Deploy on this server from Forgejo
-        run: /usr/local/sbin/toyooran-deploy.sh
+        env:
+          # Forgejo now requires sign-in for git reads, so the deploy script's anonymous
+          # `git fetch` from http://127.0.0.1:3002 fails. Pass the job's automatic, short-lived
+          # repo token to git via env-only config (scoped to the local Forgejo URL; nothing is
+          # written to disk or to the repo).
+          DEPLOY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          AUTH=$(printf 'x-access-token:%s' "$DEPLOY_TOKEN" | base64 -w0)
+          echo "::add-mask::$AUTH"
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0="http.http://127.0.0.1:3002/.extraHeader"
+          export GIT_CONFIG_VALUE_0="Authorization: Basic $AUTH"
+          /usr/local/sbin/toyooran-deploy.sh
