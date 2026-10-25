@@ -98,7 +98,7 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
         <CategoryBand categories={categories} onNavigate={onNavigate} />
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8" hidden>
         <div
           className="lg:col-span-7 relative rounded-[2.5rem] p-1 overflow-hidden shadow-2xl shadow-blue-900/20"
           onMouseEnter={() => setPaused(true)}
