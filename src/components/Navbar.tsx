@@ -55,7 +55,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'products', path: '/products', label: 'محصولات', icon: Package },
     { id: 'projects', path: '/projects', label: 'پروژه‌ها', icon: Building },
     { id: 'rnd', path: '/rnd', label: 'تحقیق و توسعه', icon: FlaskConical },
-    { id: 'knowledge', path: '/magazine', label: 'مجله', icon: BookOpen },
     { id: 'about', path: '/about', label: 'درباره شرکت', icon: User },
     { id: 'contact', path: '/contact', label: 'تماس', icon: Compass },
   ];
