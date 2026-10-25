@@ -19,23 +19,23 @@ export const ShopHero: React.FC<{
 }> = ({ selectedCategory, categories }) => {
   const rich = selectedCategory !== 'all' ? categoryIntroRich(selectedCategory) : undefined;
   return (
-    <PageBanner
-      title={catalogHeading(selectedCategory, categories)}
-      highlight="دام و طیور"
-      subtitle={rich ? <RichInline text={rich} /> : SHOP_SUBTITLE}
-      topSlot={
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-        <a
-          href={CATALOG_PDF_HREF}
-          download="TSPK_catalog.pdf"
-          className="page-hero-cta inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#003F86] text-white font-bold text-sm px-6 py-3 shadow-lg shadow-blue-900/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
-        >
-          <Download className="w-4 h-4" aria-hidden="true" />
-          دانلود کاتالوگ
-        </a>
-        <HeroCta label="استعلام قیمت" href="/contact" />
-        </div>
-      }
-    />
+<PageBanner
+  title={catalogHeading(selectedCategory, categories)}
+  highlight="دام و طیور"
+  subtitle={rich ? <RichInline text={rich} /> : SHOP_SUBTITLE}
+>
+  <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+    <a
+      href={CATALOG_PDF_HREF}
+      download="TSPK_catalog.pdf"
+      className="page-hero-cta inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#003F86] text-white font-bold text-sm px-6 py-3 shadow-lg shadow-blue-900/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+    >
+      <Download className="w-4 h-4" aria-hidden="true" />
+      دانلود کاتالوگ
+    </a>
+    <HeroCta label="استعلام قیمت" href="/contact" />
+  </div>
+</PageBanner>
+
   );
 };
