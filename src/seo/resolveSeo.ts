@@ -7,9 +7,10 @@ import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle, sortArticl
 import { isSafeHref, isSafeImageSrc } from "./safeUrl";
 import { homePriorityProducts, relatedInCategory } from "./internalLinks";
 import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richText";
-import { SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
+import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_E164, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
 import { removedProductRedirect } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
+import { isPendingPhoto, isPhotoPlaceholder } from "../data/pendingPhotos";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
@@ -332,6 +333,10 @@ function orgSchema(company: CompanyInfo) {
     alternateName: company.nameEn,
     url: CANONICAL_ORIGIN,
     telephone: SALES_PHONE_E164,
+    contactPoint: [
+      { "@type": "ContactPoint", telephone: SALES_PHONE_E164, contactType: "sales", name: "مشاوره، فروش و پشتیبانی", areaServed: "IR", availableLanguage: "fa" },
+      { "@type": "ContactPoint", telephone: OFFICE_PHONE_E164, contactType: "customer service", name: "تلفن دفتر", areaServed: "IR", availableLanguage: "fa" },
+    ],
     email: company.email || undefined,
     address: {
       "@type": "PostalAddress",
@@ -389,6 +394,8 @@ function isCategorySlug(slug: string, catalog: SeoCatalog) {
 
 function articleShareImage(image?: string): string | undefined {
   if (!image || image.startsWith("data:") || image.startsWith("blob:")) return undefined;
+  // Photo pending: share cards use the site default OG image, and JSON-LD carries no image.
+  if (isPendingPhoto(image) || isPhotoPlaceholder(image)) return undefined;
   if (image.startsWith("http://") || image.startsWith("https://")) return image;
   const path = image.startsWith("/") ? image : `/${image}`;
   return `${CANONICAL_ORIGIN}${withMediaVersion(path)}`;
@@ -623,7 +630,8 @@ function localBusinessNodes(company: CompanyInfo) {
     "@type": loc.type === "factory" ? "LocalBusiness" : loc.type === "rd" ? "LocalBusiness" : "LocalBusiness",
     name: `${company.nameFa} — ${loc.title}`,
     parentOrganization: { "@id": `${CANONICAL_ORIGIN}/#org` },
-    telephone: SALES_PHONE_E164,
+    // The 051 landline is the Mashhad office line; the Gorgan R&D unit lists the mobile only.
+    telephone: loc.type === "rd" ? SALES_PHONE_E164 : [SALES_PHONE_E164, OFFICE_PHONE_E164],
     address: {
       "@type": "PostalAddress",
       addressCountry: "IR",
@@ -674,7 +682,8 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
-<p>تلفن: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
+<p>مشاوره، فروش و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
+<p>تلفن دفتر: <a href="${OFFICE_PHONE_TEL}" dir="ltr">${OFFICE_PHONE_DISPLAY}</a></p>
 <p>${escapeHtml(company.address)}</p>
 <p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>
 <p><a href="/services/${FITOUT_SLUG}">نوسازی و تجهیز کامل سالن</a> · <a href="/products">تجهیزات دام و طیور</a> · <a href="/contact">درخواست مشاوره</a></p>
@@ -1054,7 +1063,8 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>${escapeHtml(company.tagline || "")}</p>
 <p>${escapeHtml(company.subTagline || "")}</p>
-<p>تلفن فروش، استعلام و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
+<p>مشاوره، فروش و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
+<p>تلفن دفتر: <a href="${OFFICE_PHONE_TEL}" dir="ltr">${OFFICE_PHONE_DISPLAY}</a></p>
 <p>ساعات کار: ${escapeHtml(company.workingHours)}</p>
 <p>دفتر مشهد: ${escapeHtml(company.address)}</p>
 <p>کارخانه: ${escapeHtml(company.factoryAddress)}</p>
@@ -1075,7 +1085,8 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       h1: "تماس و درخواست مشاوره",
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>تلفن فروش، استعلام و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
+      body: `<p>مشاوره، فروش و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
+<p>تلفن دفتر: <a href="${OFFICE_PHONE_TEL}" dir="ltr">${OFFICE_PHONE_DISPLAY}</a></p>
 <p>ساعات کار: ${escapeHtml(company.workingHours)}</p>
 <ul>${locHtml}</ul>
 <p><a href="#free-consultation-form">فرم درخواست بازدید و پیشنهاد فنی</a></p>`,

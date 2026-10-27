@@ -15,7 +15,7 @@ import { ImagePicker } from '../components/ImagePicker';
 import { CategoryInfo, ProductCategory } from '../../types';
 
 export const CategoriesTab: React.FC = () => {
-  const { categories, addCategory, updateCategory, deleteCategory, products } = useData();
+  const { categories, addCategory, updateCategory, deleteCategory, allProducts: products } = useData();
   const [editingCat, setEditingCat] = useState<CategoryInfo | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);

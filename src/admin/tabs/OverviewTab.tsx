@@ -25,7 +25,7 @@ interface OverviewTabProps {
 
 export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
   const { 
-    products, 
+    allProducts: products, 
     projects, 
     articles, 
     services, 

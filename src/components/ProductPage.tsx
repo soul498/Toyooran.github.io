@@ -10,7 +10,7 @@ import { findProduct, publicProductPath } from '../seo/resolveSeo';
 import { relatedInCategory } from '../seo/internalLinks';
 import { ProductCategory } from '../types';
 
-const CATEGORY_IDS: ProductCategory[] = ['heating', 'ventilation', 'drinking', 'cooling', 'inlet', 'feeding', 'cage', 'silo', 'other'];
+import { CATALOG_CATEGORY_IDS as CATEGORY_IDS } from '../lib/catalogPath';
 
 export const ProductPage: React.FC = () => {
   const { productId } = useParams();

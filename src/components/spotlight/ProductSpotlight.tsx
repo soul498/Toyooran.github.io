@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Phone, Thermometer, Wheat } from '../../icons';
+import { ArrowLeft, Image as ImageIcon, Phone, Thermometer, Wheat } from '../../icons';
+import { PHOTO_PENDING_ALT } from '../../data/pendingPhotos';
 
 /**
  * Product spotlight for «دانخوری پروانه‌ای پویا» and «جت هیتر ۱۰۰ هزار».
  * - HomeProductBands: horizontal bands (same frame as the home brand band in Hero.tsx), after the home hero.
- * - ProductsSpotlightPanel: dark blueprint panel with numbered callouts + spec grid, after the /products hero.
+ * - ProductsSpotlightPanel: dark blueprint panel with numbered notes + spec grid, after the /products hero.
  * Specs are only those published on the site: magazine article «introduction-to-pouya-butterfly-feeder»,
  * service «srv-poultry-equipment-supply», products ts-043 / ts-044 / ts-045. Missing specs are omitted.
  */
@@ -17,13 +18,10 @@ type Spot = {
   name: string;
   eyebrow: string;
   sub: string;
-  image: string;
-  srcSet: string;
-  imageAlt: string;
   specs: Spec[];
   keyFigure: { value: string; unit: string };
   keyFigure2: { value: string; unit: string };
-  callouts: { text: string; pos: string }[];
+  callouts: string[];
   specsHref: string;
   icon: React.ElementType;
 };
@@ -34,9 +32,6 @@ const SPOTS: Spot[] = [
     name: 'دانخوری پروانه‌ای پویا',
     eyebrow: 'تولید طیوران صنعت پویا',
     sub: 'بشقاب دانخوری با لبهٔ پروانه‌ای برای تغذیهٔ جوجه از روز اول، بدون سینی دان',
-    image: '/images/spotlight/feeder-800.webp',
-    srcSet: '/images/spotlight/feeder-480.webp 480w, /images/spotlight/feeder-800.webp 800w',
-    imageAlt: 'بشقاب دانخوری پروانه‌ای پویا در سالن مرغداری با جوجه‌های یک‌روزه',
     specs: [
       { label: 'شروع تغذیه', value: 'از روز اول، بدون سینی دان' },
       { label: 'لبه', value: 'دوبل و ضدپاشش' },
@@ -46,9 +41,9 @@ const SPOTS: Spot[] = [
     keyFigure: { value: 'روز اول', unit: 'تغذیه بدون سینی دان' },
     keyFigure2: { value: 'Virgin PP', unit: 'مقاوم به UV و ضدعفونی' },
     callouts: [
-      { text: 'لبهٔ پروانه‌ای کوتاه برای جوجهٔ یک‌روزه', pos: 'top-[14%] right-[4%]' },
-      { text: 'لبهٔ دوبل ضدپاشش', pos: 'top-[46%] left-[4%]' },
-      { text: 'شبکهٔ مانع ورود پرنده به بشقاب', pos: 'bottom-[10%] right-[10%]' },
+      'لبهٔ پروانه‌ای کوتاه برای جوجهٔ یک‌روزه',
+      'لبهٔ دوبل ضدپاشش',
+      'شبکهٔ مانع ورود پرنده به بشقاب',
     ],
     specsHref: '/magazine/introduction-to-pouya-butterfly-feeder',
     icon: Wheat,
@@ -58,9 +53,6 @@ const SPOTS: Spot[] = [
     name: 'جت هیتر ۱۰۰ هزار',
     eyebrow: 'گرمایش سالن مرغداری',
     sub: 'جت هیتر ۱۰۰ هزار در سه نسخهٔ گازی، گازوئیلی و دوگانه‌سوز برای گرمایش یکنواخت سالن',
-    image: '/images/spotlight/heater-800.webp',
-    srcSet: '/images/spotlight/heater-480.webp 480w, /images/spotlight/heater-800.webp 800w',
-    imageAlt: 'جت هیتر دوگانه‌سوز ۱۰۰ هزار مدل GLD-100',
     specs: [
       { label: 'ظرفیت حرارتی', value: '۱۰۰٬۰۰۰ کیلوکالری بر ساعت' },
       { label: 'هوادهی', value: '۷٬۰۰۰ مترمکعب بر ساعت' },
@@ -70,9 +62,9 @@ const SPOTS: Spot[] = [
     keyFigure: { value: '۱۰۰٬۰۰۰', unit: 'کیلوکالری بر ساعت' },
     keyFigure2: { value: '۷٬۰۰۰', unit: 'مترمکعب هوادهی در ساعت' },
     callouts: [
-      { text: 'پرتاب هوای گرم تا ۲۰ متر', pos: 'top-[12%] left-[6%]' },
-      { text: 'هوادهی ۷٬۰۰۰ مترمکعب بر ساعت', pos: 'bottom-[14%] left-[10%]' },
-      { text: 'برد کنترل و تابلو برق', pos: 'top-[18%] right-[4%]' },
+      'پرتاب هوای گرم تا ۲۰ متر',
+      'هوادهی ۷٬۰۰۰ مترمکعب بر ساعت',
+      'برد کنترل و تابلو برق',
     ],
     specsHref: '/products/heating',
     icon: Thermometer,
@@ -82,18 +74,25 @@ const SPOTS: Spot[] = [
 const CONSULT = 'مشاورهٔ رایگان و استعلام قیمت';
 const faDigit = (n: number) => n.toLocaleString('fa-IR');
 
-const SpotImage: React.FC<{ spot: Spot; className?: string; sizes: string }> = ({ spot, className = '', sizes }) => (
-  <img
-    src={spot.image}
-    srcSet={spot.srcSet}
-    sizes={sizes}
-    alt={spot.imageAlt}
-    loading="lazy"
-    decoding="async"
-    width={800}
-    height={spot.key === 'feeder' ? 446 : 450}
-    className={`absolute inset-0 h-full w-full ${spot.key === 'heater' ? 'object-contain' : 'object-cover'} ${className}`}
-  />
+/** Photo slot until real product photos arrive: fills its fixed-size frame, so nothing shifts later. */
+const PhotoPending: React.FC<{ tone: 'light' | 'dark'; compact?: boolean }> = ({ tone, compact }) => (
+  <div
+    role="img"
+    aria-label={PHOTO_PENDING_ALT}
+    className={`absolute inset-0 flex items-center justify-center gap-2.5 ${compact ? 'flex-row' : 'flex-col'} ${
+      tone === 'light' ? 'bg-gradient-to-br from-slate-50 to-slate-200 text-slate-500' : 'bg-white/[0.03] text-blue-100/80'
+    }`}
+  >
+    <span
+      className={`flex shrink-0 items-center justify-center rounded-2xl ${compact ? 'h-9 w-9' : 'h-12 w-12'} ${
+        tone === 'light' ? 'bg-white shadow-sm text-slate-400' : 'bg-white/10 border border-white/15 text-blue-200'
+      }`}
+      aria-hidden="true"
+    >
+      <ImageIcon className={compact ? 'w-4 h-4' : 'w-5 h-5'} />
+    </span>
+    <span className="text-xs sm:text-sm font-bold">{PHOTO_PENDING_ALT}</span>
+  </div>
 );
 
 /** Primary amber CTA + secondary «مشاهده مشخصات» (a text link on mobile to keep the block short). */
@@ -133,12 +132,8 @@ const ProductBand: React.FC<{ spot: Spot }> = ({ spot }) => (
   >
     <BandGlows />
     <div className="relative z-10 flex flex-col lg:flex-row lg:items-stretch">
-      <div className="spot-bleed relative h-24 sm:h-36 lg:h-auto lg:w-[24%] shrink-0 overflow-hidden bg-white">
-        <SpotImage
-          spot={spot}
-          sizes="(min-width: 1024px) 300px, 100vw"
-          className={`transition-transform duration-700 group-hover:scale-[1.04] ${spot.key === 'heater' ? 'p-3 lg:pl-12' : ''}`}
-        />
+      <div className="spot-bleed relative h-24 sm:h-36 lg:h-auto lg:w-[24%] shrink-0 overflow-hidden bg-slate-100">
+        <PhotoPending tone="light" compact />
       </div>
       <div className="flex-1 min-w-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 sm:gap-5 lg:gap-8 p-5 sm:p-8 lg:py-8 lg:pr-6 lg:pl-10">
         <div className="min-w-0">
@@ -194,26 +189,16 @@ const BlueprintCard: React.FC<{ spot: Spot }> = ({ spot }) => {
         </div>
       </div>
 
-      <div className="relative mt-4 sm:mt-5 aspect-[16/9] sm:aspect-[4/3] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white">
-        <SpotImage spot={spot} sizes="(min-width: 1024px) 560px, 100vw" className={spot.key === 'heater' ? 'p-4 sm:p-6' : ''} />
-        <ul className="hidden sm:block" aria-hidden="true">
-          {spot.callouts.map((c, n) => (
-            <li key={c.text} className={`absolute ${c.pos} flex items-center gap-2`}>
-              <span className="spot-ping relative flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-[11px] font-black text-blue-950">
-                {faDigit(n + 1)}
-              </span>
-              <span className="rounded-lg bg-blue-950/85 border border-white/15 px-2.5 py-1 text-[11px] font-bold text-white shadow-lg">{c.text}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="relative mt-4 sm:mt-5 aspect-[16/9] overflow-hidden rounded-[1.5rem] border border-dashed border-white/20">
+        <PhotoPending tone="dark" />
       </div>
 
-      {/* Callout legend: the readable list for screen readers; compact chips on mobile. */}
-      <ol className="mt-3 flex flex-wrap gap-1.5 sm:sr-only" aria-label={`نکات فنی ${spot.name}`}>
+      {/* Numbered technical notes as compact chips. */}
+      <ol className="mt-3 flex flex-wrap gap-1.5" aria-label={`نکات فنی ${spot.name}`}>
         {spot.callouts.map((c, n) => (
-          <li key={c.text} className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 py-1 pl-2.5 pr-1 text-[11px] font-bold text-blue-50">
+          <li key={c} className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 py-1 pl-2.5 pr-1 text-[11px] font-bold text-blue-50">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 text-[10px] font-black text-blue-950">{faDigit(n + 1)}</span>
-            {c.text}
+            {c}
           </li>
         ))}
       </ol>

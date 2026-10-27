@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { isPublicProduct } from '../../data/removedProducts';
 import { 
   Package, 
   Plus, 
@@ -18,7 +19,7 @@ import { Product, ProductCategory } from '../../types';
 import { withMediaVersion } from '../../lib/mediaUrl';
 
 export const ProductsTab: React.FC = () => {
-  const { products, addProduct, updateProduct, deleteProduct, replaceAllProducts, categories } = useData();
+  const { allProducts: products, addProduct, updateProduct, deleteProduct, replaceAllProducts, categories } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -195,6 +196,11 @@ export const ProductsTab: React.FC = () => {
                   </td>
                   <td className="py-3 px-4 font-bold text-slate-200">
                     {product.name}
+                    {(product.hidden || !isPublicProduct(product)) && (
+                      <span className="mr-2 inline-block bg-rose-500/10 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded text-[10px] font-bold">
+                        مخفی از سایت (غیرقابل نمایش و ایندکس)
+                      </span>
+                    )}
                   </td>
                   <td className="py-3 px-4 text-slate-400">
                     <span className="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-[10px]">

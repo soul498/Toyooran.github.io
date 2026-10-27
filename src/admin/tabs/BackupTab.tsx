@@ -14,7 +14,7 @@ import { useData } from '../../context/DataContext';
 
 export const BackupTab: React.FC = () => {
   const { 
-    products, 
+    allProducts: products, 
     projects, 
     services, 
     articles, 

@@ -70,7 +70,7 @@ export const ProjectsTab: React.FC = () => {
         equipmentList: ['بشقاب پروانه‌ای پویا', 'جت هیتر ۵۰'],
         results: [
           { label: 'ضریب تبدیل (FCR)', value: '۱.۵۴', detail: 'بهبود ۰.۱۵ واحدی' },
-          { label: 'کاهش پرت دان', value: '۱۵٪', detail: 'صرفه‌جویی مستقیم در هر دوره' }
+          { label: 'کاهش پرت دان', value: '۳ تا ۵٪', detail: 'صرفه‌جویی مستقیم در هر دوره' }
         ]
       }
     });

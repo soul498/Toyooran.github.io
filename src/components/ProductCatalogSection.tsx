@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useInView } from '../lib/useInView';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Search,
   PhoneCall,
@@ -41,24 +40,18 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
       setLocalCategory(cat);
     }
   };
-  const { categories } = useData();
+  const { categories, catalogReady } = useData();
   const heading = catalogHeading(selectedCategory, categories as { id: string; title: string }[]);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(() =>
     typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 6
   );
   
-  const { ref: loadMoreRef, isInView } = useInView<HTMLDivElement>();
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setVisibleCount(typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 6);
   }, [selectedCategory, searchQuery]);
-
-  useEffect(() => {
-    if (isInView) {
-      setVisibleCount(prev => prev + 6);
-    }
-  }, [isInView]);
 
   const filteredProducts = products.filter((p) => {
     const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
@@ -69,6 +62,26 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
   });
 
   const displayedProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProducts.length;
+
+  // Progressive grid: observe the sentinel again after every batch, so loading continues while it
+  // stays in view (a one-shot observer stopped at the second batch and left the spinner forever).
+  useEffect(() => {
+    if (!hasMore) return;
+    const node = loadMoreRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setVisibleCount(filteredProducts.length);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) setVisibleCount((prev) => prev + 6);
+      },
+      { rootMargin: '400px 0px' }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasMore, visibleCount, filteredProducts.length]);
 
   return (
     <section id="products" className="min-h-screen relative overflow-hidden z-0">
@@ -132,7 +145,9 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
           ========================================================
         */}
         <div className="mt-2 sm:mt-4">
-            {filteredProducts.length === 0 ? (
+            {!catalogReady && filteredProducts.length === 0 ? (
+              <div className="min-h-[60vh]" aria-busy="true" />
+            ) : filteredProducts.length === 0 ? (
               <div className="py-24 flex flex-col items-center justify-center text-center bg-white rounded-[3rem] border border-slate-200 shadow-sm">
                 <div className="w-24 h-24 rounded-full bg-slate-50 flex items-center justify-center mb-6">
                   <Filter className="w-10 h-10 text-slate-400" />
@@ -212,6 +227,13 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
               </div>
             )}
 
+          {/* Lazy Load Trigger (directly under the grid, above the full list) */}
+          {hasMore && (
+            <div ref={loadMoreRef} className="w-full h-20 flex items-center justify-center mt-8" aria-hidden="true">
+              <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin opacity-50" />
+            </div>
+          )}
+
           {/* Full crawlable list of this category's products (grid above loads progressively) */}
           {selectedCategory !== 'all' && !searchQuery && filteredProducts.length > 0 && (
             <nav aria-label={`فهرست محصولات ${heading}`} className="mt-10 bg-white/80 rounded-3xl border border-slate-200 p-6">
@@ -226,12 +248,6 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
             </nav>
           )}
 
-          {/* Lazy Load Trigger */}
-          {visibleCount < filteredProducts.length && (
-            <div ref={loadMoreRef} className="w-full h-20 flex items-center justify-center mt-8">
-              <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin opacity-50" />
-            </div>
-          )}
         </div>
 
       </div>
