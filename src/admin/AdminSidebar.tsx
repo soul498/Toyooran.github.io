@@ -43,7 +43,7 @@ interface AdminSidebarProps {
 }
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentTab, onSelectTab }) => {
-  const { quoteRequests, consultationRequests, products, projects, articles } = useData();
+  const { quoteRequests, consultationRequests, allProducts: products, projects, articles } = useData();
 
   const newQuotes = quoteRequests.filter(q => q.status === 'new').length;
   const newConsultations = consultationRequests.filter(c => c.status === 'new').length;
