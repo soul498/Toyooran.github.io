@@ -234,7 +234,7 @@ const Hero: React.FC<HeroProps> = ({
       <div 
         ref={cardsSectionRef}
         id="categories-drawer-sheet"
-        className="relative z-20 w-full bg-[#F8FAFC] shadow-2xl rounded-t-lg sm:rounded-t-lg border-t border-slate-200/90 py-6 sm:py-8"
+        className="relative z-20 w-full bg-[#F8FAFC] shadow-2xl rounded-t-lg sm:rounded-t-lg border-t border-slate-200/90 pt-6 sm:pt-8 pb-12 lg:pb-16"
       >
         
         {/* Subtle Top Pull Handle Bar */}
@@ -243,7 +243,7 @@ const Hero: React.FC<HeroProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           
           {/* Section Title Header */}
-          <div className="w-full mb-6 text-center sm:text-right border-b border-slate-200/80 pb-4">
+          <div className="w-full mb-8 lg:mb-12 text-center sm:text-right border-b border-slate-200/80 pb-4">
             <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60 inline-block mb-1.5">
               دسته‌بندی تخصصی طیوران صنعت پویا
             </span>
@@ -253,7 +253,7 @@ const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* 🎨 Dribbble-Worthy High-Fidelity Magic Cards */}
-              <div className="relative z-10 w-full py-8 lg:py-12">
+              <div className="relative z-10 w-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 w-full">
                   
                   {categoryCards.map((card, idx) => (
@@ -269,7 +269,7 @@ const Hero: React.FC<HeroProps> = ({
                 {/* Ultra-Wide Premium Brand Banner */}
                 <button
                   type="button"
-                  className="mt-8 relative group w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 p-8 sm:p-10 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 text-right"
+                  className="mt-8 lg:mt-12 relative group w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 p-8 sm:p-10 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 text-right"
                   onClick={onOpenConsultation}
                   aria-label="ثبت درخواست مشاوره"
                 >
@@ -306,7 +306,7 @@ const Hero: React.FC<HeroProps> = ({
               </div>
 
           {/* Bottom Quick Feature Strip */}
-          <div className="relative z-10 w-full mt-6">
+          <div className="relative z-10 w-full mt-8 lg:mt-12">
             <div className="bg-white/90  border border-slate-200/90 rounded-3xl p-3 sm:px-5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 shadow-2xs">
               
               <div className="flex items-center gap-4">
@@ -336,7 +336,7 @@ const Hero: React.FC<HeroProps> = ({
 
           {/* Seamless Content Continuation (About & Contact Unified Section) */}
           {children && (
-            <div className="relative z-10 w-full mt-8 sm:mt-10">
+            <div className="relative z-10 w-full mt-8 lg:mt-12 space-y-8 lg:space-y-12">
               {children}
             </div>
           )}

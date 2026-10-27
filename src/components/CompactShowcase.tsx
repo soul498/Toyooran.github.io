@@ -93,12 +93,12 @@ export const CompactShowcase: React.FC<CompactShowcaseProps> = ({
   };
 
   return (
-    <section className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-24 mt-12 space-y-6 lg:space-y-8">
+    <section className="w-full space-y-8 lg:space-y-12">
       {categories.length > 0 && (
         <CategoryBand categories={categories} onNavigate={onNavigate} />
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8" hidden>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         <div
           className="lg:col-span-7 relative rounded-[2.5rem] p-1 overflow-hidden shadow-2xl shadow-blue-900/20"
           onMouseEnter={() => setPaused(true)}

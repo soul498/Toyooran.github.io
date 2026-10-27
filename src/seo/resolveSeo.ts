@@ -8,6 +8,7 @@ import { isSafeHref, isSafeImageSrc } from "./safeUrl";
 import { homePriorityProducts, relatedInCategory } from "./internalLinks";
 import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richText";
 import { SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
+import { removedProductRedirect } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
@@ -277,7 +278,7 @@ export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | 
       return leaf !== path ? leaf : null;
     }
     const product = findProduct(slug, catalog);
-    if (!product) return null;
+    if (!product) return parts.length === 2 ? removedProductRedirect(slug) : null;
     const canonical = publicProductPath(product);
     return canonical !== path ? canonical : null;
   }
