@@ -244,13 +244,7 @@ const MainAppInner: React.FC = () => {
               onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
             >
               <Suspense fallback={null}>
-              <CompactShowcase 
-                products={products}
-                articles={publicArticles}
-                onNavigate={handleNavigateSection}
-                onSelectProduct={handleSelectProductById}
-                onSelectArticle={(articleId) => navigate(`/magazine/${articleId}`)}
-              />
+              <CompactShowcase onNavigate={handleNavigateSection} />
               <AboutContactUnifiedSection />
               </Suspense>
             </Hero>

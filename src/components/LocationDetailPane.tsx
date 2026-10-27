@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Building2, Clock, Factory, MapPin } from "../icons";
 import { baladEmbedFor, baladPlaceFor } from "../lib/baladMaps";
 import { neshanMapsUrl } from "../lib/phone";
@@ -17,15 +17,38 @@ type LocationLike = {
 export const LocationDetailPane: React.FC<{
   location: LocationLike;
   hours?: string | null;
-}> = ({ location, hours }) => {
+  /** Mount the map iframe only once the pane is near the viewport (keeps it off the initial load). */
+  deferMap?: boolean;
+}> = ({ location, hours, deferMap = false }) => {
+  const paneRef = useRef<HTMLDivElement>(null);
+  const [mapVisible, setMapVisible] = useState(!deferMap);
+  useEffect(() => {
+    if (mapVisible) return;
+    const el = paneRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setMapVisible(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setMapVisible(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "200px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [mapVisible]);
   const embed = baladEmbedFor(location);
   const title = location.title || (location.type === "headquarter" ? "دفتر مرکزی" : "شعبه");
   const mapHref = baladPlaceFor(location) || neshanMapsUrl(location.address || "", location.lat, location.lng);
 
   return (
-    <div className="lg:col-span-8 relative rounded-[2rem] overflow-hidden bg-[#001c3d] border border-white/10 h-[460px] lg:h-full shadow-2xl">
+    <div ref={paneRef} className="lg:col-span-8 relative rounded-[2rem] overflow-hidden bg-[#001c3d] border border-white/10 h-[460px] lg:h-full shadow-2xl">
       <div className="absolute inset-0">
-        {embed ? (
+        {embed && mapVisible ? (
           <iframe
             key={embed.src}
             src={embed.src}
@@ -35,7 +58,7 @@ export const LocationDetailPane: React.FC<{
             referrerPolicy="no-referrer-when-downgrade"
             allowFullScreen
           />
-        ) : (
+        ) : embed ? null : (
           <div className="absolute inset-0 flex items-center justify-center">
             {location.type === "headquarter" ? (
               <Building2 className="w-12 h-12 text-amber-500/50" />
