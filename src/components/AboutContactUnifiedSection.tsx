@@ -213,6 +213,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
 
                 {activeLocation && (
                   <LocationDetailPane
+                    deferMap
                     location={activeLocation}
                     hours={(activeLocation as { workingHours?: string }).workingHours || (activeLocation.type === 'headquarter' ? companyInfo.workingHours : null)}
                   />
