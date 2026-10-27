@@ -1,5 +1,5 @@
 import type React from 'react';
-import { SALES_PHONE_DISPLAY } from './contact';
+import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
 import { Building2, FileCheck, FlaskConical, Phone, Sparkles, type IconProps } from '../icons';
 
 export interface PageHeroConfig {
@@ -64,7 +64,7 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
     eyebrow: 'پاسخ کارشناس فنی طیوران صنعت پویا',
     eyebrowIcon: Phone,
     subtitle: `مشاورهٔ رایگان و استعلام قیمت؛ فرم را تکمیل کنید یا با \u2066${SALES_PHONE_DISPLAY}\u2069 تماس بگیرید.`,
-    cta: { label: 'تماس تلفنی', href: 'tel:+989151126258' },
+    cta: { label: 'تماس تلفنی', href: SALES_PHONE_TEL },
     secondaryCta: { label: 'تکمیل فرم', href: '#consultation-form' },
   },
 };
