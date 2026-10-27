@@ -275,3 +275,14 @@ html {
   .page-hero-cta { transition: none; }
   .page-hero-cta:hover, .page-hero-cta:active { transform: none; }
 }
+
+/* Product spotlight (home bands + /products blueprint panel) */
+.spot-blueprint::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(147,197,253,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(147,197,253,.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+@keyframes spot-ping { 0% { box-shadow: 0 0 0 0 rgba(251,191,36,.55); } 80%, 100% { box-shadow: 0 0 0 10px rgba(251,191,36,0); } }
+.spot-ping { animation: spot-ping 2.4s ease-out infinite; }
+@media (min-width: 1024px) { .spot-bleed { clip-path: polygon(0 0, 100% 0, 100% 100%, 18% 100%); } }
+@media (prefers-reduced-motion: reduce) { .spot-ping { animation: none; } .group:hover .spot-bleed img { transform: none; } }
