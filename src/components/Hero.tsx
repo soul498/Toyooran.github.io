@@ -248,7 +248,7 @@ const Hero: React.FC<HeroProps> = ({
               دسته‌بندی تخصصی طیوران صنعت پویا
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-[#003F86]">
-              طراحی، ساخت و تجهیز پروژه‌های صنعتی در دام، طیور و آبزیان
+              خدمات
             </h2>
           </div>
 
