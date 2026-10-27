@@ -61,9 +61,9 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
   '/contact': {
     title: 'تماس و درخواست مشاوره',
     highlight: 'درخواست مشاوره',
-    eyebrow: 'پاسخ کارشناس فنی طیوران صنعت پویا',
+    eyebrow: 'مشاورهٔ رایگان و استعلام قیمت',
     eyebrowIcon: Phone,
-    subtitle: `مشاورهٔ رایگان و استعلام قیمت؛ فرم را تکمیل کنید یا با \u2066${SALES_PHONE_DISPLAY}\u2069 تماس بگیرید.`,
+    subtitle: `فرم را تکمیل کنید یا با \u2066${SALES_PHONE_DISPLAY}\u2069 تماس بگیرید.`,
     cta: { label: 'تماس تلفنی', href: SALES_PHONE_TEL },
     secondaryCta: { label: 'تکمیل فرم', href: '#consultation-form' },
   },
