@@ -31,7 +31,7 @@ import {
 } from '../data/mockData';
 import { CRM_PERSONAS } from '../crm/data/personas';
 import { migrateCustomerRecord } from '../crm/utils/crmRecords';
-import { withPendingPhotos } from '../data/pendingPhotos';
+import { withProductPhotos } from '../data/productPhotos';
 
 function loadStoredArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored)) return ARTICLES;
@@ -166,7 +166,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [services, setServices] = useState<Service[]>(SERVICES);
 
-  const [articles, setArticles] = useState<Article[]>(() => ARTICLES.map(withPendingPhotos));
+  const [articles, setArticles] = useState<Article[]>(() => ARTICLES.map(withProductPhotos));
 
   const [categories, setCategories] = useState<CategoryItem[]>(CATEGORIES_DATA as CategoryItem[]);
 
@@ -471,7 +471,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     import("../data/productsData").then((mod) => setProducts(mod.PRODUCTS)).then(() => withHiddenProducts());
     setProjects(PROJECTS);
     setServices(SERVICES);
-    setArticles(ARTICLES.map(withPendingPhotos));
+    setArticles(ARTICLES.map(withProductPhotos));
     setCategories(CATEGORIES_DATA as CategoryItem[]);
     setCompanyInfo(COMPANY_INFO as CompanyInfo);
     setHeroCms(DEFAULT_HERO_CMS);

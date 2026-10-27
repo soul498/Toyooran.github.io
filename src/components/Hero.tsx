@@ -21,6 +21,8 @@ interface HeroProps {
   onOpenConsultation: () => void;
   onOpenQuote: () => void;
   onOpenAiAssistant?: () => void;
+  /** Rendered at the top of the drawer sheet, above the «خدمات» section (home product bands). */
+  beforeServices?: React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -92,6 +94,7 @@ const Hero: React.FC<HeroProps> = ({
   onOpenConsultation,
   onOpenQuote,
   onOpenAiAssistant,
+  beforeServices,
   children,
 }) => {
   const navigate = useNavigate();
@@ -241,7 +244,9 @@ const Hero: React.FC<HeroProps> = ({
         <div className="w-14 h-1.5 bg-slate-300 hover:bg-amber-400 rounded-full mx-auto mb-4 transition-colors" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          
+
+          {beforeServices && <div className="mb-8 lg:mb-12">{beforeServices}</div>}
+
           {/* Section Title Header */}
           <div className="w-full mb-8 lg:mb-12 text-center sm:text-right border-b border-slate-200/80 pb-4">
             <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60 inline-block mb-1.5">

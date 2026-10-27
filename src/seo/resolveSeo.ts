@@ -10,7 +10,6 @@ import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richT
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_E164, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
 import { removedProductRedirect } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
-import { isPendingPhoto, isPhotoPlaceholder } from "../data/pendingPhotos";
 
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
@@ -394,8 +393,6 @@ function isCategorySlug(slug: string, catalog: SeoCatalog) {
 
 function articleShareImage(image?: string): string | undefined {
   if (!image || image.startsWith("data:") || image.startsWith("blob:")) return undefined;
-  // Photo pending: share cards use the site default OG image, and JSON-LD carries no image.
-  if (isPendingPhoto(image) || isPhotoPlaceholder(image)) return undefined;
   if (image.startsWith("http://") || image.startsWith("https://")) return image;
   const path = image.startsWith("/") ? image : `/${image}`;
   return `${CANONICAL_ORIGIN}${withMediaVersion(path)}`;
