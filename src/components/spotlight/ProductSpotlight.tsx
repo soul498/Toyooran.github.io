@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Image as ImageIcon, Phone, Thermometer, Wheat } from '../../icons';
-import { PHOTO_PENDING_ALT } from '../../data/pendingPhotos';
+import { FEEDER_PHOTO, HEATER_PHOTO, type ProductPhoto } from '../../data/productPhotos';
 
 /**
- * Product spotlight for «دانخوری پروانه‌ای پویا» and «جت هیتر ۱۰۰ هزار».
+ * Product spotlight for «دانخوری پروانه‌ای پویا» and «جت هیتر IMACHINE».
  * - HomeProductBands: horizontal bands (same frame as the home brand band in Hero.tsx), after the home hero.
  * - ProductsSpotlightPanel: dark blueprint panel with numbered notes + spec grid, after the /products hero.
- * Specs are only those published on the site: magazine article «introduction-to-pouya-butterfly-feeder»,
- * service «srv-poultry-equipment-supply», products ts-043 / ts-044 / ts-045. Missing specs are omitted.
+ * Feeder specs come from the magazine article «introduction-to-pouya-butterfly-feeder» and service
+ * «srv-poultry-equipment-supply». No published IMACHINE heater datasheet exists, so the heater lists only
+ * components visible on the approved photos (pump and valve labels); capacity figures are left out.
  */
 
 type Spec = { label: string; value: string };
@@ -18,6 +19,7 @@ type Spot = {
   name: string;
   eyebrow: string;
   sub: string;
+  photo: ProductPhoto;
   specs: Spec[];
   keyFigure: { value: string; unit: string };
   keyFigure2: { value: string; unit: string };
@@ -32,6 +34,7 @@ const SPOTS: Spot[] = [
     name: 'دانخوری پروانه‌ای پویا',
     eyebrow: 'تولید طیوران صنعت پویا',
     sub: 'بشقاب دانخوری با لبهٔ پروانه‌ای برای تغذیهٔ جوجه از روز اول، بدون سینی دان',
+    photo: FEEDER_PHOTO,
     specs: [
       { label: 'شروع تغذیه', value: 'از روز اول، بدون سینی دان' },
       { label: 'لبه', value: 'دوبل و ضدپاشش' },
@@ -50,21 +53,22 @@ const SPOTS: Spot[] = [
   },
   {
     key: 'heater',
-    name: 'جت هیتر ۱۰۰ هزار',
+    name: 'جت هیتر IMACHINE',
     eyebrow: 'گرمایش سالن مرغداری',
-    sub: 'جت هیتر ۱۰۰ هزار در سه نسخهٔ گازی، گازوئیلی و دوگانه‌سوز برای گرمایش یکنواخت سالن',
+    sub: 'جت هیتر IMACHINE برای گرمایش سالن مرغداری؛ ظرفیت مناسب هر سالن با مشاورهٔ فنی تعیین می‌شود',
+    photo: HEATER_PHOTO,
     specs: [
-      { label: 'ظرفیت حرارتی', value: '۱۰۰٬۰۰۰ کیلوکالری بر ساعت' },
-      { label: 'هوادهی', value: '۷٬۰۰۰ مترمکعب بر ساعت' },
-      { label: 'پرتاب هوای گرم', value: 'تا ۲۰ متر' },
-      { label: 'سوخت', value: 'گاز / گازوئیل / دوگانه‌سوز' },
+      { label: 'پمپ سوخت مشعل', value: 'Danfoss' },
+      { label: 'شیر برقی گاز', value: 'MARAS، حفاظت IP54' },
+      { label: 'تابلو کنترل', value: 'روی بدنهٔ دستگاه' },
+      { label: 'انتخاب ظرفیت', value: 'با مشاورهٔ فنی رایگان' },
     ],
-    keyFigure: { value: '۱۰۰٬۰۰۰', unit: 'کیلوکالری بر ساعت' },
-    keyFigure2: { value: '۷٬۰۰۰', unit: 'مترمکعب هوادهی در ساعت' },
+    keyFigure: { value: 'Danfoss', unit: 'پمپ سوخت مشعل' },
+    keyFigure2: { value: 'IP54', unit: 'شیر برقی گاز MARAS' },
     callouts: [
-      'پرتاب هوای گرم تا ۲۰ متر',
-      'هوادهی ۷٬۰۰۰ مترمکعب بر ساعت',
-      'برد کنترل و تابلو برق',
+      'پمپ سوخت Danfoss',
+      'شیر برقی گاز MARAS',
+      'تابلو کنترل روی بدنه',
     ],
     specsHref: '/products/heating',
     icon: Thermometer,
@@ -74,25 +78,19 @@ const SPOTS: Spot[] = [
 const CONSULT = 'مشاورهٔ رایگان و استعلام قیمت';
 const faDigit = (n: number) => n.toLocaleString('fa-IR');
 
-/** Photo slot until real product photos arrive: fills its fixed-size frame, so nothing shifts later. */
-const PhotoPending: React.FC<{ tone: 'light' | 'dark'; compact?: boolean }> = ({ tone, compact }) => (
-  <div
-    role="img"
-    aria-label={PHOTO_PENDING_ALT}
-    className={`absolute inset-0 flex items-center justify-center gap-2.5 ${compact ? 'flex-row' : 'flex-col'} ${
-      tone === 'light' ? 'bg-gradient-to-br from-slate-50 to-slate-200 text-slate-500' : 'bg-white/[0.03] text-blue-100/80'
-    }`}
-  >
-    <span
-      className={`flex shrink-0 items-center justify-center rounded-2xl ${compact ? 'h-9 w-9' : 'h-12 w-12'} ${
-        tone === 'light' ? 'bg-white shadow-sm text-slate-400' : 'bg-white/10 border border-white/15 text-blue-200'
-      }`}
-      aria-hidden="true"
-    >
-      <ImageIcon className={compact ? 'w-4 h-4' : 'w-5 h-5'} />
-    </span>
-    <span className="text-xs sm:text-sm font-bold">{PHOTO_PENDING_ALT}</span>
-  </div>
+/** Fixed-size, lazy product photo filling its frame (cover, centred: the product sits in the centre square). */
+const SpotPhoto: React.FC<{ photo: ProductPhoto; sizes: string; className?: string }> = ({ photo, sizes, className = '' }) => (
+  <img
+    src={photo.src}
+    srcSet={photo.srcSet}
+    sizes={sizes}
+    alt={photo.alt}
+    width={photo.width}
+    height={photo.height}
+    loading="lazy"
+    decoding="async"
+    className={`absolute inset-0 h-full w-full object-cover object-center ${className}`}
+  />
 );
 
 /** Primary amber CTA + secondary «مشاهده مشخصات» (a text link on mobile to keep the block short). */
@@ -132,8 +130,8 @@ const ProductBand: React.FC<{ spot: Spot }> = ({ spot }) => (
   >
     <BandGlows />
     <div className="relative z-10 flex flex-col lg:flex-row lg:items-stretch">
-      <div className="spot-bleed relative h-24 sm:h-36 lg:h-auto lg:w-[24%] shrink-0 overflow-hidden bg-slate-100">
-        <PhotoPending tone="light" compact />
+      <div className="spot-bleed relative h-36 lg:h-auto lg:w-[24%] shrink-0 overflow-hidden bg-white">
+        <SpotPhoto photo={spot.photo} sizes="(min-width: 1024px) 300px, 100vw" className="transition-transform duration-700 group-hover:scale-[1.04]" />
       </div>
       <div className="flex-1 min-w-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 sm:gap-5 lg:gap-8 p-5 sm:p-8 lg:py-8 lg:pr-6 lg:pl-10">
         <div className="min-w-0">
@@ -189,8 +187,8 @@ const BlueprintCard: React.FC<{ spot: Spot }> = ({ spot }) => {
         </div>
       </div>
 
-      <div className="relative mt-4 sm:mt-5 aspect-[16/9] overflow-hidden rounded-[1.5rem] border border-dashed border-white/20">
-        <PhotoPending tone="dark" />
+      <div className="relative mt-4 sm:mt-5 aspect-[16/9] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white">
+        <SpotPhoto photo={spot.photo} sizes="(min-width: 1024px) 560px, 100vw" />
       </div>
 
       {/* Numbered technical notes as compact chips. */}
@@ -228,7 +226,7 @@ export const ProductsSpotlightPanel: React.FC = () => (
       <h2 id="products-spotlight-heading" className="font-black text-xl sm:text-3xl tracking-tight">
         محصولات شاخص طیوران صنعت پویا
       </h2>
-      <p className="mt-1.5 sm:mt-2 text-xs sm:text-base font-medium text-blue-100/80">دانخوری پروانه‌ای و جت هیتر ۱۰۰ هزار؛ مشخصات فنی در یک نگاه</p>
+      <p className="mt-1.5 sm:mt-2 text-xs sm:text-base font-medium text-blue-100/80">دانخوری پروانه‌ای پویا و جت هیتر IMACHINE؛ مشخصات در یک نگاه</p>
     </div>
     <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
       {SPOTS.map((spot) => (

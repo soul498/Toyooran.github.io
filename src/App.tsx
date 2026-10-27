@@ -250,8 +250,8 @@ const MainAppInner: React.FC = () => {
               onOpenConsultation={() => handleOpenUnifiedConsultation()}
               onOpenQuote={() => handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور')}
               onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
+              beforeServices={<HomeProductBands />}
             >
-              <HomeProductBands />
               <Suspense fallback={null}>
               <CompactShowcase onNavigate={handleNavigateSection} />
               <AboutContactUnifiedSection />

@@ -283,3 +283,4 @@ html {
   background-size: 28px 28px;
 }
 @media (min-width: 1024px) { .spot-bleed { clip-path: polygon(0 0, 100% 0, 100% 100%, 18% 100%); } }
+@media (prefers-reduced-motion: reduce) { .group:hover .spot-bleed img { transform: none; } }
