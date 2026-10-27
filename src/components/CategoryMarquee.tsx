@@ -41,7 +41,7 @@ export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCatego
   const scrollLeft = useRef(0);
   const lite = isLiteDevice();
 
-  const allItem = { id: 'all', title: 'همه محصولات', icon: 'LayoutGrid', productCount: 113 };
+  const allItem = { id: 'all', title: 'همه محصولات', icon: 'LayoutGrid', productCount: 101 };
   const items = [allItem, ...CATEGORIES_DATA];
   const repeatedItems = lite ? [...items, ...items] : [...items, ...items, ...items, ...items];
 

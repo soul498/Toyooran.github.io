@@ -2,10 +2,7 @@ import type { Product } from "../types";
 
 /** Priority products linked from the homepage (prerender + browser) to raise their crawl priority. */
 export const HOME_PRIORITY_PRODUCT_IDS = [
-  "ts-009", // هواکش صنعتی KGFI140
-  "ts-015", // فن دمپردار ۱۰۰ و ۱۴۰
   "ts-062", // هواکش بیگ هردزمن ۱۴۰
-  "ts-011", // جت هیتر KG100
   "ts-037", // جت هیتر برقی ۱۵ کیلووات
   "ts-038", // جت هیتر برقی ۳ کیلووات
   "ts-024", // هیتر کابینتی KHG-300

@@ -58,7 +58,7 @@ export const CATEGORIES_DATA = [
     id: 'heating',
     title: 'سیستم گرمایش مرغداری',
     icon: 'Thermometer',
-    productCount: 37,
+    productCount: 29,
     image: "/images/machine-1.jpg",
     badge: "جدید",
     titleEn: "Heating",
@@ -68,7 +68,7 @@ export const CATEGORIES_DATA = [
     id: 'ventilation',
     title: 'تهویه مرغداری',
     icon: 'Fan',
-    productCount: 23,
+    productCount: 19,
     image: "/images/poultry-1.jpg",
     badge: "",
     titleEn: "Ventilation",
@@ -572,7 +572,7 @@ export const ARTICLES: Article[] = [
       'بسیاری از بهره‌برداران بدون در نظر گرفتن افت فشار استاتیک ناشی از پدهای سلولزی یا اینلت‌ها، صرفاً بر اساس ظرفیت اسمی هواکش‌ها اقدام به خرید می‌کنند. این کار باعث می‌شود تا در عمل، هواکش‌ها نتوانند به ظرفیت واقعی خود برسند و سالن دچار خفگی شود.',
       'استفاده از سیستم کنترل اقلیم هوشمند (PLC) که به طور اتوماتیک اینلت‌ها و هواکش‌ها را تنظیم می‌کند، بهترین راهکار برای جلوگیری از خطاهای انسانی در مدیریت تهویه است.'
     ],
-    relatedProductIds: ['ts-014', 'ts-060'],
+    relatedProductIds: ['ts-060'],
     relatedServiceId: 'srv-turnkey-shed',
     datePublishedIso: '2024-09-05',
     dateModifiedIso: '2026-09-24',
@@ -638,7 +638,7 @@ export const ARTICLES: Article[] = [
       '## نتیجه‌گیری',
       'انتخاب جت‌هیتر، کابینتی یا تابشی باید بر اساس سازه، تهویه، نوع سوخت، رطوبت بستر و نگهداری انجام شود. استعلام فنی طیوران بر همین متغیرهاست نه بر برچسب «بهترین سیستم».'
     ],
-    relatedProductIds: ['ts-011', 'ts-040', 'ts-024'],
+    relatedProductIds: ['ts-040', 'ts-024'],
     relatedServiceId: 'srv-turnkey-shed',
     datePublishedIso: '2024-08-26',
     dateModifiedIso: '2026-09-24'

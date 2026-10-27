@@ -33,7 +33,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
   const activeLocation = locations[activeLocationIndex] || null;
 
   return (
-    <section className="relative w-full py-16 lg:py-24 bg-slate-50 overflow-hidden z-10">
+    <section className="relative w-full overflow-hidden z-10">
       <style>{`
         .dir-scrollbar::-webkit-scrollbar {
           width: 4px;
@@ -51,7 +51,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
         }
       `}</style>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full">
         
         {/* Massive Dark Cinematic Card */}
         <div className="bg-[#001c3d] rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-12 lg:p-16 relative overflow-hidden flex flex-col shadow-[0_30px_60px_rgba(0,0,0,0.1)]">
