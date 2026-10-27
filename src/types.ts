@@ -58,6 +58,8 @@ export interface ProductSpec {
 
 export interface Product {
   isFeatured?: boolean;
+  /** Hidden from the public site and search engines; kept for the admin panel (re-enable by clearing it). */
+  hidden?: boolean;
   id: string;
   code: string;
   name: string;

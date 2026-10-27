@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { sortArticlesNewestFirst } from './seo/articleMeta';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation, useNavigationType } from 'react-router-dom';
+import { catalogCategoryFromPath } from './lib/catalogPath';
 const Toaster = lazy(() => import('react-hot-toast').then((m) => ({ default: m.Toaster })));
 import { ScrollProgress } from './components/ScrollProgress';
 import { DataProvider, useData } from './context/DataContext';
@@ -46,10 +47,12 @@ const RouteFallback = () => <div className="min-h-[100svh]" aria-hidden="true" /
 
 // Section hero for nav routes, rendered outside the route Suspense so it (and its H1, the LCP)
 // paints on the first commit and is not re-mounted when the lazy page chunk arrives.
-const RouteHero = ({ selectedCategory, categories }: { selectedCategory: string; categories: { id: string; title: string }[] }) => {
+const RouteHero = ({ categories }: { categories: { id: string; title: string }[] }) => {
   const { pathname } = useLocation();
-  if (pathname.replace(/\/+$/, '') === '/products') {
-    return <ShopHero selectedCategory={selectedCategory} categories={categories} />;
+  const catalogCategory = catalogCategoryFromPath(pathname);
+  if (catalogCategory) {
+    // /products and every /products/<category> get the section hero with their own H1.
+    return <ShopHero selectedCategory={catalogCategory} categories={categories} />;
   }
   const hero = pageHeroFor(pathname);
   return hero ? <PageBanner {...hero} /> : null;
@@ -71,9 +74,15 @@ const MagazineArticleWrapper = ({ articles, onBack, onSelectProductById }: { art
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+  const previousPath = useRef(pathname);
   useEffect(() => {
+    const from = previousPath.current;
+    previousPath.current = pathname;
+    // Switching category from the chips keeps the reader at the list instead of jumping back to the hero.
+    if (navigationType === 'PUSH' && from !== pathname && catalogCategoryFromPath(from) && catalogCategoryFromPath(pathname)) return;
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [pathname]);
+  }, [pathname, navigationType]);
   return null;
 };
 
@@ -94,7 +103,6 @@ const MainAppInner: React.FC = () => {
   const publicArticles = useMemo(() => sortArticlesNewestFirst(articles.filter((article) => article.status !== 'draft')), [articles]);
 
   // Navigation and consultation state
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>('all');
 
   // Unified Consultation / Quote Form prefill state
   const [consultationSubject, setConsultationSubject] = useState<string | undefined>('مرغداری گوشتی');
@@ -139,7 +147,6 @@ const MainAppInner: React.FC = () => {
                          location.pathname === '/contact' ? 'contact' : 'home';
 
   const handleSelectCategory = (cat: ProductCategory | 'all') => {
-    setSelectedCategory(cat);
     if (cat === 'all') navigate('/products');
     else navigate(`/products/${cat}`);
   };
@@ -232,7 +239,7 @@ const MainAppInner: React.FC = () => {
 
       {/* Main Content by Section */}
       <main id="main-content" className="flex-1">
-        <RouteHero selectedCategory={selectedCategory} categories={categories as { id: string; title: string }[]} />
+        <RouteHero categories={categories as { id: string; title: string }[]} />
         <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={
@@ -257,7 +264,7 @@ const MainAppInner: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12"><ProductsSpotlightPanel /></div>
             <ProductCatalogSection
               products={products}
-              selectedCategory={selectedCategory}
+              selectedCategory="all"
               onSelectCategory={handleSelectCategory}
               onSelectProduct={handleSelectProduct}
               onRequestQuoteForProduct={handleRequestQuoteForProduct}

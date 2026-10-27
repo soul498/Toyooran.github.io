@@ -24,7 +24,7 @@ const CATEGORIES = [
 ];
 
 export const ArticlesTab: React.FC = () => {
-  const { articles, addArticle, updateArticle, deleteArticle, products, services } = useData();
+  const { articles, addArticle, updateArticle, deleteArticle, allProducts: products, services } = useData();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");

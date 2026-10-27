@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
+import { isPublicProduct } from '../data/removedProducts';
 import {
   Product,
   Project,
@@ -38,7 +39,10 @@ function loadStoredArticles(stored: Article[] | null | undefined): Article[] {
 
 interface DataContextType {
   // Products
+  /** Public catalog (hidden products removed). */
   products: Product[];
+  /** Every product including hidden ones — admin panel only. */
+  allProducts: Product[];
   catalogReady: boolean;
   addProduct: (product: Product) => void;
   updateProduct: (id: string, product: Partial<Product>) => void;
@@ -146,7 +150,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let cancelled = false;
     import("../data/productsData").then((mod) => {
       if (!cancelled) {
-        setProducts((prev) => (prev.length ? prev : mod.PRODUCTS));
+        setProducts((prev) => (!prev.length ? mod.PRODUCTS : prev.every((item) => item?.hidden) ? [...mod.PRODUCTS, ...prev] : prev));
         setCatalogReady(true);
       }
     }).catch(() => {
@@ -220,6 +224,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .then(async result => { if (result?.admin) { await refreshCsrf(); setAdminUser({ username: result.admin.username, displayName: 'مدیریت کل سیستم', role: 'superadmin' }); } })
       .catch(() => undefined);
   }, []);
+  // Hidden products (e.g. Kolak Gostar) stay listed for the admin even if the stored copy predates them.
+  // Separate lazy chunk: public visitors never download these records.
+  const withHiddenProducts = () => {
+    void import('../data/hiddenProducts').then(({ HIDDEN_PRODUCTS }) => {
+      setProducts((prev) => {
+        const ids = new Set(prev.map((item) => item?.id));
+        const missing = HIDDEN_PRODUCTS.filter((item) => !ids.has(item.id));
+        return missing.length ? [...prev, ...missing] : prev;
+      });
+    });
+  };
   const saveAdminState = (key: string, value: unknown) => {
     if (adminUser && adminDataReady && csrfToken) void fetch(`/api/admin/state/${key}`, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken }, body: JSON.stringify({ value }) });
   };
@@ -231,7 +246,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     Promise.all(keys.map(async key => [key, await fetch(`/api/admin/state/${key}`, { credentials: 'include' }).then(response => response.ok ? response.json() : { value: null })] as const))
       .then(entries => {
         const state = Object.fromEntries(entries);
-        if (state.products.value) setProducts(state.products.value);
+        if (Array.isArray(state.products.value) && state.products.value.length) {
+          const stored = state.products.value as Product[];
+          setProducts(stored.map((item) => (item && !isPublicProduct(item) && !item.hidden ? { ...item, hidden: true } : item)));
+        }
+        withHiddenProducts();
         if (state.projects.value) setProjects(state.projects.value);
         if (state.services.value) setServices(state.services.value);
         articlesHydrated.current = true;
@@ -273,6 +292,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => { saveAdminState('consultations', consultationRequests); }, [consultationRequests, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('customers', customers); }, [customers, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('media', mediaLibrary); }, [mediaLibrary, adminUser, adminDataReady]);
+  const publicProducts = useMemo(() => products.filter((item) => item && isPublicProduct(item)), [products]);
   // Product CRUD
   const addProduct = (product: Product) => {
     setProducts(prev => [product, ...prev]);
@@ -447,7 +467,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Reset to Defaults
   const resetToDefaults = () => {
-    import("../data/productsData").then((mod) => setProducts(mod.PRODUCTS));
+    import("../data/productsData").then((mod) => setProducts(mod.PRODUCTS)).then(() => withHiddenProducts());
     setProjects(PROJECTS);
     setServices(SERVICES);
     setArticles(ARTICLES);
@@ -500,7 +520,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <DataContext.Provider
       value={{
-        products,
+        products: publicProducts,
+        allProducts: products,
         catalogReady,
         addProduct,
         updateProduct,
