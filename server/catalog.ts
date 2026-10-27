@@ -4,6 +4,8 @@ import type { SeoCatalog } from "../src/seo/resolveSeo";
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../src/types";
 import { isPublicArticle, sortArticlesNewestFirst } from "../src/seo/articleMeta";
 import { isPublicProduct } from "../src/data/removedProducts";
+import { withPendingPhotos } from "../src/data/pendingPhotos";
+import { withContentCorrections } from "../src/data/contentCorrections";
 
 function asArray<T>(key: string, fallback: T[]): T[] {
   try {
@@ -39,7 +41,7 @@ export function loadPublicArticles(): Article[] {
     stored = null;
   }
   const source = stored ?? ARTICLES;
-  return sortArticlesNewestFirst(source.filter((item) => item?.id && item?.title && isPublicArticle(item)));
+  return sortArticlesNewestFirst(source.filter((item) => item?.id && item?.title && isPublicArticle(item))).map((item) => withPendingPhotos(withContentCorrections(item)));
 }
 
 function asCompany(): CompanyInfo {
@@ -76,7 +78,7 @@ export function invalidateSeoCatalog(): void {
 function buildSeoCatalog(): SeoCatalog {
   return {
     products: mergeSeedById<Product>("products", PRODUCTS).filter((item) => item && isPublicProduct(item)),
-    services: overlaySeedOnly<Service>("services", SERVICES),
+    services: overlaySeedOnly<Service>("services", SERVICES).map((item) => withContentCorrections(item)),
     projects: mergeSeedById<Project>("projects", PROJECTS),
     articles: loadPublicArticles(),
     categories: asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[]),

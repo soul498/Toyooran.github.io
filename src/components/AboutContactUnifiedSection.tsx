@@ -17,7 +17,7 @@ import {
   Grid
 } from '../icons';
 import { useData } from '../context/DataContext';
-import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
+import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { LocationDetailPane } from './LocationDetailPane';
 
 export const AboutContactUnifiedSection: React.FC = () => {
@@ -91,8 +91,10 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
                   </div>
                   <div>
-                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mb-1 uppercase tracking-wider">مشاوره و فروش</span>
+                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mb-1 uppercase tracking-wider">مشاوره، فروش و پشتیبانی</span>
                     <a href={SALES_PHONE_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{SALES_PHONE_DISPLAY}</a>
+                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mt-3 mb-1">{OFFICE_PHONE_LABEL}</span>
+                    <a href={OFFICE_PHONE_TEL} className="block text-lg sm:text-xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{OFFICE_PHONE_DISPLAY}</a>
                   </div>
                 </div>
               </div>

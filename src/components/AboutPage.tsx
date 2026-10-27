@@ -2,7 +2,7 @@ import React from 'react';
 import { LazyImage } from './LazyImage';
 import { Building2, CheckCircle2, Factory, Globe2 } from '../icons';
 import { SEO } from './SEO';
-import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
+import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 
 export const AboutPage: React.FC = () => {
   return (
@@ -79,8 +79,12 @@ export const AboutPage: React.FC = () => {
               
               <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/60 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-sm">
                  <div className="text-slate-700 text-sm font-bold flex items-center gap-2">
-                   مشاوره و فروش:
+                   مشاوره، فروش و پشتیبانی:
                    <a href={SALES_PHONE_TEL} className="font-mono text-[#003F86] text-base hover:underline" dir="ltr">{SALES_PHONE_DISPLAY}</a>
+                 </div>
+                 <div className="text-slate-700 text-sm font-bold flex items-center gap-2">
+                   {OFFICE_PHONE_LABEL}:
+                   <a href={OFFICE_PHONE_TEL} className="font-mono text-[#003F86] text-base hover:underline" dir="ltr">{OFFICE_PHONE_DISPLAY}</a>
                  </div>
               </div>
 

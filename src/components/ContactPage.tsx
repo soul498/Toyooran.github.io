@@ -7,7 +7,7 @@ import {
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
-import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
+import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { LocationDetailPane } from './LocationDetailPane';
 
 interface ContactPageProps {
@@ -63,9 +63,13 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-300 block text-xs mb-1">تلفن فروش، استعلام و پشتیبانی:</span>
+                      <span className="text-slate-300 block text-xs mb-1">مشاوره، فروش و پشتیبانی:</span>
                       <a href={SALES_PHONE_TEL} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
                         {SALES_PHONE_DISPLAY}
+                      </a>
+                      <span className="text-slate-300 block text-xs mt-3 mb-1">{OFFICE_PHONE_LABEL}:</span>
+                      <a href={OFFICE_PHONE_TEL} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
+                        {OFFICE_PHONE_DISPLAY}
                       </a>
                     </div>
                   </div>
