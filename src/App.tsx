@@ -33,6 +33,7 @@ import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
 import { PageBanner } from './components/PageBanner';
 import { ShopHero } from './components/ShopHero';
+import { ProductSpotlightEtude } from './components/spotlight/ProductSpotlight';
 import { pageHeroFor } from './data/pageHeroes';
 const CustomCursor = lazy(() => import('./components/CustomCursor').then((m) => ({ default: m.CustomCursor })));
 import { NotFoundPage } from './components/NotFoundPage';
@@ -243,6 +244,7 @@ const MainAppInner: React.FC = () => {
               onOpenQuote={() => handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور')}
               onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
             >
+              <ProductSpotlightEtude />
               <Suspense fallback={null}>
               <CompactShowcase onNavigate={handleNavigateSection} />
               <AboutContactUnifiedSection />
@@ -251,6 +253,8 @@ const MainAppInner: React.FC = () => {
           } />
           <Route path="/products/:productId" element={<ProductPage />} />
           <Route path="/products" element={
+            <>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12"><ProductSpotlightEtude /></div>
             <ProductCatalogSection
               products={products}
               selectedCategory={selectedCategory}
@@ -258,6 +262,7 @@ const MainAppInner: React.FC = () => {
               onSelectProduct={handleSelectProduct}
               onRequestQuoteForProduct={handleRequestQuoteForProduct}
             />
+            </>
           } />
           <Route path="/services/:serviceId" element={<ServicePage onOpenConsultation={(title) => handleOpenUnifiedConsultation(title, undefined, `مشاوره درباره خدمت: ${title}`)} />} />
           <Route path="/services" element={

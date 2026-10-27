@@ -275,3 +275,17 @@ html {
   .page-hero-cta { transition: none; }
   .page-hero-cta:hover, .page-hero-cta:active { transform: none; }
 }
+
+/* Spotlight études (throwaway branch) */
+.spot-blueprint::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(147,197,253,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(147,197,253,.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+@keyframes spot-ping { 0% { box-shadow: 0 0 0 0 rgba(251,191,36,.55); } 80%,100% { box-shadow: 0 0 0 10px rgba(251,191,36,0); } }
+.spot-ping { animation: spot-ping 2.4s ease-out infinite; }
+@keyframes spot-heat { 0%,100% { opacity: .35; transform: translateX(0); } 50% { opacity: .6; transform: translateX(-6%); } }
+.spot-heat { background: radial-gradient(ellipse at left center, rgba(251,191,36,.35), rgba(251,146,60,.12) 45%, transparent 70%); animation: spot-heat 4s ease-in-out infinite; }
+@keyframes spot-fade { from { opacity: 0; } to { opacity: 1; } }
+.spot-fade { animation: spot-fade .35s ease-out; }
+@media (prefers-reduced-motion: reduce) { .spot-ping, .spot-heat, .spot-fade { animation: none; } }
