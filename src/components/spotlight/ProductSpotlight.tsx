@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Thermometer, Wheat, Phone, ShieldCheck, Wind, Zap, Image as ImageIcon, ChevronLeft } from '../../icons';
+import { Thermometer, Wheat, Phone, ShieldCheck, Wind, Zap, Image as ImageIcon, ChevronLeft, ArrowLeft } from '../../icons';
 
 /**
  * DESIGN ÉTUDES (throwaway branch, not for main): product spotlight for
@@ -373,11 +373,242 @@ const EtudeC: React.FC = () => {
   );
 };
 
+
+/* =====================================================================================
+ * HORIZONTAL-BAND ÉTUDES D/E/F — same frame as the home brand band in Hero.tsx
+ * (rounded-[2.5rem], from-[#001c3d] via-[#002d61] to-[#003F86], border-blue-800,
+ * p-8 sm:p-10, amber CTA px-8 py-4 rounded-2xl, title text-2xl sm:text-3xl lg:text-4xl).
+ * One band per product; the product name is the band's H2.
+ * ===================================================================================== */
+
+type BandData = {
+  spot: Spot;
+  eyebrow: string;
+  sub: string;
+  chips: Spec[];
+  key: { value: string; unit: string };
+  key2?: { value: string; unit: string };
+};
+
+const BANDS: BandData[] = [
+  {
+    spot: FEEDER,
+    eyebrow: 'تولید طیوران صنعت پویا',
+    sub: 'بشقاب دانخوری با لبهٔ پروانه‌ای برای تغذیهٔ جوجه از روز اول، بدون سینی دان',
+    chips: [
+      { label: '', value: 'از روز اول، بدون سینی' },
+      { label: '', value: 'لبهٔ دوبل ضدپاشش' },
+      { label: '', value: 'PP نو گرید بهداشتی' },
+    ],
+    key: { value: 'روز اول', unit: 'تغذیه بدون سینی دان' },
+    key2: { value: 'Virgin PP', unit: 'مقاوم به UV و ضدعفونی' },
+  },
+  {
+    spot: HEATER,
+    eyebrow: 'گرمایش سالن مرغداری',
+    sub: 'جت هیتر ۱۰۰ هزار در سه نسخهٔ گازی، گازوئیلی و دوگانه‌سوز برای گرمایش یکنواخت سالن',
+    chips: [
+      { label: '', value: '۱۰۰٬۰۰۰ کیلوکالری' },
+      { label: '', value: 'هوادهی ۷٬۰۰۰ مترمکعب' },
+      { label: '', value: 'پرتاب تا ۲۰ متر' },
+      { label: '', value: 'گاز / گازوئیل / دوگانه' },
+    ],
+    key: { value: '۱۰۰٬۰۰۰', unit: 'کیلوکالری بر ساعت' },
+    key2: { value: '۷٬۰۰۰', unit: 'مترمکعب هوادهی در ساعت' },
+  },
+];
+
+const BAND_SHELL =
+  'relative w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 shadow-xl';
+
+const BandGlows = () => (
+  <>
+    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/2 pointer-events-none" aria-hidden="true" />
+    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.08)_0%,_transparent_70%)] translate-y-1/2 -translate-x-1/2 pointer-events-none" aria-hidden="true" />
+  </>
+);
+
+/** Small fixed-size product tile (replaces the band's 80×80 icon tile). */
+const ThumbTile: React.FC<{ spot: Spot; size?: string; light?: boolean }> = ({ spot, size = 'w-16 h-16 sm:w-20 sm:h-20', light }) => {
+  const ph = usePlaceholder();
+  return (
+    <div className={`relative ${size} shrink-0 rounded-2xl overflow-hidden border-[1.5px] ${light ? 'border-amber-300 bg-white' : 'border-white/40 bg-white/10'}`}>
+      {ph ? (
+        <div className={`absolute inset-0 flex flex-col items-center justify-center gap-0.5 border border-dashed rounded-2xl ${light ? 'border-amber-400 text-amber-700' : 'border-white/40 text-blue-100'}`}>
+          <ImageIcon className="w-5 h-5 opacity-80" aria-hidden="true" />
+          <span className="text-[9px] font-black leading-tight text-center">جای عکس<br />محصول</span>
+        </div>
+      ) : (
+        <img
+          src={spot.image}
+          alt={spot.imageAlt}
+          loading="lazy"
+          decoding="async"
+          width={160}
+          height={160}
+          className={`absolute inset-0 h-full w-full ${spot.key === 'heater' ? 'object-contain bg-white p-1' : 'object-cover'}`}
+        />
+      )}
+    </div>
+  );
+};
+
+const BandCtas: React.FC<{ spot: Spot; light?: boolean; compact?: boolean; stack?: boolean }> = ({ spot, light, compact, stack }) => (
+  <div className={`flex flex-col sm:flex-row ${compact ? '' : stack ? 'lg:flex-col' : ''} items-stretch sm:items-center gap-1 sm:gap-3 w-full lg:w-auto shrink-0`}>
+    <Link
+      to="/contact"
+      className={`group/cta flex-1 lg:flex-none bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black ${compact ? 'px-4 py-3' : 'px-5 sm:px-8 py-3.5 sm:py-4'} rounded-2xl inline-flex items-center justify-center gap-2 sm:gap-3 shadow-[0_10px_30px_rgba(251,191,36,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
+    >
+      <span className="text-[13px] sm:text-sm whitespace-nowrap">{CONSULT}</span>
+      <span className="hidden sm:flex w-8 h-8 rounded-full bg-slate-950/10 items-center justify-center group-hover/cta:-translate-x-1 transition-transform">
+        <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+      </span>
+    </Link>
+    <Link
+      to={spot.specsHref}
+      className={`inline-flex items-center justify-center rounded-2xl ${compact ? 'px-4 py-3' : 'px-4 sm:px-6 py-3.5 sm:py-4'} max-sm:py-2 max-sm:min-h-[40px] max-sm:border-transparent max-sm:bg-transparent max-sm:underline max-sm:underline-offset-4 text-[13px] sm:text-sm font-bold whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 ${
+        light ? 'border border-[#003F86]/25 text-[#003F86] bg-white hover:border-[#003F86]' : 'border border-white/25 text-white bg-white/5 hover:bg-white/15'
+      }`}
+    >
+      مشاهده مشخصات
+    </Link>
+  </div>
+);
+
+const Chip: React.FC<{ c: Spec; light?: boolean; i?: number }> = ({ c, light, i = 0 }) => (
+  <li
+    className={`${i >= 2 ? 'hidden sm:block' : ''} shrink-0 rounded-full px-3 py-1 text-[11px] sm:text-xs font-bold border whitespace-nowrap ${
+      c.todo
+        ? 'border-dashed border-amber-400/80 text-amber-300 bg-amber-400/5'
+        : light
+          ? 'border-amber-300 bg-white text-[#003F86]'
+          : 'border-white/20 bg-white/10 text-blue-50'
+    }`}
+  >
+    {c.value}
+  </li>
+);
+
+/* ---------- Étude D: the reference band 1:1, product tile instead of icon, chips instead of subtitle ---------- */
+const BandD: React.FC<{ b: BandData }> = ({ b }) => (
+  <section className={`${BAND_SHELL} p-5 sm:p-8 lg:p-10`}>
+    <BandGlows />
+    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-8">
+      <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+        <ThumbTile spot={b.spot} />
+        <div className="min-w-0">
+          <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 mb-1 sm:mb-1.5 block">{b.eyebrow}</span>
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-black text-white mb-2">{b.spot.name}</h2>
+          <ul className="flex flex-wrap gap-1.5 sm:gap-2" aria-label={`مشخصات ${b.spot.name}`}>
+            {b.chips.map((c, i) => <Chip key={c.value} c={c} i={i} />)}
+          </ul>
+        </div>
+      </div>
+      <BandCtas spot={b.spot} />
+    </div>
+  </section>
+);
+
+const EtudeD: React.FC = () => (
+  <div className="space-y-4 lg:space-y-6">
+    {BANDS.map((b) => <BandD key={b.spot.key} b={b} />)}
+  </div>
+);
+
+/* ---------- Étude E: photo panel bleeding off the start edge + key-number highlight ---------- */
+const BandE: React.FC<{ b: BandData }> = ({ b }) => {
+  const ph = usePlaceholder();
+  const heater = b.spot.key === 'heater';
+  return (
+    <section className={`${BAND_SHELL} group`}>
+      <BandGlows />
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-stretch">
+        {/* photo panel: top strip on mobile, diagonal start-edge panel on desktop */}
+        <div className="spot-bleed relative h-24 sm:h-36 lg:h-auto lg:w-[24%] shrink-0 overflow-hidden bg-white">
+          {ph ? (
+            <div className="absolute inset-2 lg:inset-3 lg:left-10 flex flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-slate-500">
+              <ImageIcon className="w-6 h-6" aria-hidden="true" />
+              <span className="text-xs font-black">جای عکس محصول</span>
+            </div>
+          ) : (
+            <img
+              src={b.spot.image}
+              alt={b.spot.imageAlt}
+              loading="lazy"
+              decoding="async"
+              width={600}
+              height={400}
+              className={`absolute inset-0 h-full w-full ${heater ? 'object-contain p-3 lg:pl-12' : 'object-cover'} transition-transform duration-700 group-hover:scale-[1.04]`}
+            />
+          )}
+        </div>
+        <div className="flex-1 min-w-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 sm:gap-5 lg:gap-8 p-5 sm:p-8 lg:py-8 lg:pr-6 lg:pl-10">
+          <div className="min-w-0">
+            <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 mb-1 sm:mb-1.5 block">{b.eyebrow}</span>
+            <h2 className="text-xl sm:text-3xl font-black text-white mb-1.5 sm:mb-2 lg:whitespace-nowrap">{b.spot.name}</h2>
+            <p className="hidden sm:block text-sm text-blue-100 max-w-md leading-relaxed font-medium line-clamp-2">{b.sub}</p>
+          </div>
+          <dl className="flex items-stretch gap-4 sm:gap-6 lg:border-r lg:border-white/15 lg:pr-8">
+            {[b.key, b.key2].filter(Boolean).map((k, i) => (
+              <div key={i} className={i ? 'border-r border-white/15 pr-4 sm:pr-6 lg:hidden 2xl:block' : ''}>
+                <dd className="text-2xl sm:text-3xl lg:text-[2rem] font-black text-amber-400 leading-none whitespace-nowrap" dir={/[A-Za-z]/.test(k!.value) ? 'ltr' : undefined}>{k!.value}</dd>
+                <dt className="mt-1.5 text-[11px] sm:text-xs font-bold text-blue-100/80 whitespace-nowrap">{k!.unit}</dt>
+              </div>
+            ))}
+          </dl>
+          <BandCtas spot={b.spot} stack />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const EtudeE: React.FC = () => (
+  <div className="space-y-4 lg:space-y-6">
+    {BANDS.map((b) => <BandE key={b.spot.key} b={b} />)}
+  </div>
+);
+
+/* ---------- Étude F: two half-width bands side by side — feeder light/amber, heater dark ---------- */
+const BandF: React.FC<{ b: BandData; light?: boolean }> = ({ b, light }) => (
+  <section
+    className={`relative w-full rounded-[2.5rem] overflow-hidden shadow-xl p-5 sm:p-7 ${
+      light ? 'bg-gradient-to-l from-amber-50 via-white to-amber-100/70 border border-amber-200' : 'bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800'
+    }`}
+  >
+    {!light && <BandGlows />}
+    {light && <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[radial-gradient(circle,_rgba(245,158,11,0.18)_0%,_transparent_70%)] pointer-events-none" aria-hidden="true" />}
+    <div className="relative z-10 flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <ThumbTile spot={b.spot} light={light} size="w-16 h-16" />
+        <div className="min-w-0">
+          <span className={`text-[10px] sm:text-[11px] font-bold mb-1 block ${light ? 'text-amber-700' : 'text-amber-300'}`}>{b.eyebrow}</span>
+          <h2 className={`text-xl sm:text-2xl lg:text-[1.75rem] font-black leading-tight ${light ? 'text-slate-900' : 'text-white'}`}>{b.spot.name}</h2>
+          <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={`مشخصات ${b.spot.name}`}>
+            {b.chips.slice(0, 3).map((c, i) => <Chip key={c.value} c={c} light={light} i={i} />)}
+          </ul>
+        </div>
+      </div>
+      <BandCtas spot={b.spot} light={light} compact />
+    </div>
+  </section>
+);
+
+const EtudeF: React.FC = () => (
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+    <BandF b={BANDS[0]} light />
+    <BandF b={BANDS[1]} />
+  </div>
+);
+
 /** Renders the étude chosen by #etude=A|B|C (nothing otherwise). */
 export const ProductSpotlightEtude: React.FC = () => {
   const v = typeof window !== 'undefined' ? new URLSearchParams(window.location.hash.slice(1)).get('etude') : null;
   if (v === 'A') return <EtudeA />;
   if (v === 'B') return <EtudeB />;
   if (v === 'C') return <EtudeC />;
+  if (v === 'D') return <EtudeD />;
+  if (v === 'E') return <EtudeE />;
+  if (v === 'F') return <EtudeF />;
   return null;
 };

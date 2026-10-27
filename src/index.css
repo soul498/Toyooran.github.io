@@ -289,3 +289,6 @@ html {
 @keyframes spot-fade { from { opacity: 0; } to { opacity: 1; } }
 .spot-fade { animation: spot-fade .35s ease-out; }
 @media (prefers-reduced-motion: reduce) { .spot-ping, .spot-heat, .spot-fade { animation: none; } }
+.spot-chips { scrollbar-width: none; }
+.spot-chips::-webkit-scrollbar { display: none; }
+@media (min-width: 1024px) { .spot-bleed { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); clip-path: polygon(0 0, 100% 0, 100% 100%, 18% 100%); } }
