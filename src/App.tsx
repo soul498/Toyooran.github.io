@@ -365,6 +365,7 @@ const MainAppInner: React.FC = () => {
         onSelectProduct={handleSelectProduct}
         onSelectProject={setSelectedProject}
         onSelectArticle={setSelectedArticle}
+        articles={publicArticles}
       />
       </Suspense>
       ) : null}

@@ -8,7 +8,7 @@ export const AboutPage: React.FC = () => {
   return (
     <div className="bg-blueprint-light min-h-screen relative">
       <SEO 
-        title="درباره طیوران صنعت پویا"
+        title="درباره طیوران صنعت پویا | ۵۰ سال سابقه در صنعت دام و طیور"
         description="مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان."
       />
 
