@@ -1,5 +1,6 @@
 import { getAdminState, getAdminStateUpdatedAt } from "./auth";
-import { ARTICLES, CATEGORIES_DATA, COMPANY_INFO, PRODUCTS, PROJECTS, SERVICES } from "../src/data/mockData";
+import { SEED_ARTICLES } from "../src/data/seedArticles";
+import { CATEGORIES_DATA, COMPANY_INFO, PRODUCTS, PROJECTS, SERVICES } from "../src/data/mockData";
 import type { SeoCatalog } from "../src/seo/resolveSeo";
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../src/types";
 import { isPublicArticle, sortArticlesNewestFirst } from "../src/seo/articleMeta";
@@ -40,7 +41,7 @@ export function loadPublicArticles(): Article[] {
   } catch {
     stored = null;
   }
-  const source = stored ?? ARTICLES;
+  const source = stored ?? SEED_ARTICLES;
   return sortArticlesNewestFirst(source.filter((item) => item?.id && item?.title && isPublicArticle(item))).map((item) => withProductPhotos(withContentCorrections(item)));
 }
 

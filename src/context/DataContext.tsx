@@ -29,7 +29,6 @@ import {
   INITIAL_CONSULTATIONS,
   INITIAL_MEDIA
 } from '../data/mockData';
-import { CRM_PERSONAS } from '../crm/data/personas';
 import { migrateCustomerRecord } from '../crm/utils/crmRecords';
 import { withProductPhotos } from '../data/productPhotos';
 
@@ -180,7 +179,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [consultationRequests, setConsultationRequests] = useState<ConsultationRequestItem[]>(INITIAL_CONSULTATIONS);
 
-  const [customers, setCustomers] = useState<CustomerContact[]>(CRM_PERSONAS);
+  const [customers, setCustomers] = useState<CustomerContact[]>([]);
   const [mediaLibrary, setMediaLibrary] = useState<MediaItem[]>(INITIAL_MEDIA);
 
   const addCustomer = (customer: CustomerContact) => setCustomers(prev => [customer, ...prev]);
@@ -245,7 +244,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     articlesHydrated.current = false;
     const keys = ['products', 'projects', 'services', 'articles', 'categories', 'companyInfo', 'heroCms', 'aiConfig', 'quotes', 'consultations', 'customers', 'media'];
     Promise.all(keys.map(async key => [key, await fetch(`/api/admin/state/${key}`, { credentials: 'include' }).then(response => response.ok ? response.json() : { value: null })] as const))
-      .then(entries => {
+      .then(async entries => {
         const state = Object.fromEntries(entries);
         if (Array.isArray(state.products.value) && state.products.value.length) {
           const stored = state.products.value as Product[];
@@ -271,6 +270,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (Array.isArray(state.customers.value) && state.customers.value.length) {
           setCustomers(state.customers.value.map((item: CustomerContact) => migrateCustomerRecord(item)));
         } else {
+          // Admin-only lazy chunk: CRM personas never ship in the public bundle.
+          const { CRM_PERSONAS } = await import('../crm/data/personas');
           setCustomers(CRM_PERSONAS);
         }
         if (state.media.value) setMediaLibrary(state.media.value);
@@ -471,7 +472,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     import("../data/productsData").then((mod) => setProducts(mod.PRODUCTS)).then(() => withHiddenProducts());
     setProjects(PROJECTS);
     setServices(SERVICES);
-    setArticles(ARTICLES.map(withProductPhotos));
+    void import("../data/seedArticles").then(({ SEED_ARTICLES }) => setArticles(SEED_ARTICLES.map(withProductPhotos)));
     setCategories(CATEGORIES_DATA as CategoryItem[]);
     setCompanyInfo(COMPANY_INFO as CompanyInfo);
     setHeroCms(DEFAULT_HERO_CMS);

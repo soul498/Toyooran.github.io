@@ -40,7 +40,7 @@ Google / Referral → بررسی سایت → پروژه‌ها → محصولا
   },
   {
     id: "persona-farm-manager",
-    fullName: "مرغدار فعال / مدیر مرغداری",
+    fullName: "مالک یا مدیر مرغداری فعال",
     phoneNumber: "",
     companyName: "پرسونا ۰۲",
     role: "مالک یا مدیر یک مرغداری فعال که قصد خرید، تعویض یا ارتقای تجهیزات را دارد",
@@ -49,7 +49,7 @@ Google / Referral → بررسی سایت → پروژه‌ها → محصولا
     pipelineStage: "directory",
     followUpStatus: "none",
     followUpPriority: "high",
-    tags: ["پرسونا", "مرغدار فعال", "مدیر مرغداری"],
+    tags: ["پرسونا", "مالک یا مدیر مرغداری فعال"],
     notes: `نیازهای اصلی:
 - حل یک مشکل مشخص در سالن
 - پیدا کردن تجهیز مناسب ظرفیت خود
