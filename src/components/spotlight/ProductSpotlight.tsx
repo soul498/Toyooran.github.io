@@ -22,7 +22,6 @@ type Spot = {
   photo: ProductPhoto;
   specs: Spec[];
   keyFigure: { value: string; unit: string };
-  keyFigure2: { value: string; unit: string };
   callouts: string[];
   specsHref: string;
   icon: React.ElementType;
@@ -42,7 +41,6 @@ const SPOTS: Spot[] = [
       { label: 'مقاومت', value: 'اشعهٔ UV، شستشو و ضدعفونی‌کننده' },
     ],
     keyFigure: { value: 'روز اول', unit: 'تغذیه بدون سینی دان' },
-    keyFigure2: { value: '۳ تا ۵٪', unit: 'کاهش هدررفت دان' },
     callouts: [
       'لبهٔ پروانه‌ای کوتاه برای جوجهٔ یک‌روزه',
       'کاهش ۳ تا ۵ درصدی هدررفت دان',
@@ -64,7 +62,6 @@ const SPOTS: Spot[] = [
       { label: 'انتخاب ظرفیت', value: 'با مشاورهٔ فنی رایگان' },
     ],
     keyFigure: { value: '۱۰۰٬۰۰۰', unit: 'کیلوکالری بر ساعت' },
-    keyFigure2: { value: 'گاز یا گازوئیل', unit: 'سوخت دستگاه' },
     callouts: [
       'بدنهٔ استنلس استیل',
       'نصب آویز یا پرتابل',
@@ -130,8 +127,7 @@ const GlassTint = () => (
 );
 
 /* ------------------------------ Home: horizontal bands ------------------------------ */
-/* Home bands: name + secondary stat only (description line and first stat removed, user request
- * 2026-10-28); primary CTA «مشاهده مشخصات», small outline «درخواست مشاورهٔ رایگان».
+/* Home bands: name only (description line and both stats removed, user requests 2026-10-28); primary CTA «مشاهده مشخصات», small outline «درخواست مشاورهٔ رایگان».
  * The heater band is a frosted-glass box (band-glass in index.css) with dark text; the feeder band keeps the navy fill.
  * Both bands: primary CTA centred in the text area, smaller consult link stacked under it (user request 2026-10-28). */
 
@@ -161,7 +157,6 @@ const BandCtas: React.FC<{ spot: Spot; clear: boolean }> = ({ spot, clear }) => 
 
 const ProductBand: React.FC<{ spot: Spot }> = ({ spot }) => {
   const clear = spot.key === 'heater';
-  const k = spot.keyFigure2;
   return (
     <section
       aria-labelledby={`spot-band-${spot.key}`}
@@ -182,20 +177,6 @@ const ProductBand: React.FC<{ spot: Spot }> = ({ spot }) => {
             </h2>
           </div>
           <BandCtas spot={spot} clear={clear} />
-          <dl className={`order-2 lg:order-3 flex items-stretch justify-center text-center lg:hidden 2xl:flex 2xl:justify-self-end 2xl:text-start 2xl:border-r 2xl:pr-8 ${clear ? '2xl:border-[#003F86]/15' : '2xl:border-white/15'}`}>
-            <div>
-              <dt className="sr-only">{k.unit}</dt>
-              <dd
-                className={`text-2xl sm:text-3xl lg:text-[2rem] font-black leading-none whitespace-nowrap ${clear ? 'text-amber-700' : 'text-amber-400'}`}
-                dir={/[A-Za-z]/.test(k.value) ? 'ltr' : undefined}
-              >
-                {k.value}
-              </dd>
-              <dd className={`mt-1.5 text-[11px] sm:text-xs font-bold whitespace-nowrap ${clear ? 'text-slate-600' : 'text-blue-100/80'}`} aria-hidden="true">
-                {k.unit}
-              </dd>
-            </div>
-          </dl>
         </div>
       </div>
     </section>
