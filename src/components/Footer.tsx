@@ -193,9 +193,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 </div>
                 <div className="space-y-1">
                   <span className="block text-[10px] text-slate-300 font-bold">مشاوره، فروش و پشتیبانی</span>
-                  <a href={SALES_PHONE_TEL} className="text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{SALES_PHONE_DISPLAY}</a>
+                  <a href={SALES_PHONE_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{SALES_PHONE_DISPLAY}</a>
                   <span className="block text-[10px] text-slate-300 font-bold pt-1">{OFFICE_PHONE_LABEL}</span>
-                  <a href={OFFICE_PHONE_TEL} className="block text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{OFFICE_PHONE_DISPLAY}</a>
+                  <a href={OFFICE_PHONE_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{OFFICE_PHONE_DISPLAY}</a>
                 </div>
               </div>
               
