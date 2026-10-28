@@ -5,7 +5,6 @@ import {
   User,
   Package,
   Wrench,
-  Building,
   BookOpen,
   Compass,
   Menu,
@@ -48,12 +47,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [mobileMenuOpen]);
 
   // Nav items ordered right to left as requested:
-  // خانه, خدمات, محصولات, پروژه‌ها, تحقیق و توسعه, مجله, درباره شرکت, تماس
+  // خانه, خدمات, محصولات, تحقیق و توسعه, مجله, درباره شرکت, تماس
   const navItems: { id: PageSection; path: string; label: string; icon: React.ElementType }[] = [
     { id: 'home', path: '/', label: 'خانه', icon: Home },
     { id: 'services', path: '/services', label: 'خدمات', icon: Wrench },
     { id: 'products', path: '/products', label: 'محصولات', icon: Package },
-    { id: 'projects', path: '/projects', label: 'پروژه‌ها', icon: Building },
     { id: 'rnd', path: '/rnd', label: 'تحقیق و توسعه', icon: FlaskConical },
     { id: 'about', path: '/about', label: 'درباره شرکت', icon: User },
     { id: 'contact', path: '/contact', label: 'تماس', icon: Compass },

@@ -122,46 +122,76 @@ const BandGlows = () => (
 );
 
 /* ------------------------------ Home: horizontal bands ------------------------------ */
+/* Home bands: name + secondary stat only (description line and first stat removed, user request
+ * 2026-10-28); primary CTA «مشاهده مشخصات», small outline «درخواست مشاورهٔ رایگان».
+ * The heater band is a clear (transparent) box with dark text; the feeder band keeps the navy fill. */
 
-const ProductBand: React.FC<{ spot: Spot }> = ({ spot }) => (
-  <section
-    aria-labelledby={`spot-band-${spot.key}`}
-    className="group relative w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 shadow-xl"
-  >
-    <BandGlows />
-    <div className="relative z-10 flex flex-col lg:flex-row lg:items-stretch">
-      <div className="spot-bleed relative h-36 lg:h-auto lg:w-[24%] shrink-0 overflow-hidden bg-white">
-        <SpotPhoto photo={spot.photo} sizes="(min-width: 1024px) 300px, 100vw" className="transition-transform duration-700 group-hover:scale-[1.04]" />
-      </div>
-      <div className="flex-1 min-w-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 sm:gap-5 lg:gap-8 p-5 sm:p-8 lg:py-8 lg:pr-6 lg:pl-10">
-        <div className="min-w-0">
-          <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 mb-1 sm:mb-1.5 block">{spot.eyebrow}</span>
-          <h2 id={`spot-band-${spot.key}`} className="text-xl sm:text-3xl font-black text-white mb-1.5 sm:mb-2 lg:whitespace-nowrap">
-            {spot.name}
-          </h2>
-          <p className="hidden sm:block text-sm text-blue-100 max-w-md leading-relaxed font-medium line-clamp-2">{spot.sub}</p>
+const BandCtas: React.FC<{ spot: Spot; clear: boolean }> = ({ spot, clear }) => (
+  <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center gap-2 sm:gap-3 w-full lg:w-auto shrink-0">
+    <Link
+      to={spot.specsHref}
+      className={`group/cta bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-5 sm:px-8 py-3.5 sm:py-4 rounded-2xl inline-flex items-center justify-center gap-2 sm:gap-3 shadow-[0_10px_30px_rgba(251,191,36,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${clear ? 'focus-visible:outline-[#003F86]' : 'focus-visible:outline-white'}`}
+    >
+      <span className="text-[13px] sm:text-sm whitespace-nowrap">مشاهده مشخصات</span>
+      <span className="hidden sm:flex w-8 h-8 rounded-full bg-slate-950/10 items-center justify-center transition-transform group-hover/cta:-translate-x-1">
+        <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+      </span>
+    </Link>
+    <Link
+      to="/contact"
+      className={`self-center sm:self-auto lg:self-center inline-flex min-h-[40px] items-center justify-center rounded-xl border px-4 py-2 text-xs font-bold whitespace-nowrap transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+        clear
+          ? 'border-slate-300 text-[#003F86] hover:bg-slate-100 focus-visible:outline-[#003F86]'
+          : 'border-white/30 text-white hover:bg-white/10 focus-visible:outline-amber-400'
+      }`}
+    >
+      {CONSULT}
+    </Link>
+  </div>
+);
+
+const ProductBand: React.FC<{ spot: Spot }> = ({ spot }) => {
+  const clear = spot.key === 'heater';
+  const k = spot.keyFigure2;
+  return (
+    <section
+      aria-labelledby={`spot-band-${spot.key}`}
+      className={`group relative w-full rounded-[2.5rem] overflow-hidden ${
+        clear ? 'bg-transparent border border-slate-200' : 'bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 shadow-xl'
+      }`}
+    >
+      {!clear && <BandGlows />}
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-stretch">
+        <div className="spot-bleed relative h-36 lg:h-auto lg:w-[24%] shrink-0 overflow-hidden bg-white">
+          <SpotPhoto photo={spot.photo} sizes="(min-width: 1024px) 300px, 100vw" className="transition-transform duration-700 group-hover:scale-[1.04]" />
         </div>
-        <dl className="flex items-stretch gap-4 sm:gap-6 lg:border-r lg:border-white/15 lg:pr-8">
-          {[spot.keyFigure, spot.keyFigure2].map((k, i) => (
-            <div key={k.unit} className={i ? 'border-r border-white/15 pr-4 sm:pr-6 lg:hidden 2xl:block' : ''}>
+        <div className="flex-1 min-w-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] 2xl:grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 sm:gap-5 lg:gap-8 p-5 sm:p-8 lg:py-8 lg:pr-6 lg:pl-10">
+          <div className="min-w-0">
+            <span className={`text-[10px] sm:text-[11px] font-bold mb-1 sm:mb-1.5 block ${clear ? 'text-amber-700' : 'text-amber-300'}`}>{spot.eyebrow}</span>
+            <h2 id={`spot-band-${spot.key}`} className={`text-xl sm:text-3xl font-black lg:whitespace-nowrap ${clear ? 'text-[#003F86]' : 'text-white'}`}>
+              {spot.name}
+            </h2>
+          </div>
+          <dl className={`flex items-stretch lg:hidden 2xl:flex 2xl:border-r 2xl:pr-8 ${clear ? '2xl:border-slate-200' : '2xl:border-white/15'}`}>
+            <div>
               <dt className="sr-only">{k.unit}</dt>
               <dd
-                className="text-2xl sm:text-3xl lg:text-[2rem] font-black text-amber-400 leading-none whitespace-nowrap"
+                className={`text-2xl sm:text-3xl lg:text-[2rem] font-black leading-none whitespace-nowrap ${clear ? 'text-amber-700' : 'text-amber-400'}`}
                 dir={/[A-Za-z]/.test(k.value) ? 'ltr' : undefined}
               >
                 {k.value}
               </dd>
-              <dd className="mt-1.5 text-[11px] sm:text-xs font-bold text-blue-100/80 whitespace-nowrap" aria-hidden="true">
+              <dd className={`mt-1.5 text-[11px] sm:text-xs font-bold whitespace-nowrap ${clear ? 'text-slate-600' : 'text-blue-100/80'}`} aria-hidden="true">
                 {k.unit}
               </dd>
             </div>
-          ))}
-        </dl>
-        <SpotCtas spot={spot} stackOnDesktop />
+          </dl>
+          <BandCtas spot={spot} clear={clear} />
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export const HomeProductBands: React.FC = () => (
   <div className="space-y-4 lg:space-y-6">

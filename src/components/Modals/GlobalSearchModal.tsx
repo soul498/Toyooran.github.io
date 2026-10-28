@@ -70,7 +70,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="جستجوی نام تجهیزات، کد قطعه (مثلاً: ۱۴۰ یا ۴۲۰)، پروژه یا مقاله فنی..."
+            placeholder="جستجوی نام تجهیزات، کد قطعه (مثلاً: ۱۴۰ یا ۴۲۰) یا مقاله فنی..."
             className="w-full bg-transparent border-none text-sm focus:outline-none text-slate-900 placeholder:text-slate-400 font-medium"
           />
           {query && (
