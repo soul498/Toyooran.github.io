@@ -17,7 +17,7 @@ const photo = (name: string, alt: string): ProductPhoto => ({
 
 export const FEEDER_PHOTO = photo('feeder-pouya-trough', 'دانخوری پروانه‌ای پویا، نمای نزدیک کاسه‌ها و دان');
 export const FEEDER_HALL_PHOTO = photo('feeder-pouya-hall-installation', 'نصب دانخوری پروانه‌ای پویا در سالن مرغداری');
-export const HEATER_PHOTO = photo('jet-heater-imachine', 'جت هیتر IMACHINE، نمای کامل');
+export const HEATER_PHOTO = photo('jet-heater-imachine', 'جت هیتر، نمای کامل');
 
 /** Old feeder photo of «introduction-to-pouya-butterfly-feeder» (cover + inline). */
 const OLD_FEEDER_RE = /^\/images\/article_feeder_[^/]*$/i;

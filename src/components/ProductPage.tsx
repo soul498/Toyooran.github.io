@@ -1,31 +1,42 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ArrowRight, PhoneCall, Sparkles, Layers, Package, Zap, Settings } from '../icons';
+import { PhoneCall, Sparkles, Layers, Zap, Settings } from '../icons';
 import { LazyImage } from './LazyImage';
 import { NotFoundPage } from './NotFoundPage';
 import { ProductCatalogSection } from './ProductCatalogSection';
 import { RichBlocks } from './RichBlocks';
 import { findProduct, publicProductPath } from '../seo/resolveSeo';
 import { relatedInCategory } from '../seo/internalLinks';
-import { ProductCategory } from '../types';
+import { Product, ProductCategory } from '../types';
+import { ProductsSpotlightPanel } from './spotlight/ProductSpotlight';
 
 import { CATALOG_CATEGORY_IDS as CATEGORY_IDS } from '../lib/catalogPath';
 
-export const ProductPage: React.FC = () => {
+/**
+ * One route (/products/:productId?) serves the hub, every category and every product, so switching
+ * category keeps the same catalog instance: no lazy-chunk fallback flash, no remount of the chips.
+ */
+export const ProductPage: React.FC<{ onRequestQuoteForProduct?: (product: Product) => void }> = ({ onRequestQuoteForProduct }) => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { products, articles, catalogReady } = useData();
 
-  if (productId && CATEGORY_IDS.includes(productId as ProductCategory)) {
+  if (!productId || CATEGORY_IDS.includes(productId as ProductCategory)) {
+    const category = (productId as ProductCategory | undefined) || 'all';
     return (
-      <ProductCatalogSection
-        products={products}
-        selectedCategory={productId as ProductCategory}
-        onSelectCategory={(cat) => navigate(cat === 'all' ? '/products' : `/products/${cat}`)}
-        onSelectProduct={(product) => navigate(publicProductPath(product))}
-        onRequestQuoteForProduct={(product) => navigate('/contact')}
-      />
+      <>
+        {category === 'all' ? (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12"><ProductsSpotlightPanel /></div>
+        ) : null}
+        <ProductCatalogSection
+          products={products}
+          selectedCategory={category}
+          onSelectCategory={(cat) => navigate(cat === 'all' ? '/products' : `/products/${cat}`)}
+          onSelectProduct={(product) => navigate(publicProductPath(product))}
+          onRequestQuoteForProduct={onRequestQuoteForProduct || (() => navigate('/contact'))}
+        />
+      </>
     );
   }
 
@@ -99,12 +110,8 @@ export const ProductPage: React.FC = () => {
                     <Layers className="w-4 h-4" />
                     {product.categoryTitle.replace(/ مرغداری$/, '')}
                   </span>
-                  
-                  {/* 2. کد محصول */}
-                  <span className="font-mono text-sm font-black bg-amber-400/20 text-amber-700 px-4 py-2 rounded-xl flex items-center gap-1.5 border border-amber-400/30">
-                    <Package className="w-4 h-4" />
-                    کد: {product.code}
-                  </span>
+
+                  {/* Product code is internal (admin panel only); never shown to visitors. */}
                 </div>
                 
                 {/* 3. نام محصول */}

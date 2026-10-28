@@ -89,7 +89,6 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({
                       <strong className="text-xs font-bold text-slate-900 block line-clamp-1">
                         {p.name}
                       </strong>
-                      <span className="text-[10px] font-mono text-slate-400">کد: {p.code}</span>
                     </div>
 
                     <button

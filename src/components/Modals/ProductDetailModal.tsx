@@ -47,9 +47,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             <span className="bg-[#003F86] text-white text-xs font-bold px-3 py-1 rounded-lg">
               {product.categoryTitle.replace(/ مرغداری$/, '')}
             </span>
-            <span className="font-mono text-xs font-black bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-lg">
-              {product.code}
-            </span>
           </div>
           <button
             onClick={onClose}
@@ -201,7 +198,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         <div className="sticky bottom-0 bg-slate-900 text-white p-4 sm:p-6 rounded-b-3xl flex flex-col sm:flex-row items-center justify-between gap-4 z-20">
           <div>
             <h4 className="font-bold text-amber-400 text-sm">
-              استعلام قیمت رسمی برای {product.code}
+              استعلام قیمت رسمی برای {product.name}
             </h4>
             <p className="text-xs text-slate-300 font-light mt-0.5">
               برای دریافت قیمت روز و استعلام، با طیوران صنعت پویا تماس بگیرید.

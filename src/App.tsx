@@ -11,7 +11,6 @@ const AdminLogin = lazy(() => import('./admin/AdminLogin').then((m) => ({ defaul
 const AdminPanel = lazy(() => import('./admin/AdminPanel').then((m) => ({ default: m.AdminPanel })));
 const CrmApp = lazy(() => import('./crm/CrmApp').then((m) => ({ default: m.CrmApp })));
 const ProductPage = lazy(() => import('./components/ProductPage').then((m) => ({ default: m.ProductPage })));
-const ProductCatalogSection = lazy(() => import('./components/ProductCatalogSection').then((m) => ({ default: m.ProductCatalogSection })));
 const ServicePage = lazy(() => import('./components/ServicePage').then((m) => ({ default: m.ServicePage })));
 const ProjectPage = lazy(() => import('./components/ProjectPage').then((m) => ({ default: m.ProjectPage })));
 const ServicesSection = lazy(() => import('./components/ServicesSection').then((m) => ({ default: m.ServicesSection })));
@@ -34,7 +33,7 @@ import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
 import { PageBanner } from './components/PageBanner';
 import { ShopHero } from './components/ShopHero';
-import { HomeProductBands, ProductsSpotlightPanel } from './components/spotlight/ProductSpotlight';
+import { HomeProductBands } from './components/spotlight/ProductSpotlight';
 import { pageHeroFor } from './data/pageHeroes';
 const CustomCursor = lazy(() => import('./components/CustomCursor').then((m) => ({ default: m.CustomCursor })));
 import { NotFoundPage } from './components/NotFoundPage';
@@ -180,7 +179,7 @@ const MainAppInner: React.FC = () => {
     handleOpenUnifiedConsultation(
       'استعلام قیمت و پیش‌فاکتور',
       product.name,
-      `درخواست استعلام قیمت و مشخصات فنی برای محصول: ${product.name} (کد: ${product.code || product.id})`
+      `درخواست استعلام قیمت و مشخصات فنی برای محصول: ${product.name}`
     );
   };
 
@@ -258,19 +257,8 @@ const MainAppInner: React.FC = () => {
               </Suspense>
             </Hero>
           } />
-          <Route path="/products/:productId" element={<ProductPage />} />
-          <Route path="/products" element={
-            <>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12"><ProductsSpotlightPanel /></div>
-            <ProductCatalogSection
-              products={products}
-              selectedCategory="all"
-              onSelectCategory={handleSelectCategory}
-              onSelectProduct={handleSelectProduct}
-              onRequestQuoteForProduct={handleRequestQuoteForProduct}
-            />
-            </>
-          } />
+          {/* Hub, categories and products share one route so a category switch never remounts the catalog. */}
+          <Route path="/products/:productId?" element={<ProductPage onRequestQuoteForProduct={handleRequestQuoteForProduct} />} />
           <Route path="/services/:serviceId" element={<ServicePage onOpenConsultation={(title) => handleOpenUnifiedConsultation(title, undefined, `مشاوره درباره خدمت: ${title}`)} />} />
           <Route path="/services" element={
             <ServicesSection

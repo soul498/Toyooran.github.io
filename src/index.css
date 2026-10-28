@@ -284,3 +284,11 @@ html {
 }
 @media (min-width: 1024px) { .spot-bleed { clip-path: polygon(0 0, 100% 0, 100% 100%, 18% 100%); } }
 @media (prefers-reduced-motion: reduce) { .group:hover .spot-bleed img { transform: none; } }
+
+/* Catalog category switch: short fade/rise of the new grid (opacity + transform only, no layout). */
+@keyframes catalog-swap-in {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to { opacity: 1; transform: none; }
+}
+.catalog-swap { animation: catalog-swap-in 230ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .catalog-swap { animation: none; } }
