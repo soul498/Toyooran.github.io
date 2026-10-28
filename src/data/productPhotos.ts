@@ -7,17 +7,18 @@ import { withMediaVersion } from '../lib/mediaUrl';
  */
 export type ProductPhoto = { src: string; srcSet: string; alt: string; width: number; height: number };
 
-const photo = (name: string, alt: string): ProductPhoto => ({
-  src: withMediaVersion(`/images/photos/${name}-1600.webp`),
-  srcSet: [800, 1600].map((w) => `${withMediaVersion(`/images/photos/${name}-${w}.webp`)} ${w}w`).join(', '),
+const photo = (name: string, alt: string, large = 1600): ProductPhoto => ({
+  src: withMediaVersion(`/images/photos/${name}-${large}.webp`),
+  srcSet: [800, large].map((w) => `${withMediaVersion(`/images/photos/${name}-${w}.webp`)} ${w}w`).join(', '),
   alt,
-  width: 1600,
-  height: 900,
+  width: large,
+  height: Math.round((large * 9) / 16),
 });
 
 export const FEEDER_PHOTO = photo('feeder-pouya-trough', 'دانخوری پروانه‌ای پویا، نمای نزدیک کاسه‌ها و دان');
 export const FEEDER_HALL_PHOTO = photo('feeder-pouya-hall-installation', 'نصب دانخوری پروانه‌ای پویا در سالن مرغداری');
-export const HEATER_PHOTO = photo('jet-heater-imachine', 'جت هیتر، نمای کامل');
+/** Jet heaters firing in a hall (16:9 centre crop of the approved 1536×1024 source; heaters centred). */
+export const HEATER_PHOTO = photo('jet-heater-v2', 'جت هیتر در حال کار', 1536);
 
 /** Old feeder photo of «introduction-to-pouya-butterfly-feeder» (cover + inline). */
 const OLD_FEEDER_RE = /^\/images\/article_feeder_[^/]*$/i;

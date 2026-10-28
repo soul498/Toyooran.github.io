@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Clock, Calendar, Share2, Tag, Link as LinkIcon, CheckCircle2, Image as ImageIcon } from '../../icons';
+import { ArrowRight, Clock, Calendar, Tag, Link as LinkIcon, Image as ImageIcon } from '../../icons';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { LazyImage } from '../LazyImage';
@@ -232,9 +232,6 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
             >
               <ArrowRight className="w-4 h-4" />
               <span>بازگشت به مجله</span>
-            </button>
-            <button aria-label="اشتراک‌گذاری" className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 p-2.5 rounded-full transition-all shadow-sm">
-              <Share2 className="w-4 h-4" />
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-slate-500 text-sm font-medium mb-4">
