@@ -132,7 +132,7 @@ const CATEGORY_SEO: Record<string, { title: string; h1: string; description: str
       { h2: "محصولات فعلی این دسته" },
       {
         ul: [
-          "**سیستم تهویه کارنو:** پکیج تهویه‌ی تونلی و عرضی سالن مرغداری. هواکش‌های این پکیج ۱۴۰×۱۴۰ سانتی‌متر با بدنه‌ی ورق گالوانیزه، پروانه‌ی استیل و دمپر گریز از مرکز هستند. دمپر وقتی هواکش خاموش است بسته می‌ماند و جلوی ورود هوای بیرون را می‌گیرد.",
+          "**سیستم تهویه تونلی مرغداری:** پکیج تهویه‌ی تونلی و عرضی سالن مرغداری. هواکش‌های این پکیج ۱۴۰×۱۴۰ سانتی‌متر با بدنه‌ی ورق گالوانیزه، پروانه‌ی استیل و دمپر گریز از مرکز هستند. دمپر وقتی هواکش خاموش است بسته می‌ماند و جلوی ورود هوای بیرون را می‌گیرد.",
         ],
       },
       { h2: "اگر دنبال تجهیز خاصی هستید" },
@@ -261,9 +261,14 @@ export function productSeoSlug(product: Product): string {
 export function findProduct(slug: string, source: SeoCatalog | Product[]): Product | undefined {
   const decoded = decodePathname(slug);
   const products = Array.isArray(source) ? source : source.products;
-  return products.find(
+  const exact = products.find(
     (p) => p.id === decoded || p.code === decoded || productSeoSlug(p) === decoded || productSeoSlug(p) === slug
   );
+  if (exact) return exact;
+  // Old name slugs (e.g. after a product was renamed) still end in the stable code: `<old-name>-ts-057`.
+  // Resolve them by that code so the server 301s to the current canonical slug.
+  const m = decoded.toLowerCase().match(/-(ts-\d{3})$/);
+  return m ? products.find((p) => String(p.code || p.id || "").toLowerCase() === m[1]) : undefined;
 }
 
 export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | null {

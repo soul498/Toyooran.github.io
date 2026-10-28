@@ -82,7 +82,11 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   echo "$prod" | grep -q 'Offer\|location:' || true
   redirp="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/TS-001 | awk 'NR==1{print $2}')"
   test "$redirp" = "301" || fail "product code must 301 to slug"
-  heater_enc="/products/%D9%87%DB%8C%D8%AA%D8%B1-%DA%AF%D8%A7%D8%B2%DB%8C-%D8%A7%D9%86%D8%B1%DA%98%DB%8C-%D9%85%D8%AF%D9%84-GH-0625-ts-001"
+  heater_enc="/products/%D9%87%DB%8C%D8%AA%D8%B1-%DA%AF%D8%A7%D8%B2%DB%8C-%D8%AF%D9%88%D8%AF%DA%A9%D8%B4%E2%80%8C%D8%AF%D8%A7%D8%B1-%D9%85%D8%AF%D9%84-GH-0625-ts-001"
+  # Renamed product: the old name slug must 301 to the current one.
+  heater_old="/products/%D9%87%DB%8C%D8%AA%D8%B1-%DA%AF%D8%A7%D8%B2%DB%8C-%D8%A7%D9%86%D8%B1%DA%98%DB%8C-%D9%85%D8%AF%D9%84-GH-0625-ts-001"
+  heater_old_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000${heater_old}" | awk 'NR==1{print $2}')"
+  test "$heater_old_code" = "301" || fail "old product name slug must 301, got ${heater_old_code}"
   heater_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000${heater_enc}" | awk 'NR==1{print $2}')"
   test "$heater_code" = "200" || fail "encoded Persian product slug must be 200, got ${heater_code}"
   heater_html="$(curl_id "http://127.0.0.1:3000${heater_enc}")"
