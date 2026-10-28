@@ -155,7 +155,7 @@ const CATEGORY_SEO: Record<string, { title: string; h1: string; description: str
 };
 
 /** H1 of the /products hub. The company covers the whole livestock & poultry industry, not only poultry halls. */
-export const PRODUCTS_HUB_H1 = "تجهیزات صنعت دام و طیور";
+export const PRODUCTS_HUB_H1 = "هایپرمارکت صنعت دام و طیور";
 
 /**
  * Single source of truth for the catalog H1 (server prerender and client UI must match).
@@ -530,7 +530,7 @@ function productBody(product: Product, catalog?: SeoCatalog): string {
   return `${crumbs}
 <p>${escapeHtml(product.fullDescription || product.shortDescription)}</p>
 ${blocksToHtml(product.details)}
-<p>کد محصول: ${escapeHtml(product.code || product.id)} · دسته: <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>
+<p>دسته: <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>
 ${specs ? `<h2>مشخصات فنی ${escapeHtml(product.name)}</h2><ul>${specs}</ul>` : ""}
 ${advantages ? `<h2>ویژگی‌ها</h2><ul>${advantages}</ul>` : ""}
 ${applications ? `<h2>کاربردها</h2><ul>${applications}</ul>` : ""}

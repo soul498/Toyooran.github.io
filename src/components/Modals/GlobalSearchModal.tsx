@@ -120,9 +120,6 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                         className="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200 hover:border-[#003F86] cursor-pointer flex items-center justify-between transition-colors group"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-[10px] font-mono font-bold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-lg">
-                            {p.code}
-                          </span>
                           <div>
                             <strong className="text-xs font-bold text-slate-900 group-hover:text-[#003F86] block">
                               {p.name}

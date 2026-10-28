@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import {
   Search,
   PhoneCall,
@@ -7,9 +7,8 @@ import {
 } from '../icons';
 import { Link } from 'react-router-dom';
 import { Product, ProductCategory } from '../types';
-import { catalogHeading, categoryIntroBlocks, publicProductPath } from '../seo/resolveSeo';
+import { catalogHeading, publicProductPath } from '../seo/resolveSeo';
 import { useData } from '../context/DataContext';
-import { RichBlocks } from './RichBlocks';
 import { LazyImage } from './LazyImage';
 import { CategoryMarquee } from './CategoryMarquee';
 
@@ -33,7 +32,20 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
   const [localCategory, setLocalCategory] = useState<ProductCategory | 'all'>('all');
   const selectedCategory = propSelectedCategory !== undefined ? propSelectedCategory : localCategory;
   
+  // Category switch: remember where the filter bar sits in the viewport and how tall the grid is,
+  // so the next commit can pin the filter bar in place (content above it changes height between
+  // the hub and a category) and keep the grid from collapsing while the new cards fade in.
+  const filterRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const anchorTop = useRef<number | null>(null);
+  const [reservedHeight, setReservedHeight] = useState<number | undefined>(undefined);
+  const [switchCount, setSwitchCount] = useState(0);
+
   const handleSelectCategory = (cat: ProductCategory | 'all') => {
+    if (cat === selectedCategory) return;
+    if (filterRef.current) anchorTop.current = filterRef.current.getBoundingClientRect().top;
+    if (gridRef.current) setReservedHeight(gridRef.current.offsetHeight);
+    setSwitchCount((n) => n + 1);
     if (propOnSelectCategory) {
       propOnSelectCategory(cat);
     } else {
@@ -48,6 +60,22 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
   );
   
   const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  // Runs before paint: put the filter bar back exactly where the user clicked it.
+  useLayoutEffect(() => {
+    const top = anchorTop.current;
+    anchorTop.current = null;
+    if (top == null || !filterRef.current) return;
+    const delta = filterRef.current.getBoundingClientRect().top - top;
+    if (Math.abs(delta) > 1) window.scrollTo({ top: window.scrollY + delta, behavior: 'instant' as ScrollBehavior });
+  }, [selectedCategory]);
+
+  // Release the reserved grid height once the fade-in is over.
+  useEffect(() => {
+    if (reservedHeight === undefined) return;
+    const t = window.setTimeout(() => setReservedHeight(undefined), 320);
+    return () => window.clearTimeout(t);
+  }, [reservedHeight, selectedCategory]);
 
   useEffect(() => {
     setVisibleCount(typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 6);
@@ -84,24 +112,19 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
   }, [hasMore, visibleCount, filteredProducts.length]);
 
   return (
-    <section id="products" className="min-h-screen relative overflow-hidden z-0">
-      {/* Dynamic Vibrant Mesh Gradient Background to match Magazine */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.15)_0%,_transparent_60%)]" style={{ animationDuration: '8s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(251,191,36,0.15)_0%,_transparent_60%)]" style={{ animationDuration: '10s' }} />
-        <div className="absolute top-[30%] right-[30%] w-[40vw] h-[40vw] bg-[radial-gradient(circle_at_center,_rgba(52,211,153,0.12)_0%,_transparent_60%)]" style={{ animationDuration: '12s' }} />
-      </div>
-
-      {/* Section hero (H1 + catalog download) is rendered by App (ShopHero) above this section. */}
-      {selectedCategory !== 'all' && categoryIntroBlocks(selectedCategory) && (
-      <div className="relative z-10 pt-8 pb-6 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="rounded-3xl border border-slate-200 bg-white/95 shadow-sm px-5 py-5 sm:px-7 sm:py-6 text-right">
-            <RichBlocks blocks={categoryIntroBlocks(selectedCategory)} />
-          </div>
-        </div>
-      </div>
-      )}
+    <section
+      id="products"
+      className="min-h-screen relative overflow-hidden z-0"
+      // Mesh glow as section backgrounds (not absolutely positioned boxes) so a category switch that
+      // changes the section height never registers as a layout shift.
+      style={{
+        backgroundImage:
+          'radial-gradient(circle at 15% 15%, rgba(96,165,250,0.15) 0, transparent 35%), radial-gradient(circle at 85% 90%, rgba(251,191,36,0.15) 0, transparent 35%), radial-gradient(circle at 60% 50%, rgba(52,211,153,0.12) 0, transparent 30%)',
+      }}
+    >
+      {/* Section hero (H1 + catalog download) is rendered by App (ShopHero) above this section.
+          The long category copy (CATEGORY_SEO.intro) stays in #seo-prerender only; visitors asked
+          not to see it above the grid. */}
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-16 lg:pb-24 relative z-10">
 
@@ -110,7 +133,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
           FILTERS & SEARCH
           ========================================================
         */}
-        <div className="w-full flex flex-col justify-start mb-4 relative z-20 pt-8 sm:pt-12 md:pt-16">
+        <div ref={filterRef} className="w-full flex flex-col justify-start mb-4 relative z-20 pt-8 sm:pt-12 md:pt-16">
           <div className="flex items-center justify-center gap-4 mb-10 w-full opacity-60">
             <div className="h-px bg-slate-400 flex-1 max-w-[40px] sm:max-w-[60px]" />
             <h3 className="text-[11px] sm:text-xs font-bold text-slate-500 tracking-widest whitespace-nowrap">
@@ -131,7 +154,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="جستجوی نام محصول یا کد..."
+                placeholder="جستجوی نام محصول..."
                 className="w-full bg-white border border-slate-200 focus:border-[#003F86] rounded-2xl py-3.5 pr-12 pl-4 text-sm font-bold text-slate-800 transition-all outline-none placeholder:text-slate-400 placeholder:font-normal shadow-sm"
               />
               <Search className="w-5 h-5 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
@@ -144,7 +167,12 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
           PRODUCT GRID (DRIBBBLE STYLE / MINIMALIST)
           ========================================================
         */}
-        <div className="mt-2 sm:mt-4">
+        <div
+          ref={gridRef}
+          key={switchCount > 0 ? `swap-${selectedCategory}` : 'initial'}
+          className={`mt-2 sm:mt-4${switchCount > 0 ? ' catalog-swap' : ''}`}
+          style={reservedHeight !== undefined ? { minHeight: reservedHeight } : undefined}
+        >
             {!catalogReady && filteredProducts.length === 0 ? (
               <div className="min-h-[60vh]" aria-busy="true" />
             ) : filteredProducts.length === 0 ? (
@@ -189,10 +217,6 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                       
                     </Link>
                     <div className="px-2 flex-1 flex flex-col">
-                      <div className="text-xs text-slate-400 font-bold mb-2">
-                        کد محصول: {product.code}
-                      </div>
-                      
                       <Link
                         to={publicProductPath(product)}
                         className="text-xl md:text-2xl font-black text-slate-900 mb-8 group-hover:text-[#003F86] transition-colors line-clamp-2"
