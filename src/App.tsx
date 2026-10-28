@@ -5,16 +5,14 @@ import { catalogCategoryFromPath } from './lib/catalogPath';
 const Toaster = lazy(() => import('react-hot-toast').then((m) => ({ default: m.Toaster })));
 import { ScrollProgress } from './components/ScrollProgress';
 import { DataProvider, useData } from './context/DataContext';
-import { PageSection, Product, Project, Service, Article, ProductCategory } from './types';
+import { PageSection, Product, Service, Article, ProductCategory } from './types';
 
 const AdminLogin = lazy(() => import('./admin/AdminLogin').then((m) => ({ default: m.AdminLogin })));
 const AdminPanel = lazy(() => import('./admin/AdminPanel').then((m) => ({ default: m.AdminPanel })));
 const CrmApp = lazy(() => import('./crm/CrmApp').then((m) => ({ default: m.CrmApp })));
 const ProductPage = lazy(() => import('./components/ProductPage').then((m) => ({ default: m.ProductPage })));
 const ServicePage = lazy(() => import('./components/ServicePage').then((m) => ({ default: m.ServicePage })));
-const ProjectPage = lazy(() => import('./components/ProjectPage').then((m) => ({ default: m.ProjectPage })));
 const ServicesSection = lazy(() => import('./components/ServicesSection').then((m) => ({ default: m.ServicesSection })));
-const FeaturedProjectsSection = lazy(() => import('./components/FeaturedProjectsSection').then((m) => ({ default: m.FeaturedProjectsSection })));
 const MagazineFeed = lazy(() => import('./components/magazine/MagazineFeed').then((m) => ({ default: m.MagazineFeed })));
 const MagazineTopic = lazy(() => import('./components/magazine/MagazineTopic').then((m) => ({ default: m.MagazineTopic })));
 const MagazineArticle = lazy(() => import('./components/magazine/MagazineArticle').then((m) => ({ default: m.MagazineArticle })));
@@ -23,7 +21,6 @@ const RnDPage = lazy(() => import('./components/RnDPage').then((m) => ({ default
 const ContactPage = lazy(() => import('./components/ContactPage').then((m) => ({ default: m.ContactPage })));
 const CompactShowcase = lazy(() => import('./components/CompactShowcase').then((m) => ({ default: m.CompactShowcase })));
 const AboutContactUnifiedSection = lazy(() => import('./components/AboutContactUnifiedSection').then((m) => ({ default: m.AboutContactUnifiedSection })));
-const CaseStudyModal = lazy(() => import('./components/Modals/CaseStudyModal').then((m) => ({ default: m.CaseStudyModal })));
 const ServiceDetailModal = lazy(() => import('./components/Modals/ServiceDetailModal').then((m) => ({ default: m.ServiceDetailModal })));
 const GlobalSearchModal = lazy(() => import('./components/Modals/GlobalSearchModal').then((m) => ({ default: m.GlobalSearchModal })));
 const AiEngineerAssistantModal = lazy(() => import('./components/AiEngineerAssistantModal').then((m) => ({ default: m.AiEngineerAssistantModal })));
@@ -91,7 +88,6 @@ const MainAppInner: React.FC = () => {
   const { 
     isAuthenticated, 
     products, 
-    projects, 
     services, 
     articles,
     magazineReady,
@@ -113,7 +109,6 @@ const MainAppInner: React.FC = () => {
     navigate(publicProductPath(product));
   };
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
@@ -128,7 +123,6 @@ const MainAppInner: React.FC = () => {
     if (section === 'home') navigate('/');
     else if (section === 'products') navigate('/products');
     else if (section === 'services') navigate('/services');
-    else if (section === 'projects') navigate('/projects');
     else if (section === 'knowledge' || section === 'magazine' || section === 'magazine-article') navigate('/magazine');
     else if (section === 'about') navigate('/about');
     else if (section === 'rnd') navigate('/rnd');
@@ -139,7 +133,6 @@ const MainAppInner: React.FC = () => {
   const currentSection = location.pathname === '/' ? 'home' : 
                          location.pathname === '/products' ? 'products' : 
                          location.pathname === '/services' ? 'services' : 
-                         location.pathname === '/projects' ? 'projects' : 
                          location.pathname.startsWith('/magazine') ? 'knowledge' : 
                          location.pathname === '/about' ? 'about' : 
                          location.pathname === '/rnd' ? 'rnd' : 
@@ -157,7 +150,6 @@ const MainAppInner: React.FC = () => {
     if (message !== undefined) setConsultationMessage(message);
 
     // Close any open modals
-    setSelectedProject(null);
     setSelectedService(null);
     setIsAiAssistantOpen(false);
 
@@ -268,14 +260,8 @@ const MainAppInner: React.FC = () => {
               onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی')}
             />
           } />
-          <Route path="/projects/:projectId" element={<ProjectPage onOpenConsultation={(title) => handleOpenUnifiedConsultation('سوله و سالن صنعتی', undefined, `مشاوره درباره پروژه: ${title}`)} />} />
-          <Route path="/projects" element={
-            <FeaturedProjectsSection
-              projects={projects}
-              onSelectProject={setSelectedProject}
-              onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی')}
-            />
-          } />
+          {/* No projects are published yet: project URLs redirect to /services (server sends 301). */}
+          <Route path="/projects/*" element={<Navigate to="/services" replace />} />
           <Route path="/magazine" element={
             magazineReady ? (
             <MagazineFeed
@@ -323,17 +309,6 @@ const MainAppInner: React.FC = () => {
       />
 
       {/* Detail Modals (Technical specifications & info) */}
-      {selectedProject && (
-        <Suspense fallback={null}>
-        <CaseStudyModal
-          project={selectedProject}
-          isOpen={!!selectedProject}
-          onClose={() => setSelectedProject(null)}
-          onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی', undefined, `مشاوره درباره پروژه: ${selectedProject.title}`)}
-        />
-        </Suspense>
-      )}
-
       {selectedService && (
         <Suspense fallback={null}>
         <ServiceDetailModal
@@ -351,7 +326,8 @@ const MainAppInner: React.FC = () => {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         onSelectProduct={handleSelectProduct}
-        onSelectProject={setSelectedProject}
+        onSelectProject={() => {}}
+        projects={[]}
         onSelectArticle={setSelectedArticle}
         articles={publicArticles}
       />

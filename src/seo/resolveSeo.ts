@@ -297,9 +297,8 @@ export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | 
     if (parts.length > 2 && catalog.articles.some((article) => article.id === slug && isPublicArticle(article))) return `/magazine/${slug}`;
   }
 
-  if (parts[0] === "projects" && parts.length > 2) {
-    if (catalog.projects.some((p) => p.id === parts[1])) return `/projects/${parts[1]}`;
-  }
+  // No projects are published yet: the index and every project URL go to /services.
+  if (parts[0] === "projects") return "/services";
 
   return null;
 }
@@ -1120,7 +1119,7 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
 export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolean {
   const path = decodePathname(stripQuery(pathname));
   const parts = publicSegments(path);
-  if (["/", "/products", "/services", "/projects", "/magazine", "/about", "/contact", "/rnd"].includes(path)) {
+  if (["/", "/products", "/services", "/magazine", "/about", "/contact", "/rnd"].includes(path)) {
     return true;
   }
   // Only the real app prefixes (/admin, /admin/..., /crm/...), not /administrator or /admin.php.
@@ -1144,7 +1143,6 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
     { loc: "/services", priority: "0.9", lastmod: collectionDay(catalog, "services") },
     { loc: `/services/${FITOUT_SLUG}`, priority: "0.9", lastmod: collectionDay(catalog, "services") },
     { loc: "/products", priority: "0.9", lastmod: collectionDay(catalog, "products") },
-    { loc: "/projects", priority: "0.8", lastmod: collectionDay(catalog, "projects") },
     { loc: "/magazine", priority: "0.6", lastmod: collectionDay(catalog, "articles") },
     { loc: "/about", priority: "0.5", lastmod: collectionDay(catalog, "companyInfo") },
     { loc: "/contact", priority: "0.8", lastmod: collectionDay(catalog, "companyInfo") },

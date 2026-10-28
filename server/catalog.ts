@@ -1,8 +1,8 @@
 import { getAdminState, getAdminStateUpdatedAt } from "./auth";
 import { SEED_ARTICLES } from "../src/data/seedArticles";
-import { CATEGORIES_DATA, COMPANY_INFO, PRODUCTS, PROJECTS, SERVICES } from "../src/data/mockData";
+import { CATEGORIES_DATA, COMPANY_INFO, PRODUCTS, SERVICES } from "../src/data/mockData";
 import type { SeoCatalog } from "../src/seo/resolveSeo";
-import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../src/types";
+import type { Article, CategoryItem, CompanyInfo, Product, Service } from "../src/types";
 import { isPublicArticle, sortArticlesNewestFirst } from "../src/seo/articleMeta";
 import { isPublicProduct } from "../src/data/removedProducts";
 import { withProductPhotos } from "../src/data/productPhotos";
@@ -80,7 +80,8 @@ function buildSeoCatalog(): SeoCatalog {
   return {
     products: mergeSeedById<Product>("products", PRODUCTS).filter((item) => item && isPublicProduct(item)),
     services: overlaySeedOnly<Service>("services", SERVICES).map((item) => withContentCorrections(item)),
-    projects: mergeSeedById<Project>("projects", PROJECTS),
+    // No projects are published yet (user request 2026-10-28): keep admin data, expose none publicly.
+    projects: [],
     articles: loadPublicArticles(),
     categories: asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[]),
     company: asCompany(),

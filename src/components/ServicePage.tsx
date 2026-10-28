@@ -10,13 +10,12 @@ const ALIASES: Record<string, string> = { "poultry-hall-fitout": "srv-turnkey-sh
 
 export const ServicePage: React.FC<{ onOpenConsultation: (title: string) => void }> = ({ onOpenConsultation }) => {
   const { serviceId } = useParams();
-  const { services, projects } = useData();
+  const { services } = useData();
   const resolved = ALIASES[serviceId || ""] || serviceId;
   const service = services.find((s) => s.id === resolved);
   if (!service) return <NotFoundPage />;
   const isFitout = serviceId === "poultry-hall-fitout" || service.id === "srv-turnkey-shed";
   const h1 = isFitout ? "تجهیز و نوسازی سالن مرغداری" : service.title;
-  const relatedProjects = projects.filter((p) => service.sampleProjectIds.includes(p.id));
 
   return (
     <div className="pt-32 pb-24 bg-slate-50 min-h-screen">
@@ -81,28 +80,6 @@ export const ServicePage: React.FC<{ onOpenConsultation: (title: string) => void
           </section>
         ) : null}
 
-        {relatedProjects.length ? (
-          <section className="space-y-3">
-            <h2 className="text-xl font-black text-slate-900">پروژه‌های مرتبط</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {relatedProjects.map((p) => (
-                <Link
-                  key={p.id}
-                  to={`/projects/${p.id}`}
-                  className="bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-[#003F86] transition-colors"
-                >
-                  <div className="h-36 bg-slate-100">
-                    <LazyImage src={p.image} alt={p.title} className="w-full h-full" imgClassName="w-full h-full object-cover" />
-                  </div>
-                  <div className="p-4">
-                    <p className="font-black text-slate-900 text-sm leading-relaxed">{p.title}</p>
-                    <p className="text-xs text-slate-500 mt-2">{p.location} · {p.capacity}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        ) : null}
 
         <div className="flex flex-wrap gap-3">
           <Link to="/contact" onClick={() => onOpenConsultation(service.title)} className="bg-[#003F86] text-white font-bold px-6 py-3 rounded-2xl inline-flex items-center gap-2">

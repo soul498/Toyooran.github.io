@@ -57,10 +57,10 @@ export const SEO = ({ title, description, ogType = "website", robots, canonicalH
 
 export const SeoHead = () => {
   const { pathname } = useLocation();
-  const { products, projects, services, articles, categories, companyInfo, magazineReady, catalogReady } = useData();
+  const { products, services, articles, categories, companyInfo, magazineReady, catalogReady } = useData();
   const catalog: SeoCatalog = {
     products,
-    projects,
+    projects: [], // no projects are published yet
     services,
     articles,
     categories: categories as CategoryItem[],

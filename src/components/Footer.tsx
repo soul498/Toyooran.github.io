@@ -33,7 +33,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
   const navigation = [
     { title: 'صفحه اصلی', path: '/' },
     { title: 'درباره شرکت', path: '/about' },
-    { title: 'پروژه‌ها', path: '/projects' },
     { title: 'محصولات', path: '/products' },
     { title: 'خدمات', path: '/services' },
     { title: 'مجله', path: '/magazine' },
