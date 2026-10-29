@@ -62,6 +62,12 @@ export interface Product {
   hidden?: boolean;
   id: string;
   code: string;
+  /** Optional clean Latin URL slug (e.g. "jet-heater"); without it the slug is `<name>-<code>`. */
+  slug?: string;
+  /** Optional <title> override; defaults to `<name> | طیوران صنعت پویا`. */
+  seoTitle?: string;
+  /** Third-party product: omit brand/manufacturer from the Product JSON-LD. */
+  noBrandSchema?: boolean;
   name: string;
   nameEn?: string;
   category: ProductCategory;

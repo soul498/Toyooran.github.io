@@ -248,6 +248,8 @@ export function publicProductPath(product: Product): string {
 }
 
 export function productSeoSlug(product: Product): string {
+  const custom = String(product.slug || "").trim().toLowerCase();
+  if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(custom)) return custom;
   const code = String(product.code || product.id || "").toLowerCase();
   const name = String(product.name || "")
     .trim()
@@ -839,7 +841,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
       const imageAbs = imagePath.startsWith("http") ? imagePath : `${CANONICAL_ORIGIN}${imagePath}`;
       return okDoc({
         path: publicProductPath(product),
-        title: `${product.name} | طیوران صنعت پویا`,
+        title: product.seoTitle || `${product.name} | طیوران صنعت پویا`,
         description: product.shortDescription || product.fullDescription,
         h1: product.name,
         ogType: "product",
@@ -852,13 +854,15 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
             description: product.shortDescription || product.fullDescription,
             sku: product.code,
             image: imageAbs,
-            brand: { "@type": "Brand", name: company.nameFa },
-            manufacturer: { "@id": `${CANONICAL_ORIGIN}/#org` },
+            ...(product.noBrandSchema
+              ? {}
+              : { brand: { "@type": "Brand", name: company.nameFa }, manufacturer: { "@id": `${CANONICAL_ORIGIN}/#org` } }),
             offers: {
               "@type": "Offer",
               url: canonicalPath(publicProductPath(product)),
               availability: "https://schema.org/InStock",
               businessFunction: "https://schema.org/Sell",
+              ...(product.noBrandSchema ? { seller: { "@id": `${CANONICAL_ORIGIN}/#org` } } : {}),
               priceSpecification: {
                 "@type": "PriceSpecification",
                 description: "قیمت پس از استعلام فنی و ظرفیت سالن اعلام می‌شود؛ قیمت ثابت در اسکیما درج نشده است.",
