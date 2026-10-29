@@ -533,7 +533,15 @@ function productBody(product: Product, catalog?: SeoCatalog): string {
         .join("")
     : "";
   const crumbs = `<nav aria-label="مسیر صفحه"><a href="/">خانه</a> › <a href="/products">محصولات</a> › <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a> › ${escapeHtml(product.name)}</nav>`;
+  // Real <img> for crawlers and an early, high-priority fetch of the hero photo (same URL as the client
+  // LazyImage, so the client render hits the cache). All product photos are 16:9. `hidden` keeps it out
+  // of layout: a laid-out image inside the clipped #seo-prerender produced a 0.47 CLS in Lighthouse.
+  const heroSrc = product.image ? withMediaVersion(product.image) : "";
+  const hero = heroSrc
+    ? `<img src="${escapeHtml(heroSrc)}" alt="${escapeHtml(product.imageAlt || product.name)}" width="800" height="450" loading="eager" fetchpriority="high" decoding="async" hidden />`
+    : "";
   return `${crumbs}
+${hero}
 <p>${escapeHtml(product.fullDescription || product.shortDescription)}</p>
 ${blocksToHtml(product.details)}
 <p>دسته: <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>

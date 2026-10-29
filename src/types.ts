@@ -68,6 +68,8 @@ export interface Product {
   seoTitle?: string;
   /** Third-party product: omit brand/manufacturer from the Product JSON-LD. */
   noBrandSchema?: boolean;
+  /** Optional Persian alt text for the main product image (defaults to the product name). */
+  imageAlt?: string;
   /** Optional display label per related article id (overrides the article title in «راهنمای مرتبط»). */
   articleLinkLabels?: Record<string, string>;
   name: string;

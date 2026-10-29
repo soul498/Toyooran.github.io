@@ -80,7 +80,8 @@ export const ProductPage: React.FC<{ onRequestQuoteForProduct?: (product: Produc
               <div className="relative w-full aspect-square max-w-lg rounded-3xl overflow-hidden shadow-sm bg-white border border-slate-200 mb-6">
                 <LazyImage
                   src={product.image}
-                  alt={product.name}
+                  alt={product.imageAlt || product.name}
+                  priority
                   className="w-full h-full"
                   imgClassName="w-full h-full object-cover mix-blend-multiply"
                 />
