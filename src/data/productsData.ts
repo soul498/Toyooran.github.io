@@ -5,14 +5,14 @@ export const PRODUCTS: Product[] = [
     "id": "ts-115",
     "code": "TS-115",
     "slug": "jet-heater",
-    "seoTitle": "جت هیتر ۱۰۰ هزار کیلوکالری؛ گاز، گازوئیل و دوگانه‌سوز | طیوران صنعت پویا",
+    "seoTitle": "جت هیتر مرغداری ۱۰۰ هزار کیلوکالری؛ گازی، گازوئیلی و دوگانه‌سوز | طیوران صنعت پویا",
     "noBrandSchema": true,
-    "name": "جت هیتر",
+    "name": "جت هیتر مرغداری ۱۰۰ هزار کیلوکالری",
     "nameEn": "",
     "category": "heating",
     "categoryTitle": "سیستم گرمایش مرغداری",
     "isIndustrialMachine": false,
-    "shortDescription": "جت هیتر ۱۰۰ هزار کیلوکالری بر ساعت با سوخت گاز طبیعی، گازوئیل یا دوگانه‌سوز؛ بدنهٔ استنلس استیل نسوز، کنترل شعله با فتوسل و گرمایش تقریبی ۱۰۰۰ تا ۴۰۰۰ مترمکعب.",
+    "shortDescription": "جت هیتر مرغداری ۱۰۰ هزار کیلوکالری بر ساعت با سوخت گاز طبیعی، گازوئیل یا دوگانه‌سوز؛ بدنهٔ استنلس استیل نسوز، کنترل شعله با فتوسل و گرمایش تقریبی ۱۰۰۰ تا ۴۰۰۰ مترمکعب.",
     "fullDescription": "جت هیتر دستگاه گرمایش مستقیم است که با سوزاندن سوخت و دمیدن هوای گرم، فضای سالن را گرم می‌کند. این جت هیتر برای گرمایش سریع فضاهای بزرگ طراحی شده و در چهار مدل با سوخت گاز طبیعی، گازوئیل یا دوگانه‌سوز (گاز طبیعی و گازوئیل) عرضه می‌شود؛ ظرفیت حرارتی همهٔ مدل‌ها ۱۰۰ هزار کیلوکالری بر ساعت است.",
     "details": [
       {
@@ -99,7 +99,8 @@ export const PRODUCTS: Product[] = [
     ],
     "articleLinkLabels": {
       "imachine-jet-heater": "معرفی جت هیتر و مشخصات فنی هر چهار مدل"
-    }
+    },
+    "imageAlt": "جت هیتر مرغداری"
   },
   {
     "id": "ts-001",
@@ -248,8 +249,7 @@ export const PRODUCTS: Product[] = [
     "image": "/images/photos/feeder-pouya-trough-800.webp",
     "gallery": [
       "/images/photos/feeder-pouya-trough-800.webp",
-      "/images/photos/feeder-pouya-hall-installation-800.webp",
-      "/images/photos/feeder-pouya-hall-lines-800.webp"
+      "/images/photos/feeder-pouya-hall-installation-800.webp"
     ],
     "advantages": [
       "تغذیهٔ جوجه از روز اول، بدون سینی دان",
@@ -299,7 +299,8 @@ export const PRODUCTS: Product[] = [
     ],
     "relatedArticleIds": [
       "introduction-to-pouya-butterfly-feeder"
-    ]
+    ],
+    "imageAlt": "دانخوری پروانه‌ای پویا در سالن مرغداری"
   },
   {
     "id": "ts-013",
