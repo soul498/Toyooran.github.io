@@ -9,6 +9,7 @@ export const LazyImage = ({
   fallbackSrc = '/images/product-placeholder.svg',
   width = 800,
   height = 600,
+  priority = false,
 }: {
   src: string;
   alt?: string;
@@ -17,6 +18,8 @@ export const LazyImage = ({
   fallbackSrc?: string;
   width?: number;
   height?: number;
+  /** Above-the-fold hero (e.g. the product photo): load eagerly with high fetch priority. */
+  priority?: boolean;
 }) => {
   const versionedSrc = withMediaVersion(src);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -42,7 +45,8 @@ export const LazyImage = ({
         alt={alt !== undefined ? alt : 'تجهیزات دام و طیور طیوران صنعت پویا'}
         width={width}
         height={height}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : undefined}
         decoding="async"
         onLoad={() => setIsLoaded(true)}
         onError={() => {
