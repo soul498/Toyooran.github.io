@@ -242,9 +242,9 @@ export const PRODUCTS: Product[] = [
         "p": "توضیحات کامل‌تر در مقالهٔ [معرفی دانخوری پروانه‌ای پویا](/magazine/introduction-to-pouya-butterfly-feeder) آمده است."
       }
     ],
-    "image": "/images/photos/feeder-pouya-trough-1600.webp",
+    "image": "/images/photos/feeder-pouya-trough-800.webp",
     "gallery": [
-      "/images/photos/feeder-pouya-trough-1600.webp",
+      "/images/photos/feeder-pouya-trough-800.webp",
       "/images/photos/feeder-pouya-hall-installation-800.webp",
       "/images/photos/feeder-pouya-hall-lines-800.webp"
     ],
