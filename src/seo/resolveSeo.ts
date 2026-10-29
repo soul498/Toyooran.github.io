@@ -524,7 +524,7 @@ function productBody(product: Product, catalog?: SeoCatalog): string {
   const articles = catalog
     ? indexableArticles(catalog)
         .filter((a) => a.relatedProductIds?.includes(product.id) || product.relatedArticleIds?.includes(a.id))
-        .map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a></li>`)
+        .map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(product.articleLinkLabels?.[a.id] || a.title)}</a></li>`)
         .join("")
     : "";
   const services = catalog
