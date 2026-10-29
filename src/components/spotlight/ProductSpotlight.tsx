@@ -48,7 +48,7 @@ const SPOTS: Spot[] = [
       'کاهش ۳ تا ۵ درصدی هدررفت دان',
       'شبکهٔ مانع ورود پرنده به بشقاب',
     ],
-    specsHref: '/magazine/introduction-to-pouya-butterfly-feeder',
+    specsHref: '/products/pouya-butterfly-feeder',
     icon: Wheat,
     card: {
       desc: 'نسل جدید دانخوری‌های محیطی طیور؛ دسترسی کامل پرنده به خوراک، بدون ورود به داخل دانخوری.',
@@ -80,7 +80,7 @@ const SPOTS: Spot[] = [
       'نصب آویز یا پرتابل',
       'کنترل شعله با فتوسل',
     ],
-    specsHref: '/magazine/imachine-jet-heater',
+    specsHref: '/products/jet-heater',
     icon: Thermometer,
     card: {
       desc: 'گرمایش سریع فضاهای بزرگ با سوخت گاز طبیعی، گازوئیل یا دوگانه‌سوز.',
