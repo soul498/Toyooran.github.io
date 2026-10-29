@@ -242,7 +242,7 @@ export const ProductPage: React.FC<{ onRequestQuoteForProduct?: (product: Produc
               {relatedArticles.map((article) => (
                 <li key={article.id}>
                   <Link className="text-[#003F86] font-bold text-sm" to={`/magazine/${article.id}`}>
-                    {article.title}
+                    {product.articleLinkLabels?.[article.id] || article.title}
                   </Link>
                 </li>
               ))}

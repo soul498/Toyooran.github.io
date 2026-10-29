@@ -96,7 +96,10 @@ export const PRODUCTS: Product[] = [
     ],
     "relatedArticleIds": [
       "imachine-jet-heater"
-    ]
+    ],
+    "articleLinkLabels": {
+      "imachine-jet-heater": "معرفی جت هیتر و مشخصات فنی هر چهار مدل"
+    }
   },
   {
     "id": "ts-001",
