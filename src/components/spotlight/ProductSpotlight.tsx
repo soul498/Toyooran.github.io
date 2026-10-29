@@ -25,6 +25,8 @@ type Spot = {
   callouts: string[];
   specsHref: string;
   icon: React.ElementType;
+  /** Home card (redesign variant B, approved 2026-10-29): description, four features, key number. */
+  card: { desc: string; feats: { icon: FeatIconKey; text: string }[]; stat: { value: string; unit: string }; photoPos: string };
 };
 
 const SPOTS: Spot[] = [
@@ -48,6 +50,17 @@ const SPOTS: Spot[] = [
     ],
     specsHref: '/magazine/introduction-to-pouya-butterfly-feeder',
     icon: Wheat,
+    card: {
+      desc: 'نسل جدید دانخوری‌های محیطی طیور؛ دسترسی کامل پرنده به خوراک، بدون ورود به داخل دانخوری.',
+      feats: [
+        { icon: 'shield', text: 'کاهش آلودگی خوراک' },
+        { icon: 'clock', text: 'مناسب تمام دورهٔ پرورش' },
+        { icon: 'link', text: 'نصب روی خطوط موجود' },
+        { icon: 'drop', text: 'شستشوی سریع و آسان' },
+      ],
+      stat: { value: '۳ تا ۵٪', unit: 'کاهش هدررفت دان' },
+      photoPos: '60% 50%',
+    },
   },
   {
     key: 'heater',
@@ -69,6 +82,17 @@ const SPOTS: Spot[] = [
     ],
     specsHref: '/magazine/imachine-jet-heater',
     icon: Thermometer,
+    card: {
+      desc: 'گرمایش سریع فضاهای بزرگ با سوخت گاز طبیعی، گازوئیل یا دوگانه‌سوز.',
+      feats: [
+        { icon: 'fuel', text: 'گاز طبیعی، گازوئیل یا دوگانه‌سوز' },
+        { icon: 'cube', text: 'گرمایش ۱۰۰۰ تا ۴۰۰۰ مترمکعب' },
+        { icon: 'layers', text: 'بدنه از استنلس استیل نسوز' },
+        { icon: 'flame', text: 'کنترل شعله با فتوسل' },
+      ],
+      stat: { value: '۱۰۰ هزار', unit: 'کیلوکالری بر ساعت' },
+      photoPos: '50% 50%',
+    },
   },
 ];
 
@@ -111,72 +135,113 @@ const SpotCtas: React.FC<{ spot: Spot; stackOnDesktop?: boolean }> = ({ spot, st
   </div>
 );
 
-const BandGlows = () => (
-  <>
-    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/2 pointer-events-none" aria-hidden="true" />
-    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.08)_0%,_transparent_70%)] translate-y-1/2 -translate-x-1/2 pointer-events-none" aria-hidden="true" />
-  </>
+/* ------------------------------ Home: product cards (variant B) ------------------------------ */
+/* Redesign approved by the user 2026-10-29 (designer handoff «product_cards», variant B):
+ * photo at the right edge with the diagonal cut, text column (eyebrow, title, description, four features),
+ * action column at the left edge (key number, primary «مشاهده مشخصات», secondary consult button).
+ * Stacked below md. Feeder card navy, heater card light. Photos are the site's current ones (user request).
+ * Titles use Estedad (Anjoman Max is not served by the site). Colours/contrast from the handoff's contrast.md. */
+
+type FeatIconKey = 'shield' | 'clock' | 'link' | 'drop' | 'fuel' | 'cube' | 'layers' | 'flame';
+const FEAT_PATHS: Record<FeatIconKey, string[]> = {
+  shield: ['M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z', 'm9 12 2 2 4-4'],
+  clock: ['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', 'M12 7v5l3 2'],
+  link: ['M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1', 'M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1'],
+  drop: ['M12 3s7 7.5 7 12a7 7 0 0 1-14 0c0-4.5 7-12 7-12z'],
+  fuel: ['M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M3 21h13M7 8h5M15 10h2a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V8l-3-3'],
+  cube: ['M21 8 12 3 3 8v8l9 5 9-5z', 'm3 8 9 5 9-5M12 13v8'],
+  layers: ['m12 3 9 5-9 5-9-5z', 'm3 13 9 5 9-5'],
+  flame: ['M12 22a7 7 0 0 0 7-7c0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-4-2 2-5 5-5 8a7 7 0 0 0 7 7z'],
+};
+const FeatIcon: React.FC<{ name: FeatIconKey }> = ({ name }) => (
+  <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {FEAT_PATHS[name].map((d) => (
+      <path key={d} d={d} />
+    ))}
+  </svg>
 );
 
-/** Coloured light behind the heater band's frosted layer, so the glass reads as glass on the light page. */
-const GlassTint = () => (
-  <>
-    <div className="absolute -top-24 right-[20%] w-[420px] h-[260px] rounded-full bg-[radial-gradient(closest-side,_rgba(0,63,134,0.16),_transparent)] pointer-events-none" aria-hidden="true" />
-    <div className="absolute -bottom-28 left-[8%] w-[460px] h-[280px] rounded-full bg-[radial-gradient(closest-side,_rgba(245,158,11,0.16),_transparent)] pointer-events-none" aria-hidden="true" />
-  </>
-);
-
-/* ------------------------------ Home: horizontal bands ------------------------------ */
-/* Home bands: name only (description line and both stats removed, user requests 2026-10-28); primary CTA «مشاهده مشخصات», small outline «درخواست مشاورهٔ رایگان».
- * The heater band is a frosted-glass box (band-glass in index.css) with dark text; the feeder band keeps the navy fill.
- * Both bands: primary CTA centred in the text area, smaller consult link stacked under it (user request 2026-10-28). */
-
-const BandCtas: React.FC<{ spot: Spot; clear: boolean }> = ({ spot, clear }) => (
-  <div className="order-3 lg:order-2 flex flex-col items-center justify-self-center gap-2 shrink-0">
-    <Link
-      to={spot.specsHref}
-      className={`group/cta bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl inline-flex items-center justify-center gap-2 sm:gap-3 shadow-[0_10px_30px_rgba(251,191,36,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${clear ? 'focus-visible:outline-[#003F86]' : 'focus-visible:outline-white'}`}
-    >
-      <span className="text-[13px] sm:text-sm whitespace-nowrap">مشاهده مشخصات</span>
-      <span className="hidden sm:flex w-8 h-8 rounded-full bg-slate-950/10 items-center justify-center transition-transform group-hover/cta:-translate-x-1">
-        <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-      </span>
-    </Link>
-    <Link
-      to="/contact"
-      className={`inline-flex min-h-[32px] items-center justify-center rounded-lg border px-3 py-1 text-[11px] font-bold whitespace-nowrap transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-        clear
-          ? 'border-[#003F86]/25 bg-white/40 text-[#003F86] hover:bg-white/70 focus-visible:outline-[#003F86]'
-          : 'border-white/30 text-white hover:bg-white/10 focus-visible:outline-amber-400'
-      }`}
-    >
-      {CONSULT}
-    </Link>
-  </div>
-);
-
-const ProductBand: React.FC<{ spot: Spot }> = ({ spot }) => {
-  const clear = spot.key === 'heater';
+const ProductCard: React.FC<{ spot: Spot }> = ({ spot }) => {
+  const dark = spot.key === 'feeder';
+  const { desc, feats, stat, photoPos } = spot.card;
   return (
     <section
       aria-labelledby={`spot-band-${spot.key}`}
-      className={`group relative w-full rounded-[2.5rem] overflow-hidden ${
-        clear ? 'band-glass' : 'bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 shadow-xl'
-      }`}
+      className={`pcard group relative grid overflow-hidden rounded-3xl md:rounded-[2rem] border ${dark ? 'pcard-dark border-[#0A55A8] text-white' : 'pcard-light border-[#003F84]/25 text-[#1F2733]'}`}
     >
-      {clear ? <GlassTint /> : <BandGlows />}
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-stretch">
-        <div className="spot-bleed relative h-36 lg:h-auto lg:w-[24%] shrink-0 overflow-hidden bg-white">
-          <SpotPhoto photo={spot.photo} sizes="(min-width: 1024px) 300px, 100vw" className="transition-transform duration-700 group-hover:scale-[1.04]" />
-        </div>
-        <div className="flex-1 min-w-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center justify-items-center lg:justify-items-stretch gap-3 sm:gap-5 lg:gap-8 p-5 sm:p-8 lg:py-8 lg:pr-6 lg:pl-10">
-          <div className="order-1 min-w-0 text-center lg:text-start">
-            <span className={`text-[10px] sm:text-[11px] font-bold mb-1 sm:mb-1.5 block ${clear ? 'text-amber-700' : 'text-amber-300'}`}>{spot.eyebrow}</span>
-            <h2 id={`spot-band-${spot.key}`} className={`text-xl sm:text-3xl font-black lg:whitespace-nowrap ${clear ? 'text-[#003F86]' : 'text-white'}`}>
-              {spot.name}
-            </h2>
-          </div>
-          <BandCtas spot={spot} clear={clear} />
+      <div className="pcard-media relative h-[190px] md:h-auto overflow-hidden bg-slate-200">
+        <img
+          src={spot.photo.src}
+          srcSet={spot.photo.srcSet}
+          sizes="(min-width: 1280px) 330px, (min-width: 768px) 280px, 100vw"
+          alt={spot.photo.alt}
+          width={spot.photo.width}
+          height={spot.photo.height}
+          loading="lazy"
+          decoding="async"
+          style={{ objectPosition: photoPos }}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+        />
+      </div>
+
+      <div className="pcard-body flex min-w-0 flex-col justify-center gap-2 md:gap-2.5 px-[18px] pt-4 pb-1 md:px-8 md:py-8 lg:ps-9 lg:pe-6">
+        <p className={`flex items-center gap-2 text-[15px] font-extrabold ${dark ? 'text-[#FFC303]' : 'text-[#8A5A00]'}`}>
+          <span className="h-[3px] w-5 rounded-sm bg-[#FFC303]" aria-hidden="true" />
+          {spot.eyebrow}
+        </p>
+        <h2 id={`spot-band-${spot.key}`} className={`text-[26px] md:text-[34px] font-black leading-[1.4] ${dark ? 'text-white' : 'text-[#003F84]'}`}>
+          {spot.name}
+        </h2>
+        <p className={`max-w-[620px] text-base md:text-[17px] leading-[1.85] ${dark ? 'text-white/[0.92]' : 'text-[#4A5568]'}`}>{desc}</p>
+        <ul className="mt-1.5 grid max-w-[640px] grid-cols-1 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 gap-x-[18px] gap-y-2">
+          {feats.map((f) => (
+            <li key={f.text} className="flex items-center gap-2.5 text-[15px] font-bold leading-normal">
+              <span
+                className={`grid h-[30px] w-[30px] flex-none place-items-center rounded-[9px] ${
+                  dark ? 'bg-white/[0.12] text-[#FFC303]' : 'bg-white text-[#003F84] shadow-[0_0_0_1px_#D6DFEB]'
+                }`}
+              >
+                <FeatIcon name={f.icon} />
+              </span>
+              {f.text}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div
+        className={`pcard-aside relative flex flex-col justify-center gap-3.5 lg:gap-[18px] px-[18px] pt-3 pb-5 md:px-8 md:pb-8 md:pt-0 lg:py-7 lg:ps-8 lg:pe-7 lg:before:absolute lg:before:inset-y-9 lg:before:start-0 lg:before:border-s ${
+          dark ? 'lg:before:border-white/[0.18]' : 'lg:before:border-[#D6DFEB]'
+        }`}
+      >
+        <p
+          className={`flex flex-row items-baseline gap-2.5 rounded-[14px] px-3.5 py-2.5 lg:flex-col lg:items-start lg:gap-0 lg:rounded-none lg:p-0 lg:bg-transparent lg:shadow-none ${
+            dark ? 'bg-white/10' : 'bg-white shadow-[0_0_0_1px_#D6DFEB]'
+          }`}
+        >
+          <span className={`whitespace-nowrap text-[28px] lg:text-[40px] font-black leading-[1.2] ${dark ? 'text-[#FFC303]' : 'text-[#003F84]'}`}>{stat.value}</span>
+          <span className={`text-[15px] font-bold ${dark ? 'text-white/90' : 'text-[#4A5568]'}`}>{stat.unit}</span>
+        </p>
+        <div className="flex flex-col items-stretch gap-2.5">
+          <Link
+            to={spot.specsHref}
+            className="group/cta inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-l from-[#FFC303] to-[#FFA800] px-[22px] text-[17px] font-black text-[#333333] shadow-[0_10px_24px_rgba(255,170,0,0.30)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003F84]"
+          >
+            مشاهده مشخصات
+            <span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-black/[0.12] transition-transform group-hover/cta:-translate-x-1 motion-reduce:transition-none" aria-hidden="true">
+              <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2.4} />
+            </span>
+          </Link>
+          <Link
+            to="/contact"
+            className={`inline-flex min-h-[46px] flex-1 items-center justify-center whitespace-nowrap rounded-full border-[1.5px] px-[22px] text-[15px] font-extrabold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+              dark
+                ? 'border-white/60 text-white hover:bg-white/10 focus-visible:outline-[#FFC303]'
+                : 'border-[#003F84] bg-white text-[#003F84] hover:bg-[#F2F6FB] focus-visible:outline-[#003F84]'
+            }`}
+          >
+            {CONSULT}
+          </Link>
         </div>
       </div>
     </section>
@@ -184,9 +249,9 @@ const ProductBand: React.FC<{ spot: Spot }> = ({ spot }) => {
 };
 
 export const HomeProductBands: React.FC = () => (
-  <div className="space-y-4 lg:space-y-6">
+  <div className="space-y-4 md:space-y-6">
     {SPOTS.map((spot) => (
-      <ProductBand key={spot.key} spot={spot} />
+      <ProductCard key={spot.key} spot={spot} />
     ))}
   </div>
 );
