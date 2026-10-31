@@ -6,7 +6,7 @@ import { ProductCatalogSection } from './ProductCatalogSection';
 import { findProduct, publicProductPath } from '../seo/resolveSeo';
 import { Product, ProductCategory } from '../types';
 import { ProductDetail } from './product/ProductDetail';
-import { ProductsSpotlightPanel } from './spotlight/ProductSpotlight';
+import { HomeProductBands } from './spotlight/ProductSpotlight';
 
 import { CATALOG_CATEGORY_IDS as CATEGORY_IDS } from '../lib/catalogPath';
 
@@ -24,7 +24,7 @@ export const ProductPage: React.FC<{ onRequestQuoteForProduct?: (product: Produc
     return (
       <>
         {category === 'all' ? (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12"><ProductsSpotlightPanel /></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12"><HomeProductBands /></div>
         ) : null}
         <ProductCatalogSection
           products={products}

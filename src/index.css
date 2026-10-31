@@ -319,13 +319,6 @@ html {
   .page-hero-cta:hover, .page-hero-cta:active { transform: none; }
 }
 
-/* Product spotlight (home bands + /products blueprint panel) */
-.spot-blueprint::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background-image: linear-gradient(rgba(147,197,253,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(147,197,253,.07) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
 /* Catalog category switch: short fade/rise of the new grid (opacity + transform only, no layout). */
 @keyframes catalog-swap-in {
   from { opacity: 0; transform: translate3d(0, 10px, 0); }
