@@ -91,6 +91,12 @@ export interface Product {
   faqs?: { q: string; a: string }[];
   /** Approved long-form copy under «معرفی محصول»; rendered in #seo-prerender and on the product page. */
   details?: RichBlock[];
+  /** Product page: up to 6 key-spec tiles beside the photo (taken from `specs`; defaults to the first 6 specs). */
+  keySpecs?: ProductSpec[];
+  /** Product page: short line under the H1 (from the product's own copy). */
+  subline?: string;
+  /** Product page: sentence in the «استعلام قیمت و مشاورهٔ رایگان» box (from the product's own copy). */
+  inquiryNote?: string;
 }
 
 export interface ServiceWorkflowStep {
