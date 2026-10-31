@@ -33,10 +33,15 @@ export function isServiceDisabled(idOrSlug: string | undefined | null): boolean 
   return (CARD_SERVICE_IDS as readonly string[]).includes(id);
 }
 
-/** True for /services/<card service> and anything below it (query/hash ignored). */
+/** True for /services/<card service> and anything below it (query/hash ignored), as a relative path or an absolute toyooran.com URL. */
 export function isDisabledPagePath(pathOrHref: string | undefined | null): boolean {
   if (CARD_SERVICE_PAGES_ENABLED || !pathOrHref) return false;
-  let path = String(pathOrHref).split(/[?#]/)[0];
+  let path = String(pathOrHref).trim().split(/[?#]/)[0];
+  const abs = /^(?:https?:)?\/\/([^/]+)(\/.*)?$/i.exec(path);
+  if (abs) {
+    if (!/(^|\.)toyooran\.com(:\d+)?$/i.test(abs[1])) return false;
+    path = abs[2] || '/';
+  }
   try {
     path = decodeURIComponent(path);
   } catch {

@@ -993,7 +993,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
         .map((source) => ({
           "@type": "CreativeWork",
           name: source.name.trim(),
-          ...(source.url && isSafeHref(source.url) ? { url: source.url.trim() } : {}),
+          ...(source.url && isSafeHref(source.url) && !isDisabledPagePath(source.url) ? { url: source.url.trim() } : {}),
         }));
       const sourceHtml = (article.sources || [])
         .filter((source) => source.name.trim())
