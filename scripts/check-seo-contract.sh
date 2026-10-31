@@ -50,7 +50,21 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   sitemap="$(curl_id http://127.0.0.1:3000/sitemap.xml)"
   echo "$sitemap" | grep -q 'www.toyooran.com' || fail "live sitemap"
   echo "$sitemap" | grep -q '/rnd' || fail "sitemap missing /rnd"
-  echo "$sitemap" | grep -q 'poultry-hall-fitout' || fail "sitemap missing fitout slug"
+  # Card service pages can be switched off (src/data/disabledPages.ts); the contract follows that flag.
+  if grep -q 'CARD_SERVICE_PAGES_ENABLED = false' src/data/disabledPages.ts; then
+    card_pages_off=1
+    for slug in poultry-hall-fitout srv-machinery-manufacturing srv-poultry-equipment-supply srv-feed-formulation-pharma; do
+      if echo "$sitemap" | grep -q "/services/${slug}"; then fail "sitemap lists disabled page /services/${slug}"; fi
+      off_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'NR==1{print $2}')"
+      test "$off_code" = "302" || fail "disabled /services/${slug} must 302, got ${off_code}"
+      off_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
+      test "$off_loc" = "https://www.toyooran.com/" || fail "disabled /services/${slug} must redirect home, got ${off_loc}"
+      if echo "$html" | grep -q "href=\"/services/${slug}"; then fail "homepage still links disabled /services/${slug}"; fi
+    done
+  else
+    card_pages_off=0
+    echo "$sitemap" | grep -q 'poultry-hall-fitout' || fail "sitemap missing fitout slug"
+  fi
   if echo "$sitemap" | grep -q 'srv-turnkey-shed'; then fail "sitemap still has non-canonical service id"; fi
   if echo "$sitemap" | grep -Eq '/admin|/crm'; then fail "sitemap must not list /admin or /crm"; fi
   for private_path in /admin /crm; do
@@ -93,7 +107,11 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   echo "$heater_html" | grep -q 'هیتر گازی' || fail "encoded heater slug missing product content"
   grep -q 'font-src' server.ts || fail "CSP font-src missing"
   redir="$(curl -sI --max-time 5 http://127.0.0.1:3000/services/srv-turnkey-shed | awk 'NR==1{print $2}')"
-  test "$redir" = "301" || fail "service alias must 301"
+  if [ "$card_pages_off" = 1 ]; then
+    test "$redir" = "302" || fail "disabled service alias must 302, got ${redir}"
+  else
+    test "$redir" = "301" || fail "service alias must 301"
+  fi
   nested="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/heating/not-a-page | awk 'NR==1{print $2}')"
   test "$nested" = "301" || fail "nested category path must 301, got ${nested}"
   nested_loc="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/heating/not-a-page | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"

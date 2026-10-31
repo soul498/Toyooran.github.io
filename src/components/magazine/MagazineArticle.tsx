@@ -8,6 +8,7 @@ import { articleBlocks, type ArticleBlock } from '../../seo/articleBlocks';
 import { publicProductPath, publicServicePath } from '../../seo/resolveSeo';
 import { isSafeHref, isSafeImageSrc } from '../../seo/safeUrl';
 import { inlinePlain } from '../../seo/richText';
+import { isDisabledPagePath } from '../../data/disabledPages';
 import { withMediaVersion } from '../../lib/mediaUrl';
 import { RichInline } from '../RichBlocks';
 import { findTopic, topicPath } from '../../seo/topics';
@@ -56,6 +57,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
   const { products, services } = useData();
   const heroImage = article.image && isSafeImageSrc(article.image) ? article.image : "";
   const relatedService = article.relatedServiceId ? services.find((service) => service.id === article.relatedServiceId) : undefined;
+  const serviceHref = relatedService ? publicServicePath(relatedService) : "/services/poultry-hall-fitout";
 
   const linkedProducts = products.filter((p) => article.relatedProductIds?.includes(p.id));
   const items = groupBlocks(articleBlocks(article.content));
@@ -144,7 +146,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
       );
     }
     if (block.type === "cta") {
-      if (!isSafeHref(block.href)) return null;
+      if (!isSafeHref(block.href) || isDisabledPagePath(block.href)) return null;
       const external = /^https?:\/\//i.test(block.href);
       const buttonClass = "relative z-10 whitespace-nowrap bg-amber-400 hover:bg-amber-500 text-blue-950 px-8 py-3.5 rounded-xl font-black text-sm transition-all shadow-lg shadow-amber-400/20";
       return (
@@ -318,10 +320,14 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
               </ul>
             ) : null}
             <p>
-              <Link className="text-[#003F86] font-bold" to={relatedService ? publicServicePath(relatedService) : "/services/poultry-hall-fitout"}>
-                {relatedService ? relatedService.title : "تجهیز و نوسازی سالن"}
-              </Link>
-              {' · '}
+              {!isDisabledPagePath(serviceHref) ? (
+                <>
+                  <Link className="text-[#003F86] font-bold" to={serviceHref}>
+                    {relatedService ? relatedService.title : "تجهیز و نوسازی سالن"}
+                  </Link>
+                  {' · '}
+                </>
+              ) : null}
               <Link className="text-[#003F86] font-bold" to="/contact?cta=article-consult">درخواست مشاوره</Link>
             </p>
           </div>
