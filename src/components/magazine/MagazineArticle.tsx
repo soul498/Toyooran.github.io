@@ -315,7 +315,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
             {article.sources?.length ? (
               <ul className="list-disc mr-5">
                 {article.sources.map((source, sourceIndex) => (
-                  <li key={`${source.name}-${sourceIndex}`}>{source.url && isSafeHref(source.url) ? <a className="text-[#003F86] font-bold" href={source.url} rel="noopener noreferrer">{source.name}</a> : source.name}</li>
+                  <li key={`${source.name}-${sourceIndex}`}>{source.url && isSafeHref(source.url) && !isDisabledPagePath(source.url) ? <a className="text-[#003F86] font-bold" href={source.url} rel="noopener noreferrer">{source.name}</a> : source.name}</li>
                 ))}
               </ul>
             ) : null}
