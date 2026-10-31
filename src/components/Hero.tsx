@@ -47,13 +47,15 @@ export interface CircleCategoryCard {
 export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void }> = ({ card, onClick }) => {
   const Icon = card.icon;
   // While the page behind a card is switched off (data/disabledPages.ts) the card is a display-only tile:
-  // same look, but a plain <div> with no click, focus, pointer cursor or hover effect.
+  // same look, but a plain <div> with no click, focus or pointer cursor. It keeps the decorative CSS hover
+  // (lift, photo zoom, icon glow; see .service-card-shell in index.css).
   const interactive = !isDisabledPagePath(card.to);
   const Tag = (interactive ? 'button' : 'div') as 'button';
   const tagProps = interactive
     ? { type: 'button' as const, onClick, 'aria-label': card.title }
     : {};
   return (
+    <div className="service-card-shell relative">
     <Tag
       {...tagProps}
       className={`service-card relative w-full h-[280px] sm:h-[320px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 ${interactive ? 'cursor-pointer' : 'service-card--static cursor-default'}`}
@@ -84,6 +86,7 @@ export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void
         </div>
       </div>
     </Tag>
+    </div>
   );
 };
 

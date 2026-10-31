@@ -132,45 +132,84 @@ html {
   }
 }
 
+/* Sector cards (home + /services). Rest state is the original design; hover is decorative only
+   (the cards are display-only tiles while their pages are off). Transform/opacity only, no layout shift. */
+.service-card-shell {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.service-card-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 2rem;
+  box-shadow: 0 22px 44px -18px rgb(0 18 48 / 0.55), 0 10px 22px -12px rgb(251 191 36 / 0.25);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
 .service-card {
   transform: translateZ(0);
+  transition: border-color 0.35s ease;
 }
-.service-card-photo,
+.service-card-photo {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+}
 .service-card-icon,
 .service-card-title,
 .service-card-rule,
 .service-card-wash {
-  transition: transform 0.35s ease, color 0.25s ease, opacity 0.35s ease, border-color 0.25s ease, background-color 0.25s ease;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease, opacity 0.4s ease, border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.4s ease;
 }
 .service-card-rule {
   transform: scaleX(0.6);
 }
 .service-card-wash {
-  background-color: rgb(251 191 36 / 0);
+  opacity: 0;
+  background: radial-gradient(circle at 50% 42%, rgb(251 191 36 / 0.16), rgb(251 191 36 / 0) 38%);
 }
 @media (hover: hover) and (pointer: fine) {
-  .service-card:not(.service-card--static):hover {
+  .service-card-shell:hover {
+    transform: translateY(-5px);
+  }
+  .service-card-shell:hover::before {
+    opacity: 1;
+  }
+  .service-card-shell:hover .service-card {
     border-color: rgb(251 191 36 / 0.45);
   }
-  .service-card:not(.service-card--static):hover .service-card-photo {
-    transform: scale(1.05);
+  .service-card-shell:hover .service-card-photo {
+    transform: scale(1.07);
+    opacity: 0.56;
   }
-  .service-card:not(.service-card--static):hover .service-card-icon {
-    transform: translateY(-4px);
+  .service-card-shell:hover .service-card-wash {
+    opacity: 1;
+  }
+  .service-card-shell:hover .service-card-icon {
+    transform: translateY(-4px) scale(1.06) rotate(-4deg);
     background-color: rgb(251 191 36 / 0.16);
-    border-color: rgb(251 191 36 / 0.4);
+    border-color: rgb(251 191 36 / 0.45);
+    box-shadow: 0 0 22px rgb(251 191 36 / 0.28);
   }
-  .service-card:not(.service-card--static):hover .service-card-title {
+  .service-card-shell:hover .service-card-title {
     color: #fcd34d;
   }
-  .service-card:not(.service-card--static):hover .service-card-rule {
-    transform: scaleX(1.4);
+  .service-card-shell:hover .service-card-rule {
+    transform: scaleX(1.6);
   }
-  .service-card:not(.service-card--static):hover .service-card-wash {
-    background-color: rgb(251 191 36 / 0.08);
+}
+/* Touch screens: a gentle press response, no JS. */
+@media (hover: none) {
+  .service-card-shell:active {
+    transform: scale(0.985);
+  }
+  .service-card-shell:active .service-card-wash {
+    opacity: 1;
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .service-card-shell,
+  .service-card-shell::before,
+  .service-card,
   .service-card-photo,
   .service-card-icon,
   .service-card-title,
@@ -178,10 +217,14 @@ html {
   .service-card-wash {
     transition: none;
   }
-  .service-card:not(.service-card--static):hover .service-card-photo,
-  .service-card:not(.service-card--static):hover .service-card-icon,
-  .service-card:not(.service-card--static):hover .service-card-rule {
+  .service-card-shell:hover,
+  .service-card-shell:active,
+  .service-card-shell:hover .service-card-photo,
+  .service-card-shell:hover .service-card-icon {
     transform: none;
+  }
+  .service-card-shell:hover .service-card-rule {
+    transform: scaleX(0.6);
   }
 }
 
