@@ -6,6 +6,7 @@ import fs from "fs";
 import cookieParser from "cookie-parser";
 import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, publicTurnstileSiteKey, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
+import { DISABLED_PAGE_REDIRECT, isDisabledPagePath } from "./src/data/disabledPages";
 import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxt, normalizePublicUrl, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
 import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
@@ -39,6 +40,15 @@ async function startServer() {
     const target = normalizePublicUrl(req.originalUrl);
     if (target && target !== req.originalUrl) return res.redirect(301, `${CANONICAL_ORIGIN}${target}`);
     next();
+  });
+  // Pages switched off for now (src/data/disabledPages.ts): temporary 302 to the home page, never cached,
+  // noindex on the redirect itself. Runs before seoRedirectFor so aliases don't 301 into a disabled page.
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+    if (!isDisabledPagePath(req.path)) return next();
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-Robots-Tag', 'noindex');
+    return res.redirect(302, `${CANONICAL_ORIGIN}${DISABLED_PAGE_REDIRECT}`);
   });
   app.use((req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();

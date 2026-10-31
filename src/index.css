@@ -149,24 +149,24 @@ html {
   background-color: rgb(251 191 36 / 0);
 }
 @media (hover: hover) and (pointer: fine) {
-  .service-card:hover {
+  .service-card:not(.service-card--static):hover {
     border-color: rgb(251 191 36 / 0.45);
   }
-  .service-card:hover .service-card-photo {
+  .service-card:not(.service-card--static):hover .service-card-photo {
     transform: scale(1.05);
   }
-  .service-card:hover .service-card-icon {
+  .service-card:not(.service-card--static):hover .service-card-icon {
     transform: translateY(-4px);
     background-color: rgb(251 191 36 / 0.16);
     border-color: rgb(251 191 36 / 0.4);
   }
-  .service-card:hover .service-card-title {
+  .service-card:not(.service-card--static):hover .service-card-title {
     color: #fcd34d;
   }
-  .service-card:hover .service-card-rule {
+  .service-card:not(.service-card--static):hover .service-card-rule {
     transform: scaleX(1.4);
   }
-  .service-card:hover .service-card-wash {
+  .service-card:not(.service-card--static):hover .service-card-wash {
     background-color: rgb(251 191 36 / 0.08);
   }
 }
@@ -178,9 +178,9 @@ html {
   .service-card-wash {
     transition: none;
   }
-  .service-card:hover .service-card-photo,
-  .service-card:hover .service-card-icon,
-  .service-card:hover .service-card-rule {
+  .service-card:not(.service-card--static):hover .service-card-photo,
+  .service-card:not(.service-card--static):hover .service-card-icon,
+  .service-card:not(.service-card--static):hover .service-card-rule {
     transform: none;
   }
 }

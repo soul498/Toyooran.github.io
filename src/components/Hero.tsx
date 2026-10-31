@@ -13,6 +13,7 @@ import {
 import { PageSection, ProductCategory } from '../types';
 import { isLiteDevice } from '../lib/device';
 import { LANDING_SERVICE_CARDS } from '../data/landingServiceCards';
+import { isDisabledPagePath } from '../data/disabledPages';
 
 interface HeroProps {
   cmsHero?: import('../types').HeroCms;
@@ -45,12 +46,17 @@ export interface CircleCategoryCard {
 
 export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void }> = ({ card, onClick }) => {
   const Icon = card.icon;
+  // While the page behind a card is switched off (data/disabledPages.ts) the card is a display-only tile:
+  // same look, but a plain <div> with no click, focus, pointer cursor or hover effect.
+  const interactive = !isDisabledPagePath(card.to);
+  const Tag = (interactive ? 'button' : 'div') as 'button';
+  const tagProps = interactive
+    ? { type: 'button' as const, onClick, 'aria-label': card.title }
+    : {};
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={card.title}
-      className="service-card relative w-full h-[280px] sm:h-[320px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 cursor-pointer"
+    <Tag
+      {...tagProps}
+      className={`service-card relative w-full h-[280px] sm:h-[320px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 ${interactive ? 'cursor-pointer' : 'service-card--static cursor-default'}`}
     >
       <div className="absolute inset-[2px] rounded-[calc(2rem-2px)] bg-[#001c3d] z-10 overflow-hidden flex flex-col items-center justify-center p-6">
         {card.bgImage && (
@@ -77,7 +83,7 @@ export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void
           <span className="service-card-rule mt-4 h-[2px] w-12 bg-amber-400 rounded-full" aria-hidden="true" />
         </div>
       </div>
-    </button>
+    </Tag>
   );
 };
 

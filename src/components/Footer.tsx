@@ -19,6 +19,14 @@ import {
   ArrowLeft,
   ChevronLeft
 } from '../icons';
+import { isDisabledPagePath } from '../data/disabledPages';
+
+const FOOTER_SERVICE_LINKS = [
+  { to: '/services/srv-machinery-manufacturing', title: 'ماشین‌آلات خوراک' },
+  { to: '/services/srv-poultry-equipment-supply', title: 'تجهیزات دام و طیور' },
+  { to: '/services/poultry-hall-fitout', title: 'تجهیز و نوسازی سالن مرغداری' },
+  { to: '/services/srv-feed-formulation-pharma', title: 'خوراک و مکمل' },
+];
 
 interface FooterProps {
   onNavigate: (id: string) => void;
@@ -151,30 +159,22 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
               خدمات و محصولات
             </p>
             <ul className="space-y-3">
-              <li>
-                <Link to="/services/srv-machinery-manufacturing" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
-                  <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  ماشین‌آلات خوراک
-                </Link>
-              </li>
-              <li>
-                <Link to="/services/srv-poultry-equipment-supply" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
-                  <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  تجهیزات دام و طیور
-                </Link>
-              </li>
-              <li>
-                <Link to="/services/poultry-hall-fitout" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
-                  <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  تجهیز و نوسازی سالن مرغداری
-                </Link>
-              </li>
-              <li>
-                <Link to="/services/srv-feed-formulation-pharma" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
-                  <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
-                  خوراک و مکمل
-                </Link>
-              </li>
+              {FOOTER_SERVICE_LINKS.map((item) => (
+                <li key={item.to}>
+                  {isDisabledPagePath(item.to) ? (
+                    // Page switched off for now (data/disabledPages.ts): the name stays, as plain text.
+                    <span className="text-slate-300 text-sm font-medium flex items-center gap-1.5">
+                      <ChevronLeft className="w-3.5 h-3.5 text-slate-600" />
+                      {item.title}
+                    </span>
+                  ) : (
+                    <Link to={item.to} className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                      <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
+                      {item.title}
+                    </Link>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
 
