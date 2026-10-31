@@ -81,21 +81,20 @@ function applicationIcon(text: string): IconName {
 const hasRealImage = (p: Product) => Boolean(p.image && !PLACEHOLDER_RE.test(p.image));
 
 /** Larger file of the same approved photo for the zoom view (`-800.webp` → `-1600/1536.webp`), else as is. */
-/** Mounts its children only once the box nears the viewport, so below-the-fold
- * card photos (full-size files) don't compete with the main product photo. */
-const NearView: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [show, setShow] = useState(false);
+/** True once the element nears the viewport, so below-the-fold card photos
+ * (full-size files) don't compete with the main product photo for bandwidth. */
+function useNearViewport<T extends Element>(): [(el: T | null) => void, boolean] {
+  const [el, setEl] = useState<T | null>(null);
+  const [near, setNear] = useState(false);
   useEffect(() => {
-    const el = ref.current;
-    if (!el || show) return;
-    if (typeof IntersectionObserver === 'undefined') { setShow(true); return; }
-    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { setShow(true); io.disconnect(); } }, { rootMargin: '200px 0px' });
+    if (!el || near) return;
+    if (typeof IntersectionObserver === 'undefined') { setNear(true); return; }
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { setNear(true); io.disconnect(); } }, { rootMargin: '200px 0px' });
     io.observe(el);
     return () => io.disconnect();
-  }, [show]);
-  return <div ref={ref} className={className}>{show ? children : null}</div>;
-};
+  }, [el, near]);
+  return [setEl, near];
+}
 
 function zoomSrc(src: string): string {
   if (/jet-heater-v2-800\.webp$/.test(src)) return src.replace(/-800\.webp$/, '-1536.webp');
@@ -133,6 +132,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
     ...(specs.length ? [{ id: 'specs', label: 'مشخصات فنی' }] : []),
   ];
   const [current, setCurrent] = useState('intro');
+  const [relRowRef, relNear] = useNearViewport<HTMLDivElement>();
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Sticky offsets follow the site's fixed header (its height differs per breakpoint).
@@ -385,11 +385,11 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                         <Icon name="left" className="pd-ic-sm" />
                       </Link>
                     </div>
-                    <div className="pd-rel-row">
+                    <div className="pd-rel-row" ref={relRowRef}>
                       {related.map((p) => (
                         <Link key={p.id} className="pd-rel" to={publicProductPath(p)}>
                           <div className="pd-rel-thumb">
-                            <NearView className="w-full h-full"><LazyImage src={p.image} alt={p.imageAlt || p.name} width={400} height={225} className="w-full h-full" imgClassName="w-full h-full object-cover" /></NearView>
+                            {relNear && <LazyImage src={p.image} alt={p.imageAlt || p.name} width={400} height={225} className="w-full h-full" imgClassName="w-full h-full object-cover" />}
                           </div>
                           <div className="pd-rel-meta">
                             <small>{p.categoryTitle}</small>
