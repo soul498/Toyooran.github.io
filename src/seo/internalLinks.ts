@@ -22,7 +22,8 @@ export function homePriorityProducts(products: Product[]): Product[] {
  * nearby products instead of all pages pointing at the first few items of the category.
  */
 export function relatedInCategory(product: Product, products: Product[], count = 6): Product[] {
-  const list = products.filter((p) => p.category === product.category);
+  const exclude = new Set(product.relatedExclude || []);
+  const list = products.filter((p) => p.category === product.category && !exclude.has(p.id));
   const index = list.findIndex((p) => p.id === product.id);
   if (index === -1 || list.length < 2) return list.filter((p) => p.id !== product.id).slice(0, count);
   const out: Product[] = [];

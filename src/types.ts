@@ -93,6 +93,8 @@ export interface Product {
   details?: RichBlock[];
   /** Product page: up to 6 key-spec tiles beside the photo (taken from `specs`; defaults to the first 6 specs). */
   keySpecs?: ProductSpec[];
+  /** Product ids never shown in this product's related list (page-level editorial choice). */
+  relatedExclude?: string[];
   /** Product page: short line under the H1 (from the product's own copy). */
   subline?: string;
   /** Product page: sentence in the «استعلام قیمت و مشاورهٔ رایگان» box (from the product's own copy). */

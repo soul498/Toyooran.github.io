@@ -131,7 +131,7 @@ const MainAppInner: React.FC = () => {
   
   // Helper to determine currentSection for Navbar
   const currentSection = location.pathname === '/' ? 'home' : 
-                         location.pathname === '/products' ? 'products' : 
+                         (location.pathname === '/products' || location.pathname.startsWith('/products/')) ? 'products' : 
                          location.pathname === '/services' ? 'services' : 
                          location.pathname.startsWith('/magazine') ? 'knowledge' : 
                          location.pathname === '/about' ? 'about' : 

@@ -7,6 +7,7 @@ import { relatedInCategory } from '../../seo/internalLinks';
 import { withMediaVersion } from '../../lib/mediaUrl';
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../../data/contact';
 import type { Article, Product, ProductSpec } from '../../types';
+import { faDigits, faSpecValue } from '../../lib/faDigits';
 import './product-detail.css';
 
 /**
@@ -83,9 +84,10 @@ const hasRealImage = (p: Product) => Boolean(p.image && !PLACEHOLDER_RE.test(p.i
 /** Larger file of the same approved photo for the zoom view (`-800.webp` → `-1600/1536.webp`), else as is. */
 /** True once the element nears the viewport, so below-the-fold card photos
  * (full-size files) don't compete with the main product photo for bandwidth. */
-function useNearViewport<T extends Element>(): [(el: T | null) => void, boolean] {
+function useNearViewport<T extends Element>(resetKey?: string): [(el: T | null) => void, boolean] {
   const [el, setEl] = useState<T | null>(null);
   const [near, setNear] = useState(false);
+  useEffect(() => setNear(false), [resetKey]);
   useEffect(() => {
     if (!el || near) return;
     if (typeof IntersectionObserver === 'undefined') { setNear(true); return; }
@@ -119,7 +121,11 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
   const applications = product.applications || [];
   const longApps = applications.some((a) => a.length > 48);
   const note = categoryIntro(product.category);
+  const [relBroken, setRelBroken] = useState<Record<string, true>>({});
+  useEffect(() => setRelBroken({}), [product.id]);
   const related = relatedInCategory(product, products, 6).filter(hasRealImage);
+  // Cards whose photo fails to load are dropped (no grey boxes); if all fail the row disappears.
+  const relatedShown = related.filter((p) => !relBroken[p.id]);
   const relatedArticles = articles.filter(
     (a) => a.status !== 'draft' && (product.relatedArticleIds?.includes(a.id) || a.relatedProductIds?.includes(product.id)),
   );
@@ -132,7 +138,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
     ...(specs.length ? [{ id: 'specs', label: 'مشخصات فنی' }] : []),
   ];
   const [current, setCurrent] = useState('intro');
-  const [relRowRef, relNear] = useNearViewport<HTMLDivElement>();
+  const [relRowRef, relNear] = useNearViewport<HTMLDivElement>(product.id);
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Sticky offsets follow the site's fixed header (its height differs per breakpoint).
@@ -252,8 +258,8 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                   <dl className="pd-attrs">
                     {keySpecs.map((s, i) => (
                       <div className="pd-attr" key={i}>
-                        <dt>{s.label}</dt>
-                        <dd>{s.value}</dd>
+                        <dt>{faDigits(s.label)}</dt>
+                        <dd>{faSpecValue(s.label, s.value)}</dd>
                       </div>
                     ))}
                   </dl>
@@ -283,11 +289,11 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
               ) : null}
               <a className="pd-btn pd-btn-outline pd-desk-only" href={SALES_PHONE_TEL}>
                 <Icon name="phone" />
-                تماس: <bdi dir="ltr">{SALES_PHONE_DISPLAY}</bdi>
+                تماس: <bdi dir="ltr" className="pd-phone">{SALES_PHONE_DISPLAY}</bdi>
               </a>
             </div>
             <div className="pd-landline">
-              {OFFICE_PHONE_LABEL}: <a href={OFFICE_PHONE_TEL}><bdi dir="ltr">{OFFICE_PHONE_DISPLAY}</bdi></a>
+              {OFFICE_PHONE_LABEL}: <a href={OFFICE_PHONE_TEL} dir="ltr" className="pd-phone">{OFFICE_PHONE_DISPLAY}</a>
             </div>
             <ul className="pd-trust">
               <li><Icon name="award" />۵۰ سال سابقه</li>
@@ -365,8 +371,8 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                   <tbody>
                     {specs.map((s, i) => (
                       <tr key={i}>
-                        <th scope="row">{s.label}</th>
-                        <td>{s.value}</td>
+                        <th scope="row">{faDigits(s.label)}</th>
+                        <td>{faSpecValue(s.label, s.value)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -374,9 +380,9 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
               </section>
             ) : null}
 
-            {related.length || relatedArticles.length ? (
+            {relatedShown.length || relatedArticles.length ? (
               <section className="pd-card pd-related" aria-labelledby="pd-rel-t">
-                {related.length ? (
+                {relatedShown.length ? (
                   <>
                     <div className="pd-rel-head">
                       <h2 id="pd-rel-t">محصولات مرتبط</h2>
@@ -386,10 +392,19 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                       </Link>
                     </div>
                     <div className="pd-rel-row" ref={relRowRef}>
-                      {related.map((p) => (
+                      {relatedShown.map((p) => (
                         <Link key={p.id} className="pd-rel" to={publicProductPath(p)}>
                           <div className="pd-rel-thumb">
-                            {relNear && <LazyImage src={p.image} alt={p.imageAlt || p.name} width={400} height={225} className="w-full h-full" imgClassName="w-full h-full object-cover" />}
+                            {relNear && (
+                              <img
+                                src={withMediaVersion(p.image)}
+                                alt={p.imageAlt || p.name}
+                                width={400}
+                                height={225}
+                                decoding="async"
+                                onError={() => setRelBroken((b) => ({ ...b, [p.id]: true }))}
+                              />
+                            )}
                           </div>
                           <div className="pd-rel-meta">
                             <small>{p.categoryTitle}</small>

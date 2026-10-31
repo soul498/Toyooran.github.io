@@ -230,6 +230,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "ts-114",
     "code": "TS-114",
+    "relatedExclude": ["ts-013"],
     "slug": "pouya-butterfly-feeder",
     "seoTitle": "دانخوری پروانه‌ای پویا؛ تغذیه جوجه از روز اول | طیوران صنعت پویا",
     "name": "دانخوری پروانه‌ای پویا",
