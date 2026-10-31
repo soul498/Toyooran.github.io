@@ -659,6 +659,7 @@ function localBusinessNodes(company: CompanyInfo) {
     address: {
       "@type": "PostalAddress",
       addressCountry: "IR",
+      ...(loc.type === "rd" ? { addressLocality: "گرگان" } : {}),
       streetAddress: loc.address,
     },
   }));
