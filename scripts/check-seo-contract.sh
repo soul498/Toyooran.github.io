@@ -51,19 +51,29 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   echo "$sitemap" | grep -q 'www.toyooran.com' || fail "live sitemap"
   echo "$sitemap" | grep -q '/rnd' || fail "sitemap missing /rnd"
   # Card service pages can be switched off (src/data/disabledPages.ts); the contract follows that flag.
+  card_pages_off=0
+  disabled_slugs=""
   if grep -q 'CARD_SERVICE_PAGES_ENABLED = false' src/data/disabledPages.ts; then
     card_pages_off=1
-    for slug in poultry-hall-fitout srv-machinery-manufacturing srv-poultry-equipment-supply srv-feed-formulation-pharma; do
+    disabled_slugs="poultry-hall-fitout srv-machinery-manufacturing srv-poultry-equipment-supply srv-feed-formulation-pharma"
+  else
+    echo "$sitemap" | grep -q 'poultry-hall-fitout' || fail "sitemap missing fitout slug"
+  fi
+  if grep -q 'CONSULTING_PAGE_ENABLED = false' src/data/disabledPages.ts; then
+    disabled_slugs="${disabled_slugs} srv-consulting-efficiency"
+  else
+    echo "$sitemap" | grep -q 'srv-consulting-efficiency' || fail "sitemap missing consulting page"
+  fi
+  if [ -n "$disabled_slugs" ]; then
+    for slug in $disabled_slugs; do
       if echo "$sitemap" | grep -q "/services/${slug}"; then fail "sitemap lists disabled page /services/${slug}"; fi
       off_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'NR==1{print $2}')"
       test "$off_code" = "302" || fail "disabled /services/${slug} must 302, got ${off_code}"
       off_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
       test "$off_loc" = "https://www.toyooran.com/" || fail "disabled /services/${slug} must redirect home, got ${off_loc}"
       if echo "$html" | grep -q "href=\"/services/${slug}"; then fail "homepage still links disabled /services/${slug}"; fi
+      if curl_id http://127.0.0.1:3000/llms.txt | grep -q "/services/${slug}"; then fail "llms.txt lists disabled /services/${slug}"; fi
     done
-  else
-    card_pages_off=0
-    echo "$sitemap" | grep -q 'poultry-hall-fitout' || fail "sitemap missing fitout slug"
   fi
   if echo "$sitemap" | grep -q 'srv-turnkey-shed'; then fail "sitemap still has non-canonical service id"; fi
   if echo "$sitemap" | grep -Eq '/admin|/crm'; then fail "sitemap must not list /admin or /crm"; fi

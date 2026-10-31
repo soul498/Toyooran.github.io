@@ -12,6 +12,12 @@
  */
 export const CARD_SERVICE_PAGES_ENABLED = false;
 
+/**
+ * The consulting service page (/services/srv-consulting-efficiency), switched off too (user answer, 31 Oct 2026).
+ * Set to true to bring only this page back, with the same effects as above.
+ */
+export const CONSULTING_PAGE_ENABLED = false;
+
 /** Service ids behind the four landing cards (src/data/landingServiceCards.ts). */
 export const CARD_SERVICE_IDS = [
   'srv-machinery-manufacturing',
@@ -20,6 +26,9 @@ export const CARD_SERVICE_IDS = [
   'srv-feed-formulation-pharma',
 ] as const;
 
+/** Other service pages that are switched off by their own flag. */
+const OTHER_DISABLED_SERVICE_IDS: readonly string[] = CONSULTING_PAGE_ENABLED ? [] : ['srv-consulting-efficiency'];
+
 /** Public slugs that resolve to a card service id (keep in sync with FITOUT_SLUG in seo/resolveSeo.ts). */
 const SERVICE_SLUG_ALIASES: Record<string, string> = { 'poultry-hall-fitout': 'srv-turnkey-shed' };
 
@@ -27,15 +36,16 @@ const SERVICE_SLUG_ALIASES: Record<string, string> = { 'poultry-hall-fitout': 's
 export const DISABLED_PAGE_REDIRECT = '/';
 
 export function isServiceDisabled(idOrSlug: string | undefined | null): boolean {
-  if (CARD_SERVICE_PAGES_ENABLED || !idOrSlug) return false;
+  if (!idOrSlug) return false;
   const raw = String(idOrSlug).trim().toLowerCase();
   const id = SERVICE_SLUG_ALIASES[raw] || raw;
-  return (CARD_SERVICE_IDS as readonly string[]).includes(id);
+  if (!CARD_SERVICE_PAGES_ENABLED && (CARD_SERVICE_IDS as readonly string[]).includes(id)) return true;
+  return OTHER_DISABLED_SERVICE_IDS.includes(id);
 }
 
 /** True for /services/<card service> and anything below it (query/hash ignored), as a relative path or an absolute toyooran.com URL. */
 export function isDisabledPagePath(pathOrHref: string | undefined | null): boolean {
-  if (CARD_SERVICE_PAGES_ENABLED || !pathOrHref) return false;
+  if (!pathOrHref) return false;
   let path = String(pathOrHref).trim().split(/[?#]/)[0];
   const abs = /^(?:https?:)?\/\/([^/]+)(\/.*)?$/i.exec(path);
   if (abs) {
