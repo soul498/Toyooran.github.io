@@ -1,14 +1,15 @@
 import React from 'react';
 import { Clock } from '../icons';
 
+import { t } from '../i18n';
 interface UnderConstructionProps {
   title?: string;
   description?: string;
 }
 
 export const UnderConstruction: React.FC<UnderConstructionProps> = ({
-  title = "در حال آماده‌سازی و بارگذاری...",
-  description = "این بخش در حال تکمیل است و به‌زودی منتشر می‌شود."
+  title = t("در حال آماده‌سازی و بارگذاری..."),
+  description = t("این بخش در حال تکمیل است و به‌زودی منتشر می‌شود.")
 }) => {
   return (
     <div className="w-full relative py-8 px-4 sm:px-6 lg:px-8 z-10">

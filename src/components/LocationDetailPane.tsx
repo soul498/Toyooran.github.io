@@ -3,6 +3,7 @@ import { Building2, Clock, Factory, MapPin } from "../icons";
 import { baladEmbedFor, baladPlaceFor } from "../lib/baladMaps";
 import { neshanMapsUrl } from "../lib/phone";
 
+import { t } from '../i18n';
 type LocationLike = {
   id?: string;
   title?: string;
@@ -42,7 +43,7 @@ export const LocationDetailPane: React.FC<{
     return () => io.disconnect();
   }, [mapVisible]);
   const embed = baladEmbedFor(location);
-  const title = location.title || (location.type === "headquarter" ? "دفتر مرکزی" : "شعبه");
+  const title = location.title || (location.type === "headquarter" ? t("دفتر مرکزی") : t("شعبه"));
   const mapHref = baladPlaceFor(location) || neshanMapsUrl(location.address || "", location.lat, location.lng);
 
   return (
@@ -90,7 +91,8 @@ export const LocationDetailPane: React.FC<{
           className="inline-flex items-center gap-2 self-center sm:self-start mb-6 px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-sm hover:bg-amber-300"
         >
           <MapPin className="w-4 h-4" />
-          مشاهده نقشه
+          
+          {t("مشاهده نقشه")}
         </a>
         {hours && (
           <div className="flex flex-wrap items-center gap-6 pt-5 border-t border-white/15">

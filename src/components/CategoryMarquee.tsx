@@ -15,6 +15,7 @@ import {
 } from '../icons';
 import { isLiteDevice } from '../lib/device';
 
+import { isEn, t, tr } from '../i18n';
 const ICONS: Record<string, React.ElementType> = {
   LayoutGrid,
   Box,
@@ -33,6 +34,12 @@ interface CategoryMarqueeProps {
   onSelectCategory: (cat: ProductCategory | 'all') => void;
 }
 
+/** English tile label: "Poultry heating systems" → "Heating systems" (the Persian tile drops « مرغداری» the same way). */
+function shortEn(title: string): string {
+  const en = tr(title).replace(/^Poultry\s+/i, '');
+  return en.charAt(0).toUpperCase() + en.slice(1);
+}
+
 export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCategory, onSelectCategory }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -41,7 +48,7 @@ export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCatego
   const scrollLeft = useRef(0);
   const lite = isLiteDevice();
 
-  const allItem = { id: 'all', title: 'همه محصولات', icon: 'LayoutGrid', productCount: 101 };
+  const allItem = { id: 'all', title: t("همه محصولات"), icon: 'LayoutGrid', productCount: 101 };
   const items = [allItem, ...CATEGORIES_DATA];
   const repeatedItems = lite ? [...items, ...items] : [...items, ...items, ...items, ...items];
 
@@ -152,7 +159,7 @@ export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCatego
 
               <div className="relative z-20 flex flex-col items-center justify-center gap-1.5 w-full pb-2">
                 <h3 className={`text-lg sm:text-2xl font-black text-center ${isSelected ? 'text-white' : 'text-slate-800'}`}>
-                  {cat.title.replace(/ مرغداری$/, '')}
+                  {isEn() ? shortEn(cat.title) : cat.title.replace(/ مرغداری$/, '')}
                 </h3>
               </div>
             </div>

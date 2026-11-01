@@ -15,6 +15,7 @@ import { isLiteDevice } from '../lib/device';
 import { LANDING_SERVICE_CARDS } from '../data/landingServiceCards';
 import { isDisabledPagePath } from '../data/disabledPages';
 
+import { t, tr, translateDeep } from '../i18n';
 interface HeroProps {
   cmsHero?: import('../types').HeroCms;
   onNavigate: (section: PageSection) => void;
@@ -92,9 +93,9 @@ export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void
 
 /** Legacy CMS labels from before the copy update map to the new CTA labels (formal, third person). */
 const heroCtaPrimary = (text?: string) =>
-  !text || text === 'محصولات و تجهیزات' ? 'درخواست مشاورهٔ رایگان' : text;
+  !text || text === 'محصولات و تجهیزات' || text === tr('محصولات و تجهیزات') ? t("درخواست مشاورهٔ رایگان") : text;
 const heroCtaSecondary = (text?: string) =>
-  !text || text === 'تماس با ما' || text === 'ارتباط با مهندسین' ? 'مشاهدهٔ محصولات' : text;
+  !text || ['تماس با ما', 'ارتباط با مهندسین'].some((legacy) => text === legacy || text === tr(legacy)) ? t("مشاهدهٔ محصولات") : text;
 
 const Hero: React.FC<HeroProps> = ({
   cmsHero,
@@ -140,7 +141,7 @@ const Hero: React.FC<HeroProps> = ({
     }
   };
 
-  const categoryCards = LANDING_SERVICE_CARDS;
+  const categoryCards = translateDeep(LANDING_SERVICE_CARDS);
 
   return (
     <div className="w-full relative min-h-screen bg-slate-950">
@@ -173,7 +174,7 @@ const Hero: React.FC<HeroProps> = ({
           <LazyHeroImage
             key={heroImages[currentImageIndex] || heroImages[0]}
             src={heroImages[currentImageIndex] || heroImages[0]}
-            alt="شرکت طیوران صنعت پویا"
+            alt={t("شرکت طیوران صنعت پویا")}
             isActive
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#003F86]/25 via-[#003F86]/35 to-slate-950/75 z-10" />
@@ -189,14 +190,14 @@ const Hero: React.FC<HeroProps> = ({
           <div className="hero-pill inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-7 border border-amber-300/50 bg-amber-400/15 font-black">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse" />
             <span className="text-sm sm:text-base text-white tracking-wide drop-shadow-[0_0_12px_rgba(251,191,36,0.55)]">
-              {cmsHero?.pillText || 'نیم قرن تجربه · بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی'}
+              {cmsHero?.pillText || t("نیم قرن تجربه · بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی")}
             </span>
           </div>
 
           <h1
             className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.15] tracking-tight drop-shadow-2xl mb-6"
           >
-            {cmsHero?.title || 'طیوران صنعت پویا'}
+            {cmsHero?.title || t("طیوران صنعت پویا")}
           </h1>
 
           <p className="text-sm sm:text-base lg:text-xl text-slate-100 leading-relaxed max-w-2xl font-light drop-shadow-lg mb-10 mx-auto">
@@ -228,7 +229,7 @@ const Hero: React.FC<HeroProps> = ({
           type="button"
           className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer z-10 bg-transparent border-0 min-w-6 min-h-11"
           onClick={scrollToCards}
-          aria-label="رفتن به بخش بعد"
+          aria-label={t("رفتن به بخش بعد")}
         >
           <ChevronLeft className="w-5 h-5 text-amber-400 -rotate-90 animate-bounce" aria-hidden="true" />
         </button>
@@ -259,10 +260,12 @@ const Hero: React.FC<HeroProps> = ({
           {/* Section Title Header */}
           <div className="w-full mb-8 lg:mb-12 text-center sm:text-right border-b border-slate-200/80 pb-4">
             <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60 inline-block mb-1.5">
-              دسته‌بندی تخصصی طیوران صنعت پویا
+              
+              {t("دسته‌بندی تخصصی طیوران صنعت پویا")}
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-[#003F86]">
-              خدمات
+              
+              {t("خدمات")}
             </h2>
           </div>
 
@@ -285,7 +288,7 @@ const Hero: React.FC<HeroProps> = ({
                   type="button"
                   className="mt-8 lg:mt-12 relative group w-full rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#001c3d] via-[#002d61] to-[#003F86] border border-blue-800 p-8 sm:p-10 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 text-right"
                   onClick={onOpenConsultation}
-                  aria-label="ثبت درخواست مشاوره"
+                  aria-label={t("ثبت درخواست مشاوره")}
                 >
                     {/* Animated geometric background */}
                     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.08)_0%,_transparent_70%)] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -301,15 +304,15 @@ const Hero: React.FC<HeroProps> = ({
                           </div>
                           
                           <div>
-                             <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 tracking-widest uppercase mb-1.5 block drop-shadow-md">مهندسی و اجرا</span>
-                             <p className="text-2xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg mb-2">شرکت طیوران صنعت پویا</p>
-                             <p className="text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed font-medium">از طراحی و ساخت تا تجهیز و بهره‌برداری؛ راهکاری یکپارچه برای پروژه‌های صنعت دام، طیور و آبزیان</p>
+                             <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 tracking-widest uppercase mb-1.5 block drop-shadow-md">{t("مهندسی و اجرا")}</span>
+                             <p className="text-2xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg mb-2">{t("شرکت طیوران صنعت پویا")}</p>
+                             <p className="text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed font-medium">{t("از طراحی و ساخت تا تجهیز و بهره‌برداری؛ راهکاری یکپارچه برای پروژه‌های صنعت دام، طیور و آبزیان")}</p>
                           </div>
                        </div>
 
                        <div className="w-full lg:w-auto shrink-0 mt-4 lg:mt-0">
                          <span className="w-full lg:w-auto bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-8 py-4 rounded-2xl inline-flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(251,191,36,0.3)]">
-                            <span className="text-sm">ثبت درخواست مشاوره</span>
+                            <span className="text-sm">{t("ثبت درخواست مشاوره")}</span>
                             <span className="w-8 h-8 rounded-full bg-slate-950/10 flex items-center justify-center group-hover:translate-x-[-4px] transition-transform">
                                <ArrowLeft className="w-4 h-4" />
                             </span>
@@ -326,11 +329,13 @@ const Hero: React.FC<HeroProps> = ({
               <div className="flex items-center gap-4">
                 <span className="font-bold text-slate-800 flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  مشاوره رایگان
+                  
+                  {t("مشاوره رایگان")}
                 </span>
                 <span className="hidden sm:inline text-slate-300">|</span>
                 <span className="hidden sm:inline text-slate-500">
-                  ارائه خدمات نصب و پشتیبانی فنی، متناسب با نوع پروژه و محصول
+                  
+                  {t("ارائه خدمات نصب و پشتیبانی فنی، متناسب با نوع پروژه و محصول")}
                 </span>
               </div>
 
@@ -340,7 +345,7 @@ const Hero: React.FC<HeroProps> = ({
                   onClick={() => onNavigate('contact')}
                   className="text-[#003F86] hover:text-amber-500 font-bold flex items-center gap-1 transition-colors cursor-pointer min-h-11"
                 >
-                  <span>تماس</span>
+                  <span>{t("تماس")}</span>
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
               </div>

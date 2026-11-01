@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { t } from '../i18n';
 function webpFor(src: string): string | null {
   if (src.endsWith(".jpg") || src.endsWith(".jpeg")) return src.replace(/\.jpe?g$/i, ".webp");
   if (src.endsWith(".webp")) return src;
@@ -12,7 +13,7 @@ export const LazyHeroImage: React.FC<{ src: string, alt?: string, className?: st
     ? "/images/hero-final-1-480.webp 480w, /images/hero-final-1-800.webp 800w, /images/hero-final-1.webp 1400w"
     : null;
   const mobileWebp = src.includes("hero-final-1") ? "/images/hero-final-1-480.webp" : null;
-  const label = alt !== undefined ? alt : "سالن مرغداری تجهیزشده توسط طیوران صنعت پویا";
+  const label = alt !== undefined ? alt : t("سالن مرغداری تجهیزشده توسط طیوران صنعت پویا");
 
   return (
     <div

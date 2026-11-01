@@ -12,6 +12,7 @@ import {
 } from '../../icons';
 import { Service } from '../../types';
 
+import { t } from '../../i18n';
 interface ServiceDetailModalProps {
   service: Service | null;
   onClose: () => void;
@@ -33,7 +34,8 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
         <div className="sticky top-0 bg-white/95  border-b border-slate-200 p-4 sm:p-6 flex items-center justify-between z-20">
           <div className="flex items-center gap-3">
             <span className="bg-[#003F86] text-white text-xs font-bold px-3 py-1 rounded-lg">
-              خدمات مهندسی و پیمانکاری
+              
+              {t("خدمات مهندسی و پیمانکاری")}
             </span>
           </div>
           <button
@@ -58,7 +60,8 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
 
             <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4">
               <span className="text-xs font-bold text-amber-900 block mb-1">
-                چالش و مسئله‌ای که با این خدمت حل می‌شود:
+                
+                {t("چالش و مسئله‌ای که با این خدمت حل می‌شود:")}
               </span>
               <p className="text-xs sm:text-sm text-amber-950 leading-relaxed font-normal">
                 {service.problemSolved}
@@ -70,7 +73,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
           <div>
             <h3 className="text-base font-extrabold text-slate-900 mb-3 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>شرح تعهدات و اقلام تحویلی (Scope of Work):</span>
+              <span>{t("شرح تعهدات و اقلام تحویلی (Scope of Work):")}</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {service.whatWeProvide.map((item, i) => (
@@ -85,7 +88,8 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
           {/* Workflow Steps */}
           <div>
             <h3 className="text-base font-extrabold text-slate-900 mb-3">
-              فرآیند گام‌به‌گام اجرای خدمت:
+              
+              {t("فرآیند گام‌به‌گام اجرای خدمت:")}
             </h3>
             <div className="space-y-3">
               {service.workflow.map((step, i) => (
@@ -101,7 +105,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
                       {step.description}
                     </p>
                     <div className="mt-2 text-[11px] text-[#003F86] font-semibold flex items-center gap-1">
-                      <span>خروجی تحویلی:</span>
+                      <span>{t("خروجی تحویلی:")}</span>
                       <span className="underline">{step.deliverable}</span>
                     </div>
                   </div>
@@ -113,7 +117,8 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
           {/* Suitable For */}
           <div>
             <h3 className="text-base font-extrabold text-slate-900 mb-2">
-              این خدمت مناسب چه فارم‌ها و پروژه‌هایی است؟
+              
+              {t("این خدمت مناسب چه فارم‌ها و پروژه‌هایی است؟")}
             </h3>
             <div className="flex flex-wrap gap-2">
               {service.suitableFor.map((item, i) => (
@@ -129,7 +134,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
             <div className="space-y-3">
               <h4 className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
                 <HelpCircle className="w-4 h-4 text-[#003F86]" />
-                <span>پرسش‌های متداول این خدمت</span>
+                <span>{t("پرسش‌های متداول این خدمت")}</span>
               </h4>
               <div className="space-y-2">
                 {service.faqs.map((faq, i) => (
@@ -152,10 +157,12 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
         <div className="sticky bottom-0 bg-slate-900 text-white p-4 sm:p-6 rounded-b-3xl flex flex-col sm:flex-row items-center justify-between gap-4 z-20">
           <div>
             <h4 className="font-bold text-amber-400 text-sm">
-              درخواست اجرای خدمت: {service.title}
+              
+              {t("درخواست اجرای خدمت:")}{" "}{service.title}
             </h4>
             <p className="text-xs text-slate-300 font-light mt-0.5">
-              تنظیم جلسه حضوری، بازدید از فارم یا دریافت برآورد اولیه هزینه و زمان‌بندی
+              
+              {t("تنظیم جلسه حضوری، بازدید از فارم یا دریافت برآورد اولیه هزینه و زمان‌بندی")}
             </p>
           </div>
           <button
@@ -165,7 +172,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
             }}
             className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shrink-0 shadow-md"
           >
-            <span>درخواست مشاوره اختصاصی</span>
+            <span>{t("درخواست مشاوره اختصاصی")}</span>
             <ChevronLeft className="w-4 h-4" />
           </button>
         </div>

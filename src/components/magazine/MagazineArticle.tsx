@@ -14,6 +14,7 @@ import { RichInline } from '../RichBlocks';
 import { findTopic, topicPath } from '../../seo/topics';
 import { resolveProductCards, PRODUCT_CARDS_HEADING, PRODUCT_CARD_IMG } from '../../seo/productCards';
 
+import { t, tr, lp, routerTo } from '../../i18n';
 interface MagazineArticleProps {
   article: Article;
   onBack: () => void;
@@ -23,8 +24,8 @@ interface MagazineArticleProps {
 type FitBox = { type: 'fit'; label: string; items: string[]; tone: 'good' | 'warn' };
 type RenderItem = ArticleBlock | { type: 'fitGroup'; boxes: FitBox[] };
 
-const FIT_RE = /^کی\s*مناسب/;
-const NOT_FIT_RE = /^کی\s*مناسب\s*نیست/;
+const FIT_RE = /^(کی\s*مناسب|When it (suits|does not suit))/i;
+const NOT_FIT_RE = /^(کی\s*مناسب\s*نیست|When it does not suit)/i;
 
 /** Pairs «کی مناسب است:» / «کی مناسب نیست…» paragraphs + their lists into side-by-side boxes. */
 function groupBlocks(blocks: ArticleBlock[]): RenderItem[] {
@@ -125,8 +126,8 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
       const cards = resolveProductCards(block.ids, products);
       if (!cards.length) return null;
       return (
-        <section key={idx} aria-label={PRODUCT_CARDS_HEADING} className="my-10 rounded-2xl bg-amber-50 border border-amber-300 border-s-4 border-s-amber-400 p-4 md:p-6">
-          <h2 className="text-xl font-black text-slate-900 mb-4">{PRODUCT_CARDS_HEADING}</h2>
+        <section key={idx} aria-label={tr(PRODUCT_CARDS_HEADING)} className="my-10 rounded-2xl bg-amber-50 border border-amber-300 border-s-4 border-s-amber-400 p-4 md:p-6">
+          <h2 className="text-xl font-black text-slate-900 mb-4">{tr(PRODUCT_CARDS_HEADING)}</h2>
           <ul className="flex sm:grid sm:grid-cols-3 gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1">
             {cards.map((card) => (
               <li key={card.id} className="snap-start shrink-0 w-[75%] sm:w-auto flex flex-col bg-white rounded-xl border border-amber-200 overflow-hidden">
@@ -135,9 +136,9 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                 ) : null}
                 <div className="flex flex-col flex-1 p-4 gap-2">
                   <h3 className="text-[15px] font-black leading-[1.7] text-slate-900">{card.name}</h3>
-                  {card.model ? <p className="text-[13px] text-slate-500">مدل: {card.model}</p> : null}
+                  {card.model ? <p className="text-[13px] text-slate-500">{t("مدل:")}{" "}{card.model}</p> : null}
                   {card.spec ? <p className="text-[13px] leading-[1.8] text-slate-700">{card.spec}</p> : null}
-                  <a href={card.href} className="mt-auto inline-block text-center bg-amber-400 hover:bg-amber-500 text-blue-950 font-black text-sm rounded-lg px-4 py-2.5">مشاهده محصول</a>
+                  <a href={lp(card.href)} className="mt-auto inline-block text-center bg-amber-400 hover:bg-amber-500 text-blue-950 font-black text-sm rounded-lg px-4 py-2.5">{t("مشاهده محصول")}</a>
                 </div>
               </li>
             ))}
@@ -153,13 +154,13 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
         <div key={idx} className="my-10 bg-gradient-to-r from-blue-900 to-[#003F86] rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-blue-900/20 relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('/images/pattern-circuit.svg')] opacity-10 mix-blend-overlay"></div>
           <div className="relative z-10 flex-1">
-            <h4 className="text-white text-lg md:text-xl font-bold mb-2">نیاز به راهنمایی بیشتر دارید؟</h4>
-            <p className="text-blue-100 text-sm md:text-base font-medium">کارشناسان طیوران صنعت پویا آمادهٔ ارائهٔ مشاورهٔ تخصصی و فنی هستند.</p>
+            <h4 className="text-white text-lg md:text-xl font-bold mb-2">{t("نیاز به راهنمایی بیشتر دارید؟")}</h4>
+            <p className="text-blue-100 text-sm md:text-base font-medium">{t("کارشناسان طیوران صنعت پویا آمادهٔ ارائهٔ مشاورهٔ تخصصی و فنی هستند.")}</p>
           </div>
           {external ? (
-            <a href={block.href} className={buttonClass} rel="noopener noreferrer">{block.label}</a>
+            <a href={lp(block.href)} className={buttonClass} rel="noopener noreferrer">{block.label}</a>
           ) : (
-            <Link to={block.href} className={buttonClass}>{block.label}</Link>
+            <Link to={routerTo(block.href)} className={buttonClass}>{block.label}</Link>
           )}
         </div>
       );
@@ -233,7 +234,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
               className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-[#003F86] px-4 py-2 rounded-full text-sm font-bold transition-all shadow-sm"
             >
               <ArrowRight className="w-4 h-4" />
-              <span>بازگشت به مجله</span>
+              <span>{t("بازگشت به مجله")}</span>
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-slate-500 text-sm font-medium mb-4">
@@ -284,7 +285,8 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
                   <LinkIcon className="w-6 h-6 text-[#003F86]" />
                 </div>
                 <h3 className="text-xl font-black text-slate-900">
-                  محصولات و تجهیزات مرتبط
+                  
+                  {t("محصولات و تجهیزات مرتبط")}
                 </h3>
               </div>
               
@@ -309,13 +311,13 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
           )}
           
           <div className="mt-10 pt-8 border-t border-slate-200 text-sm text-slate-600 space-y-2">
-            {article.authorName ? <p>نویسنده: {article.authorName}{article.authorRole ? ` — ${article.authorRole}` : ''}</p> : null}
-            {article.reviewerName ? <p>بازبین فنی: {article.reviewerName}{article.reviewerRole ? ` — ${article.reviewerRole}` : ''}</p> : null}
-            <p>تاریخ انتشار: {article.datePublishedIso || article.date}</p>
+            {article.authorName ? <p>{t("نویسنده:")}{" "}{article.authorName}{article.authorRole ? ` — ${article.authorRole}` : ''}</p> : null}
+            {article.reviewerName ? <p>{t("بازبین فنی:")}{" "}{article.reviewerName}{article.reviewerRole ? ` — ${article.reviewerRole}` : ''}</p> : null}
+            <p>{t("تاریخ انتشار:")}{" "}{article.datePublishedIso || article.date}</p>
             {article.sources?.length ? (
               <ul className="list-disc mr-5">
                 {article.sources.map((source, sourceIndex) => (
-                  <li key={`${source.name}-${sourceIndex}`}>{source.url && isSafeHref(source.url) && !isDisabledPagePath(source.url) ? <a className="text-[#003F86] font-bold" href={source.url} rel="noopener noreferrer">{source.name}</a> : source.name}</li>
+                  <li key={`${source.name}-${sourceIndex}`}>{source.url && isSafeHref(source.url) && !isDisabledPagePath(source.url) ? <a className="text-[#003F86] font-bold" href={lp(source.url)} rel="noopener noreferrer">{source.name}</a> : source.name}</li>
                 ))}
               </ul>
             ) : null}
@@ -323,15 +325,15 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
               {!isDisabledPagePath(serviceHref) ? (
                 <>
                   <Link className="text-[#003F86] font-bold" to={serviceHref}>
-                    {relatedService ? relatedService.title : "تجهیز و نوسازی سالن"}
+                    {relatedService ? relatedService.title : t("تجهیز و نوسازی سالن")}
                   </Link>
                   {' · '}
                 </>
               ) : null}
-              <Link className="text-[#003F86] font-bold" to="/contact?cta=article-consult">درخواست مشاوره</Link>
+              <Link className="text-[#003F86] font-bold" to="/contact?cta=article-consult">{t("درخواست مشاوره")}</Link>
             </p>
           </div>
-          <div className="mt-16 pt-8 border-t border-slate-200 flex flex-wrap items-center gap-2" aria-label="برچسب‌های مقاله">
+          <div className="mt-16 pt-8 border-t border-slate-200 flex flex-wrap items-center gap-2" aria-label={t("برچسب‌های مقاله")}>
              <Tag className="w-5 h-5 text-slate-400 me-1" />
              {topic ? (
                <Link to={topicPath(topic)} className="bg-amber-400 hover:bg-amber-500 text-blue-950 text-xs font-black px-3.5 py-1.5 rounded-full">

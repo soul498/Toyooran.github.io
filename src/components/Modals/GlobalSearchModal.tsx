@@ -3,6 +3,7 @@ import { Search, X, ChevronLeft, Wrench, Layers, BookOpen, CheckCircle2, Zap } f
 import { Product, Project, Article } from '../../types';
 import { PRODUCTS, PROJECTS, ARTICLES } from '../../data/mockData';
 
+import { t } from '../../i18n';
 interface GlobalSearchModalProps {
   products?: Product[];
   projects?: Project[];
@@ -70,7 +71,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="جستجوی نام تجهیزات، کد قطعه (مثلاً: ۱۴۰ یا ۴۲۰) یا مقاله فنی..."
+            placeholder={t("جستجوی نام تجهیزات، کد قطعه (مثلاً: ۱۴۰ یا ۴۲۰) یا مقاله فنی...")}
             className="w-full bg-transparent border-none text-sm focus:outline-none text-slate-900 placeholder:text-slate-400 font-medium"
           />
           {query && (
@@ -78,7 +79,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               onClick={() => setQuery('')}
               className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1 bg-slate-200 rounded-lg"
             >
-              پاک کردن
+              
+              {t("پاک کردن")}
             </button>
           )}
           <button
@@ -93,12 +95,14 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         <div className="max-h-[60vh] overflow-y-auto p-5 space-y-6">
           {!query.trim() ? (
             <div className="text-center py-8 text-slate-400 text-xs">
-              <span className="block mb-2 font-bold text-slate-600">جستجوی هوشمند در کل پایگاه داده طیوران</span>
-              عبارت مورد نظر خود مانند: «دانخوری»، «پرس پلت»، «هواکش ۱۴۰»، «مرغداری گوشتی»، «تهویه زمستان» را تایپ کنید.
+              <span className="block mb-2 font-bold text-slate-600">{t("جستجوی هوشمند در کل پایگاه داده طیوران")}</span>
+              
+              {t("عبارت مورد نظر خود مانند: «دانخوری»، «پرس پلت»، «هواکش ۱۴۰»، «مرغداری گوشتی»، «تهویه زمستان» را تایپ کنید.")}
             </div>
           ) : totalMatches === 0 ? (
             <div className="text-center py-8 text-slate-500 text-xs">
-              نتیجه‌ای برای «{query}» یافت نشد. لطفاً کلمات کلیدی دیگری را جستجو کنید.
+              
+              {t("نتیجه‌ای برای «")}{query}{t("» یافت نشد. لطفاً کلمات کلیدی دیگری را جستجو کنید.")}
             </div>
           ) : (
             <>
@@ -107,7 +111,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-[#003F86] mb-3">
                     <Wrench className="w-4 h-4" />
-                    <span>محصولات و تجهیزات ({results.products.length}):</span>
+                    <span>{t("محصولات و تجهیزات (")}{results.products.length}):</span>
                   </div>
                   <div className="space-y-2">
                     {results.products.map((p) => (
@@ -141,7 +145,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-[#003F86] mb-3">
                     <Layers className="w-4 h-4" />
-                    <span>گزارش پروژه‌ها ({results.projects.length}):</span>
+                    <span>{t("گزارش پروژه‌ها (")}{results.projects.length}):</span>
                   </div>
                   <div className="space-y-2">
                     {results.projects.map((pr) => (
@@ -158,7 +162,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                             {pr.title}
                           </strong>
                           <span className="text-[11px] text-slate-500">
-                            {pr.location} | ظرفیت: {pr.capacity}
+                            {pr.location} {" "}{t("| ظرفیت:")}{" "}{pr.capacity}
                           </span>
                         </div>
                         <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-[#003F86]" />
@@ -173,7 +177,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-[#003F86] mb-3">
                     <BookOpen className="w-4 h-4" />
-                    <span>مقالات و راهنماهای فنی ({results.articles.length}):</span>
+                    <span>{t("مقالات و راهنماهای فنی (")}{results.articles.length}):</span>
                   </div>
                   <div className="space-y-2">
                     {results.articles.map((art) => (
@@ -190,7 +194,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                             {art.title}
                           </strong>
                           <span className="text-[11px] text-slate-500">
-                            {art.categoryLabel} | زمان مطالعه: {art.readTime}
+                            {art.categoryLabel} {" "}{t("| زمان مطالعه:")}{" "}{art.readTime}
                           </span>
                         </div>
                         <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-[#003F86]" />

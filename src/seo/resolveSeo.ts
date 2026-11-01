@@ -1,7 +1,7 @@
 import type { Article, CategoryItem, CompanyInfo, Product, Project, Service } from "../types";
 import { withMediaVersion } from "../lib/mediaUrl";
 import { articleBlocks } from "./articleBlocks";
-import { MAGAZINE_TOPICS, findTopic, topicPath } from "./topics";
+import { MAGAZINE_TOPICS, findTopic, localTopics, topicPath } from "./topics";
 import { resolveProductCards, PRODUCT_CARDS_HEADING, PRODUCT_CARD_IMG } from "./productCards";
 import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle, sortArticlesNewestFirst } from "./articleMeta";
 import { isSafeHref, isSafeImageSrc } from "./safeUrl";
@@ -12,6 +12,7 @@ import { removedProductRedirect } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 import { isDisabledPagePath, isServiceDisabled } from "../data/disabledPages";
 
+import { EN_PREFIX, isEn, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
 export const FITOUT_SLUG = "poultry-hall-fitout";
@@ -23,7 +24,7 @@ export const SEO_REDIRECTS: Record<string, string> = {
 
 // body: one-paragraph intro (inline **bold** / [label](/path) allowed; categoryIntro() returns plain text).
 // intro: optional longer approved copy rendered under it, identically in #seo-prerender and the client catalog.
-const CATEGORY_SEO: Record<string, { title: string; h1: string; description: string; body: string; intro?: RichBlock[] }> = {
+const CATEGORY_SEO_FA: Record<string, { title: string; h1: string; description: string; body: string; intro?: RichBlock[] }> = {
   ventilation: {
     title: "هواکش و تهویه سالن مرغداری | طیوران صنعت پویا",
     h1: "هواکش و سیستم تهویه سالن مرغداری",
@@ -155,6 +156,12 @@ const CATEGORY_SEO: Record<string, { title: string; h1: string; description: str
   },
 };
 
+/** Category copy for the active language (Persian source; English via the dictionary). */
+function catSeo(slug: string) {
+  const m = CATEGORY_SEO_FA[slug];
+  return m ? translateDeep(m) : undefined;
+}
+
 /** H1 of the /products hub. The company covers the whole livestock & poultry industry, not only poultry halls. */
 export const PRODUCTS_HUB_H1 = "هایپرمارکت صنعت دام و طیور";
 
@@ -163,8 +170,8 @@ export const PRODUCTS_HUB_H1 = "هایپرمارکت صنعت دام و طیور
  * "all"/empty → hub H1; known category → CATEGORY_SEO h1, else the category's own title.
  */
 export function catalogHeading(slug: string | undefined, categories: { id: string; title: string }[] = []): string {
-  if (!slug || slug === "all") return PRODUCTS_HUB_H1;
-  return CATEGORY_SEO[slug]?.h1 || categories.find((c) => c.id === slug)?.title || PRODUCTS_HUB_H1;
+  if (!slug || slug === "all") return tr(PRODUCTS_HUB_H1);
+  return catSeo(slug)?.h1 || categories.find((c) => c.id === slug)?.title || tr(PRODUCTS_HUB_H1);
 }
 
 export const FITOUT_CHECKLIST = [
@@ -264,7 +271,7 @@ export function productSeoSlug(product: Product): string {
   const custom = String(product.slug || "").trim().toLowerCase();
   if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(custom)) return custom;
   const code = String(product.code || product.id || "").toLowerCase();
-  const name = String(product.name || "")
+  const name = String(product.slugName || product.name || "")
     .trim()
     .replace(/[()[\].,،/\\+#]+/g, " ")
     .replace(/\s+/g, "-")
@@ -352,14 +359,14 @@ function orgSchema(company: CompanyInfo) {
     url: CANONICAL_ORIGIN,
     telephone: SALES_PHONE_E164,
     contactPoint: [
-      { "@type": "ContactPoint", telephone: SALES_PHONE_E164, contactType: "sales", name: "مشاوره، فروش و پشتیبانی", areaServed: "IR", availableLanguage: "fa" },
-      { "@type": "ContactPoint", telephone: OFFICE_PHONE_E164, contactType: "customer service", name: "تلفن دفتر", areaServed: "IR", availableLanguage: "fa" },
+      { "@type": "ContactPoint", telephone: SALES_PHONE_E164, contactType: "sales", name: t("مشاوره، فروش و پشتیبانی"), areaServed: "IR", availableLanguage: "fa" },
+      { "@type": "ContactPoint", telephone: OFFICE_PHONE_E164, contactType: "customer service", name: t("تلفن دفتر"), areaServed: "IR", availableLanguage: "fa" },
     ],
     email: company.email || undefined,
     address: {
       "@type": "PostalAddress",
       addressCountry: "IR",
-      addressLocality: "مشهد",
+      addressLocality: t("مشهد"),
       streetAddress: company.address,
     },
     sameAs,
@@ -380,26 +387,26 @@ function breadcrumb(items: { name: string; path: string }[]) {
 
 /** Plain-text one-paragraph intro (markup stripped). */
 export function categoryIntro(slug: string): string | undefined {
-  const body = CATEGORY_SEO[slug]?.body;
+  const body = catSeo(slug)?.body;
   return body ? inlinePlain(body) : undefined;
 }
 
 /** Raw intro paragraph (may contain inline **bold** / [label](/path)) for rich rendering. */
 export function categoryIntroRich(slug: string): string | undefined {
-  return CATEGORY_SEO[slug]?.body;
+  return catSeo(slug)?.body;
 }
 
 /** Longer approved category copy, rendered under the intro on server and client. */
 export function categoryIntroBlocks(slug: string): RichBlock[] | undefined {
-  return CATEGORY_SEO[slug]?.intro;
+  return catSeo(slug)?.intro;
 }
 
 function categoryMeta(slug: string, catalog: SeoCatalog) {
-  if (CATEGORY_SEO[slug]) return CATEGORY_SEO[slug];
+  { const m = catSeo(slug); if (m) return m; }
   const cat = catalog.categories.find((c) => c.id === slug);
   if (!cat) return null;
   return {
-    title: `${cat.title} | طیوران صنعت پویا`,
+    title: `${cat.title} | ${t("طیوران صنعت پویا")}`,
     h1: catalogHeading(slug, catalog.categories),
     description: cat.description,
     body: cat.description,
@@ -407,7 +414,7 @@ function categoryMeta(slug: string, catalog: SeoCatalog) {
 }
 
 function isCategorySlug(slug: string, catalog: SeoCatalog) {
-  return Boolean(CATEGORY_SEO[slug] || catalog.categories.some((c) => c.id === slug));
+  return Boolean(CATEGORY_SEO_FA[slug] || catalog.categories.some((c) => c.id === slug));
 }
 
 function articleShareImage(image?: string): string | undefined {
@@ -475,9 +482,9 @@ function articleHtml(article: Article, products: Product[] = []): string {
         const cards = resolveProductCards(block.ids, products);
         if (!cards.length) return "";
         const items = cards
-          .map((c) => `<li>${c.image ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.name)}" width="${PRODUCT_CARD_IMG.width}" height="${PRODUCT_CARD_IMG.height}" loading="lazy" decoding="async" />` : ""}<h3><a href="${escapeHtml(c.href)}">${escapeHtml(c.name)}</a></h3>${c.model ? `<p>مدل: ${escapeHtml(c.model)}</p>` : ""}${c.spec ? `<p>${escapeHtml(c.spec)}</p>` : ""}<a href="${escapeHtml(c.href)}">مشاهده محصول</a></li>`)
+          .map((c) => `<li>${c.image ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.name)}" width="${PRODUCT_CARD_IMG.width}" height="${PRODUCT_CARD_IMG.height}" loading="lazy" decoding="async" />` : ""}<h3><a href="${escapeHtml(c.href)}">${escapeHtml(c.name)}</a></h3>${c.model ? `<p>${t("مدل:")} ${escapeHtml(c.model)}</p>` : ""}${c.spec ? `<p>${escapeHtml(c.spec)}</p>` : ""}<a href="${escapeHtml(c.href)}">${t("مشاهده محصول")}</a></li>`)
           .join("");
-        return `<section aria-label="${PRODUCT_CARDS_HEADING}"><h2>${PRODUCT_CARDS_HEADING}</h2><ul>${items}</ul></section>`;
+        return `<section aria-label="${tr(PRODUCT_CARDS_HEADING)}"><h2>${tr(PRODUCT_CARDS_HEADING)}</h2><ul>${items}</ul></section>`;
       }
       if (block.type === "cta") {
         if (!isSafeHref(block.href) || isDisabledPagePath(block.href)) return "";
@@ -493,10 +500,10 @@ function articleHtml(article: Article, products: Product[] = []): string {
 function articleTagsHtml(article: Article): string {
   const topic = findTopic(article.topic);
   const parts: string[] = [];
-  if (topic) parts.push(`<p>موضوع: <a href="${topicPath(topic)}">${escapeHtml(topic.label)}</a></p>`);
-  if (article.categoryLabel) parts.push(`<p>دسته: ${escapeHtml(article.categoryLabel)}</p>`);
+  if (topic) parts.push(`<p>${t("موضوع:")} <a href="${topicPath(topic)}">${escapeHtml(topic.label)}</a></p>`);
+  if (article.categoryLabel) parts.push(`<p>${t("دسته:")} ${escapeHtml(article.categoryLabel)}</p>`);
   const tags = (article.tags || []).filter(Boolean);
-  if (tags.length) parts.push(`<p>برچسب‌ها: ${tags.map((t) => escapeHtml(t)).join("، ")}</p>`);
+  if (tags.length) parts.push(`<p>${t("برچسب‌ها:")} ${tags.map((tag) => escapeHtml(tag)).join(isEn() ? ", " : "، ")}</p>`);
   return parts.join("\n");
 }
 
@@ -528,7 +535,7 @@ function productBody(product: Product, catalog?: SeoCatalog): string {
     .join("");
   const feedingCta =
     product.category === "feeding"
-      ? `<p><a href="/contact">محاسبه تعداد خطوط دانخوری</a></p>`
+      ? `<p><a href="/contact">${t("محاسبه تعداد خطوط دانخوری")}</a></p>`
       : "";
   const intro = categoryIntro(product.category);
   const siblings = (catalog ? relatedInCategory(product, catalog.products, 6) : [])
@@ -545,7 +552,7 @@ function productBody(product: Product, catalog?: SeoCatalog): string {
         .map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`)
         .join("")
     : "";
-  const crumbs = `<nav aria-label="مسیر صفحه"><a href="/">خانه</a> › <a href="/products">محصولات</a> › <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a> › ${escapeHtml(product.name)}</nav>`;
+  const crumbs = `<nav aria-label="${t("مسیر صفحه")}"><a href="/">${t("خانه")}</a> › <a href="/products">${t("محصولات")}</a> › <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a> › ${escapeHtml(product.name)}</nav>`;
   // Real <img> for crawlers and an early, high-priority fetch of the hero photo (same URL as the client
   // LazyImage, so the client render hits the cache). All product photos are 16:9. `hidden` keeps it out
   // of layout: a laid-out image inside the clipped #seo-prerender produced a 0.47 CLS in Lighthouse.
@@ -557,31 +564,31 @@ function productBody(product: Product, catalog?: SeoCatalog): string {
 ${hero}
 <p>${escapeHtml(product.fullDescription || product.shortDescription)}</p>
 ${blocksToHtml(product.details)}
-<p>دسته: <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>
-${specs ? `<h2>مشخصات فنی ${escapeHtml(product.name)}</h2><ul>${specs}</ul>` : ""}
-${advantages ? `<h2>ویژگی‌ها</h2><ul>${advantages}</ul>` : ""}
-${applications ? `<h2>کاربردها</h2><ul>${applications}</ul>` : ""}
-${intro ? `<h2>نکته انتخاب در ${escapeHtml(product.categoryTitle)}</h2><p>${escapeHtml(intro)}</p>` : ""}
-${articles ? `<h2>راهنمای مرتبط</h2><ul>${articles}</ul>` : ""}
-${fitoutLink("") || services ? `<h2>خدمات مرتبط</h2><ul>${fitoutLink("") ? `<li>${fitoutLink("تجهیز و نوسازی سالن مرغداری")}</li>` : ""}${services}</ul>` : ""}
-${siblings ? `<h2>محصولات دیگر ${escapeHtml(product.categoryTitle)}</h2><ul>${siblings}</ul>` : ""}
+<p>${t("دسته:")} <a href="/products/${escapeHtml(product.category)}">${escapeHtml(product.categoryTitle)}</a></p>
+${specs ? `<h2>${tf("مشخصات فنی {name}", { name: escapeHtml(product.name) })}</h2><ul>${specs}</ul>` : ""}
+${advantages ? `<h2>${t("ویژگی‌ها")}</h2><ul>${advantages}</ul>` : ""}
+${applications ? `<h2>${t("کاربردها")}</h2><ul>${applications}</ul>` : ""}
+${intro ? `<h2>${tf("نکته انتخاب در {category}", { category: escapeHtml(product.categoryTitle) })}</h2><p>${escapeHtml(intro)}</p>` : ""}
+${articles ? `<h2>${t("راهنمای مرتبط")}</h2><ul>${articles}</ul>` : ""}
+${fitoutLink("") || services ? `<h2>${t("خدمات مرتبط")}</h2><ul>${fitoutLink("") ? `<li>${fitoutLink(t("تجهیز و نوسازی سالن مرغداری"))}</li>` : ""}${services}</ul>` : ""}
+${siblings ? `<h2>${tf("محصولات دیگر {category}", { category: escapeHtml(product.categoryTitle) })}</h2><ul>${siblings}</ul>` : ""}
 ${feedingCta}
-<p><a href="/contact">استعلام قیمت و مشخصات فنی ${escapeHtml(product.name)}</a> · <a href="/TSPK_catalog.pdf">دانلود کاتالوگ PDF</a></p>`;
+<p><a href="/contact">${tf("استعلام قیمت و مشخصات فنی {name}", { name: escapeHtml(product.name) })}</a> · <a href="/TSPK_catalog.pdf">${t("دانلود کاتالوگ PDF")}</a></p>`;
 }
 
 function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string {
   const provide = service.whatWeProvide.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   const steps = (service.workflow || [])
-    .map((step) => `<li>${escapeHtml(step.title)}: ${escapeHtml(step.description)} — خروجی: ${escapeHtml(step.deliverable)}</li>`)
+    .map((step) => `<li>${escapeHtml(step.title)}: ${escapeHtml(step.description)} — ${t("خروجی:")} ${escapeHtml(step.deliverable)}</li>`)
     .join("");
   const isFitout = service.id === FITOUT_SERVICE_ID;
-  const checklist = isFitout ? `<h2>چک‌لیست ممیزی قبل از نوسازی</h2><ul>${FITOUT_CHECKLIST.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : "";
+  const checklist = isFitout ? `<h2>${t("چک‌لیست ممیزی قبل از نوسازی")}</h2><ul>${FITOUT_CHECKLIST.map(tr).map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : "";
   const faqs = (service.faqs || []).map((f) => `<h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p>`).join("");
   const related = catalog.projects
     .filter((p) => service.sampleProjectIds?.includes(p.id))
     .map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)}</li>`)
     .join("");
-  const lead = isFitout ? `<p>${escapeHtml(FITOUT_LEAD)}</p>` : `<p>${escapeHtml(service.tagline)}</p>`;
+  const lead = isFitout ? `<p>${escapeHtml(tr(FITOUT_LEAD))}</p>` : `<p>${escapeHtml(service.tagline)}</p>`;
   const suitable = (service.suitableFor || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   const relatedCats = (service.relatedEquipmentCategories || [])
     .map((id) => catalog.categories.find((c) => c.id === id))
@@ -589,31 +596,31 @@ function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string 
     .map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.description)}</li>`)
     .join("");
   const auditLink = isFitout
-    ? ` · <a href="/magazine/before-and-after-renovation">قبل و بعد از نوسازی</a> · <a href="/contact">درخواست ممیزی</a>`
+    ? ` · <a href="/magazine/before-and-after-renovation">${t("قبل و بعد از نوسازی")}</a> · <a href="/contact">${t("درخواست ممیزی")}</a>`
     : "";
   return `${lead}
 <p>${escapeHtml(service.problemSolved)}</p>
-<h2>دامنه کار ${escapeHtml(h1)}</h2>
+<h2>${tf("دامنه کار {title}", { title: escapeHtml(h1) })}</h2>
 <ul>${provide}</ul>
-${steps ? `<h2>فرایند اجرا</h2><ol>${steps}</ol>` : ""}
+${steps ? `<h2>${t("فرایند اجرا")}</h2><ol>${steps}</ol>` : ""}
 ${checklist}
-${suitable ? `<h2>مناسب برای</h2><ul>${suitable}</ul>` : ""}
-${relatedCats ? `<h2>تجهیزات مرتبط</h2><ul>${relatedCats}</ul>` : ""}
-${related ? `<h2>پروژه‌های مرتبط</h2><ul>${related}</ul>` : ""}
-${faqs ? `<h2>پرسش‌های متداول</h2>${faqs}` : ""}
-<p><a href="/contact">درخواست بازدید و پیشنهاد فنی</a> · <a href="/products">مشاهده تجهیزات</a>${auditLink}</p>`;
+${suitable ? `<h2>${t("مناسب برای")}</h2><ul>${suitable}</ul>` : ""}
+${relatedCats ? `<h2>${t("تجهیزات مرتبط")}</h2><ul>${relatedCats}</ul>` : ""}
+${related ? `<h2>${t("پروژه‌های مرتبط")}</h2><ul>${related}</ul>` : ""}
+${faqs ? `<h2>${t("پرسش‌های متداول")}</h2>${faqs}` : ""}
+<p><a href="/contact">${t("درخواست بازدید و پیشنهاد فنی")}</a> · <a href="/products">${t("مشاهده تجهیزات")}</a>${auditLink}</p>`;
 }
 
 function projectBody(project: Project): string {
   const cs = project.caseStudy;
   const steps = cs?.processSteps?.map((s) => `<li>${escapeHtml(s.title)}: ${escapeHtml(s.desc)}</li>`).join("") || "";
   const results = cs?.results?.map((r) => `<li>${escapeHtml(r.label)}: ${escapeHtml(r.value)} — ${escapeHtml(r.detail)}</li>`).join("") || "";
-  return `<p>${escapeHtml(project.location)} — ${escapeHtml(project.year)} — ظرفیت: ${escapeHtml(project.capacity)}</p>
+  return `<p>${escapeHtml(project.location)} — ${escapeHtml(project.year)} — ${t("ظرفیت:")} ${escapeHtml(project.capacity)}</p>
 ${project.keyOutcome ? `<p>${escapeHtml(project.keyOutcome)}</p>` : ""}
 ${cs ? `<p>${escapeHtml(cs.problem)}</p><p>${escapeHtml(cs.solution)}</p>` : ""}
-${steps ? `<h2>مراحل</h2><ol>${steps}</ol>` : ""}
-${results ? `<h2>نتیجه اعلام‌شده</h2><ul>${results}</ul>` : `<ul>${project.servicesProvided.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`}
-<p><a href="/contact">مشاوره پروژه مشابه</a></p>`;
+${steps ? `<h2>${t("مراحل")}</h2><ol>${steps}</ol>` : ""}
+${results ? `<h2>${t("نتیجه اعلام‌شده")}</h2><ul>${results}</ul>` : `<ul>${project.servicesProvided.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`}
+<p><a href="/contact">${t("مشاوره پروژه مشابه")}</a></p>`;
 }
 
 export const HOME_LINKS_CATEGORIES_HEADING = "دسته‌های تجهیزات دام و طیور";
@@ -639,13 +646,13 @@ function homeExtras(catalog: SeoCatalog): string {
   const popular = homePriorityProducts(catalog.products)
     .map((p) => `<li><a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a></li>`)
     .join("");
-  return `<h2>نوسازی و تجهیز کامل سالن مرغداری</h2><p>${escapeHtml(FITOUT_LEAD)}</p>
+  return `<h2>${t("نوسازی و تجهیز کامل سالن مرغداری")}</h2><p>${escapeHtml(tr(FITOUT_LEAD))}</p>
 ${steps ? `<ol>${steps}</ol>` : ""}
-${catLinks ? `<h2>${HOME_LINKS_CATEGORIES_HEADING}</h2><ul>${catLinks}</ul>` : ""}
-${popular ? `<h2>${HOME_LINKS_PRODUCTS_HEADING}</h2><ul>${popular}</ul>` : ""}
-${featured ? `<h2>محصولات پرفروش</h2><ul>${featured}</ul>` : ""}
-${projects ? `<h2>پروژه‌ها</h2><ul>${projects}</ul>` : ""}
-${posts ? `<h2>مجله تخصصی</h2><ul>${posts}</ul>` : ""}`;
+${catLinks ? `<h2>${tr(HOME_LINKS_CATEGORIES_HEADING)}</h2><ul>${catLinks}</ul>` : ""}
+${popular ? `<h2>${tr(HOME_LINKS_PRODUCTS_HEADING)}</h2><ul>${popular}</ul>` : ""}
+${featured ? `<h2>${t("محصولات پرفروش")}</h2><ul>${featured}</ul>` : ""}
+${projects ? `<h2>${t("پروژه‌ها")}</h2><ul>${projects}</ul>` : ""}
+${posts ? `<h2>${t("مجله تخصصی")}</h2><ul>${posts}</ul>` : ""}`;
 }
 
 function localBusinessNodes(company: CompanyInfo) {
@@ -659,7 +666,7 @@ function localBusinessNodes(company: CompanyInfo) {
     address: {
       "@type": "PostalAddress",
       addressCountry: "IR",
-      ...(loc.type === "rd" ? { addressLocality: "گرگان" } : {}),
+      ...(loc.type === "rd" ? { addressLocality: t("گرگان") } : {}),
       streetAddress: loc.address,
     },
   }));
@@ -684,9 +691,9 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   const company = catalog.company;
   if (isPrivateAppPath(path)) {
     return {
-      title: "ورود مدیریت | طیوران صنعت پویا",
-      description: "بخش خصوصی سامانه طیوران صنعت پویا.",
-      h1: "ورود مدیریت",
+      title: t("ورود مدیریت | طیوران صنعت پویا"),
+      description: t("بخش خصوصی سامانه طیوران صنعت پویا."),
+      h1: t("ورود مدیریت"),
       ogType: "website",
       body: "",
       jsonLd: [],
@@ -701,21 +708,21 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       .join("");
     return okDoc({
       path,
-      title: "طیوران صنعت پویا | تجهیزات دام و طیور و نوسازی سالن مرغداری",
+      title: t("طیوران صنعت پویا | تجهیزات دام و طیور و نوسازی سالن مرغداری"),
       description:
-        "تأمین تجهیزات صنعت دام و طیور، ماشین‌آلات خوراک و طراحی و نوسازی سالن مرغداری: تهویه، گرمایش، دانخوری و آبخوری. استعلام فنی از طیوران صنعت پویا.",
-      h1: "طیوران صنعت پویا",
+        t("تأمین تجهیزات صنعت دام و طیور، ماشین‌آلات خوراک و طراحی و نوسازی سالن مرغداری: تهویه، گرمایش، دانخوری و آبخوری. استعلام فنی از طیوران صنعت پویا."),
+      h1: t("طیوران صنعت پویا"),
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.</p>
-<p>مشاوره، فروش و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
-<p>تلفن دفتر: <a href="${OFFICE_PHONE_TEL}" dir="ltr">${OFFICE_PHONE_DISPLAY}</a></p>
+      body: `<p>${t("طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.")}</p>
+<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a></p>
+<p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
 <p>${escapeHtml(company.address)}</p>
-<p>واحد تحقیق و توسعه: ${escapeHtml(company.rdAddress || "")}</p>
-<p>${[fitoutLink("نوسازی و تجهیز کامل سالن"), `<a href="/products">تجهیزات دام و طیور</a>`, `<a href="/contact">درخواست مشاوره</a>`].filter(Boolean).join(" · ")}</p>
-${serviceLinks ? `<h2>خدمات</h2>
+<p>${t("واحد تحقیق و توسعه:")} ${escapeHtml(company.rdAddress || "")}</p>
+<p>${[fitoutLink(t("نوسازی و تجهیز کامل سالن")), `<a href="/products">${t("تجهیزات دام و طیور")}</a>`, `<a href="/contact">${t("درخواست مشاوره")}</a>`].filter(Boolean).join(" · ")}</p>
+${serviceLinks ? `<h2>${t("خدمات")}</h2>
 <ul>${serviceLinks}</ul>` : ""}
-<h2>دسته‌های تجهیزات</h2>
+<h2>${t("دسته‌های تجهیزات")}</h2>
 <ul>${catalog.categories.map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.description)}</li>`).join("")}</ul>
 ${homeExtras(catalog)}`,
       jsonLd: [
@@ -735,13 +742,13 @@ ${homeExtras(catalog)}`,
     const links = listedServices(catalog).map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a> — ${escapeHtml(s.tagline)}</li>`).join("");
     return okDoc({
       path,
-      title: "خدمات تجهیز دام و طیور و مرغداری | طیوران صنعت پویا",
-      description: "از طراحی سالن تا نصب تهویه، گرمایش و سیستم دان. درخواست مشاوره فنی.",
-      h1: "خدمات طراحی و تجهیز صنعت دام و طیور",
+      title: t("خدمات تجهیز دام و طیور و مرغداری | طیوران صنعت پویا"),
+      description: t("از طراحی سالن تا نصب تهویه، گرمایش و سیستم دان. درخواست مشاوره فنی."),
+      h1: t("خدمات طراحی و تجهیز صنعت دام و طیور"),
       ogType: "website",
       lastmod: collectionDay(catalog, "services"),
-      body: `<p>خدمات مهندسی و اجرایی طیوران صنعت پویا در صنعت دام و طیور: سالن مرغداری، کارخانه خوراک و خوراک و مکمل.</p>${links ? `<ul>${links}</ul>` : ""}${fitoutLink("") ? `<p>${fitoutLink("تجهیز و نوسازی سالن مرغداری")}</p>` : ""}`,
-      jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "خدمات", path: "/services" }])],
+      body: `<p>${t("خدمات مهندسی و اجرایی طیوران صنعت پویا در صنعت دام و طیور: سالن مرغداری، کارخانه خوراک و خوراک و مکمل.")}</p>${links ? `<ul>${links}</ul>` : ""}${fitoutLink("") ? `<p>${fitoutLink(t("تجهیز و نوسازی سالن مرغداری"))}</p>` : ""}`,
+      jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: t("خدمات"), path: "/services" }])],
     });
   }
 
@@ -752,11 +759,11 @@ ${homeExtras(catalog)}`,
       const isFitout = slug === FITOUT_SLUG || service.id === FITOUT_SERVICE_ID;
       const canonicalServicePath = publicServicePath(service);
       const title = isFitout
-        ? "تجهیز و نوسازی سالن مرغداری | طیوران صنعت پویا"
-        : `${service.title} | طیوران صنعت پویا`;
-      const h1 = isFitout ? "تجهیز و نوسازی سالن مرغداری" : service.title;
+        ? t("تجهیز و نوسازی سالن مرغداری | طیوران صنعت پویا")
+        : `${service.title} | ${t("طیوران صنعت پویا")}`;
+      const h1 = isFitout ? t("تجهیز و نوسازی سالن مرغداری") : service.title;
       const description = isFitout
-        ? "محاسبه ظرفیت، انتخاب تجهیزات و اجرای نوسازی سالن گوشتی/تخم‌گذار. بازدید و پیشنهاد فنی."
+        ? t("محاسبه ظرفیت، انتخاب تجهیزات و اجرای نوسازی سالن گوشتی/تخم‌گذار. بازدید و پیشنهاد فنی.")
         : service.tagline;
       return okDoc({
         path: canonicalServicePath,
@@ -773,7 +780,7 @@ ${homeExtras(catalog)}`,
             name: h1,
             description,
             provider: { "@id": `${CANONICAL_ORIGIN}/#org` },
-            areaServed: ["IR", "مشهد", "گرگان"],
+            areaServed: ["IR", t("مشهد"), t("گرگان")],
             url: canonicalPath(canonicalServicePath),
           },
           ...(service.faqs?.length
@@ -789,8 +796,8 @@ ${homeExtras(catalog)}`,
               ]
             : []),
           breadcrumb([
-            { name: "خانه", path: "/" },
-            { name: "خدمات", path: "/services" },
+            { name: t("خانه"), path: "/" },
+            { name: t("خدمات"), path: "/services" },
             { name: h1, path: canonicalServicePath },
           ]),
         ],
@@ -803,18 +810,18 @@ ${homeExtras(catalog)}`,
       .map((c) => {
         const count = catalog.products.filter((p) => p.category === c.id).length;
         const intro = categoryIntro(c.id);
-        return `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> (${count} محصول) — ${escapeHtml(intro || c.description)}</li>`;
+        return `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> (${tf("{n} محصول", { n: count })}) — ${escapeHtml(intro || c.description)}</li>`;
       })
       .join("");
     return okDoc({
       path,
-      title: "تجهیزات دام و طیور و مرغداری: تهویه، هیتر، دانخوری، آبخوری | طیوران صنعت پویا",
-      description: "کاتالوگ تجهیزات صنعت دام و طیور: هواکش، جت‌هیتر، دانخوری پروانه‌ای، آبخوری نیپل، قفس و سیلو. استعلام قیمت.",
-      h1: PRODUCTS_HUB_H1,
+      title: t("تجهیزات دام و طیور و مرغداری: تهویه، هیتر، دانخوری، آبخوری | طیوران صنعت پویا"),
+      description: t("کاتالوگ تجهیزات صنعت دام و طیور: هواکش، جت‌هیتر، دانخوری پروانه‌ای، آبخوری نیپل، قفس و سیلو. استعلام قیمت."),
+      h1: tr(PRODUCTS_HUB_H1),
       ogType: "website",
       lastmod: collectionDay(catalog, "products"),
-      body: `<p>کاتالوگ تجهیزات صنعت دام و طیور طیوران صنعت پویا؛ از تهویه، گرمایش، دانخوری و آبخوری سالن مرغداری تا قفس و سیلو.</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">دانلود کاتالوگ PDF</a> · <a href="/contact">استعلام قیمت</a></p>`,
-      jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "محصولات", path: "/products" }])],
+      body: `<p>${t("کاتالوگ تجهیزات صنعت دام و طیور طیوران صنعت پویا؛ از تهویه، گرمایش، دانخوری و آبخوری سالن مرغداری تا قفس و سیلو.")}</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">${t("دانلود کاتالوگ PDF")}</a> · <a href="/contact">${t("استعلام قیمت")}</a></p>`,
+      jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: t("محصولات"), path: "/products" }])],
     });
   }
 
@@ -844,15 +851,15 @@ ${homeExtras(catalog)}`,
         lastmod: collectionDay(catalog, "products"),
         body: `<p>${inlineToHtml(category.body || category.description || "")}</p>
 ${blocksToHtml(categoryIntroBlocks(slug))}
-<h2>محصولات ${escapeHtml(category.h1)} (${inCategory.length} مورد)</h2><ul>${items}</ul>
-${catArticles ? `<h2>راهنماهای مرتبط</h2><ul>${catArticles}</ul>` : ""}
-${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
-<p>${[`<a href="/contact">استعلام فنی</a>`, fitoutLink("تجهیز و نوسازی سالن"), `<a href="/TSPK_catalog.pdf">کاتالوگ PDF</a>`].filter(Boolean).join(" · ")}</p>`,
+<h2>${tf("محصولات {category}", { category: escapeHtml(category.h1) })} (${tf("{n} مورد", { n: inCategory.length })})</h2><ul>${items}</ul>
+${catArticles ? `<h2>${t("راهنماهای مرتبط")}</h2><ul>${catArticles}</ul>` : ""}
+${catServices ? `<h2>${t("خدمات مرتبط")}</h2><ul>${catServices}</ul>` : ""}
+<p>${[`<a href="/contact">${t("استعلام فنی")}</a>`, fitoutLink(t("تجهیز و نوسازی سالن")), `<a href="/TSPK_catalog.pdf">${t("کاتالوگ PDF")}</a>`].filter(Boolean).join(" · ")}</p>`,
         jsonLd: [
           orgSchema(company),
           breadcrumb([
-            { name: "خانه", path: "/" },
-            { name: "محصولات", path: "/products" },
+            { name: t("خانه"), path: "/" },
+            { name: t("محصولات"), path: "/products" },
             { name: category.h1, path },
           ]),
         ],
@@ -864,7 +871,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
       const imageAbs = imagePath.startsWith("http") ? imagePath : `${CANONICAL_ORIGIN}${imagePath}`;
       return okDoc({
         path: publicProductPath(product),
-        title: product.seoTitle || `${product.name} | طیوران صنعت پویا`,
+        title: product.seoTitle || `${product.name} | ${t("طیوران صنعت پویا")}`,
         description: product.shortDescription || product.fullDescription,
         h1: product.name,
         ogType: "product",
@@ -875,7 +882,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
             "@type": "Product",
             name: product.name,
             description: product.shortDescription || product.fullDescription,
-            sku: product.code,
+            ...(isEn() ? {} : { sku: product.code }),
             image: imageAbs,
             ...(product.noBrandSchema
               ? {}
@@ -888,13 +895,13 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
               ...(product.noBrandSchema ? { seller: { "@id": `${CANONICAL_ORIGIN}/#org` } } : {}),
               priceSpecification: {
                 "@type": "PriceSpecification",
-                description: "قیمت پس از استعلام فنی و ظرفیت سالن اعلام می‌شود؛ قیمت ثابت در اسکیما درج نشده است.",
+                description: t("قیمت پس از استعلام فنی و ظرفیت سالن اعلام می‌شود؛ قیمت ثابت در اسکیما درج نشده است."),
               },
             },
           },
           breadcrumb([
-            { name: "خانه", path: "/" },
-            { name: "محصولات", path: "/products" },
+            { name: t("خانه"), path: "/" },
+            { name: t("محصولات"), path: "/products" },
             { name: product.categoryTitle, path: `/products/${product.category}` },
             { name: product.name, path: publicProductPath(product) },
           ]),
@@ -907,13 +914,13 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
     const links = catalog.projects.map((p) => `<li><a href="/projects/${p.id}">${escapeHtml(p.title)}</a> — ${escapeHtml(p.location)} · ${escapeHtml(p.capacity)}${p.keyOutcome ? ` · ${escapeHtml(p.keyOutcome)}` : ""}</li>`).join("");
     return okDoc({
       path,
-      title: "پروژه‌های تجهیز مرغداری | طیوران صنعت پویا",
-      description: "نمونه کارهای اجرایی طیوران صنعت پویا در سالن مرغداری و کارخانه خوراک.",
-      h1: "پروژه‌های اجراشده",
+      title: t("پروژه‌های تجهیز مرغداری | طیوران صنعت پویا"),
+      description: t("نمونه کارهای اجرایی طیوران صنعت پویا در سالن مرغداری و کارخانه خوراک."),
+      h1: t("پروژه‌های اجراشده"),
       ogType: "website",
       lastmod: collectionDay(catalog, "projects"),
-      body: `<p>پروژه‌های شاخص طیوران صنعت پویا. جزئیات عددی فقط در صورت داده تأییدشده شرکت در صفحه پروژه آمده است.</p><ul>${links}</ul>`,
-      jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "پروژه‌ها", path: "/projects" }])],
+      body: `<p>${t("پروژه‌های شاخص طیوران صنعت پویا. جزئیات عددی فقط در صورت داده تأییدشده شرکت در صفحه پروژه آمده است.")}</p><ul>${links}</ul>`,
+      jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: t("پروژه‌ها"), path: "/projects" }])],
     });
   }
 
@@ -922,7 +929,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
     if (project) {
       return okDoc({
         path,
-        title: `${project.title} | طیوران صنعت پویا`,
+        title: `${project.title} | ${t("طیوران صنعت پویا")}`,
         description: project.keyOutcome || project.caseStudy?.solution || project.title,
         h1: project.title,
         ogType: "article",
@@ -937,8 +944,8 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
             author: { "@id": `${CANONICAL_ORIGIN}/#org` },
           },
           breadcrumb([
-            { name: "خانه", path: "/" },
-            { name: "پروژه‌ها", path: "/projects" },
+            { name: t("خانه"), path: "/" },
+            { name: t("پروژه‌ها"), path: "/projects" },
             { name: project.title, path },
           ]),
         ],
@@ -950,13 +957,13 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
     const links = indexableArticles(catalog).map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a><p>${escapeHtml(a.summary)}</p></li>`).join("");
     return okDoc({
       path,
-      title: "مجله تخصصی دام و طیور و مرغداری | طیوران صنعت پویا",
-      description: "راهنماهای فنی تهویه، گرمایش و تجهیز سالن مرغداری.",
-      h1: "مجله تخصصی دام و طیور",
+      title: t("مجله تخصصی دام و طیور و مرغداری | طیوران صنعت پویا"),
+      description: t("راهنماهای فنی تهویه، گرمایش و تجهیز سالن مرغداری."),
+      h1: t("مجله تخصصی دام و طیور"),
       ogType: "website",
       lastmod: collectionDay(catalog, "articles"),
       body: `<ul>${links}</ul>`,
-      jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "مجله", path: "/magazine" }])],
+      jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: t("مجله"), path: "/magazine" }])],
     });
   }
 
@@ -965,7 +972,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
     if (topic) {
       const list = indexableArticles(catalog).filter((a) => a.topic === topic.slug);
       const links = list.map((a) => `<li><a href="/magazine/${a.id}">${escapeHtml(a.title)}</a><p>${escapeHtml(a.summary)}</p></li>`).join("");
-      const others = MAGAZINE_TOPICS.filter((t) => t.slug !== topic.slug).map((t) => `<a href="${topicPath(t)}">${escapeHtml(t.label)}</a>`).join(" · ");
+      const others = localTopics().filter((t) => t.slug !== topic.slug).map((t) => `<a href="${topicPath(t)}">${escapeHtml(t.label)}</a>`).join(" · ");
       return okDoc({
         path,
         title: topic.title,
@@ -973,8 +980,8 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
         h1: topic.h1,
         ogType: "website",
         lastmod: collectionDay(catalog, "articles"),
-        body: `<p>${escapeHtml(topic.intro)}</p><ul>${links}</ul><p>موضوعات دیگر: ${others} · <a href="/magazine">همهٔ مقالات مجله</a></p>`,
-        jsonLd: [orgSchema(company), breadcrumb([{ name: "خانه", path: "/" }, { name: "مجله", path: "/magazine" }, { name: topic.label, path: topicPath(topic) }])],
+        body: `<p>${escapeHtml(topic.intro)}</p><ul>${links}</ul><p>${t("موضوعات دیگر:")} ${others} · <a href="/magazine">${t("همهٔ مقالات مجله")}</a></p>`,
+        jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: t("مجله"), path: "/magazine" }, { name: topic.label, path: topicPath(topic) }])],
       });
     }
   }
@@ -1001,15 +1008,15 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
         .map((source) => (source.url && isSafeHref(source.url) ? `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.name)}</a></li>` : `<li>${escapeHtml(source.name)}</li>`))
         .join("");
       const authorHtml = article.authorName
-        ? `<p>نویسنده: ${escapeHtml(article.authorName)}${article.authorRole ? ` (${escapeHtml(article.authorRole)})` : ""}</p>`
+        ? `<p>${t("نویسنده:")} ${escapeHtml(article.authorName)}${article.authorRole ? ` (${escapeHtml(article.authorRole)})` : ""}</p>`
         : "";
       const reviewerHtml = article.reviewerName
-        ? `<p>بازبین فنی: ${escapeHtml(article.reviewerName)}${article.reviewerRole ? ` (${escapeHtml(article.reviewerRole)})` : ""}</p>`
+        ? `<p>${t("بازبین فنی:")} ${escapeHtml(article.reviewerName)}${article.reviewerRole ? ` (${escapeHtml(article.reviewerRole)})` : ""}</p>`
         : "";
       const relatedHtml = [
-        relatedService ? (isServiceDisabled(relatedService.id) ? "" : `<a href="${publicServicePath(relatedService)}">${escapeHtml(relatedService.title)}</a>`) : fitoutLink("تجهیز سالن"),
+        relatedService ? (isServiceDisabled(relatedService.id) ? "" : `<a href="${publicServicePath(relatedService)}">${escapeHtml(relatedService.title)}</a>`) : fitoutLink(t("تجهیز سالن")),
         ...relatedProducts.map((p) => `<a href="${publicProductPath(p)}">${escapeHtml(p.name)}</a>`),
-        `<a href="/contact">مشاوره</a>`,
+        `<a href="/contact">${t("مشاوره")}</a>`,
       ].filter(Boolean).join(" · ");
       const seoTitle = effectiveSeoTitle(article);
       const seoDescription = effectiveSeoDescription(article);
@@ -1017,7 +1024,7 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
       const faqs = faqEntities(article);
       return okDoc({
         path,
-        title: seoTitle || `${article.title} | مجله طیوران صنعت پویا`,
+        title: seoTitle || `${article.title} | ${t("مجله طیوران صنعت پویا")}`,
         description: seoDescription || article.summary,
         h1: article.title,
         ogType: "article",
@@ -1028,8 +1035,8 @@ ${catServices ? `<h2>خدمات مرتبط</h2><ul>${catServices}</ul>` : ""}
 ${articleTagsHtml(article)}
 ${authorHtml}
 ${reviewerHtml}
-<p>تاریخ انتشار: ${escapeHtml(article.datePublishedIso || article.date)}</p>
-${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
+<p>${t("تاریخ انتشار:")} ${escapeHtml(article.datePublishedIso || article.date)}</p>
+${sourceHtml ? `<h2>${t("منابع")}</h2><ul>${sourceHtml}</ul>` : ""}
 <p>${relatedHtml}</p>`,
         jsonLd: [
           {
@@ -1064,16 +1071,16 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
                   name: article.title,
                   description: article.summary,
                   step: [
-                    { "@type": "HowToStep", name: "محاسبه حجم و سطح مقطع سالن", text: "طول، عرض و ارتفاع میانگین سالن را برای حجم و سطح مقطع تهویه تونلی ثبت کنید." },
-                    { "@type": "HowToStep", name: "تعیین وزن زنده پایان دوره", text: "تعداد پرنده × وزن هدف؛ مبنای دبی باید منبع سویه باشد نه رقم بازار بدون شرط." },
-                    { "@type": "HowToStep", name: "انتخاب فن روی منحنی فشار استاتیک", text: "ظرفیت کاتالوگ را در فشار استاتیک پد/اینلت اصلاح کنید و با مهندس تأیید کنید." },
+                    { "@type": "HowToStep", name: t("محاسبه حجم و سطح مقطع سالن"), text: t("طول، عرض و ارتفاع میانگین سالن را برای حجم و سطح مقطع تهویه تونلی ثبت کنید.") },
+                    { "@type": "HowToStep", name: t("تعیین وزن زنده پایان دوره"), text: t("تعداد پرنده × وزن هدف؛ مبنای دبی باید منبع سویه باشد نه رقم بازار بدون شرط.") },
+                    { "@type": "HowToStep", name: t("انتخاب فن روی منحنی فشار استاتیک"), text: t("ظرفیت کاتالوگ را در فشار استاتیک پد/اینلت اصلاح کنید و با مهندس تأیید کنید.") },
                   ],
                 },
               ]
             : []),
           breadcrumb([
-            { name: "خانه", path: "/" },
-            { name: "مجله", path: "/magazine" },
+            { name: t("خانه"), path: "/" },
+            { name: t("مجله"), path: "/magazine" },
             { name: article.title, path },
           ]),
         ],
@@ -1084,20 +1091,20 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
   if (path === "/about") {
     return okDoc({
       path,
-      title: "درباره طیوران صنعت پویا | ۵۰ سال سابقه در صنعت دام و طیور",
-      description: "معرفی شرکت طیوران صنعت پویا، دفاتر مشهد و گرگان و حوزه فعالیت در صنعت دام و طیور.",
-      h1: "درباره طیوران صنعت پویا",
+      title: t("درباره طیوران صنعت پویا | ۵۰ سال سابقه در صنعت دام و طیور"),
+      description: t("معرفی شرکت طیوران صنعت پویا، دفاتر مشهد و گرگان و حوزه فعالیت در صنعت دام و طیور."),
+      h1: t("درباره طیوران صنعت پویا"),
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>${escapeHtml(company.tagline || "")}</p>
 <p>${escapeHtml(company.subTagline || "")}</p>
-<p>مشاوره، فروش و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
-<p>تلفن دفتر: <a href="${OFFICE_PHONE_TEL}" dir="ltr">${OFFICE_PHONE_DISPLAY}</a></p>
-<p>ساعات کار: ${escapeHtml(company.workingHours)}</p>
-<p>دفتر مشهد: ${escapeHtml(company.address)}</p>
-<p>کارخانه: ${escapeHtml(company.factoryAddress)}</p>
-<p>واحد تحقیق و توسعه گرگان: ${escapeHtml(company.rdAddress || "")}</p>
-<p><a href="/contact">درخواست مشاوره تجهیز سالن</a></p>`,
+<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a></p>
+<p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
+<p>${t("ساعات کار:")} ${escapeHtml(company.workingHours)}</p>
+<p>${t("دفتر مشهد:")} ${escapeHtml(company.address)}</p>
+<p>${t("کارخانه:")} ${escapeHtml(company.factoryAddress)}</p>
+<p>${t("واحد تحقیق و توسعه گرگان:")} ${escapeHtml(company.rdAddress || "")}</p>
+<p><a href="/contact">${t("درخواست مشاوره تجهیز سالن")}</a></p>`,
       jsonLd: [orgSchema(company)],
     });
   }
@@ -1108,16 +1115,16 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
       .join("");
     return okDoc({
       path,
-      title: "تماس و مشاوره تجهیزات دام و طیور | طیوران صنعت پویا",
-      description: "درخواست مشاوره فنی برای تجهیزات دام و طیور، ماشین‌آلات خوراک و نوسازی سالن مرغداری.",
-      h1: "تماس و درخواست مشاوره",
+      title: t("تماس و مشاوره تجهیزات دام و طیور | طیوران صنعت پویا"),
+      description: t("درخواست مشاوره فنی برای تجهیزات دام و طیور، ماشین‌آلات خوراک و نوسازی سالن مرغداری."),
+      h1: t("تماس و درخواست مشاوره"),
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>مشاوره، فروش و پشتیبانی: <a href="${SALES_PHONE_TEL}" dir="ltr">${SALES_PHONE_DISPLAY}</a></p>
-<p>تلفن دفتر: <a href="${OFFICE_PHONE_TEL}" dir="ltr">${OFFICE_PHONE_DISPLAY}</a></p>
-<p>ساعات کار: ${escapeHtml(company.workingHours)}</p>
+      body: `<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a></p>
+<p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
+<p>${t("ساعات کار:")} ${escapeHtml(company.workingHours)}</p>
 <ul>${locHtml}</ul>
-<p><a href="#free-consultation-form">فرم درخواست بازدید و پیشنهاد فنی</a></p>`,
+<p><a href="#free-consultation-form">${t("فرم درخواست بازدید و پیشنهاد فنی")}</a></p>`,
       jsonLd: [orgSchema(company), ...localBusinessNodes(company)],
     });
   }
@@ -1125,22 +1132,22 @@ ${sourceHtml ? `<h2>منابع</h2><ul>${sourceHtml}</ul>` : ""}
   if (path === "/rnd") {
     return okDoc({
       path,
-      title: "تحقیق و توسعه | طیوران صنعت پویا",
-      description: "واحد تحقیق و توسعه طیوران صنعت پویا در گرگان.",
-      h1: "واحد تحقیق و توسعه",
+      title: t("تحقیق و توسعه | طیوران صنعت پویا"),
+      description: t("واحد تحقیق و توسعه طیوران صنعت پویا در گرگان."),
+      h1: t("واحد تحقیق و توسعه"),
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>${escapeHtml(company.rdAddress || "")}</p><p><a href="/contact">ارتباط با واحد فنی</a></p>`,
+      body: `<p>${escapeHtml(company.rdAddress || "")}</p><p><a href="/contact">${t("ارتباط با واحد فنی")}</a></p>`,
       jsonLd: [orgSchema(company)],
     });
   }
 
   return {
-    title: "صفحه پیدا نشد | طیوران صنعت پویا",
-    description: "صفحه مورد نظر یافت نشد.",
-    h1: "صفحه پیدا نشد",
+    title: t("صفحه پیدا نشد | طیوران صنعت پویا"),
+    description: t("صفحه مورد نظر یافت نشد."),
+    h1: t("صفحه پیدا نشد"),
     ogType: "website",
-    body: `<p>این مسیر در سایت وجود ندارد. <a href="/">بازگشت به خانه</a></p>`,
+    body: `<p>${t("این مسیر در سایت وجود ندارد.")} <a href="/">${t("بازگشت به خانه")}</a></p>`,
     jsonLd: [],
     robots: "noindex, follow",
     canonicalHref: null,
@@ -1199,27 +1206,49 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
 }
 
 export function llmsTxt(catalog: SeoCatalog): string {
-  const services = catalog.services.filter((s) => !isServiceDisabled(s.id)).map((s) => `- ${publicServicePath(s)} — ${s.title}`).join("\n");
-  const cats = catalog.categories.map((c) => `- /products/${c.id} — ${c.title}`).join("\n");
+  // Persian section at the original URLs; the server appends the English section (lang "en", /en URLs).
+  const en = isEn();
+  const services = catalog.services.filter((s) => !isServiceDisabled(s.id)).map((s) => `- ${lp(publicServicePath(s))} — ${s.title}`).join("\n");
+  const cats = catalog.categories.map((c) => `- ${lp(`/products/${c.id}`)} — ${c.title}`).join("\n");
   const posts = catalog.articles
     .filter((article) => isPublicArticle(article) && !article.noindex)
-    .map((article) => `- /magazine/${article.id} — ${article.title}`)
+    .map((article) => `- ${lp(`/magazine/${article.id}`)} — ${article.title}`)
     .join("\n");
-  return `# طیوران صنعت پویا
-> تجهیزات صنعت دام و طیور، ماشین‌آلات خوراک و نوسازی سالن مرغداری؛ تهویه، گرمایش، دانخوری و آبخوری. دفاتر مشهد و گرگان.
+  const fitout = isServiceDisabled(FITOUT_SERVICE_ID) ? "" : `- ${en ? "Core service:" : keepFa("خدمت محوری:")} ${CANONICAL_ORIGIN}${lp(`/services/${FITOUT_SLUG}`)}\n`;
+  if (en) {
+    return `# Toyooran Sanat Pouya (English)
+> Livestock and poultry equipment, feed machinery and poultry house renovation: ventilation, heating, feeding and drinking systems. Offices in Mashhad and Gorgan.
 
-- سایت: ${CANONICAL_ORIGIN}
-- تماس: ${CANONICAL_ORIGIN}/contact
-${isServiceDisabled(FITOUT_SERVICE_ID) ? "" : `- خدمت محوری: ${CANONICAL_ORIGIN}/services/${FITOUT_SLUG}\n`}${services ? `\n## خدمات\n${services}\n` : ""}
-## دسته‌های محصول
+- Site: ${CANONICAL_ORIGIN}${EN_PREFIX}
+- Contact: ${CANONICAL_ORIGIN}${EN_PREFIX}/contact
+${fitout}${services ? `\n## Services\n${services}\n` : ""}
+## Product categories
 ${cats}
 
-## مجله
+## Magazine
 ${posts}
 
-## قواعد استناد
-- اعداد ظرفیت فن و مصرف سوخت را بدون فشار استاتیک، اقلیم و تأیید مهندس نقل نکنید.
-- قیمت محصول در صفحات عمومی استعلام است نه رقم ثابت.
-- نقشه و مشخصات را از HTML اولیه یا صفحه محصول/خدمت بخوانید نه از حدس مدل.
+## Citation rules
+- Do not quote fan capacity or fuel consumption figures without static pressure, climate and an engineer's confirmation.
+- Product prices on public pages are given on request, not as a fixed figure.
+- Read layouts and specifications from the initial HTML or the product/service page, not from model guesses.
+`;
+  }
+  return `${keepFa("# طیوران صنعت پویا")}
+${keepFa("> تجهیزات صنعت دام و طیور، ماشین‌آلات خوراک و نوسازی سالن مرغداری؛ تهویه، گرمایش، دانخوری و آبخوری. دفاتر مشهد و گرگان.")}
+
+- ${keepFa("سایت:")} ${CANONICAL_ORIGIN}
+- ${keepFa("تماس:")} ${CANONICAL_ORIGIN}/contact
+${fitout}${services ? `\n## ${keepFa("خدمات")}\n${services}\n` : ""}
+## ${keepFa("دسته‌های محصول")}
+${cats}
+
+## ${keepFa("مجله")}
+${posts}
+
+## ${keepFa("قواعد استناد")}
+- ${keepFa("اعداد ظرفیت فن و مصرف سوخت را بدون فشار استاتیک، اقلیم و تأیید مهندس نقل نکنید.")}
+- ${keepFa("قیمت محصول در صفحات عمومی استعلام است نه رقم ثابت.")}
+- ${keepFa("نقشه و مشخصات را از HTML اولیه یا صفحه محصول/خدمت بخوانید نه از حدس مدل.")}
 `;
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import type { IconProps } from '../icons';
 
+import { t } from '../i18n';
 interface PageBannerProps {
   title: string;
   subtitle: React.ReactNode;
@@ -117,7 +118,7 @@ export const PageBanner: React.FC<PageBannerProps> = ({
       <button
         type="button"
         onClick={scrollPastHero}
-        aria-label="رفتن به بخش بعد"
+        aria-label={t("رفتن به بخش بعد")}
         className="page-hero-cue absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 cursor-pointer group"
       >
         <span className="w-[2px] h-10 sm:h-12 bg-slate-200/60 relative overflow-hidden rounded-full group-hover:bg-amber-100 transition-colors">

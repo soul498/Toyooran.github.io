@@ -7,7 +7,9 @@ import cookieParser from "cookie-parser";
 import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, publicTurnstileSiteKey, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
 import { z } from 'zod';
 import { DISABLED_PAGE_REDIRECT, isDisabledPagePath } from "./src/data/disabledPages";
-import { CANONICAL_ORIGIN, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxt, normalizePublicUrl, robotsTxt, seoRedirectFor, sitemapXml, stripQuery } from "./server/seo";
+import { CANONICAL_ORIGIN, englishFallbackRedirect, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxtAll, normalizePublicUrl, robotsTxt, seoRedirectForAnyLang, sitemapXml, stripQuery } from "./server/seo";
+import { englishArticle } from "./server/i18n";
+import { EN_PREFIX, pathLang } from "./src/i18n";
 import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
 import { gzipResponses } from "./server/gzip";
@@ -48,15 +50,23 @@ async function startServer() {
     if (!isDisabledPagePath(req.path)) return next();
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Robots-Tag', 'noindex');
-    return res.redirect(302, `${CANONICAL_ORIGIN}${DISABLED_PAGE_REDIRECT}`);
+    const home = pathLang(req.path) === 'en' ? (DISABLED_PAGE_REDIRECT === '/' ? EN_PREFIX : `${EN_PREFIX}${DISABLED_PAGE_REDIRECT}`) : DISABLED_PAGE_REDIRECT;
+    return res.redirect(302, `${CANONICAL_ORIGIN}${home}`);
   });
   app.use((req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();
     // Static files and API never need the catalog lookup (it used to run for every asset request).
     if (req.path.startsWith('/api/') || req.path.startsWith('/assets/') || /\.[a-z0-9]{2,5}$/i.test(req.path)) return next();
-    const dest = seoRedirectFor(req.path, loadSeoCatalog());
+    const dest = seoRedirectForAnyLang(req.path, loadSeoCatalog());
     if (dest) {
       return res.redirect(301, `${CANONICAL_ORIGIN}${dest}`);
+    }
+    // An /en URL whose Persian page has no English version yet → closest English listing (temporary).
+    const enFallback = englishFallbackRedirect(req.path);
+    if (enFallback) {
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('X-Robots-Tag', 'noindex');
+      return res.redirect(302, `${CANONICAL_ORIGIN}${enFallback}`);
     }
     next();
   });
@@ -139,8 +149,13 @@ async function startServer() {
     invalidateSeoCatalog();
     res.status(204).end();
   });
-  app.get('/api/magazine', (_req, res) => {
+  app.get('/api/magazine', (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    // ?lang=en: only articles with a complete English version (src/i18n/en/magazine.json), translated.
+    if (req.query.lang === 'en') {
+      const articles = loadPublicArticles().map((a) => englishArticle(a)).filter(Boolean);
+      return res.json({ articles, topics: [...new Set(articles.map((a) => a!.topic).filter(Boolean))] });
+    }
     res.json({ articles: loadPublicArticles() });
   });
 
@@ -273,7 +288,7 @@ async function startServer() {
   app.get("/llms.txt", (_req, res) => {
     res.type("text/plain; charset=utf-8");
     res.set("Cache-Control", "public, max-age=300, s-maxage=3600");
-    res.send(llmsTxt(loadSeoCatalog()));
+    res.send(llmsTxtAll());
   });
 
   app.get("/sitemap.xml", (_req, res) => {

@@ -1,4 +1,5 @@
 import type { Article } from "../types";
+import { t } from "../i18n";
 
 export function isPublicArticle(article: Pick<Article, "status">): boolean {
   return article.status !== "draft";
@@ -8,7 +9,7 @@ export function effectiveSeoTitle(article: Pick<Article, "title" | "seoTitle">):
   const custom = article.seoTitle?.trim();
   if (custom) return custom;
   const title = article.title?.trim();
-  return title ? `${title} | مجله طیوران صنعت پویا` : "";
+  return title ? `${title} | ${t("مجله طیوران صنعت پویا")}` : "";
 }
 
 export function effectiveSeoDescription(article: Pick<Article, "summary" | "seoDescription">): string {

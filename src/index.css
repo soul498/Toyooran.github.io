@@ -37,6 +37,15 @@
 
 @import "tailwindcss";
 
+/* English pages (/en): LTR with the Latin cut of the brand font (Persian pages are untouched). */
+html[lang="en"] {
+  --font-sans: "Estedad Latin", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+html[lang="en"] .article-page,
+html[lang="en"] .font-\[\'Estedad\'\,sans-serif\] {
+  font-family: "Estedad Latin", ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer utilities {
   .clip-hexagon {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);

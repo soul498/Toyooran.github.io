@@ -58,5 +58,7 @@ export function isDisabledPagePath(pathOrHref: string | undefined | null): boole
     /* keep raw */
   }
   const parts = path.split('/').filter(Boolean);
+  // English pages live under /en: the same page stays disabled there.
+  if (parts[0] === 'en') parts.shift();
   return parts[0] === 'services' && parts.length >= 2 && isServiceDisabled(parts[1]);
 }

@@ -17,6 +17,7 @@ import { CategoryItem } from '../types';
 import { HOME_LINKS_CATEGORIES_HEADING } from '../seo/resolveSeo';
 import { useData } from '../context/DataContext';
 
+import { isEn, t, tr } from '../i18n';
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   LayoutGrid,
   Box,
@@ -34,7 +35,7 @@ interface CompactShowcaseProps {
   onNavigate: (path: string) => void;
 }
 
-const faNum = (value: number) => value.toLocaleString('fa-IR');
+const faNum = (value: number) => value.toLocaleString(isEn() ? 'en-US' : 'fa-IR');
 
 /** Home block under the services cards: product categories only (bestsellers slider + magazine column removed 2026-10-27). */
 export const CompactShowcase: React.FC<CompactShowcaseProps> = ({ onNavigate }) => {
@@ -52,16 +53,17 @@ const CategoryBand: React.FC<{ categories: CategoryItem[]; onNavigate: (path: st
     <div className="flex items-end justify-between gap-4 mb-5">
       <div>
         <h2 id="home-popular-links" className="font-black text-xl sm:text-2xl text-slate-900 tracking-tight">
-          {HOME_LINKS_CATEGORIES_HEADING}
+          {tr(HOME_LINKS_CATEGORIES_HEADING)}
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500 font-bold mt-1">دسته‌بندی محصولات تجهیزات دام و طیور</p>
+        <p className="text-xs sm:text-sm text-slate-500 font-bold mt-1">{t("دسته‌بندی محصولات تجهیزات دام و طیور")}</p>
       </div>
       <Link
         to="/products"
         onClick={() => onNavigate('products')}
         className="shrink-0 min-h-11 inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-[#003F86] no-underline"
       >
-        کاتالوگ
+        
+        {t("کاتالوگ")}
         <ArrowLeft className="w-4 h-4" />
       </Link>
     </div>
@@ -80,7 +82,7 @@ const CategoryBand: React.FC<{ categories: CategoryItem[]; onNavigate: (path: st
               <span className="min-w-0">
                 <span className="block text-[13px] sm:text-sm font-black text-slate-800 leading-snug">{category.title}</span>
                 {category.productCount ? (
-                  <span className="block text-[10px] font-bold text-slate-500 mt-0.5">{faNum(category.productCount)} محصول</span>
+                  <span className="block text-[10px] font-bold text-slate-500 mt-0.5">{faNum(category.productCount)} {" "}{t("محصول")}</span>
                 ) : null}
               </span>
             </Link>

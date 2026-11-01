@@ -35,21 +35,21 @@ ok "core files and canonical contract"
 if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   curl_id() { curl -fsS --max-time 5 -H 'Accept-Encoding: identity' "$@"; }
   html="$(curl_id http://127.0.0.1:3000/)"
-  echo "$html" | grep -q 'rel="canonical"' || fail "live HTML missing canonical"
-  echo "$html" | grep -q 'name="viewport"' || fail "live HTML missing viewport"
-  echo "$html" | grep -q 'https://www.toyooran.com/' || fail "live HTML missing www.toyooran.com"
-  echo "$html" | grep -q 'application/ld+json' || fail "live HTML missing JSON-LD"
-  echo "$html" | grep -q 'seo-prerender' || fail "live HTML missing prerender"
-  echo "$html" | grep -q 'GTM-5Q5PWTTK' || fail "live HTML missing GTM container"
+  grep -q 'rel="canonical"' <<<"$html" || fail "live HTML missing canonical"
+  grep -q 'name="viewport"' <<<"$html" || fail "live HTML missing viewport"
+  grep -q 'https://www.toyooran.com/' <<<"$html" || fail "live HTML missing www.toyooran.com"
+  grep -q 'application/ld+json' <<<"$html" || fail "live HTML missing JSON-LD"
+  grep -q 'seo-prerender' <<<"$html" || fail "live HTML missing prerender"
+  grep -q 'GTM-5Q5PWTTK' <<<"$html" || fail "live HTML missing GTM container"
   robots="$(curl_id http://127.0.0.1:3000/robots.txt)"
-  echo "$robots" | grep -q 'Disallow: /admin' || fail "live robots"
-  echo "$robots" | grep -q 'Disallow: /crm' || fail "live robots missing /crm"
+  grep -q 'Disallow: /admin' <<<"$robots" || fail "live robots"
+  grep -q 'Disallow: /crm' <<<"$robots" || fail "live robots missing /crm"
   gpt_block="$(echo "$robots" | awk 'BEGIN{p=0} /^User-agent: GPTBot/{p=1} p&&/^User-agent:/&&!/GPTBot/{p=0} p')"
-  echo "$gpt_block" | grep -q 'Disallow: /admin' || fail "GPTBot must disallow /admin"
-  echo "$gpt_block" | grep -q 'Disallow: /crm' || fail "GPTBot must disallow /crm"
+  grep -q 'Disallow: /admin' <<<"$gpt_block" || fail "GPTBot must disallow /admin"
+  grep -q 'Disallow: /crm' <<<"$gpt_block" || fail "GPTBot must disallow /crm"
   sitemap="$(curl_id http://127.0.0.1:3000/sitemap.xml)"
-  echo "$sitemap" | grep -q 'www.toyooran.com' || fail "live sitemap"
-  echo "$sitemap" | grep -q '/rnd' || fail "sitemap missing /rnd"
+  grep -q 'www.toyooran.com' <<<"$sitemap" || fail "live sitemap"
+  grep -q '/rnd' <<<"$sitemap" || fail "sitemap missing /rnd"
   # Card service pages can be switched off (src/data/disabledPages.ts); the contract follows that flag.
   card_pages_off=0
   disabled_slugs=""
@@ -57,26 +57,26 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
     card_pages_off=1
     disabled_slugs="poultry-hall-fitout srv-machinery-manufacturing srv-poultry-equipment-supply srv-feed-formulation-pharma"
   else
-    echo "$sitemap" | grep -q 'poultry-hall-fitout' || fail "sitemap missing fitout slug"
+    grep -q 'poultry-hall-fitout' <<<"$sitemap" || fail "sitemap missing fitout slug"
   fi
   if grep -q 'CONSULTING_PAGE_ENABLED = false' src/data/disabledPages.ts; then
     disabled_slugs="${disabled_slugs} srv-consulting-efficiency"
   else
-    echo "$sitemap" | grep -q 'srv-consulting-efficiency' || fail "sitemap missing consulting page"
+    grep -q 'srv-consulting-efficiency' <<<"$sitemap" || fail "sitemap missing consulting page"
   fi
   if [ -n "$disabled_slugs" ]; then
     for slug in $disabled_slugs; do
-      if echo "$sitemap" | grep -q "/services/${slug}"; then fail "sitemap lists disabled page /services/${slug}"; fi
+      if grep -q "/services/${slug}" <<<"$sitemap"; then fail "sitemap lists disabled page /services/${slug}"; fi
       off_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'NR==1{print $2}')"
       test "$off_code" = "302" || fail "disabled /services/${slug} must 302, got ${off_code}"
       off_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
       test "$off_loc" = "https://www.toyooran.com/" || fail "disabled /services/${slug} must redirect home, got ${off_loc}"
-      if echo "$html" | grep -q "href=\"/services/${slug}"; then fail "homepage still links disabled /services/${slug}"; fi
-      if curl_id http://127.0.0.1:3000/llms.txt | grep -q "/services/${slug}"; then fail "llms.txt lists disabled /services/${slug}"; fi
+      if grep -q "href=\"/services/${slug}" <<<"$html"; then fail "homepage still links disabled /services/${slug}"; fi
+      if grep -q "/services/${slug}" <<<"$(curl_id http://127.0.0.1:3000/llms.txt)"; then fail "llms.txt lists disabled /services/${slug}"; fi
     done
   fi
-  if echo "$sitemap" | grep -q 'srv-turnkey-shed'; then fail "sitemap still has non-canonical service id"; fi
-  if echo "$sitemap" | grep -Eq '/admin|/crm'; then fail "sitemap must not list /admin or /crm"; fi
+  if grep -q 'srv-turnkey-shed' <<<"$sitemap"; then fail "sitemap still has non-canonical service id"; fi
+  if grep -Eq '/admin|/crm' <<<"$sitemap"; then fail "sitemap must not list /admin or /crm"; fi
   for private_path in /admin /crm; do
     code="$(curl -sS --max-time 5 -D /tmp/seo-private.hdr -o /tmp/seo-private.html -w '%{http_code}' -H 'Accept-Encoding: identity' "http://127.0.0.1:3000${private_path}" || true)"
     test "$code" = "200" || fail "${private_path} should stay 200 for the private app, got ${code}"
@@ -87,23 +87,23 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
     if grep -q 'seo-prerender' /tmp/seo-private.html; then fail "${private_path} must not prerender public content"; fi
     if grep -q 'property="og:url"' /tmp/seo-private.html; then fail "${private_path} must not leak og:url"; fi
   done
-  echo "$html" | grep -q 'index, follow' || fail "homepage must remain indexable"
+  grep -q 'index, follow' <<<"$html" || fail "homepage must remain indexable"
   code404="$(curl -sS --max-time 5 -H 'Accept-Encoding: identity' -o /tmp/seo-404.html -w '%{http_code}' http://127.0.0.1:3000/this-page-does-not-exist-seo || true)"
   test "$code404" = "404" || fail "unknown path must 404"
   grep -q 'noindex' /tmp/seo-404.html || fail "404 missing noindex"
   if grep -q 'rel="canonical"' /tmp/seo-404.html; then fail "404 must not self-canonical"; fi
   contact="$(curl_id http://127.0.0.1:3000/contact)"
-  echo "$contact" | grep -q 'LocalBusiness' || fail "contact missing LocalBusiness"
+  grep -q 'LocalBusiness' <<<"$contact" || fail "contact missing LocalBusiness"
   article="$(curl_id http://127.0.0.1:3000/magazine/how-to-calculate-ventilation-capacity)"
-  echo "$article" | grep -q '<h2>' || fail "article prerender too short"
-  echo "$html" | grep -q 'as="style"' || fail "stylesheet should be preloaded not render-blocking"
-  echo "$html" | grep -q 'font-src' || true
-  curl_id http://127.0.0.1:3000/llms.txt | grep -q 'طیوران' || fail "llms.txt missing"
+  grep -q '<h2>' <<<"$article" || fail "article prerender too short"
+  grep -q 'as="style"' <<<"$html" || fail "stylesheet should be preloaded not render-blocking"
+  grep -q 'font-src' <<<"$html" || true
+  grep -q 'طیوران' <<<"$(curl_id http://127.0.0.1:3000/llms.txt)" || fail "llms.txt missing"
   grep -q 'noindex, follow' /tmp/seo-404.html || fail "404 robots should be noindex, follow"
   contact2="$(curl_id http://127.0.0.1:3000/products/ventilation)"
-  echo "$contact2" | grep -q 'دانخوری' || true
+  grep -q 'دانخوری' <<<"$contact2" || true
   prod="$(curl_id http://127.0.0.1:3000/products/TS-001)"
-  echo "$prod" | grep -q 'Offer\|location:' || true
+  grep -q 'Offer\|location:' <<<"$prod" || true
   redirp="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/TS-001 | awk 'NR==1{print $2}')"
   test "$redirp" = "301" || fail "product code must 301 to slug"
   heater_enc="/products/%D9%87%DB%8C%D8%AA%D8%B1-%DA%AF%D8%A7%D8%B2%DB%8C-%D8%AF%D9%88%D8%AF%DA%A9%D8%B4%E2%80%8C%D8%AF%D8%A7%D8%B1-%D9%85%D8%AF%D9%84-GH-0625-ts-001"
@@ -114,7 +114,7 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   heater_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000${heater_enc}" | awk 'NR==1{print $2}')"
   test "$heater_code" = "200" || fail "encoded Persian product slug must be 200, got ${heater_code}"
   heater_html="$(curl_id "http://127.0.0.1:3000${heater_enc}")"
-  echo "$heater_html" | grep -q 'هیتر گازی' || fail "encoded heater slug missing product content"
+  grep -q 'هیتر گازی' <<<"$heater_html" || fail "encoded heater slug missing product content"
   grep -q 'font-src' server.ts || fail "CSP font-src missing"
   redir="$(curl -sI --max-time 5 http://127.0.0.1:3000/services/srv-turnkey-shed | awk 'NR==1{print $2}')"
   if [ "$card_pages_off" = 1 ]; then
@@ -125,7 +125,7 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   nested="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/heating/not-a-page | awk 'NR==1{print $2}')"
   test "$nested" = "301" || fail "nested category path must 301, got ${nested}"
   nested_loc="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/heating/not-a-page | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
-  echo "$nested_loc" | grep -q '/products/heating$' || fail "nested category must redirect to /products/heating"
+  grep -q '/products/heating$' <<<"$nested_loc" || fail "nested category must redirect to /products/heating"
   junk="$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/products/no-such-cat/x || true)"
   test "$junk" = "404" || fail "unknown nested product path must 404, got ${junk}"
   ok "live HTTP SEO"

@@ -31,3 +31,14 @@ Git UI: `https://git.toyooran.com` و اگر DNS/اینترنت بین‌الم�
 سایت: `https://www.toyooran.com`
 
 جزئیات: `docs/ci-cd.md`
+
+## دوزبانه (fa / en) — اجباری بعد از هر آپدیت
+
+سایت دوزبانه است: فارسی اصلی با همان URLها، انگلیسی زیر `/en`. هر تغییر متن فارسی (کد، `src/data/*`، محصول، مقاله یا CMS) باید در همان کار نسخهٔ انگلیسی هم داشته باشد:
+
+1. `npm run check:i18n` (برای فهرست خالی‌ها: `-- --todo /tmp/todo.json`)
+2. انگلیسی را در `src/i18n/en/{ui,site,products,magazine}.json` اضافه/اصلاح کن و کلیدهای stale را پاک کن.
+3. تا وقتی `i18n: in sync` چاپ نشده (exit 0 و `"inSync": true` در `i18n-report.json`) commit نکن.
+4. بعد از دیپلوی: `npm run check:i18n -- --base https://www.toyooran.com`
+
+قواعد متن انگلیسی، فال‌بک‌ها و جزئیات: `docs/i18n.md`. هرگز متن انگلیسی را در دیتابیس ننویس؛ ترجمه فقط در فایل‌های repo است.

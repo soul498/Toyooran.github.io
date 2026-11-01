@@ -38,6 +38,7 @@ import { useParams } from 'react-router-dom';
 import { SeoHead } from "./components/SEO";
 import { publicProductPath } from "./seo/resolveSeo";
 
+import { t, isEn, keepFa, EN_PREFIX } from './i18n';
 // Reserve a full viewport while a lazy route loads so the footer never paints in view and then jumps (CLS).
 const RouteFallback = () => <div className="min-h-[100svh]" aria-hidden="true" />;
 
@@ -100,7 +101,7 @@ const MainAppInner: React.FC = () => {
   // Navigation and consultation state
 
   // Unified Consultation / Quote Form prefill state
-  const [consultationSubject, setConsultationSubject] = useState<string | undefined>('مرغداری گوشتی');
+  const [consultationSubject, setConsultationSubject] = useState<string | undefined>(keepFa("مرغداری گوشتی"));
   const [consultationProduct, setConsultationProduct] = useState<string | undefined>('');
   const [consultationMessage, setConsultationMessage] = useState<string | undefined>('');
 
@@ -169,9 +170,9 @@ const MainAppInner: React.FC = () => {
 
   const handleRequestQuoteForProduct = (product: Product) => {
     handleOpenUnifiedConsultation(
-      'استعلام قیمت و پیش‌فاکتور',
+      keepFa("استعلام قیمت و پیش‌فاکتور"),
       product.name,
-      `درخواست استعلام قیمت و مشخصات فنی برای محصول: ${product.name}`
+      `${t("درخواست استعلام قیمت و مشخصات فنی برای محصول:")} ${product.name}`
     );
   };
 
@@ -209,9 +210,10 @@ const MainAppInner: React.FC = () => {
 
   // Public Website View
   return (
-    <div className="min-h-screen bg-blueprint-light text-[#333132] font-['Estedad',sans-serif] flex flex-col selection:bg-amber-400 selection:text-slate-950" dir="rtl">
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:right-2 focus:z-[100] bg-white text-[#003F86] font-bold px-4 py-2 rounded-xl">
-        رفتن به محتوای اصلی
+    <div className={`min-h-screen bg-blueprint-light text-[#333132] ${isEn() ? "font-['Estedad_Latin',ui-sans-serif,system-ui,sans-serif]" : "font-['Estedad',sans-serif]"} flex flex-col selection:bg-amber-400 selection:text-slate-950`} dir={isEn() ? 'ltr' : 'rtl'} lang={isEn() ? 'en' : undefined}>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:start-2 focus:z-[100] bg-white text-[#003F86] font-bold px-4 py-2 rounded-xl">
+        
+        {t("رفتن به محتوای اصلی")}
       </a>
       <ScrollToTop />
       <SeoHead />
@@ -223,7 +225,7 @@ const MainAppInner: React.FC = () => {
         currentSection={currentSection}
         onNavigate={handleNavigateSection}
         onOpenConsultation={() => handleOpenUnifiedConsultation()}
-        onOpenQuote={() => handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور')}
+        onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
       />
@@ -239,7 +241,7 @@ const MainAppInner: React.FC = () => {
               onNavigate={handleNavigateSection}
               onSelectCategory={handleSelectCategory}
               onOpenConsultation={() => handleOpenUnifiedConsultation()}
-              onOpenQuote={() => handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور')}
+              onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
               onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
               beforeServices={<HomeProductBands />}
             >
@@ -251,13 +253,13 @@ const MainAppInner: React.FC = () => {
           } />
           {/* Hub, categories and products share one route so a category switch never remounts the catalog. */}
           <Route path="/products/:productId?" element={<ProductPage onRequestQuoteForProduct={handleRequestQuoteForProduct} />} />
-          <Route path="/services/:serviceId" element={<ServicePage onOpenConsultation={(title) => handleOpenUnifiedConsultation(title, undefined, `مشاوره درباره خدمت: ${title}`)} />} />
+          <Route path="/services/:serviceId" element={<ServicePage onOpenConsultation={(title) => handleOpenUnifiedConsultation(title, undefined, `${t("مشاوره درباره خدمت:")} ${title}`)} />} />
           <Route path="/services" element={
             <ServicesSection
               services={services}
               onSelectService={setSelectedService}
               onSelectCategory={handleSelectCategory}
-              onOpenConsultation={() => handleOpenUnifiedConsultation('سوله و سالن صنعتی')}
+              onOpenConsultation={() => handleOpenUnifiedConsultation(keepFa("سوله و سالن صنعتی"))}
             />
           } />
           {/* No projects are published yet: project URLs redirect to /services (server sends 301). */}
@@ -303,7 +305,7 @@ const MainAppInner: React.FC = () => {
         onNavigate={handleNavigateSection}
         onSelectCategory={handleSelectCategory}
         onOpenConsultation={() => handleOpenUnifiedConsultation()}
-        onOpenQuote={() => handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور')}
+        onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
         companyInfo={companyInfo}
         categories={categories}
       />
@@ -315,7 +317,7 @@ const MainAppInner: React.FC = () => {
           service={selectedService}
           isOpen={!!selectedService}
           onClose={() => setSelectedService(null)}
-          onOpenConsultation={() => handleOpenUnifiedConsultation(selectedService.title, undefined, `مشاوره درباره خدمت: ${selectedService.title}`)}
+          onOpenConsultation={() => handleOpenUnifiedConsultation(selectedService.title, undefined, `${t("مشاوره درباره خدمت:")} ${selectedService.title}`)}
         />
         </Suspense>
       )}
@@ -341,7 +343,7 @@ const MainAppInner: React.FC = () => {
         onClose={() => setIsAiAssistantOpen(false)}
         onOpenQuote={() => {
           setIsAiAssistantOpen(false);
-          handleOpenUnifiedConsultation('استعلام قیمت و پیش‌فاکتور');
+          handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"));
         }}
       />
       </Suspense>
@@ -354,10 +356,10 @@ const MainAppInner: React.FC = () => {
 export default function App() {
   return (
     <DataProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={isEn() ? EN_PREFIX : undefined}>
         <MainAppInner />
         <Suspense fallback={null}>
-          <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '12px', fontFamily: 'Estedad, sans-serif' } }} />
+          <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '12px', fontFamily: isEn() ? 'system-ui, sans-serif' : 'Estedad, sans-serif' } }} />
         </Suspense>
       </BrowserRouter>
     </DataProvider>

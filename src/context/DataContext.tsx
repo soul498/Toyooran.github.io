@@ -31,6 +31,7 @@ import {
 } from '../data/mockData';
 import { migrateCustomerRecord } from '../crm/utils/crmRecords';
 import { withProductPhotos } from '../data/productPhotos';
+import { isEn, isFullyTranslated, setEnAvailability, translateDeep, translateProduct } from '../i18n';
 
 function loadStoredArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored)) return ARTICLES;
@@ -198,11 +199,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const articlesHydrated = useRef(false);
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/magazine')
+    // English pages get the server-translated magazine (only articles with a complete English version).
+    fetch(isEn() ? '/api/magazine?lang=en' : '/api/magazine')
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
         if (cancelled || magazineLockedByAdmin.current) return;
-        if (Array.isArray(data?.articles)) setArticles(data.articles);
+        if (Array.isArray(data?.articles)) {
+          if (isEn()) setEnAvailability({ articles: data.articles.map((item: Article) => item.id), topics: Array.isArray(data.topics) ? data.topics : undefined });
+          setArticles(data.articles);
+        }
       })
       .catch(() => undefined)
       .finally(() => {
@@ -219,6 +224,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [adminUser]);
   const refreshCsrf = async () => { const response = await fetch('/api/auth/csrf', { credentials: 'include' }); const result = await response.json(); setCsrfToken(result.token || ''); return result.token || ''; };
   useEffect(() => {
+    // The admin session (and its save-back effects) only runs on the Persian site.
+    if (isEn()) return;
     fetch('/api/auth/me', { credentials: 'include' })
       .then(response => response.ok ? response.json() : null)
       .then(async result => { if (result?.admin) { await refreshCsrf(); setAdminUser({ username: result.admin.username, displayName: 'مدیریت کل سیستم', role: 'superadmin' }); } })
@@ -295,6 +302,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => { saveAdminState('customers', customers); }, [customers, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('media', mediaLibrary); }, [mediaLibrary, adminUser, adminDataReady]);
   const publicProducts = useMemo(() => products.filter((item) => item && isPublicProduct(item)), [products]);
+  // English (/en): expose only products with a complete English version, translated; same for the
+  // site data below. State itself always stays Persian (nothing English is ever saved back).
+  const en = isEn();
+  const shownProducts = useMemo(() => {
+    if (!en) return publicProducts;
+    const ok = publicProducts.filter((item) => isFullyTranslated(item));
+    setEnAvailability({ products: ok.map((item) => item.id) });
+    return ok.map((item) => translateProduct(item));
+  }, [en, publicProducts]);
+  const shownServices = useMemo(() => translateDeep(services), [services, en]);
+  const shownCategories = useMemo(() => translateDeep(categories), [categories, en]);
+  const shownCompanyInfo = useMemo(() => translateDeep(companyInfo), [companyInfo, en]);
+  const shownHeroCms = useMemo(() => translateDeep(heroCms), [heroCms, en]);
   // Product CRUD
   const addProduct = (product: Product) => {
     setProducts(prev => [product, ...prev]);
@@ -522,7 +542,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <DataContext.Provider
       value={{
-        products: publicProducts,
+        products: shownProducts,
         allProducts: products,
         catalogReady,
         addProduct,
@@ -533,7 +553,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addProject,
         updateProject,
         deleteProject,
-        services,
+        services: shownServices,
         addService,
         updateService,
         deleteService,
@@ -542,14 +562,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addArticle,
         updateArticle,
         deleteArticle,
-        categories,
+        categories: shownCategories,
         addCategory,
         updateCategory,
         deleteCategory,
         setCategories,
-        companyInfo,
+        companyInfo: shownCompanyInfo,
         updateCompanyInfo,
-        heroCms,
+        heroCms: shownHeroCms,
         updateHeroCms,
         aiConfig,
         updateAiConfig,

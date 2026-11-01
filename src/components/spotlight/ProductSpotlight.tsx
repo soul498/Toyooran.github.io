@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Thermometer, Wheat } from '../../icons';
 import { FEEDER_PHOTO, HEATER_PHOTO, type ProductPhoto } from '../../data/productPhotos';
 
+import { t, translateDeep, tr } from '../../i18n';
 /**
  * Product spotlight for «دانخوری پروانه‌ای پویا» and «جت هیتر».
  * - HomeProductBands: horizontal bands (same frame as the home brand band in Hero.tsx), after the home hero.
@@ -189,7 +190,8 @@ const ProductCard: React.FC<{ spot: Spot }> = ({ spot }) => {
             to={spot.specsHref}
             className="group/cta inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-l from-[#FFC303] to-[#FFA800] px-[22px] text-[17px] font-black text-[#333333] shadow-[0_10px_24px_rgba(255,170,0,0.30)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003F84]"
           >
-            مشاهده مشخصات
+            
+            {t("مشاهده مشخصات")}
             <span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-black/[0.12] transition-transform group-hover/cta:-translate-x-1 motion-reduce:transition-none" aria-hidden="true">
               <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2.4} />
             </span>
@@ -202,7 +204,7 @@ const ProductCard: React.FC<{ spot: Spot }> = ({ spot }) => {
                 : 'border-[#003F84] bg-white text-[#003F84] hover:bg-[#F2F6FB] focus-visible:outline-[#003F84]'
             }`}
           >
-            {CONSULT}
+            {tr(CONSULT)}
           </Link>
         </div>
       </div>
@@ -213,7 +215,7 @@ const ProductCard: React.FC<{ spot: Spot }> = ({ spot }) => {
 export const HomeProductBands: React.FC = () => (
   <div className="space-y-4 md:space-y-6">
     {SPOTS.map((spot) => (
-      <ProductCard key={spot.key} spot={spot} />
+      <ProductCard key={spot.key} spot={translateDeep(spot)} />
     ))}
   </div>
 );

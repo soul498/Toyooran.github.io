@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Send, User, Phone, FileText, Layers, CheckCircle2 } from '../icons';
 import { sendNotificationToBale } from '../utils/sendToBale';
 
+import { keepFa, t } from '../i18n';
 interface FreeConsultationFormProps {
   initialSubject?: string;
   initialProduct?: string;
@@ -20,8 +21,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
-    subject: initialSubject || 'مرغداری گوشتی',
-    message: initialMessage + (initialProduct ? ` \nمحصول مورد نظر: ${initialProduct}` : ''),
+    subject: initialSubject || keepFa('مرغداری گوشتی'),
+    message: initialMessage + (initialProduct ? ` \n${t("محصول مورد نظر:")} ${initialProduct}` : ''),
     location: '',
     capacity: '',
     isDecisionMaker: false,
@@ -65,7 +66,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
     setFormData({
       fullName: '',
       phoneNumber: '',
-      subject: 'مرغداری گوشتی',
+      subject: keepFa("مرغداری گوشتی"),
       message: '',
       location: '',
       capacity: '',
@@ -82,8 +83,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
 
       {/* Header */}
       <div className="relative z-10 mb-8 text-center sm:text-right">
-        <h3 className="text-xl sm:text-2xl font-black text-slate-800 mb-2">درخواست مشاوره تخصصی</h3>
-        <p className="text-sm text-slate-500 font-medium">لطفاً فرم زیر را تکمیل کنید تا کارشناسان طیوران صنعت پویا در اولین فرصت با شما تماس بگیرند.</p>
+        <h3 className="text-xl sm:text-2xl font-black text-slate-800 mb-2">{t("درخواست مشاوره تخصصی")}</h3>
+        <p className="text-sm text-slate-500 font-medium">{t("لطفاً فرم زیر را تکمیل کنید تا کارشناسان طیوران صنعت پویا در اولین فرصت با شما تماس بگیرند.")}</p>
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col justify-center">
@@ -92,9 +93,10 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
             <div className="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-xl shadow-emerald-100/50">
               <CheckCircle2 className="w-10 h-10" />
             </div>
-            <h4 className="text-xl font-black text-slate-800 mb-2">درخواست شما ثبت شد!</h4>
+            <h4 className="text-xl font-black text-slate-800 mb-2">{t("درخواست شما ثبت شد!")}</h4>
             <p className="text-sm text-slate-500 text-center max-w-xs leading-relaxed">
-              کارشناسان طیوران صنعت پویا به‌زودی برای مشاوره رایگان با شما تماس خواهند گرفت.
+              
+              {t("کارشناسان طیوران صنعت پویا به‌زودی برای مشاوره رایگان با شما تماس خواهند گرفت.")}
             </p>
           </div>
         ) : (
@@ -103,7 +105,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
               {/* Full Name */}
               <div className="space-y-1.5">
                 <label className="text-[13px] font-bold text-slate-700 block">
-                  نام و نام خانوادگی <span className="text-rose-500">*</span>
+                  
+                  {t("نام و نام خانوادگی")}{" "}<span className="text-rose-500">*</span>
                 </label>
                 <div className="relative group">
                   <User className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 group-focus-within:text-[#003F86] transition-colors" />
@@ -112,7 +115,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="نام خود را وارد کنید"
+                    placeholder={t("نام خود را وارد کنید")}
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl pr-11 pl-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#003F86] focus:ring-4 focus:ring-[#003F86]/10 transition-all"
                   />
                 </div>
@@ -121,7 +124,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
               {/* Phone Number */}
               <div className="space-y-1.5">
                 <label className="text-[13px] font-bold text-slate-700 block">
-                  شماره تماس <span className="text-rose-500">*</span>
+                  
+                  {t("شماره تماس")}{" "}<span className="text-rose-500">*</span>
                 </label>
                 <div className="relative group">
                   <Phone className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 group-focus-within:text-[#003F86] transition-colors" />
@@ -130,7 +134,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                     required
                     value={formData.phoneNumber}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                    placeholder="۰۹۱۲..."
+                    placeholder={t("۰۹۱۲...")}
                     dir="ltr"
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl pr-11 pl-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#003F86] focus:ring-4 focus:ring-[#003F86]/10 transition-all text-right font-medium"
                   />
@@ -141,7 +145,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
             {/* Subject */}
             <div className="space-y-1.5">
               <label className="text-[13px] font-bold text-slate-700 block">
-                موضوع مشاوره
+                
+                {t("موضوع مشاوره")}
               </label>
               <div className="relative group">
                 <Layers className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 group-focus-within:text-[#003F86] transition-colors" />
@@ -150,12 +155,12 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl pr-11 pl-4 py-3.5 text-sm text-slate-900 focus:outline-none focus:border-[#003F86] focus:ring-4 focus:ring-[#003F86]/10 transition-all appearance-none cursor-pointer"
                 >
-                  <option value="مرغداری گوشتی">ماشین‌آلات و تجهیزات مرغداری</option>
-                  <option value="کارخانه خوراک و مکمل">احداث کارخانه خوراک دام و طیور</option>
-                  <option value="سوله و سالن صنعتی">ساخت سوله و سالن‌های صنعتی</option>
-                  <option value="تجهیزات گرمایشی و جت هیتر">سیستم‌های گرمایشی و تهویه</option>
-                  <option value="استعلام قیمت">استعلام قیمت</option>
-                  <option value="سایر موارد">مشاوره عمومی / سایر</option>
+                  <option value={keepFa("مرغداری گوشتی")}>{t("ماشین‌آلات و تجهیزات مرغداری")}</option>
+                  <option value={keepFa("کارخانه خوراک و مکمل")}>{t("احداث کارخانه خوراک دام و طیور")}</option>
+                  <option value={keepFa("سوله و سالن صنعتی")}>{t("ساخت سوله و سالن‌های صنعتی")}</option>
+                  <option value={keepFa("تجهیزات گرمایشی و جت هیتر")}>{t("سیستم‌های گرمایشی و تهویه")}</option>
+                  <option value={keepFa("استعلام قیمت")}>{t("استعلام قیمت")}</option>
+                  <option value={keepFa("سایر موارد")}>{t("مشاوره عمومی / سایر")}</option>
                 </select>
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400"><path d="m6 9 6 6 6-6"/></svg>
@@ -165,37 +170,37 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1.5">
-                <label className="text-[13px] font-bold text-slate-700 block">شهر / استان</label>
+                <label className="text-[13px] font-bold text-slate-700 block">{t("شهر / استان")}</label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="مثلاً مشهد"
+                  placeholder={t("مثلاً مشهد")}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[13px] font-bold text-slate-700 block">ظرفیت سالن (قطعه)</label>
+                <label className="text-[13px] font-bold text-slate-700 block">{t("ظرفیت سالن (قطعه)")}</label>
                 <input
                   type="text"
                   value={formData.capacity}
                   onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                  placeholder="مثلاً ۴۰۰۰۰"
+                  placeholder={t("مثلاً ۴۰۰۰۰")}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
                 />
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-[13px] font-bold text-slate-700 block">زمان تصمیم</label>
+              <label className="text-[13px] font-bold text-slate-700 block">{t("زمان تصمیم")}</label>
               <select
                 value={formData.timing}
                 onChange={(e) => setFormData({ ...formData, timing: e.target.value })}
                 className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
               >
-                <option value="">انتخاب نشده</option>
-                <option value="این ماه">این ماه</option>
-                <option value="این فصل">این فصل</option>
-                <option value="سال جاری">سال جاری</option>
+                <option value="">{t("انتخاب نشده")}</option>
+                <option value={keepFa("این ماه")}>{t("این ماه")}</option>
+                <option value={keepFa("این فصل")}>{t("این فصل")}</option>
+                <option value={keepFa("سال جاری")}>{t("سال جاری")}</option>
               </select>
             </div>
             <label className="flex items-center gap-2 text-sm font-bold text-slate-700">
@@ -204,11 +209,13 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                 checked={formData.isDecisionMaker}
                 onChange={(e) => setFormData({ ...formData, isDecisionMaker: e.target.checked })}
               />
-              تصمیم‌گیرنده خرید هستم
+              
+              {t("تصمیم‌گیرنده خرید هستم")}
             </label>
             <div className="space-y-1.5">
               <label className="text-[13px] font-bold text-slate-700 block">
-                توضیحات تکمیلی
+                
+                {t("توضیحات تکمیلی")}
               </label>
               <div className="relative group">
                 <FileText className="w-4 h-4 text-slate-400 absolute right-4 top-4 group-focus-within:text-[#003F86] transition-colors" />
@@ -216,7 +223,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                   rows={3}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="اگر جزئیات خاصی در نظر دارید، اینجا بنویسید..."
+                  placeholder={t("اگر جزئیات خاصی در نظر دارید، اینجا بنویسید...")}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl pr-11 pl-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#003F86] focus:ring-4 focus:ring-[#003F86]/10 transition-all resize-none leading-relaxed"
                 ></textarea>
               </div>
@@ -236,7 +243,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                   </svg>
                 ) : (
                   <>
-                    <span>ثبت درخواست مشاورهٔ رایگان</span>
+                    <span>{t("ثبت درخواست مشاورهٔ رایگان")}</span>
                     <Send className="w-4 h-4 -mr-1 rotate-180 group-hover:-translate-x-1 transition-transform" />
                   </>
                 )}

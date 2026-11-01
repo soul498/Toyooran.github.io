@@ -20,6 +20,7 @@ import { useData } from '../context/DataContext';
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { LocationDetailPane } from './LocationDetailPane';
 
+import { t, tr, isEn } from '../i18n';
 export const AboutContactUnifiedSection: React.FC = () => {
   const { companyInfo } = useData();
   const [activeLocationIndex, setActiveLocationIndex] = useState(0);
@@ -67,18 +68,22 @@ export const AboutContactUnifiedSection: React.FC = () => {
             <div className="flex flex-col justify-center">
               <span className="text-amber-400 font-black tracking-widest text-xs uppercase mb-6 flex items-center gap-3 drop-shadow-md">
                 <div className="w-8 h-px bg-amber-400/50" />
-                ارتباط با طیوران صنعت پویا
+                
+                {t("ارتباط با طیوران صنعت پویا")}
               </span>
               
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.2] mb-6 drop-shadow-lg">
-                آینده‌ی صنعت را <br/>
+                
+                {t("آینده‌ی صنعت را")}{" "}<br/>
                 <span className="text-amber-300">
-                  با هم بسازیم.
+                  
+                  {t("با هم بسازیم.")}
                 </span>
               </h2>
               
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-0 font-medium max-w-md">
-                تیم مهندسی طیوران صنعت پویا آماده ارائه مشاوره تخصصی در زمینه راه‌اندازی و تجهیز مدرن‌ترین سیستم‌های پرورشی است.
+                
+                {t("تیم مهندسی طیوران صنعت پویا آماده ارائه مشاوره تخصصی در زمینه راه‌اندازی و تجهیز مدرن‌ترین سیستم‌های پرورشی است.")}
               </p>
             </div>
 
@@ -91,10 +96,10 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
                   </div>
                   <div>
-                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mb-1 uppercase tracking-wider">مشاوره، فروش و پشتیبانی</span>
-                    <a href={SALES_PHONE_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{SALES_PHONE_DISPLAY}</a>
-                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mt-3 mb-1">{OFFICE_PHONE_LABEL}</span>
-                    <a href={OFFICE_PHONE_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: 'right' }}>{OFFICE_PHONE_DISPLAY}</a>
+                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mb-1 uppercase tracking-wider">{t("مشاوره، فروش و پشتیبانی")}</span>
+                    <a href={SALES_PHONE_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: isEn() ? 'left' : 'right' }}>{tr(SALES_PHONE_DISPLAY)}</a>
+                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mt-3 mb-1">{tr(OFFICE_PHONE_LABEL)}</span>
+                    <a href={OFFICE_PHONE_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: isEn() ? 'left' : 'right' }}>{tr(OFFICE_PHONE_DISPLAY)}</a>
                   </div>
                 </div>
               </div>
@@ -102,52 +107,52 @@ export const AboutContactUnifiedSection: React.FC = () => {
               {/* Social Links Row */}
               {hasSocials && (
                 <div className="mt-6">
-                  <span className="text-xs font-bold text-slate-300 block mb-3">شبکه‌های اجتماعی:</span>
+                  <span className="text-xs font-bold text-slate-300 block mb-3">{t("شبکه‌های اجتماعی:")}</span>
                   <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
                   <SocialIconLink
                     href={companyInfo.socialLinks?.instagram}
-                    label="اینستاگرام"
-                    comingSoon="صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                    label={t("اینستاگرام")}
+                    comingSoon={t("صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300"
                   >
                     <Instagram className="w-4 h-4" aria-hidden="true" />
                   </SocialIconLink>
                   <SocialIconLink
                     href={companyInfo.socialLinks?.telegram}
-                    label="تلگرام"
-                    comingSoon="کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                    label={t("تلگرام")}
+                    comingSoon={t("کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0088cc] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
                     <Send className="w-4 h-4 ml-0.5" aria-hidden="true" />
                   </SocialIconLink>
                   <SocialIconLink
                     href={companyInfo.socialLinks?.aparat}
-                    label="آپارات"
-                    comingSoon="کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                    label={t("آپارات")}
+                    comingSoon={t("کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#263238] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300"
                   >
                     <AparatIcon className="w-4 h-4" />
                   </SocialIconLink>
                   <SocialIconLink
                     href={companyInfo.socialLinks?.rubika}
-                    label="روبیکا"
-                    comingSoon="کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                    label={t("روبیکا")}
+                    comingSoon={t("کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
                     <Grid className="w-4 h-4" aria-hidden="true" />
                   </SocialIconLink>
                   <SocialIconLink
                     href={companyInfo.socialLinks?.youtube}
-                    label="یوتیوب"
-                    comingSoon="کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                    label={t("یوتیوب")}
+                    comingSoon={t("کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#ff0000] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300"
                   >
                     <Youtube className="w-4 h-4" aria-hidden="true" />
                   </SocialIconLink>
                   <SocialIconLink
                     href={companyInfo.socialLinks?.linkedin}
-                    label="لینکدین"
-                    comingSoon="صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                    label={t("لینکدین")}
+                    comingSoon={t("صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0a66c2] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
                     <Linkedin className="w-4 h-4" aria-hidden="true" />
@@ -164,7 +169,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
               
               <div className="flex items-center gap-6 mb-10">
                 <div className="h-px flex-1 bg-gradient-to-l from-white/20 to-transparent" />
-                <h3 className="text-slate-200 font-bold text-lg tracking-widest uppercase">آدرس مراکز و شعب</h3>
+                <h3 className="text-slate-200 font-bold text-lg tracking-widest uppercase">{t("آدرس مراکز و شعب")}</h3>
                 <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
               </div>
 
@@ -203,7 +208,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                              </div>
                              <div className="flex-1 overflow-hidden">
                                <p className={`font-black truncate text-[13px] sm:text-sm mb-1 transition-colors ${isActive ? 'text-amber-400' : 'text-slate-200'}`}>
-                                 {loc.title || (isHQ ? 'دفتر مرکزی' : 'شعبه')}
+                                 {loc.title || (isHQ ? t("دفتر مرکزی") : t("شعبه"))}
                                </p>
                                <p className="text-[11px] text-slate-300 truncate">{loc.address}</p>
                              </div>

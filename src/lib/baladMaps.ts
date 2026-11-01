@@ -1,3 +1,5 @@
+import { t, tf, tr } from "../i18n";
+
 export type BaladLocation = {
   id?: string;
   title?: string;
@@ -19,14 +21,16 @@ const BALAD_BY_ID: Record<string, { src: string; title: string }> = {
 export function baladEmbedFor(location: BaladLocation): { src: string; title: string } | null {
   const custom = location.baladEmbedUrl?.trim();
   if (custom) {
-    return { src: custom, title: location.title ? `مشاهده «${location.title}» روی نقشه بلد` : "نقشه بلد" };
+    return { src: custom, title: location.title ? tf("مشاهده «{title}» روی نقشه بلد", { title: location.title }) : t("نقشه بلد") };
   }
-  if (location.id && BALAD_BY_ID[location.id]) return BALAD_BY_ID[location.id];
+  if (location.id && BALAD_BY_ID[location.id]) return localized(BALAD_BY_ID[location.id]);
   const title = location.title || "";
-  if (title.includes("مرکزی") || title.includes("مادر")) return BALAD_BY_ID["hq-01"];
-  if (title.includes("تحقیق") || title.includes("منابع طبیعی") || title.includes("دانشگاه")) return BALAD_BY_ID["rd-01"];
+  if (title.includes("مرکزی") || title.includes("مادر")) return localized(BALAD_BY_ID["hq-01"]);
+  if (title.includes("تحقیق") || title.includes("منابع طبیعی") || title.includes("دانشگاه")) return localized(BALAD_BY_ID["rd-01"]);
   return null;
 }
+
+const localized = (m: { src: string; title: string }) => ({ ...m, title: tr(m.title) });
 
 /** Public Balad place page for the same pin as the embed (`/p/{token}`). */
 export function baladPlaceFor(location: BaladLocation): string | null {

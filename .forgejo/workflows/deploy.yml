@@ -24,3 +24,33 @@ jobs:
           export GIT_CONFIG_KEY_0="http.http://127.0.0.1:3002/.extraHeader"
           export GIT_CONFIG_VALUE_0="Authorization: Basic $AUTH"
           /usr/local/sbin/toyooran-deploy.sh
+
+  # English (/en) sync report — informational only: runs after the deploy, never blocks or fails it.
+  # No actions/checkout or npm ci (international internet is unreliable here, see docs/ci-cd.md):
+  # it exports the deployed commit from the clean clone and borrows an existing node_modules.
+  i18n-check:
+    needs: deploy
+    runs-on: host
+    continue-on-error: true
+    steps:
+      - name: npm run check:i18n (warning only)
+        continue-on-error: true
+        run: |
+          SRC=/var/lib/toyooran/src
+          MODS=""
+          for d in "$SRC/node_modules" /opt/Toyooran/node_modules; do
+            if [ -x "$d/.bin/tsx" ]; then MODS="$d"; break; fi
+          done
+          if [ -z "$MODS" ] || ! command -v npm >/dev/null 2>&1 || [ ! -d "$SRC/.git" ]; then
+            echo "::warning::check:i18n skipped (no node_modules with tsx, npm or $SRC); run it manually: npm run check:i18n -- --base https://www.toyooran.com"
+            exit 0
+          fi
+          TMP=$(mktemp -d)
+          trap 'rm -rf "$TMP"' EXIT
+          git -C "$SRC" archive HEAD | tar -x -C "$TMP"
+          ln -s "$MODS" "$TMP/node_modules"
+          cd "$TMP"
+          npm run check:i18n -- --warn --base https://www.toyooran.com || true
+          if ! grep -q '"inSync": true' i18n-report.json 2>/dev/null; then
+            echo "::warning::English site is not in sync with Persian — run npm run check:i18n and see docs/i18n.md"
+          fi

@@ -57,6 +57,8 @@ export interface ProductSpec {
 }
 
 export interface Product {
+  /** English pages only (never stored): the Persian name, so /en product URLs keep the Persian slug. */
+  slugName?: string;
   isFeatured?: boolean;
   /** Hidden from the public site and search engines; kept for the admin panel (re-enable by clearing it). */
   hidden?: boolean;

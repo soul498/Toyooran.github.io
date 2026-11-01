@@ -10,6 +10,7 @@ import type { Article, Product, ProductSpec } from '../../types';
 import { faDigits, faSpecValue } from '../../lib/faDigits';
 import './product-detail.css';
 
+import { isEn, t, tf, tr } from '../../i18n';
 /**
  * Product page body (marketplace-style layout, design 31 Oct 2026): gallery | title + key specs | sticky
  * inquiry box, sticky anchor tabs, sections, related products. Shared by every product; a section with
@@ -132,10 +133,10 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
   const subline = product.subline || product.nameEn || '';
 
   const tabs: Tab[] = [
-    { id: 'intro', label: 'معرفی' },
-    ...(advantages.length ? [{ id: 'features', label: 'ویژگی‌ها' }] : []),
-    ...(applications.length ? [{ id: 'uses', label: 'کاربردها' }] : []),
-    ...(specs.length ? [{ id: 'specs', label: 'مشخصات فنی' }] : []),
+    { id: 'intro', label: t("معرفی") },
+    ...(advantages.length ? [{ id: 'features', label: t("ویژگی‌ها") }] : []),
+    ...(applications.length ? [{ id: 'uses', label: t("کاربردها") }] : []),
+    ...(specs.length ? [{ id: 'specs', label: t("مشخصات فنی") }] : []),
   ];
   const [current, setCurrent] = useState('intro');
   const [relRowRef, relNear] = useNearViewport<HTMLDivElement>(product.id);
@@ -197,11 +198,11 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
   return (
     <div className="pd" ref={rootRef}>
       <div className="pd-container">
-        <nav aria-label="مسیر صفحه" className="pd-crumbs">
+        <nav aria-label={t("مسیر صفحه")} className="pd-crumbs">
           <ol>
-            <li><Link to="/">خانه</Link></li>
+            <li><Link to="/">{t("خانه")}</Link></li>
             <li aria-hidden="true" className="pd-sep">›</li>
-            <li><Link to="/products">محصولات</Link></li>
+            <li><Link to="/products">{t("محصولات")}</Link></li>
             <li aria-hidden="true" className="pd-sep">›</li>
             <li><Link to={`/products/${product.category}`}>{product.categoryTitle}</Link></li>
             <li aria-hidden="true" className="pd-sep">›</li>
@@ -222,19 +223,19 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                   className="pd-main-img"
                   imgClassName="w-full h-full object-cover"
                 />
-                <a className="pd-zoom" href={withMediaVersion(zoomSrc(mainSrc))} target="_blank" rel="noopener" aria-label="بزرگ‌نمایی تصویر">
+                <a className="pd-zoom" href={withMediaVersion(zoomSrc(mainSrc))} target="_blank" rel="noopener" aria-label={t("بزرگ‌نمایی تصویر")}>
                   <Icon name="zoom" />
                 </a>
               </div>
               {gallery.length >= 2 ? (
-                <div className="pd-thumbs" role="list" aria-label="تصاویر محصول">
+                <div className="pd-thumbs" role="list" aria-label={t("تصاویر محصول")}>
                   {gallery.map((src, i) => (
                     <button
                       key={src}
                       type="button"
                       role="listitem"
                       className="pd-thumb"
-                      aria-label={`تصویر ${(i + 1).toLocaleString('fa-IR')}`}
+                      aria-label={`${t("تصویر")} ${(i + 1).toLocaleString(isEn() ? 'en-US' : 'fa-IR')}`}
                       aria-pressed={i === active}
                       onClick={() => setActive(i)}
                     >
@@ -254,7 +255,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
               {subline ? <p className="pd-subline">{subline}</p> : null}
               {keySpecs.length ? (
                 <>
-                  <h2 className="pd-attrs-title">ویژگی‌های کلیدی</h2>
+                  <h2 className="pd-attrs-title">{t("ویژگی‌های کلیدی")}</h2>
                   <dl className="pd-attrs">
                     {keySpecs.map((s, i) => (
                       <div className="pd-attr" key={i}>
@@ -267,7 +268,8 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
               ) : null}
               {specs.length > keySpecs.length ? (
                 <a className="pd-more" href="#specs" onClick={(e) => goTo(e, 'specs')}>
-                  مشاهدهٔ همهٔ مشخصات فنی
+                  
+                  {t("مشاهدهٔ همهٔ مشخصات فنی")}
                   <Icon name="left" className="pd-ic-sm" />
                 </a>
               ) : null}
@@ -275,50 +277,54 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
           </section>
 
           <aside className="pd-card pd-inquiry" aria-labelledby="pd-inq-t">
-            <h2 id="pd-inq-t">استعلام قیمت و مشاورهٔ رایگان</h2>
+            <h2 id="pd-inq-t">{t("استعلام قیمت و مشاورهٔ رایگان")}</h2>
             {product.inquiryNote ? <p className="pd-inq-note">{product.inquiryNote}</p> : null}
             <div className="pd-inq-actions">
               <Link className="pd-btn pd-btn-primary pd-desk-only" to={quoteHref}>
                 <Icon name="chat" />
-                استعلام قیمت
+                
+                {t("استعلام قیمت")}
               </Link>
               {isFeeding ? (
                 <Link className="pd-btn pd-btn-outline" to={`/contact?cta=feeder-line-count&product=${encodeURIComponent(product.code || product.id)}`}>
-                  محاسبه تعداد خطوط
+                  
+                  {t("محاسبه تعداد خطوط")}
                 </Link>
               ) : null}
               <a className="pd-btn pd-btn-outline pd-desk-only" href={SALES_PHONE_TEL}>
                 <Icon name="phone" />
-                تماس: <bdi dir="ltr" className="pd-phone">{SALES_PHONE_DISPLAY}</bdi>
+                
+                {t("تماس:")}{" "}<bdi dir="ltr" className="pd-phone">{tr(SALES_PHONE_DISPLAY)}</bdi>
               </a>
             </div>
             <div className="pd-landline">
-              {OFFICE_PHONE_LABEL}: <a href={OFFICE_PHONE_TEL} dir="ltr" className="pd-phone">{OFFICE_PHONE_DISPLAY}</a>
+              {tr(OFFICE_PHONE_LABEL)}: <a href={OFFICE_PHONE_TEL} dir="ltr" className="pd-phone">{tr(OFFICE_PHONE_DISPLAY)}</a>
             </div>
             <ul className="pd-trust">
-              <li><Icon name="award" />۵۰ سال سابقه</li>
-              <li><Icon name="check" />بیش از ۲۰۰ پروژه</li>
-              <li><Icon name="chat" />مشاورهٔ رایگان</li>
+              <li><Icon name="award" />{t("۵۰ سال سابقه")}</li>
+              <li><Icon name="check" />{t("بیش از ۲۰۰ پروژه")}</li>
+              <li><Icon name="chat" />{t("مشاورهٔ رایگان")}</li>
             </ul>
             <a className="pd-catalog" href={CATALOG_PDF} target="_blank" rel="noopener">
               <Icon name="doc" />
-              دانلود کاتالوگ PDF
+              
+              {t("دانلود کاتالوگ PDF")}
             </a>
           </aside>
 
           <div className="pd-rest">
             {tabs.length > 1 ? (
-              <nav className="pd-tabs" aria-label="بخش‌های صفحه">
-                {tabs.map((t) => (
-                  <a key={t.id} href={`#${t.id}`} aria-current={current === t.id ? 'true' : undefined} onClick={(e) => goTo(e, t.id)}>
-                    {t.label}
+              <nav className="pd-tabs" aria-label={t("بخش‌های صفحه")}>
+                {tabs.map((tab) => (
+                  <a key={tab.id} href={`#${tab.id}`} aria-current={current === tab.id ? 'true' : undefined} onClick={(e) => goTo(e, tab.id)}>
+                    {tab.label}
                   </a>
                 ))}
               </nav>
             ) : null}
 
             <section id="intro" className="pd-card pd-section pd-prose">
-              <h2>معرفی محصول</h2>
+              <h2>{t("معرفی محصول")}</h2>
               <p>{product.fullDescription || product.shortDescription}</p>
               {(product.details || []).map((b, i) => {
                 if ('h2' in b) return <h3 key={i}><RichInline text={b.h2} /></h3>;
@@ -329,7 +335,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                 <div className="pd-note">
                   <Icon name="info" />
                   <div>
-                    <b>نکتهٔ انتخاب در {product.categoryTitle}</b>
+                    <b>{tf("نکتهٔ انتخاب در {category}", { category: product.categoryTitle })}</b>
                     <p>{note}</p>
                   </div>
                 </div>
@@ -338,7 +344,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
 
             {advantages.length ? (
               <section id="features" className="pd-card pd-section">
-                <h2>ویژگی‌ها</h2>
+                <h2>{t("ویژگی‌ها")}</h2>
                 <ul className="pd-feats">
                   {advantages.map((a, i) => (
                     <li key={i} className="pd-feat">
@@ -352,7 +358,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
 
             {applications.length ? (
               <section id="uses" className="pd-card pd-section">
-                <h2>کاربردها</h2>
+                <h2>{t("کاربردها")}</h2>
                 <ul className={`pd-apps${longApps ? ' pd-apps-long' : ''}`}>
                   {applications.map((a, i) => (
                     <li key={i} className="pd-app">
@@ -366,7 +372,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
 
             {specs.length ? (
               <section id="specs" className="pd-card pd-section">
-                <h2>مشخصات فنی</h2>
+                <h2>{t("مشخصات فنی")}</h2>
                 <table className="pd-spec">
                   <tbody>
                     {specs.map((s, i) => (
@@ -385,9 +391,10 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                 {relatedShown.length ? (
                   <>
                     <div className="pd-rel-head">
-                      <h2 id="pd-rel-t">محصولات مرتبط</h2>
+                      <h2 id="pd-rel-t">{t("محصولات مرتبط")}</h2>
                       <Link className="pd-rel-all" to={`/products/${product.category}`}>
-                        همه محصولات {product.categoryTitle}
+                        
+                        {t("همه محصولات")}{" "}{product.categoryTitle}
                         <Icon name="left" className="pd-ic-sm" />
                       </Link>
                     </div>
@@ -409,21 +416,21 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                           <div className="pd-rel-meta">
                             <small>{p.categoryTitle}</small>
                             <b>{p.name}</b>
-                            <span className="pd-go">مشاهده<Icon name="left" className="pd-ic-xs" /></span>
+                            <span className="pd-go">{t("مشاهده")}<Icon name="left" className="pd-ic-xs" /></span>
                           </div>
                         </Link>
                       ))}
                     </div>
                   </>
                 ) : (
-                  <h2 id="pd-rel-t" className="pd-sr">مطالب مرتبط</h2>
+                  <h2 id="pd-rel-t" className="pd-sr">{t("مطالب مرتبط")}</h2>
                 )}
                 {relatedArticles.length ? (
                   <div className="pd-guides">
                     {relatedArticles.map((a) => (
                       <Link key={a.id} className="pd-guide" to={`/magazine/${a.id}`}>
                         <Icon name="book" />
-                        <span><small>راهنمای مرتبط</small>{product.articleLinkLabels?.[a.id] || a.title}</span>
+                        <span><small>{t("راهنمای مرتبط")}</small>{product.articleLinkLabels?.[a.id] || a.title}</span>
                       </Link>
                     ))}
                   </div>
@@ -434,9 +441,9 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
         </div>
       </div>
 
-      <div className="pd-mbar" role="region" aria-label="اقدام سریع">
-        <a className="pd-btn pd-btn-outline" href={SALES_PHONE_TEL}><Icon name="phone" />تماس</a>
-        <Link className="pd-btn pd-btn-primary" to={quoteHref}>استعلام قیمت</Link>
+      <div className="pd-mbar" role="region" aria-label={t("اقدام سریع")}>
+        <a className="pd-btn pd-btn-outline" href={SALES_PHONE_TEL}><Icon name="phone" />{t("تماس")}</a>
+        <Link className="pd-btn pd-btn-primary" to={quoteHref}>{t("استعلام قیمت")}</Link>
       </div>
     </div>
   );

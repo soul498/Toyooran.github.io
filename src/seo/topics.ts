@@ -1,3 +1,4 @@
+import { translateDeep } from "../i18n";
 export type MagazineTopic = { slug: string; label: string; h1: string; title: string; intro: string };
 
 /** Fixed topic tags; each has an indexable hub at /magazine/topic/<slug>. */
@@ -9,7 +10,11 @@ export const MAGAZINE_TOPICS: MagazineTopic[] = [
 ];
 
 export function findTopic(slug?: string): MagazineTopic | undefined {
-  return slug ? MAGAZINE_TOPICS.find((t) => t.slug === slug) : undefined;
+  const topic = slug ? MAGAZINE_TOPICS.find((t) => t.slug === slug) : undefined;
+  return topic ? translateDeep(topic) : undefined;
 }
 
 export const topicPath = (topic: MagazineTopic) => `/magazine/topic/${topic.slug}`;
+
+/** All topics in the active language. */
+export const localTopics = (): MagazineTopic[] => translateDeep(MAGAZINE_TOPICS);

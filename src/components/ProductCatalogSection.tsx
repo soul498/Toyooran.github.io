@@ -12,6 +12,7 @@ import { useData } from '../context/DataContext';
 import { LazyImage } from './LazyImage';
 import { CategoryMarquee } from './CategoryMarquee';
 
+import { t, tf } from '../i18n';
 export { CATALOG_PDF_HREF } from '../data/pageHeroes';
 
 interface ProductCatalogSectionProps {
@@ -137,7 +138,8 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
           <div className="flex items-center justify-center gap-4 mb-10 w-full opacity-60">
             <div className="h-px bg-slate-400 flex-1 max-w-[40px] sm:max-w-[60px]" />
             <h3 className="text-[11px] sm:text-xs font-bold text-slate-500 tracking-widest whitespace-nowrap">
-              دسته‌بندی محصولات
+              
+              {t("دسته‌بندی محصولات")}
             </h3>
             <div className="h-px bg-slate-400 flex-1 max-w-[40px] sm:max-w-[60px]" />
           </div>
@@ -154,7 +156,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="جستجوی نام محصول..."
+                placeholder={t("جستجوی نام محصول...")}
                 className="w-full bg-white border border-slate-200 focus:border-[#003F86] rounded-2xl py-3.5 pr-12 pl-4 text-sm font-bold text-slate-800 transition-all outline-none placeholder:text-slate-400 placeholder:font-normal shadow-sm"
               />
               <Search className="w-5 h-5 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
@@ -180,13 +182,14 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                 <div className="w-24 h-24 rounded-full bg-slate-50 flex items-center justify-center mb-6">
                   <Filter className="w-10 h-10 text-slate-400" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-800 mb-3">محصولی یافت نشد</h3>
-                <p className="text-slate-500 mb-8 max-w-md">هیچ محصولی با این فیلترها وجود ندارد. لطفاً کلمات کلیدی یا دسته‌بندی را تغییر دهید.</p>
+                <h3 className="text-2xl font-black text-slate-800 mb-3">{t("محصولی یافت نشد")}</h3>
+                <p className="text-slate-500 mb-8 max-w-md">{t("هیچ محصولی با این فیلترها وجود ندارد. لطفاً کلمات کلیدی یا دسته‌بندی را تغییر دهید.")}</p>
                 <button 
                   onClick={() => { handleSelectCategory('all'); setSearchQuery('');  }}
                   className="px-8 py-3 rounded-full bg-[#003F86] text-white font-bold hover:bg-blue-800 transition-colors shadow-lg shadow-blue-900/20"
                 >
-                  نمایش همه محصولات
+                  
+                  {t("نمایش همه محصولات")}
                 </button>
               </div>
             ) : (
@@ -235,12 +238,13 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                           className="flex-1 bg-[#003F86] hover:bg-blue-800 text-white py-3.5 px-4 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 flex justify-center items-center gap-2"
                         >
                           <PhoneCall className="w-4 h-4" />
-                          استعلام قیمت
+                          
+                          {t("استعلام قیمت")}
                         </Link>
                         <Link
                           to={publicProductPath(product)}
                           className="w-14 h-14 shrink-0 flex justify-center items-center bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-2xl transition-colors"
-                          title="مشاهده جزئیات کامل"
+                          title={t("مشاهده جزئیات کامل")}
                         >
                           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                         </Link>
@@ -260,8 +264,8 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
 
           {/* Full crawlable list of this category's products (grid above loads progressively) */}
           {selectedCategory !== 'all' && !searchQuery && filteredProducts.length > 0 && (
-            <nav aria-label={`فهرست محصولات ${heading}`} className="mt-10 bg-white/80 rounded-3xl border border-slate-200 p-6">
-              <h2 className="text-base font-black text-slate-900 mb-3">فهرست کامل محصولات این دسته</h2>
+            <nav aria-label={tf("فهرست محصولات {heading}", { heading })} className="mt-10 bg-white/80 rounded-3xl border border-slate-200 p-6">
+              <h2 className="text-base font-black text-slate-900 mb-3">{t("فهرست کامل محصولات این دسته")}</h2>
               <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1.5">
                 {filteredProducts.map((p) => (
                   <li key={p.id} className="text-sm leading-7">

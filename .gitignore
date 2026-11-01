@@ -1,4 +1,5 @@
 node_modules/
+/node_modules
 dist/
 .env
 .env.*
@@ -9,3 +10,6 @@ env.txt
 # Local logs and temporary files
 *.log
 coverage/
+
+# npm run check:i18n output
+i18n-report.json

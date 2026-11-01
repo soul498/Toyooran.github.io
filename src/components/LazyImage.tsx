@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { withMediaVersion } from '../lib/mediaUrl';
 
+import { t } from '../i18n';
 export const LazyImage = ({
   src,
   alt,
@@ -42,7 +43,7 @@ export const LazyImage = ({
       <img
         ref={imgRef}
         src={currentSrc}
-        alt={alt !== undefined ? alt : 'تجهیزات دام و طیور طیوران صنعت پویا'}
+        alt={alt !== undefined ? alt : t("تجهیزات دام و طیور طیوران صنعت پویا")}
         width={width}
         height={height}
         loading={priority ? 'eager' : 'lazy'}

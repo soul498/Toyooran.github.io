@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { Article } from '../../types';
-import { MAGAZINE_TOPICS, findTopic, topicPath } from '../../seo/topics';
+import { findTopic, localTopics, topicPath } from '../../seo/topics';
 import { LazyImage } from '../LazyImage';
 import { isSafeImageSrc } from '../../seo/safeUrl';
 
+import { t } from '../../i18n';
 export const MagazineTopic: React.FC<{ articles: Article[]; notFound: React.ReactNode }> = ({ articles, notFound }) => {
   const { topicSlug } = useParams();
   const topic = findTopic(topicSlug);
@@ -13,8 +14,8 @@ export const MagazineTopic: React.FC<{ articles: Article[]; notFound: React.Reac
   return (
     <div className="min-h-screen bg-[#F8FAFC] pt-28 pb-24">
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
-        <nav className="text-sm text-slate-500 mb-4" aria-label="مسیر">
-          <Link to="/" className="hover:text-[#003F86]">خانه</Link> / <Link to="/magazine" className="hover:text-[#003F86]">مجله</Link> / <span className="text-slate-700">{topic.label}</span>
+        <nav className="text-sm text-slate-500 mb-4" aria-label={t("مسیر")}>
+          <Link to="/" className="hover:text-[#003F86]">{t("خانه")}</Link> / <Link to="/magazine" className="hover:text-[#003F86]">{t("مجله")}</Link> / <span className="text-slate-700">{topic.label}</span>
         </nav>
         <h1 className="text-[1.6rem] md:text-[2.1rem] font-black text-slate-900 leading-[1.6] mb-3">{topic.h1}</h1>
         <p className="text-[17px] leading-[1.9] text-slate-700 max-w-3xl mb-8">{topic.intro}</p>
@@ -30,13 +31,13 @@ export const MagazineTopic: React.FC<{ articles: Article[]; notFound: React.Reac
               </li>
             ))}
           </ul>
-        ) : <p className="text-slate-500">هنوز مقاله‌ای در این موضوع منتشر نشده است.</p>}
+        ) : <p className="text-slate-500">{t("هنوز مقاله‌ای در این موضوع منتشر نشده است.")}</p>}
         <div className="mt-12 flex flex-wrap gap-2 items-center">
-          <span className="text-sm font-bold text-slate-600">موضوعات دیگر:</span>
-          {MAGAZINE_TOPICS.filter((t) => t.slug !== topic.slug).map((t) => (
+          <span className="text-sm font-bold text-slate-600">{t("موضوعات دیگر:")}</span>
+          {localTopics().filter((t) => t.slug !== topic.slug).map((t) => (
             <Link key={t.slug} to={topicPath(t)} className="bg-amber-400 hover:bg-amber-500 text-blue-950 text-xs font-black px-3.5 py-1.5 rounded-full">{t.label}</Link>
           ))}
-          <Link to="/magazine" className="text-sm font-bold text-[#003F86] ms-2">همهٔ مقالات مجله</Link>
+          <Link to="/magazine" className="text-sm font-bold text-[#003F86] ms-2">{t("همهٔ مقالات مجله")}</Link>
         </div>
       </div>
     </div>

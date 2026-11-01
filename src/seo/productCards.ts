@@ -8,12 +8,12 @@ export const PRODUCT_CARD_IMG = { width: 640, height: 360 };
 
 export type ProductCard = { id: string; name: string; model?: string; spec?: string; image?: string; href: string };
 
-const SKIP_SPEC = /^(مدل|برند|کد|قیمت|رنگ)/;
+const SKIP_SPEC = /^(مدل|برند|کد|قیمت|رنگ|model|brand|code|price|colou?r)/i;
 
 function keySpec(product: Product, prefer?: string): string | undefined {
   const specs = (product as any).specs as { label?: string; value?: string }[] | undefined;
   const preferred = prefer ? (specs || []).find((s) => s?.label && s?.value && s.label.trim().startsWith(prefer)) : undefined;
-  const spec = preferred || (specs || []).find((s) => s?.label && s?.value && !SKIP_SPEC.test(s.label.trim()) && !/قیمت|تومان|ریال/.test(s.value));
+  const spec = preferred || (specs || []).find((s) => s?.label && s?.value && !SKIP_SPEC.test(s.label.trim()) && !/قیمت|تومان|ریال|toman|rial/i.test(s.value));
   return spec ? `${spec.label!.trim()}: ${spec.value!.trim()}` : undefined;
 }
 
@@ -26,7 +26,7 @@ export function resolveProductCards(ids: string[], products: Product[]): Product
     const prefer = rest.join(":").trim() || undefined;
     const product = products.find((p) => p.id === id || p.code?.toLowerCase() === id);
     if (!product || cards.some((c) => c.id === product.id)) continue;
-    const model = ((product as any).specs || []).find((s: any) => /^مدل/.test(String(s?.label || "")))?.value;
+    const model = ((product as any).specs || []).find((s: any) => /^(مدل|model)/i.test(String(s?.label || "")))?.value;
     cards.push({
       id: product.id,
       name: product.name,

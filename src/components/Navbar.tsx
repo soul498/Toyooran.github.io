@@ -15,6 +15,8 @@ import {
 } from '../icons';
 import { PageSection } from '../types';
 
+import { t } from '../i18n';
+import { LangToggle } from './LangToggle';
 interface NavbarProps {
   currentSection: PageSection;
   onNavigate: (section: PageSection) => void;
@@ -49,12 +51,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   // Nav items ordered right to left as requested:
   // خانه, خدمات, محصولات, تحقیق و توسعه, مجله, درباره شرکت, تماس
   const navItems: { id: PageSection; path: string; label: string; icon: React.ElementType }[] = [
-    { id: 'home', path: '/', label: 'خانه', icon: Home },
-    { id: 'services', path: '/services', label: 'خدمات', icon: Wrench },
-    { id: 'products', path: '/products', label: 'محصولات', icon: Package },
-    { id: 'rnd', path: '/rnd', label: 'تحقیق و توسعه', icon: FlaskConical },
-    { id: 'about', path: '/about', label: 'درباره شرکت', icon: User },
-    { id: 'contact', path: '/contact', label: 'تماس', icon: Compass },
+    { id: 'home', path: '/', label: t("خانه"), icon: Home },
+    { id: 'services', path: '/services', label: t("خدمات"), icon: Wrench },
+    { id: 'products', path: '/products', label: t("محصولات"), icon: Package },
+    { id: 'rnd', path: '/rnd', label: t("تحقیق و توسعه"), icon: FlaskConical },
+    { id: 'about', path: '/about', label: t("درباره شرکت"), icon: User },
+    { id: 'contact', path: '/contact', label: t("تماس"), icon: Compass },
   ];
 
   const handleNavClick = (section: PageSection) => {
@@ -77,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="h-10 sm:h-12 flex items-center justify-center relative group-hover:-translate-y-0.5 transition-transform duration-300">
              <img 
                src="/images/logo-mark.png" 
-               alt="طیوران صنعت پویا"
+               alt={t("طیوران صنعت پویا")}
                width={62}
                height={50}
                className="h-full w-auto object-contain"
@@ -88,7 +90,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               TSPK
             </span>
             <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-600 tracking-wider -mt-1">
-              طیوران صنعت پویا
+              
+              {t("طیوران صنعت پویا")}
             </span>
           </div>
           
@@ -118,14 +121,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Controls */}
         <div className="hidden lg:flex items-center gap-2">
+          <LangToggle />
           
           {/* Minimal Search Trigger */}
           <button 
             onClick={onOpenSearch}
             className="flex items-center justify-center min-w-11 min-h-11 w-11 h-11 bg-white/50 hover:bg-white border border-slate-200/50 hover:border-blue-200 transition-all duration-300 rounded-full group cursor-pointer shadow-sm hover:shadow-md"
-            aria-label="جستجو"
+            aria-label={t("جستجو")}
             type="button"
-            title="جستجو"
+            title={t("جستجو")}
           >
             <Search className="w-5 h-5 text-slate-500 group-hover:text-[#003F86] transition-colors" />
           </button>
@@ -133,10 +137,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Mobile Menu & Action Buttons */}
         <div className="flex items-center gap-2 lg:hidden relative z-[60]">
+          <LangToggle className="backdrop-blur-md border-white/60" />
           <button
             onClick={onOpenSearch}
             className="min-w-11 min-h-11 p-2.5 text-slate-500 hover:text-[#003F86] hover:bg-white rounded-full transition-colors bg-white/50 backdrop-blur-md border border-white/60 shadow-sm"
-            aria-label="جستجو"
+            aria-label={t("جستجو")}
           >
             <Search className="w-5 h-5" />
           </button>
@@ -144,7 +149,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             id="mobile-menu-toggle-btn"
             className="min-w-11 min-h-11 p-2.5 rounded-full text-slate-700 hover:bg-white transition-all duration-300 bg-white/50 backdrop-blur-md shadow-sm border border-white/60 hover:scale-105 active:scale-95 flex items-center justify-center relative overflow-hidden"
-            aria-label={mobileMenuOpen ? 'بستن منو' : 'باز کردن منو'}
+            aria-label={mobileMenuOpen ? t("بستن منو") : t("باز کردن منو")}
             aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -159,18 +164,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-white shadow-sm z-10">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-auto min-w-[2.5rem] bg-slate-100 rounded-lg flex items-center justify-center px-2 py-1 shadow-inner border border-slate-200/50">
-                  <img src="/images/logo-mark.png" alt="طیوران صنعت پویا" className="h-10 w-auto object-contain" width={50} height={40} />
+                  <img src="/images/logo-mark.png" alt={t("طیوران صنعت پویا")} className="h-10 w-auto object-contain" width={50} height={40} />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-lg font-black text-[#003F86]">TSPK</span>
-                  <span className="text-[10px] font-extrabold text-slate-500 -mt-1">طیوران صنعت پویا</span>
+                  <span className="text-[10px] font-extrabold text-slate-500 -mt-1">{t("طیوران صنعت پویا")}</span>
                 </div>
               </div>
               
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                aria-label="بستن منو"
+                aria-label={t("بستن منو")}
                 className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors active:scale-95 border border-slate-200/50"
               >
                 <X className="w-5 h-5" />
@@ -207,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </div>
                         
                         {isActive && (
-                          <ChevronLeft className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 text-[#003F86]/50" />
+                          <ChevronLeft className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 text-[#003F86]/50 ltr:-scale-x-100" />
                         )}
                       </Link>
                     </div>
@@ -226,7 +231,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="w-full flex items-center justify-center gap-3 bg-[#003F86] text-white p-3.5 sm:p-4 rounded-2xl font-bold"
                 >
                   <Search className="w-5 h-5 text-amber-400" />
-                  <span>جستجوی هوشمند</span>
+                  <span>{t("جستجوی هوشمند")}</span>
                 </button>
               </div>
             </div>

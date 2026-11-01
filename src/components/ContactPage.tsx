@@ -10,6 +10,7 @@ import { FreeConsultationForm } from './FreeConsultationForm';
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { LocationDetailPane } from './LocationDetailPane';
 
+import { t, tr } from '../i18n';
 interface ContactPageProps {
   initialSubject?: string;
   initialProduct?: string;
@@ -54,7 +55,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
               <div className="relative z-10">
                 <h3 className="font-black text-amber-400 text-lg flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
                   <Phone className="w-5 h-5" />
-                  <span>راه‌های ارتباط مستقیم</span>
+                  <span>{t("راه‌های ارتباط مستقیم")}</span>
                 </h3>
                 
                 <div className="space-y-4 text-sm">
@@ -63,13 +64,13 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-300 block text-xs mb-1">مشاوره، فروش و پشتیبانی:</span>
+                      <span className="text-slate-300 block text-xs mb-1">{t("مشاوره، فروش و پشتیبانی:")}</span>
                       <a href={SALES_PHONE_TEL} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
-                        {SALES_PHONE_DISPLAY}
+                        {tr(SALES_PHONE_DISPLAY)}
                       </a>
-                      <span className="text-slate-300 block text-xs mt-3 mb-1">{OFFICE_PHONE_LABEL}:</span>
+                      <span className="text-slate-300 block text-xs mt-3 mb-1">{tr(OFFICE_PHONE_LABEL)}:</span>
                       <a href={OFFICE_PHONE_TEL} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
-                        {OFFICE_PHONE_DISPLAY}
+                        {tr(OFFICE_PHONE_DISPLAY)}
                       </a>
                     </div>
                   </div>
@@ -79,7 +80,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                       <Clock className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-slate-300 block text-xs mb-1">ساعات پاسخگویی مهندسان:</span>
+                      <span className="text-slate-300 block text-xs mb-1">{t("ساعات پاسخگویی مهندسان:")}</span>
                       <span className="text-slate-200 text-sm">{companyInfo.workingHours}</span>
                     </div>
                   </div>
@@ -88,52 +89,52 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                 {/* Social Links inside the dark card */}
                 {companyInfo.socialLinks && (
                   <div className="mt-8 pt-6 border-t border-white/10">
-                    <span className="text-slate-300 text-xs block mb-4">شبکه‌های اجتماعی:</span>
+                    <span className="text-slate-300 text-xs block mb-4">{t("شبکه‌های اجتماعی:")}</span>
                     <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
                       <SocialIconLink
                         href={companyInfo.socialLinks.instagram}
-                        label="اینستاگرام"
-                        comingSoon="صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                        label={t("اینستاگرام")}
+                        comingSoon={t("صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group"
                       >
                         <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </SocialIconLink>
                       <SocialIconLink
                         href={companyInfo.socialLinks.telegram}
-                        label="تلگرام"
-                        comingSoon="کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                        label={t("تلگرام")}
+                        comingSoon={t("کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group"
                       >
                         <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </SocialIconLink>
                       <SocialIconLink
                         href={companyInfo.socialLinks.aparat}
-                        label="آپارات"
-                        comingSoon="کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                        label={t("آپارات")}
+                        comingSoon={t("کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
                       >
                         <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
                       </SocialIconLink>
                       <SocialIconLink
                         href={companyInfo.socialLinks.rubika}
-                        label="روبیکا"
-                        comingSoon="کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                        label={t("روبیکا")}
+                        comingSoon={t("کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
                       >
                         <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </SocialIconLink>
                       <SocialIconLink
                         href={companyInfo.socialLinks.youtube}
-                        label="یوتیوب"
-                        comingSoon="کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                        label={t("یوتیوب")}
+                        comingSoon={t("کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
                       >
                         <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </SocialIconLink>
                       <SocialIconLink
                         href={companyInfo.socialLinks.linkedin}
-                        label="لینکدین"
-                        comingSoon="صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                        label={t("لینکدین")}
+                        comingSoon={t("صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0077b5] hover:border-transparent transition-all duration-300 group"
                       >
                         <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -167,7 +168,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
           <div className="relative z-10 w-full">
             <div className="flex items-center gap-6 mb-10">
                 <div className="h-px flex-1 bg-gradient-to-l from-white/20 to-transparent" />
-                <h3 className="text-slate-200 font-bold text-lg tracking-widest uppercase">آدرس مراکز و شعب</h3>
+                <h3 className="text-slate-200 font-bold text-lg tracking-widest uppercase">{t("آدرس مراکز و شعب")}</h3>
                 <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
               </div>
 
@@ -206,7 +207,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                              </div>
                              <div className="flex-1 overflow-hidden">
                                <p className={`font-black truncate text-[13px] sm:text-sm mb-1 transition-colors ${isActive ? 'text-amber-400' : 'text-slate-200'}`}>
-                                 {loc.title || (isHQ ? 'دفتر مرکزی' : 'شعبه')}
+                                 {loc.title || (isHQ ? t("دفتر مرکزی") : t("شعبه"))}
                                </p>
                                <p className="text-[11px] text-slate-300 truncate">{loc.address}</p>
                              </div>

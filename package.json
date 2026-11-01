@@ -11,6 +11,7 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "check:seo": "bash scripts/check-seo-contract.sh",
+    "check:i18n": "tsx scripts/check-i18n.ts",
     "test:legacy-spam": "tsx scripts/test-legacy-spam.ts"
   },
   "dependencies": {

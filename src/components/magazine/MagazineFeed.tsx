@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { LazyImage } from '../LazyImage';
 import type { Article } from '../../types';
 
+import { t } from '../../i18n';
 interface MagazineFeedProps {
   articles: Article[];
   onSelectArticle: (article: Article) => void;
@@ -47,7 +48,8 @@ export const MagazineFeed: React.FC<MagazineFeedProps> = ({ articles }) => {
                   </p>
                   <div className="mt-auto pt-5 border-t border-slate-200/60 flex items-center text-sm font-bold text-[#003F86]">
                     <span className="group-hover:-translate-x-2 transition-transform flex items-center gap-1.5">
-                      مطالعه مقاله <ChevronLeft className="w-4 h-4" />
+                      
+                      {t("مطالعه مقاله")}{" "}<ChevronLeft className="w-4 h-4" />
                     </span>
                   </div>
                 </div>

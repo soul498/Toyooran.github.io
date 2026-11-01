@@ -1,5 +1,6 @@
 import type React from 'react';
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
+import { translateDeep } from '../i18n';
 import { Building2, FileCheck, FlaskConical, Phone, Sparkles, type IconProps } from '../icons';
 
 export interface PageHeroConfig {
@@ -69,8 +70,11 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
   },
 };
 
-export const pageHeroFor = (pathname: string): PageHeroConfig | undefined =>
-  PAGE_HEROES[pathname.replace(/\/+$/, '') || '/'];
+/** Hero for a (language-neutral) path, in the active language. */
+export const pageHeroFor = (pathname: string): PageHeroConfig | undefined => {
+  const hero = PAGE_HEROES[pathname.replace(/\/+$/, '') || '/'];
+  return hero ? translateDeep(hero) : undefined;
+};
 
 /** Real catalog file: public/TSPK_catalog.pdf, served by server.ts with Content-Disposition: attachment. */
 export const CATALOG_PDF_HREF = '/TSPK_catalog.pdf';

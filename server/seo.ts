@@ -1,4 +1,6 @@
 import { loadSeoCatalog } from "./catalog";
+import { englishCatalog } from "./i18n";
+import { EN_PREFIX, localizeHref, pathLang, stripLangPrefix, withLang } from "../src/i18n";
 import {
   CANONICAL_ORIGIN,
   canonicalPath,
@@ -41,7 +43,74 @@ export function normalizePublicUrl(originalUrl: string): string | null {
 }
 
 export function isKnownPublicPath(pathname: string): boolean {
+  const path = stripQuery(pathname);
+  if (pathLang(path) === "en") {
+    const neutral = stripLangPrefix(path);
+    if (isPrivateAppPath(neutral)) return false;
+    const en = englishCatalog(loadSeoCatalog());
+    return withLang("en", () => isKnownWithCatalog(neutral, en) && !(neutral.startsWith("/magazine/topic/") && !topicHasEnglish(neutral, en)));
+  }
   return isKnownWithCatalog(pathname, loadSeoCatalog());
+}
+
+function topicHasEnglish(neutralPath: string, en: ReturnType<typeof englishCatalog>): boolean {
+  const slug = neutralPath.split("/").filter(Boolean)[2];
+  return en.articles.some((a) => a.topic === slug);
+}
+
+/** "/x" → "/en/x" for a page that exists in English, else null. */
+export function englishEquivalent(neutralPath: string): string | null {
+  const en = englishCatalog(loadSeoCatalog());
+  const ok = withLang("en", () => isKnownWithCatalog(neutralPath, en)) && !(neutralPath.startsWith("/magazine/topic/") && !topicHasEnglish(neutralPath, en));
+  if (!ok || isPrivateAppPath(neutralPath)) return null;
+  return neutralPath === "/" ? EN_PREFIX : `${EN_PREFIX}${neutralPath}`;
+}
+
+/**
+ * /en URL of a Persian page that has no English version yet: send visitors (e.g. from the
+ * language switch) to the closest English listing instead of a 404. Temporary (302).
+ */
+export function englishFallbackRedirect(pathname: string): string | null {
+  const path = stripQuery(pathname);
+  if (pathLang(path) !== "en") return null;
+  const neutral = stripLangPrefix(path);
+  if (isKnownPublicPath(path)) return null;
+  if (!isKnownWithCatalog(neutral, loadSeoCatalog())) return null;
+  const seg = neutral.split("/").filter(Boolean);
+  if (seg[0] === "magazine") return `${EN_PREFIX}/magazine`;
+  if (seg[0] === "products") return `${EN_PREFIX}/products`;
+  return EN_PREFIX;
+}
+
+/** Persian paths of the seo redirects, mapped for /en too. */
+export function seoRedirectForAnyLang(pathname: string, catalog: ReturnType<typeof loadSeoCatalog>): string | null {
+  if (pathLang(pathname) !== "en") return seoRedirectFor(pathname, catalog);
+  const r = seoRedirectFor(stripLangPrefix(pathname), catalog);
+  return r ? withLang("en", () => localizeHref(r)) : null;
+}
+
+/** Localise canonical / page URLs inside JSON-LD for an English page (ids, images and the bare origin stay). */
+function localizeJsonLd(value: unknown, key = ""): unknown {
+  if (typeof value === "string") {
+    if (key === "@id" || !value.startsWith(CANONICAL_ORIGIN)) return value;
+    const rest = value.slice(CANONICAL_ORIGIN.length);
+    if ((rest === "" || rest === "/") && key !== "item") return value;
+    return localizeHref(value);
+  }
+  if (Array.isArray(value)) return value.map((v) => localizeJsonLd(v, key));
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (k === "inLanguage" && typeof v === "string") out[k] = "en";
+      else out[k] = localizeJsonLd(v, k);
+    }
+    return out;
+  }
+  return value;
+}
+
+function localizeBodyHrefs(html: string): string {
+  return html.replace(/href="([^"]*)"/g, (_m, href: string) => `href="${localizeHref(href)}"`);
 }
 
 function deferRenderBlockingCss(html: string): string {
@@ -64,10 +133,31 @@ function stripSocialMeta(html: string): string {
 
 export function injectSeoTags(html: string, reqPath: string): string {
   const path = stripQuery(reqPath);
-  const doc = resolveSeo(path, loadSeoCatalog());
+  const lang = pathLang(path);
+  const neutral = stripLangPrefix(path);
+  const catalog = loadSeoCatalog();
+  const enCatalog = englishCatalog(catalog);
+  const doc =
+    lang === "en"
+      ? withLang("en", () => {
+          const d = resolveSeo(neutral, enCatalog);
+          return {
+            ...d,
+            canonicalHref: d.canonicalHref ? localizeHref(d.canonicalHref) : null,
+            body: localizeBodyHrefs(d.body),
+            jsonLd: d.jsonLd.map((item) => localizeJsonLd(item)),
+          };
+        })
+      : resolveSeo(path, catalog);
   let out = ensureViewport(html);
   out = deferRenderBlockingCss(out);
-  out = out.replace(/<html\b[^>]*>/i, '<html lang="fa-IR" dir="rtl">');
+  if (lang === "en") {
+    out = out.replace(/<html\b[^>]*>/i, '<html lang="en" dir="ltr">');
+    // English pages use the Latin cut of the brand font.
+    out = out.replace(/\/fonts\/estedad-(400|700)\.woff2/g, "/fonts/estedad-latin-$1.woff2");
+  } else {
+    out = out.replace(/<html\b[^>]*>/i, '<html lang="fa-IR" dir="rtl">');
+  }
   out = out.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(doc.title)}</title>`);
   if (out.includes('name="description"')) {
     out = out.replace(
@@ -91,7 +181,7 @@ export function injectSeoTags(html: string, reqPath: string): string {
   out = stripSocialMeta(out);
   const robots = `    <meta name="robots" content="${doc.robots}" />\n`;
   const canonical = doc.canonicalHref
-    ? `    <link rel="canonical" href="${doc.canonicalHref}" />\n`
+    ? `    <link rel="canonical" href="${doc.canonicalHref}" />\n${hreflangLinks(neutral, doc)}`
     : "";
   const jsonLd = doc.jsonLd.length
     ? `    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": doc.jsonLd }).replace(/</g, "\\u003c")}</script>\n`
@@ -102,7 +192,8 @@ ${canonical}    <link rel="preload" as="image" type="image/webp" href="/images/h
     <meta property="og:description" content="${escapeHtml(doc.description)}" />
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />
     <meta property="og:type" content="${doc.ogType}" />
-    <meta property="og:site_name" content="طیوران صنعت پویا" />
+    <meta property="og:site_name" content="${lang === "en" ? "Toyooran Sanat Pouya" : "طیوران صنعت پویا"}" />
+    <meta property="og:locale" content="${lang === "en" ? "en_US" : "fa_IR"}" />
     <meta property="og:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -119,6 +210,19 @@ ${robots}${jsonLd}`;
     out = out.replace('<div id="root"></div>', `<div id="root"></div>${prerender}`);
   }
   return out;
+}
+
+/** hreflang fa / en / x-default (= Persian) when the page exists in both languages. */
+function hreflangLinks(neutralPath: string, doc: { robots: string; notFound?: boolean }): string {
+  if (doc.notFound || /noindex/.test(doc.robots)) return "";
+  const en = englishEquivalent(neutralPath);
+  if (!en) return "";
+  const fa = canonicalPath(neutralPath);
+  const enHref = canonicalPath(en);
+  return `    <link rel="alternate" hreflang="fa" href="${fa}" />
+    <link rel="alternate" hreflang="en" href="${enHref}" />
+    <link rel="alternate" hreflang="x-default" href="${fa}" />
+`;
 }
 
 function robotsPrivateDisallows(): string {
@@ -163,8 +267,21 @@ function xmlEscape(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&apos;").replace(/"/g, "&quot;");
 }
 
+/** llms.txt: the Persian section (unchanged) followed by the English section. */
+export function llmsTxtAll(): string {
+  const catalog = loadSeoCatalog();
+  const en = englishCatalog(catalog);
+  return `${llmsTxt(catalog)}\n${withLang("en", () => llmsTxt(en))}`;
+}
+
 export function sitemapXml(): string {
-  const urls = sitemapEntries(loadSeoCatalog());
+  const catalog = loadSeoCatalog();
+  const enCatalog = englishCatalog(catalog);
+  // Persian URLs first (unchanged), then the English pages under /en (only what exists in English).
+  const enUrls = withLang("en", () => sitemapEntries(enCatalog))
+    .filter((u) => !(u.loc.startsWith("/magazine/topic/") && !topicHasEnglish(u.loc, enCatalog)))
+    .map((u) => ({ ...u, loc: u.loc === "/" ? EN_PREFIX : `${EN_PREFIX}${u.loc}` }));
+  const urls = [...sitemapEntries(catalog), ...enUrls];
   const body = urls
     .map((u) => {
       const last = u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : "";

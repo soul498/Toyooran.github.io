@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { parseInline, RichBlock } from '../seo/richText';
+import { routerTo } from '../i18n';
 
 export const RichInline: React.FC<{ text: string }> = ({ text }) => (
   <>
     {parseInline(text).map((part, i) =>
       part.href ? (
-        <Link key={i} to={part.href} className="text-[#003F86] font-bold hover:underline">
+        <Link key={i} to={routerTo(part.href)} className="text-[#003F86] font-bold hover:underline">
           {part.text}
         </Link>
       ) : part.bold ? (

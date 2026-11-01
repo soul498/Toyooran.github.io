@@ -21,6 +21,7 @@ import {
 } from '../icons';
 import { isDisabledPagePath } from '../data/disabledPages';
 
+import { isEn, t, tr, translateDeep } from '../i18n';
 const FOOTER_SERVICE_LINKS = [
   { to: '/services/srv-machinery-manufacturing', title: 'ماشین‌آلات خوراک' },
   { to: '/services/srv-poultry-equipment-supply', title: 'تجهیزات دام و طیور' },
@@ -39,19 +40,19 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, onOpenConsultation, onOpenQuote, companyInfo, categories }) => {
   const navigation = [
-    { title: 'صفحه اصلی', path: '/' },
-    { title: 'درباره شرکت', path: '/about' },
-    { title: 'محصولات', path: '/products' },
-    { title: 'خدمات', path: '/services' },
-    { title: 'مجله', path: '/magazine' },
-    { title: 'تماس', path: '/contact' },
+    { title: t("صفحه اصلی"), path: '/' },
+    { title: t("درباره شرکت"), path: '/about' },
+    { title: t("محصولات"), path: '/products' },
+    { title: t("خدمات"), path: '/services' },
+    { title: t("مجله"), path: '/magazine' },
+    { title: t("تماس"), path: '/contact' },
   ];
 
   
 
   const hq = companyInfo?.locations?.find(loc => loc.type === 'headquarter');
 
-  const currentYear = new Date().getFullYear().toLocaleString('fa-IR', { useGrouping: false });
+  const currentYear = new Date().getFullYear().toLocaleString(isEn() ? 'en-US' : 'fa-IR', { useGrouping: false });
 
   return (
     <footer className="relative w-full bg-[#020b18] pt-20 pb-6 overflow-hidden border-t border-white/5 z-20">
@@ -70,7 +71,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
           <div className="lg:col-span-4 flex flex-col">
             <div className="flex items-center gap-3 mb-6">
                <div className="h-14 flex items-center justify-center">
-                  <img src="/images/logo-mark.png" alt="طیوران صنعت پویا" width={70} height={56} className="h-full w-auto object-contain" />
+                  <img src="/images/logo-mark.png" alt={t("طیوران صنعت پویا")} width={70} height={56} className="h-full w-auto object-contain" />
                </div>
                <div>
                   <p className="text-xl font-black text-white tracking-tight">{companyInfo?.name}</p>
@@ -78,55 +79,56 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                </div>
             </div>
             <p className="text-slate-300 text-sm leading-relaxed font-medium mb-8 max-w-sm">
-              شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.
+              
+              {t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.")}
             </p>
             
             {/* Social Links */}
             <div className="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
               <SocialIconLink
                 href={companyInfo?.socialLinks?.instagram}
-                label="اینستاگرام"
-                comingSoon="صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                label={t("اینستاگرام")}
+                comingSoon={t("صفحهٔ اینستاگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-500 hover:border-transparent transition-all duration-300 group"
               >
                 <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </SocialIconLink>
               <SocialIconLink
                 href={companyInfo?.socialLinks?.telegram}
-                label="تلگرام"
-                comingSoon="کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                label={t("تلگرام")}
+                comingSoon={t("کانال تلگرام طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0088cc] hover:border-transparent transition-all duration-300 group"
               >
                 <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </SocialIconLink>
               <SocialIconLink
                 href={companyInfo?.socialLinks?.aparat}
-                label="آپارات"
-                comingSoon="کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                label={t("آپارات")}
+                comingSoon={t("کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
               >
                 <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
               </SocialIconLink>
               <SocialIconLink
                 href={companyInfo?.socialLinks?.rubika}
-                label="روبیکا"
-                comingSoon="کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                label={t("روبیکا")}
+                comingSoon={t("کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
               >
                 <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </SocialIconLink>
               <SocialIconLink
                 href={companyInfo?.socialLinks?.youtube}
-                label="یوتیوب"
-                comingSoon="کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                label={t("یوتیوب")}
+                comingSoon={t("کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
               >
                 <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </SocialIconLink>
               <SocialIconLink
                 href={companyInfo?.socialLinks?.linkedin}
-                label="لینکدین"
-                comingSoon="صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود"
+                label={t("لینکدین")}
+                comingSoon={t("صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0a66c2] hover:border-transparent transition-all duration-300 group"
               >
                 <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
@@ -138,13 +140,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
           <div className="lg:col-span-2 flex flex-col">
             <p className="text-white font-bold text-lg mb-6 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              دسترسی سریع
+              
+              {t("دسترسی سریع")}
             </p>
             <ul className="space-y-3">
               {navigation.map((nav, idx) => (
                 <li key={idx}>
                   <Link to={nav.path} className="text-slate-300 hover:text-amber-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
-                    <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-amber-400 transition-colors" />
+                    <ChevronLeft className="w-3.5 h-3.5 ltr:-scale-x-100 text-slate-600 group-hover:text-amber-400 transition-colors" />
                     {nav.title}
                   </Link>
                 </li>
@@ -156,20 +159,21 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
           <div className="lg:col-span-3 flex flex-col">
             <p className="text-white font-bold text-lg mb-6 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-              خدمات و محصولات
+              
+              {t("خدمات و محصولات")}
             </p>
             <ul className="space-y-3">
-              {FOOTER_SERVICE_LINKS.map((item) => (
+              {translateDeep(FOOTER_SERVICE_LINKS).map((item) => (
                 <li key={item.to}>
                   {isDisabledPagePath(item.to) ? (
                     // Page switched off for now (data/disabledPages.ts): the name stays, as plain text.
                     <span className="text-slate-300 text-sm font-medium flex items-center gap-1.5">
-                      <ChevronLeft className="w-3.5 h-3.5 text-slate-600" />
+                      <ChevronLeft className="w-3.5 h-3.5 ltr:-scale-x-100 text-slate-600" />
                       {item.title}
                     </span>
                   ) : (
                     <Link to={item.to} className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
-                      <ChevronLeft className="w-3.5 h-3.5 text-slate-600 group-hover:text-blue-400 transition-colors" />
+                      <ChevronLeft className="w-3.5 h-3.5 ltr:-scale-x-100 text-slate-600 group-hover:text-blue-400 transition-colors" />
                       {item.title}
                     </Link>
                   )}
@@ -182,7 +186,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
           <div className="lg:col-span-3 flex flex-col">
             <p className="text-white font-bold text-lg mb-6 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              اطلاعات تماس
+              
+              {t("اطلاعات تماس")}
             </p>
             
             <div className="space-y-4">
@@ -191,10 +196,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                   <Phone className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="space-y-1">
-                  <span className="block text-[10px] text-slate-300 font-bold">مشاوره، فروش و پشتیبانی</span>
-                  <a href={SALES_PHONE_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{SALES_PHONE_DISPLAY}</a>
-                  <span className="block text-[10px] text-slate-300 font-bold pt-1">{OFFICE_PHONE_LABEL}</span>
-                  <a href={OFFICE_PHONE_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{OFFICE_PHONE_DISPLAY}</a>
+                  <span className="block text-[10px] text-slate-300 font-bold">{t("مشاوره، فروش و پشتیبانی")}</span>
+                  <a href={SALES_PHONE_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{tr(SALES_PHONE_DISPLAY)}</a>
+                  <span className="block text-[10px] text-slate-300 font-bold pt-1">{tr(OFFICE_PHONE_LABEL)}</span>
+                  <a href={OFFICE_PHONE_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{tr(OFFICE_PHONE_DISPLAY)}</a>
                 </div>
               </div>
               
@@ -204,7 +209,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                     <MapPin className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div>
-                    <span className="block text-[10px] text-slate-300 font-bold mb-1">دفتر مرکزی</span>
+                    <span className="block text-[10px] text-slate-300 font-bold mb-1">{t("دفتر مرکزی")}</span>
                     <a
                       href={baladPlaceFor(hq) || neshanMapsUrl(hq.address, hq.lat, hq.lng)}
                       target="_blank"
@@ -227,12 +232,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
         {/* Copyright & Credits */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-300">
           <p>
-            © {currentYear} تمامی حقوق این وب‌سایت متعلق به طیوران صنعت پویا است. طراحی و توسعه توسط <strong className="text-slate-200 font-black">هزارتو</strong>.
+            © {currentYear} {" "}{t("تمامی حقوق این وب‌سایت متعلق به طیوران صنعت پویا است. طراحی و توسعه توسط")}{" "}<strong className="text-slate-200 font-black">{t("هزارتو")}</strong>.
           </p>
           <div className="flex items-center gap-4">
-             <span>قوانین و مقررات</span>
+             <span>{t("قوانین و مقررات")}</span>
              <div className="w-1 h-1 rounded-full bg-slate-700" />
-             <span>حریم خصوصی</span>
+             <span>{t("حریم خصوصی")}</span>
           </div>
         </div>
 
