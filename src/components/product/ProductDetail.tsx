@@ -270,7 +270,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                 <a className="pd-more" href="#specs" onClick={(e) => goTo(e, 'specs')}>
                   
                   {t("مشاهدهٔ همهٔ مشخصات فنی")}
-                  <Icon name="left" className="pd-ic-sm" />
+                  <Icon name="left" className="pd-ic-sm pd-dir-flip" />
                 </a>
               ) : null}
             </div>
@@ -395,7 +395,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                       <Link className="pd-rel-all" to={`/products/${product.category}`}>
                         
                         {t("همه محصولات")}{" "}{product.categoryTitle}
-                        <Icon name="left" className="pd-ic-sm" />
+                        <Icon name="left" className="pd-ic-sm pd-dir-flip" />
                       </Link>
                     </div>
                     <div className="pd-rel-row" ref={relRowRef}>
@@ -416,7 +416,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                           <div className="pd-rel-meta">
                             <small>{p.categoryTitle}</small>
                             <b>{p.name}</b>
-                            <span className="pd-go">{t("مشاهده")}<Icon name="left" className="pd-ic-xs" /></span>
+                            <span className="pd-go">{t("مشاهده")}<Icon name="left" className="pd-ic-xs pd-dir-flip" /></span>
                           </div>
                         </Link>
                       ))}

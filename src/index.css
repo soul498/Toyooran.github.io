@@ -37,6 +37,8 @@
 
 @import "tailwindcss";
 
+html[lang="en"] .pd-dir-flip { transform: scaleX(-1); }
+
 /* English pages (/en): LTR with the Latin cut of the brand font (Persian pages are untouched). */
 html[lang="en"] {
   --font-sans: "Estedad Latin", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
