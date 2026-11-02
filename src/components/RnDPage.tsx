@@ -2,10 +2,10 @@ import React from 'react';
 import { UnderConstruction } from './UnderConstruction';
 import { useData } from '../context/DataContext';
 
-import { t, translateCmsRecord } from '../i18n';
+import { isEn, t } from '../i18n';
 export const RnDPage: React.FC = () => {
   const { pageContent } = useData();
-  const cms = translateCmsRecord(pageContent.rnd);
+  const cms = isEn() ? (pageContent.rnd.translations?.en || {}) : pageContent.rnd;
   return (
     <div className="bg-blueprint-light min-h-screen">
       {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}

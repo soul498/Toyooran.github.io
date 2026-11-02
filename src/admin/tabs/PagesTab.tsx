@@ -3,6 +3,22 @@ import { CheckCircle2, FileText, Save } from '../../icons';
 import { useData } from '../../context/DataContext';
 import type { AboutPageCms, CmsPageKey, PageHeroCms, PagesCms, RndPageCms } from '../../types';
 import { ImagePicker } from '../components/ImagePicker';
+import { PAGE_HEROES } from '../../data/pageHeroes';
+import { EN_DICT } from '../../i18n/enDict';
+import { hasPersian } from '../../i18n';
+
+const en = (fa?: string) => fa ? EN_DICT[fa] || '' : '';
+const containsPersian = (value: unknown): boolean => typeof value === 'string' ? hasPersian(value) : Array.isArray(value) ? value.some(containsPersian) : Boolean(value && typeof value === 'object' && Object.values(value).some(containsPersian));
+const PAGE_PATH: Record<CmsPageKey, string> = { services: '/services', magazine: '/magazine', about: '/about', rnd: '/rnd', contact: '/contact' };
+const ABOUT_FEATURES = [
+  ['برند IMACHINE', 'طراحی و تولید ماشین‌آلات صنعتی با برند IMACHINE در صنعت خوراک.'],
+  ['تولید تخصصی ماشین‌آلات', 'تولیدکننده تخصصی انواع جت هیتر، تجهیزات گرمایشی و ماشین‌آلات خطوط تولید خوراک دام و طیور.'],
+  ['گستره فعالیت و توسعه', 'دارای دفتر تحقیق و توسعه (R&D) مستقر در دانشگاه منابع طبیعی گلستان و حضور فعال در بازارهای داخلی و خارجی.'],
+] as const;
+const ABOUT_HEADING = 'مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی';
+const ABOUT_INTRO = 'شرکت طیوران صنعت پویا با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان، مجری بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی است و راهکارهای جامع توسعه، طراحی، ساخت و تجهیز کامل سوله و کارخانه‌ها را ارائه می‌کند.';
+const RND_TITLE = 'دپارتمان تحقیق و توسعه در حال تجهیز است';
+const RND_DESCRIPTION = 'بخش دستاوردهای علمی و پروژه‌های مشترک دانشگاهی طیوران صنعت پویا در حال آماده‌سازی است و به‌زودی منتشر می‌شود.';
 
 const PAGE_OPTIONS: { key: CmsPageKey; label: string; description: string }[] = [
   { key: 'services', label: 'صفحه خدمات', description: 'تیتر، زیرتیتر و دعوت به اقدام بالای صفحه خدمات' },
@@ -20,10 +36,13 @@ export const PagesTab: React.FC = () => {
   const [draft, setDraft] = useState<PagesCms>(pageContent);
   const [activePage, setActivePage] = useState<CmsPageKey>('about');
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   useEffect(() => { setDraft(pageContent); }, [pageContent]);
 
   const activeHero = useMemo(() => draft.heroes[activePage] || {}, [draft.heroes, activePage]);
+  const baseHero = PAGE_HEROES[PAGE_PATH[activePage]];
   const activeHeroEn = (activeHero.translations?.en || {}) as Partial<Omit<PageHeroCms, 'translations'>>;
   const aboutEn = (draft.about.translations?.en || {}) as Partial<Omit<AboutPageCms, 'translations'>>;
   const rndEn = (draft.rnd.translations?.en || {}) as Partial<Omit<RndPageCms, 'translations'>>;
@@ -58,11 +77,25 @@ export const PagesTab: React.FC = () => {
     setDraft((previous) => ({ ...previous, rnd: { ...previous.rnd, ...patch } }));
   };
 
-  const save = (event: React.FormEvent) => {
+  const save = async (event: React.FormEvent) => {
     event.preventDefault();
-    updatePageContent(draft);
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 2500);
+    setSaving(true);
+    setSaved(false);
+    setSaveError('');
+    if (Object.values(draft.heroes as Record<string, PageHeroCms>).some((hero) => containsPersian(hero?.translations?.en)) || containsPersian(draft.about.translations?.en) || containsPersian(draft.rnd.translations?.en)) {
+      setSaveError('فیلدهای نسخهٔ انگلیسی نباید متن فارسی داشته باشند.');
+      setSaving(false);
+      return;
+    }
+    try {
+      await updatePageContent(draft);
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 2500);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'ذخیره انجام نشد. دوباره تلاش کنید.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -72,10 +105,11 @@ export const PagesTab: React.FC = () => {
           <h2 className="text-base sm:text-lg font-black text-white flex items-center gap-2"><FileText className="w-5 h-5 text-amber-400" />محتوای صفحات ثابت</h2>
           <p className="text-xs text-slate-400 mt-1">متن هر صفحه، جدا از چیدمان آن مدیریت می‌شود؛ بنابراین مسیرها و ظاهر فعلی سایت دست‌نخورده می‌مانند.</p>
         </div>
-        <button className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs inline-flex items-center justify-center gap-2"><Save className="w-4 h-4" />ذخیره و انتشار</button>
+        <button disabled={saving} className="bg-amber-400 hover:bg-amber-300 disabled:opacity-60 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs inline-flex items-center justify-center gap-2"><Save className="w-4 h-4" />{saving ? 'در حال ذخیره…' : 'ذخیره و انتشار'}</button>
       </header>
 
       {saved && <div className="rounded-2xl p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />محتوای صفحه ذخیره و برای بازدیدکنندگان منتشر شد.</div>}
+      {saveError && <div role="alert" className="rounded-2xl p-3 bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs">{saveError}</div>}
 
       <section className="bg-slate-900 border border-slate-800 rounded-3xl p-5">
         <div className="flex flex-wrap gap-2">
@@ -108,11 +142,11 @@ export const PagesTab: React.FC = () => {
           </div>
           <div className="space-y-3" dir="ltr">
             <p className="text-xs font-bold text-blue-300">English</p>
-            <label className="block text-xs text-slate-300">Page title<input value={activeHeroEn.title || ''} onChange={(event) => updateHeroEnglish({ title: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">Eyebrow<input value={activeHeroEn.eyebrow || ''} onChange={(event) => updateHeroEnglish({ eyebrow: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">Subtitle<textarea rows={3} value={activeHeroEn.subtitle || ''} onChange={(event) => updateHeroEnglish({ subtitle: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">Primary button<input value={activeHeroEn.ctaLabel || ''} onChange={(event) => updateHeroEnglish({ ctaLabel: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">Secondary button<input value={activeHeroEn.secondaryCtaLabel || ''} onChange={(event) => updateHeroEnglish({ secondaryCtaLabel: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Page title<input value={activeHeroEn.title ?? en(baseHero.title)} onChange={(event) => updateHeroEnglish({ title: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Eyebrow<input value={activeHeroEn.eyebrow ?? en(baseHero.eyebrow)} onChange={(event) => updateHeroEnglish({ eyebrow: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Subtitle<textarea rows={3} value={activeHeroEn.subtitle ?? en(baseHero.subtitle)} onChange={(event) => updateHeroEnglish({ subtitle: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Primary button<input value={activeHeroEn.ctaLabel ?? en(baseHero.cta?.label)} onChange={(event) => updateHeroEnglish({ ctaLabel: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Secondary button<input value={activeHeroEn.secondaryCtaLabel ?? en(baseHero.secondaryCta?.label)} onChange={(event) => updateHeroEnglish({ secondaryCtaLabel: event.target.value })} className={fieldClass} /></label>
           </div>
         </div>
       </section>
@@ -136,13 +170,13 @@ export const PagesTab: React.FC = () => {
             </div>
             <div className="space-y-3" dir="ltr">
               <p className="text-xs font-bold text-blue-300">English</p>
-              <label className="block text-xs text-slate-300">Introduction title<input value={aboutEn.heading || ''} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, heading: event.target.value } } })} className={fieldClass} /></label>
-              <label className="block text-xs text-slate-300">Introduction text<textarea rows={5} value={aboutEn.intro || ''} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, intro: event.target.value } } })} className={fieldClass} /></label>
+              <label className="block text-xs text-slate-300">Introduction title<input value={aboutEn.heading ?? en(ABOUT_HEADING)} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, heading: event.target.value } } })} className={fieldClass} /></label>
+              <label className="block text-xs text-slate-300">Introduction text<textarea rows={5} value={aboutEn.intro ?? en(ABOUT_INTRO)} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, intro: event.target.value } } })} className={fieldClass} /></label>
               {[0, 1, 2].map((index) => (
                 <div key={index} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-3 space-y-2">
                   <p className="text-[11px] text-slate-500">Feature {index + 1}</p>
-                  <input value={aboutEn.features?.[index]?.title || ''} onChange={(event) => updateAboutFeature(index, { title: event.target.value }, true)} placeholder="Title" className={compactFieldClass} />
-                  <textarea rows={2} value={aboutEn.features?.[index]?.description || ''} onChange={(event) => updateAboutFeature(index, { description: event.target.value }, true)} placeholder="Description" className={compactFieldClass} />
+                  <input value={aboutEn.features?.[index]?.title ?? en(ABOUT_FEATURES[index][0])} onChange={(event) => updateAboutFeature(index, { title: event.target.value }, true)} placeholder="Title" className={compactFieldClass} />
+                  <textarea rows={2} value={aboutEn.features?.[index]?.description ?? en(ABOUT_FEATURES[index][1])} onChange={(event) => updateAboutFeature(index, { description: event.target.value }, true)} placeholder="Description" className={compactFieldClass} />
                 </div>
               ))}
             </div>
@@ -159,8 +193,8 @@ export const PagesTab: React.FC = () => {
           </div>
           <div className="space-y-3" dir="ltr">
             <p className="text-xs font-bold text-blue-300">English coming-soon content</p>
-            <label className="block text-xs text-slate-300">Title<input value={rndEn.title || ''} onChange={(event) => updateRnd({ translations: { en: { ...rndEn, title: event.target.value } } })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">Description<textarea rows={4} value={rndEn.description || ''} onChange={(event) => updateRnd({ translations: { en: { ...rndEn, description: event.target.value } } })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Title<input value={rndEn.title ?? en(RND_TITLE)} onChange={(event) => updateRnd({ translations: { en: { ...rndEn, title: event.target.value } } })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Description<textarea rows={4} value={rndEn.description ?? en(RND_DESCRIPTION)} onChange={(event) => updateRnd({ translations: { en: { ...rndEn, description: event.target.value } } })} className={fieldClass} /></label>
           </div>
         </section>
       )}

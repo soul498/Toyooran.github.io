@@ -1,6 +1,6 @@
 import type React from 'react';
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
-import { translateCmsRecord, translateDeep } from '../i18n';
+import { hasPersian, isEn, translateDeep } from '../i18n';
 import { Building2, FileCheck, FlaskConical, Phone, Sparkles, type IconProps } from '../icons';
 import type { CmsPageKey, PageHeroCms } from '../types';
 
@@ -89,7 +89,15 @@ export const pageHeroFor = (
   const hero = PAGE_HEROES[normalizedPath];
   if (!hero) return undefined;
   const rawOverride = PAGE_KEY_BY_PATH[normalizedPath] ? overrides?.[PAGE_KEY_BY_PATH[normalizedPath]!] : undefined;
-  const cms = rawOverride ? translateCmsRecord(rawOverride) : undefined;
+  // English copy is independent. A Persian CMS edit without an English edit must
+  // keep the original English text instead of leaking the new Persian text.
+  const english = rawOverride?.translations?.en;
+  const safeEnglish = (value?: string) => value && !hasPersian(value) ? value : undefined;
+  const cms = isEn() ? {
+    title: safeEnglish(english?.title), subtitle: safeEnglish(english?.subtitle),
+    eyebrow: safeEnglish(english?.eyebrow), ctaLabel: safeEnglish(english?.ctaLabel),
+    secondaryCtaLabel: safeEnglish(english?.secondaryCtaLabel),
+  } : rawOverride;
   const merged: PageHeroConfig = {
     ...hero,
     title: cms?.title || hero.title,

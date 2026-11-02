@@ -5,10 +5,12 @@ import { SEO } from './SEO';
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { useData } from '../context/DataContext';
 
-import { t, tr, translateCmsRecord } from '../i18n';
+import { isEn, t, tr } from '../i18n';
 export const AboutPage: React.FC = () => {
   const { pageContent } = useData();
-  const cms = translateCmsRecord(pageContent.about);
+  const cms = isEn()
+    ? { image: pageContent.about.image, ...(pageContent.about.translations?.en || {}) }
+    : pageContent.about;
   const features = cms.features || [];
   const feature = (index: number, title: string, description: string) => ({
     title: features[index]?.title || title,

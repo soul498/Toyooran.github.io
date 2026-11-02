@@ -34,7 +34,7 @@ import {
 } from '../data/mockData';
 import { migrateCustomerRecord } from '../crm/utils/crmRecords';
 import { withProductPhotos } from '../data/productPhotos';
-import { isEn, isFullyTranslated, setEnAvailability, translateCmsRecord, translateDeep, translateProduct } from '../i18n';
+import { hasPersian, isEn, isFullyTranslated, setEnAvailability, translateCmsRecord, translateDeep, translateProduct } from '../i18n';
 
 function loadStoredArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored)) return ARTICLES;
@@ -83,11 +83,11 @@ interface DataContextType {
   companyInfo: CompanyInfo;
   updateCompanyInfo: (info: Partial<CompanyInfo>) => void;
   heroCms: HeroCmsContent;
-  updateHeroCms: (cms: Partial<HeroCmsContent>) => void;
+  updateHeroCms: (cms: Partial<HeroCmsContent>) => Promise<void>;
   siteLayout: SiteLayoutConfig;
   updateSiteLayout: (layout: Partial<SiteLayoutConfig>) => void;
   pageContent: PagesCms;
-  updatePageContent: (content: Partial<PagesCms>) => void;
+  updatePageContent: (content: Partial<PagesCms>) => Promise<void>;
   aiConfig: AiAdvisorConfig;
   updateAiConfig: (config: Partial<AiAdvisorConfig>) => void;
 
@@ -117,6 +117,9 @@ interface DataContextType {
 
   // Authentication
   adminUser: AdminUser | null;
+  adminDataReady: boolean;
+  adminLoadError: string;
+  retryAdminLoad: () => void;
   isAuthenticated: boolean;
   login: (username: string, password: string, turnstileToken?: string) => Promise<{ success: boolean; error?: string }>;
   canAccess: (section: AdminSection) => boolean;
@@ -240,7 +243,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [hasAdminPassword] = useState(true);
 
   const [adminDataReady, setAdminDataReady] = useState(false);
+  const [adminLoadError, setAdminLoadError] = useState('');
+  const [adminLoadAttempt, setAdminLoadAttempt] = useState(0);
   const [csrfToken, setCsrfToken] = useState('');
+  const pendingStateWrites = useRef(new Map<string, Promise<void>>());
   const [magazineReady, setMagazineReady] = useState(false);
   const magazineLockedByAdmin = useRef(false);
   const articlesHydrated = useRef(false);
@@ -325,16 +331,45 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     });
   };
+  const persistAdminState = (key: string, value: unknown): Promise<void> => {
+    if (!adminUser || !adminDataReady || !csrfToken) return Promise.reject(new Error('اطلاعات پنل هنوز آماده نیست. دوباره تلاش کنید.'));
+    const previous = pendingStateWrites.current.get(key) || Promise.resolve();
+    const write = previous.catch(() => undefined).then(async () => {
+      const response = await fetch(`/api/admin/state/${key}`, {
+        method: 'PUT', credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+        body: JSON.stringify({ value }),
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error || 'ذخیره در سرور انجام نشد. دوباره تلاش کنید.');
+      }
+    });
+    pendingStateWrites.current.set(key, write);
+    void write.finally(() => {
+      if (pendingStateWrites.current.get(key) === write) pendingStateWrites.current.delete(key);
+    }).catch(() => undefined);
+    return write;
+  };
   const saveAdminState = (key: string, value: unknown) => {
-    if (adminUser && adminDataReady && csrfToken) void fetch(`/api/admin/state/${key}`, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken }, body: JSON.stringify({ value }) });
+    if (adminUser && adminDataReady && csrfToken) void persistAdminState(key, value).catch((error) => console.error('CMS save failed:', key, error));
   };
   useEffect(() => {
     if (!adminUser) { setAdminDataReady(false); return; }
+    let cancelled = false;
+    setAdminLoadError('');
+    setAdminDataReady(false);
     magazineLockedByAdmin.current = true;
     articlesHydrated.current = false;
     const keys = ['products', 'projects', 'services', 'articles', 'categories', 'companyInfo', 'heroCms', 'siteLayout', 'pageContent', 'aiConfig', 'quotes', 'consultations', 'customers', 'media'];
-    Promise.all(keys.map(async key => [key, await fetch(`/api/admin/state/${key}`, { credentials: 'include' }).then(response => response.ok ? response.json() : { value: null })] as const))
+    Promise.all(keys.map(async key => {
+      const response = await fetch(`/api/admin/state/${key}`, { credentials: 'include' });
+      if (response.status === 403) return [key, { value: null }] as const;
+      if (!response.ok) throw new Error(`بارگذاری ${key} ناموفق بود.`);
+      return [key, await response.json()] as const;
+    }))
       .then(async entries => {
+        if (cancelled) return;
         const state = Object.fromEntries(entries);
         if (Array.isArray(state.products.value) && state.products.value.length) {
           const stored = state.products.value as Product[];
@@ -368,12 +403,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         if (state.media.value) setMediaLibrary(state.media.value);
         setAdminDataReady(true);
-      }).catch(() => {
+      }).catch((error) => {
+        if (cancelled) return;
         articlesHydrated.current = false;
         setMagazineReady(true);
-        setAdminDataReady(true);
+        setAdminDataReady(false);
+        setAdminLoadError(error instanceof Error ? error.message : 'بارگذاری اطلاعات پنل ناموفق بود.');
       });
-  }, [adminUser]);
+    return () => { cancelled = true; };
+  }, [adminUser, adminLoadAttempt]);
   useEffect(() => { saveAdminState('products', products); }, [products, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('projects', projects); }, [projects, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('services', services); }, [services, adminUser, adminDataReady]);
@@ -402,7 +440,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const shownServices = useMemo(() => (adminUser ? services : publicServices).map((item) => translateCmsRecord(item)), [services, publicServices, adminUser, en]);
   const shownCategories = useMemo(() => translateDeep(categories), [categories, en]);
   const shownCompanyInfo = useMemo(() => translateCmsRecord(companyInfo), [companyInfo, en]);
-  const shownHeroCms = useMemo(() => translateCmsRecord(heroCms), [heroCms, en]);
+  const shownHeroCms = useMemo(() => {
+    if (!en) return heroCms;
+    const defaults = translateDeep(DEFAULT_HERO_CMS);
+    const englishCopy = (value: string | undefined, fallback: string) => value && !hasPersian(value) ? value : fallback;
+    return {
+      ...heroCms,
+      title: englishCopy(heroCms.translations?.en?.title, defaults.title),
+      subtitle: englishCopy(heroCms.translations?.en?.subtitle, defaults.subtitle),
+      pillText: englishCopy(heroCms.translations?.en?.pillText, defaults.pillText),
+      ctaPrimaryText: englishCopy(heroCms.translations?.en?.ctaPrimaryText, defaults.ctaPrimaryText),
+      ctaSecondaryText: englishCopy(heroCms.translations?.en?.ctaSecondaryText, defaults.ctaSecondaryText),
+    };
+  }, [heroCms, en]);
   // Product CRUD
   const addProduct = (product: Product) => {
     setProducts(prev => [product, ...prev]);
@@ -477,8 +527,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCompanyInfo(prev => ({ ...prev, ...info }));
   };
 
-  const updateHeroCms = (cms: Partial<HeroCmsContent>) => {
-    setHeroCms(prev => ({ ...prev, ...cms }));
+  const updateHeroCms = async (cms: Partial<HeroCmsContent>) => {
+    const next = { ...heroCms, ...cms };
+    await persistAdminState('heroCms', next);
+    setHeroCms(next);
   };
 
   const updateSiteLayout = (layout: Partial<SiteLayoutConfig>) => {
@@ -491,14 +543,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
-  const updatePageContent = (content: Partial<PagesCms>) => {
-    setPageContent((previous) => mergePagesCms({
-      ...previous,
+  const updatePageContent = async (content: Partial<PagesCms>) => {
+    const next = mergePagesCms({
+      ...pageContent,
       ...content,
-      heroes: { ...previous.heroes, ...(content.heroes || {}) },
-      about: { ...previous.about, ...(content.about || {}) },
-      rnd: { ...previous.rnd, ...(content.rnd || {}) },
-    }));
+      heroes: { ...pageContent.heroes, ...(content.heroes || {}) },
+      about: { ...pageContent.about, ...(content.about || {}) },
+      rnd: { ...pageContent.rnd, ...(content.rnd || {}) },
+    });
+    await persistAdminState('pageContent', next);
+    setPageContent(next);
   };
 
   const updateAiConfig = (config: Partial<AiAdvisorConfig>) => {
@@ -714,6 +768,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addMedia,
     deleteMedia,
         adminUser,
+        adminDataReady: adminDataReady && Boolean(csrfToken),
+        adminLoadError,
+        retryAdminLoad: () => setAdminLoadAttempt((attempt) => attempt + 1),
         isAuthenticated: !!adminUser,
         login,
         canAccess,

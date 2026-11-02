@@ -3,22 +3,41 @@ import { Save, Layers, Image as ImageIcon, CheckCircle2 } from '../../icons';
 import { useData } from '../../context/DataContext';
 import { ImagePicker } from '../components/ImagePicker';
 import { HeroCms } from '../../types';
+import { DEFAULT_HERO_CMS } from '../../data/mockData';
+import { EN_DICT } from '../../i18n/enDict';
+import { hasPersian } from '../../i18n';
 
 export const HeroCmsTab: React.FC = () => {
   const { heroCms, updateHeroCms } = useData();
   const [heroForm, setHeroForm] = useState<HeroCms>({ ...heroCms });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const englishDraft = (heroForm.translations?.en || {}) as Partial<Omit<HeroCms, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
     setHeroForm({ ...heroForm, translations: { en: { ...englishDraft, ...patch } } });
   };
 
-  const handleSaveAll = (e: React.FormEvent) => {
+  const handleSaveAll = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateHeroCms(heroForm);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+    setSaving(true);
+    setSaveSuccess(false);
+    setSaveError('');
+    if (Object.values(englishDraft).some((value) => typeof value === 'string' && hasPersian(value))) {
+      setSaveError('فیلدهای نسخهٔ انگلیسی نباید متن فارسی داشته باشند.');
+      setSaving(false);
+      return;
+    }
+    try {
+      await updateHeroCms(heroForm);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'ذخیره انجام نشد. دوباره تلاش کنید.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -37,10 +56,11 @@ export const HeroCmsTab: React.FC = () => {
         </div>
         <button
           type="submit"
+          disabled={saving}
           className="bg-gradient-to-r from-amber-400 to-[#FF9F14] hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black px-6 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md transition-all shrink-0"
         >
           <Save className="w-4 h-4" />
-          <span>ذخیره تنظیمات هیرو</span>
+          <span>{saving ? 'در حال ذخیره…' : 'ذخیره تنظیمات هیرو'}</span>
         </button>
       </div>
 
@@ -50,6 +70,7 @@ export const HeroCmsTab: React.FC = () => {
           <span>تغییرات هیرو با موفقیت ذخیره شد. این تغییرات فوراً در سایت اعمال می‌شوند.</span>
         </div>
       )}
+      {saveError && <div role="alert" className="bg-rose-500/10 border border-rose-500/30 text-rose-200 p-3.5 rounded-3xl text-xs">{saveError}</div>}
 
       {/* Hero Banner CMS */}
       <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
@@ -107,12 +128,12 @@ export const HeroCmsTab: React.FC = () => {
               <h3 className="text-xs font-black text-blue-200">نسخه انگلیسی هیرو</h3>
               <p className="text-[11px] text-slate-500 mt-1">متن‌های انگلیسی به‌صورت مستقل ذخیره می‌شوند و فقط در سایت انگلیسی نشان داده خواهند شد.</p>
             </div>
-            <input value={englishDraft.pillText || ''} onChange={(event) => updateEnglish({ pillText: event.target.value })} placeholder="Pill text" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-            <input value={englishDraft.title || ''} onChange={(event) => updateEnglish({ title: event.target.value })} placeholder="Hero title" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-            <textarea value={englishDraft.subtitle || ''} onChange={(event) => updateEnglish({ subtitle: event.target.value })} rows={3} placeholder="Hero subtitle" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <input value={englishDraft.pillText ?? EN_DICT[DEFAULT_HERO_CMS.pillText]} onChange={(event) => updateEnglish({ pillText: event.target.value })} placeholder="Pill text" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <input value={englishDraft.title ?? EN_DICT[DEFAULT_HERO_CMS.title]} onChange={(event) => updateEnglish({ title: event.target.value })} placeholder="Hero title" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={englishDraft.subtitle ?? EN_DICT[DEFAULT_HERO_CMS.subtitle]} onChange={(event) => updateEnglish({ subtitle: event.target.value })} rows={3} placeholder="Hero subtitle" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input value={englishDraft.ctaPrimaryText || ''} onChange={(event) => updateEnglish({ ctaPrimaryText: event.target.value })} placeholder="Primary CTA" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-              <input value={englishDraft.ctaSecondaryText || ''} onChange={(event) => updateEnglish({ ctaSecondaryText: event.target.value })} placeholder="Secondary CTA" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={englishDraft.ctaPrimaryText ?? EN_DICT[DEFAULT_HERO_CMS.ctaPrimaryText]} onChange={(event) => updateEnglish({ ctaPrimaryText: event.target.value })} placeholder="Primary CTA" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={englishDraft.ctaSecondaryText ?? EN_DICT[DEFAULT_HERO_CMS.ctaSecondaryText]} onChange={(event) => updateEnglish({ ctaSecondaryText: event.target.value })} placeholder="Secondary CTA" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
             </div>
           </div>
 
@@ -156,7 +177,7 @@ export const HeroCmsTab: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="flex justify-end pt-4 border-t border-slate-800"><button type="submit" className="bg-gradient-to-r from-amber-400 to-[#FF9F14] hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black px-8 py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md transition-all"><Save className="w-5 h-5" /><span>ذخیره تنظیمات هیرو</span></button></div>
+      <div className="flex justify-end pt-4 border-t border-slate-800"><button type="submit" disabled={saving} className="bg-gradient-to-r from-amber-400 to-[#FF9F14] hover:from-amber-300 hover:to-amber-400 disabled:opacity-60 text-slate-950 font-black px-8 py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md transition-all"><Save className="w-5 h-5" /><span>{saving ? 'در حال ذخیره…' : 'ذخیره تنظیمات هیرو'}</span></button></div>
     </form>
   );
 };

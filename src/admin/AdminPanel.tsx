@@ -27,7 +27,7 @@ interface AdminPanelProps {
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onViewPublicSite }) => {
   const [currentTab, setCurrentTab] = useState<AdminTab>('overview');
-  const { canAccess } = useData();
+  const { canAccess, adminDataReady, adminLoadError, retryAdminLoad } = useData();
   const activeTab = useMemo(() => {
     if (canAccess(currentTab)) return currentTab;
     return (['overview', 'products', 'articles', 'media'] as AdminTab[]).find((tab) => canAccess(tab)) || 'overview';
@@ -48,6 +48,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onViewPublicSite }) => {
         {/* Content Area */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-slate-950/90">
           <div className="max-w-7xl mx-auto">
+            {!adminDataReady ? (
+              <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 text-sm text-slate-300" role="status">
+                {adminLoadError ? <>
+                  <p>{adminLoadError}</p>
+                  <button type="button" onClick={retryAdminLoad} className="mt-4 rounded-xl bg-amber-400 px-4 py-2 text-xs font-bold text-slate-950">تلاش دوباره</button>
+                </> : 'در حال بارگذاری اطلاعات پنل…'}
+              </div>
+            ) : (<>
             {activeTab === 'overview' && <OverviewTab onNavigateTab={setCurrentTab} />}
             {activeTab === 'products' && <ProductsTab />}
             {activeTab === 'projects' && <ProjectsTab />}
@@ -66,6 +74,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onViewPublicSite }) => {
             {activeTab === 'backup' && <BackupTab />}
             {activeTab === 'security' && <SecurityTab />}
             {activeTab === 'users' && <UsersTab />}
+            </>)}
           </div>
         </main>
 
