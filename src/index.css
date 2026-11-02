@@ -347,6 +347,7 @@ html {
 @media (min-width: 768px) {
   .pcard { grid-template-columns: 280px minmax(0, 1fr); min-height: 280px; }
   .pcard-media { grid-row: 1 / span 2; clip-path: polygon(0 0, 100% 0, 100% 100%, 14% 100%); }
+  html[dir="ltr"] .pcard-media { clip-path: polygon(0 0, 100% 0, 86% 100%, 0 100%); }
 }
 @media (min-width: 1024px) {
   .pcard { grid-template-columns: 300px minmax(0, 1fr) 280px; }

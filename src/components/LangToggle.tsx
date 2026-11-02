@@ -20,6 +20,7 @@ export const LangToggle: React.FC<{ className?: string }> = ({ className = '' })
       lang={en ? 'fa' : 'en'}
       aria-label={en ? keepFa('نسخهٔ فارسی') : 'English version'}
       title={en ? keepFa('فارسی') : 'English'}
+      style={en ? { fontFamily: '"Estedad", sans-serif' } : undefined}
       className={`flex items-center justify-center min-w-11 min-h-11 h-11 px-3 bg-white/50 hover:bg-white border border-slate-200/50 hover:border-blue-200 transition-all duration-300 rounded-full text-[13px] font-black text-slate-600 hover:text-[#003F86] shadow-sm hover:shadow-md ${className}`}
     >
       {en ? keepFa('فا') : 'EN'}
