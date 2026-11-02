@@ -46,6 +46,7 @@ export const UsersTab: React.FC = () => {
   const [users, setUsers] = useState<ManagedAdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState<Notice>(null);
+  const [userError, setUserError] = useState('');
   const [roleDraft, setRoleDraft] = useState(emptyRole);
   const [editingRole, setEditingRole] = useState<AdminRole | null>(null);
   const [userDraft, setUserDraft] = useState(emptyUser);
@@ -63,9 +64,9 @@ export const UsersTab: React.FC = () => {
         adminRequest('/api/admin/roles'),
         adminRequest('/api/admin/users'),
       ]);
-      const rolesData = rolesResponse.ok ? await rolesResponse.json() : null;
-      const usersData = usersResponse.ok ? await usersResponse.json() : null;
-      if (!rolesData || !usersData) throw new Error('خواندن داده‌های کاربران ناموفق بود.');
+      const rolesData = await rolesResponse.json().catch(() => ({}));
+      const usersData = await usersResponse.json().catch(() => ({}));
+      if (!rolesResponse.ok || !usersResponse.ok) throw new Error(rolesData.error || usersData.error || 'خواندن داده‌های کاربران ناموفق بود.');
       setRoles(Array.isArray(rolesData.roles) ? rolesData.roles : []);
       setUsers(Array.isArray(usersData.users) ? usersData.users : []);
     } catch (error: any) {
@@ -126,12 +127,14 @@ export const UsersTab: React.FC = () => {
   };
 
   const openNewUser = () => {
+    setUserError('');
     setEditingUser(null);
     setUserDraft(emptyUser(defaultRoleId));
     setShowUserForm(true);
   };
 
   const openUserEdit = (user: ManagedAdminUser) => {
+    setUserError('');
     setEditingUser(user);
     setUserDraft({ username: user.username, displayName: user.displayName, password: '', roleId: user.roleId, isActive: user.isActive });
     setShowUserForm(true);
@@ -140,23 +143,29 @@ export const UsersTab: React.FC = () => {
   const saveUser = async (event: React.FormEvent) => {
     event.preventDefault();
     setNotice(null);
+    setUserError('');
+    if (!roles.length) return setUserError('نقش‌ها بارگذاری نشده‌اند. صفحه را تازه‌سازی کنید و دوباره تلاش کنید.');
     const payload = {
       displayName: userDraft.displayName,
       roleId: userDraft.roleId,
       isActive: userDraft.isActive,
       ...(editingUser ? (userDraft.password ? { password: userDraft.password } : {}) : { username: userDraft.username, password: userDraft.password }),
     };
-    const response = await adminRequest(editingUser ? `/api/admin/users/${editingUser.id}` : '/api/admin/users', {
-      method: editingUser ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) return setNotice({ kind: 'error', text: result.error || 'ذخیره کاربر ناموفق بود.' });
-    setNotice({ kind: 'success', text: editingUser ? 'کاربر به‌روزرسانی شد.' : 'کاربر جدید ساخته شد.' });
-    setShowUserForm(false);
-    setEditingUser(null);
-    await refresh();
+    try {
+      const response = await adminRequest(editingUser ? `/api/admin/users/${editingUser.id}` : '/api/admin/users', {
+        method: editingUser ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) return setUserError(result.error || 'ذخیره کاربر ناموفق بود.');
+      setNotice({ kind: 'success', text: editingUser ? 'کاربر به‌روزرسانی شد.' : 'کاربر جدید ساخته شد.' });
+      setShowUserForm(false);
+      setEditingUser(null);
+      await refresh();
+    } catch {
+      setUserError('ارتباط با سرور برقرار نشد. دوباره تلاش کنید.');
+    }
   };
 
   const removeUser = async (user: ManagedAdminUser) => {
@@ -184,7 +193,7 @@ export const UsersTab: React.FC = () => {
           <button type="button" onClick={openNewRole} className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5">
             <KeyRound className="w-4 h-4 text-amber-400" /> نقش جدید
           </button>
-          <button type="button" onClick={openNewUser} disabled={!roles.length} className="bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 px-4 py-2.5 rounded-xl text-xs font-black inline-flex items-center gap-1.5">
+          <button type="button" onClick={openNewUser} className="bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-2.5 rounded-xl text-xs font-black inline-flex items-center gap-1.5">
             <Plus className="w-4 h-4" /> کاربر جدید
           </button>
         </div>
@@ -275,6 +284,7 @@ export const UsersTab: React.FC = () => {
         <div className="fixed inset-0 z-[100] bg-slate-950/80 p-4 overflow-y-auto flex items-center justify-center">
           <form onSubmit={saveUser} className="w-full max-w-lg bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
             <div className="flex justify-between items-center"><h3 className="text-sm font-black text-white">{editingUser ? 'ویرایش کاربر' : 'کاربر جدید'}</h3><button type="button" onClick={() => setShowUserForm(false)} className="p-1 text-slate-400"><X className="w-5 h-5" /></button></div>
+            {userError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-200">{userError}</p>}
             {!editingUser && <label className="block text-xs text-slate-300">نام کاربری (انگلیسی)
               <input required pattern="[A-Za-z0-9._-]{3,80}" value={userDraft.username} onChange={(event) => setUserDraft({ ...userDraft, username: event.target.value })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-mono" dir="ltr" />
             </label>}
@@ -286,6 +296,7 @@ export const UsersTab: React.FC = () => {
                 <option value="">انتخاب نقش</option>{roles.map((role) => <option key={role.id} value={role.id}>{role.name}</option>)}
               </select>
             </label>
+            {!roles.length && <p className="text-xs text-rose-200">فهرست نقش‌ها بارگذاری نشده است. صفحه را تازه‌سازی کنید و دوباره تلاش کنید.</p>}
             <label className="block text-xs text-slate-300">{editingUser ? 'رمز جدید (در صورت تغییر)' : 'رمز عبور'} <span className="text-slate-500">حداقل ۱۶ نویسه</span>
               <input required={!editingUser} minLength={16} type="password" value={userDraft.password} onChange={(event) => setUserDraft({ ...userDraft, password: event.target.value })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white" dir="ltr" autoComplete="new-password" />
             </label>

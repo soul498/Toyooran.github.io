@@ -51,9 +51,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
   app.disable('x-powered-by');
-  // nginx (and docker bridge) sit in front of Express. Without this, req.ip is the proxy
-  // address for every visitor, so the /api rate limiter becomes one global bucket.
-  // Pair with nginx real_ip (set_real_ip_from <ArvanCloud ranges>) so X-Forwarded-For is the client.
+  // nginx (and docker bridge) sit in front of Express; trust only local proxies.
   app.set('trust proxy', 'loopback, uniquelocal');
   // Legacy spam URLs (old hack): 410 Gone before host/URL normalization and SPA fallback.
   app.use(legacySpamGone);
@@ -137,22 +135,16 @@ async function startServer() {
     next();
   });
 
-  const apiHits = new Map<string, { count: number; resetAt: number }>();
-  app.use('/api', (req, res, next) => {
-    const now = Date.now();
-    const key = req.ip || 'unknown';
-    const entry = apiHits.get(key) || { count: 0, resetAt: now + 60_000 };
-    if (entry.resetAt <= now) { entry.count = 0; entry.resetAt = now + 60_000; }
-    entry.count += 1; apiHits.set(key, entry);
-    if (entry.count > 60) return res.status(429).json({ success: false, error: 'درخواست‌های بیش از حد' });
-    next();
-  });
-
   app.post('/api/auth/login', async (req, res) => {
-    const key = `login:${req.ip || 'unknown'}`; const rate = consumeRateLimit(key, 5, 15 * 60_000); if (!rate.allowed) return res.status(429).json({ success: false, error: 'تلاش‌های ورود زیاد است.' });
     const parsed = z.object({ username: z.string().trim().min(1).max(80), password: z.string().min(1).max(256), turnstileToken: z.string().optional() }).safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ success: false, error: 'اطلاعات ورود نامعتبر است.' });
     const { username, password, turnstileToken } = parsed.data;
+    const key = `login:${req.ip || 'unknown'}:${username.toLowerCase()}`;
+    const rate = consumeRateLimit(key, 10, 15 * 60_000);
+    if (!rate.allowed) {
+      res.setHeader('Retry-After', Math.ceil(rate.retryAfterMs / 1000));
+      return res.status(429).json({ success: false, error: 'تلاش‌های ورود زیاد است.' });
+    }
     const result = await loginAdmin(username, password, turnstileToken, req.ip, res);
     if (result.success) resetRateLimit(key);
     res.status(result.success ? 200 : 401).json(result);
