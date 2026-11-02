@@ -232,7 +232,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
         {/* Copyright & Credits */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-300">
           <p>
-            © {currentYear} {" "}{t("تمامی حقوق این وب‌سایت متعلق به طیوران صنعت پویا است. طراحی و توسعه توسط")}{" "}<strong className="text-slate-200 font-black">{t("هزارتو")}</strong>.
+            © {currentYear} {" "}{t("طراحی، توسعه و تمامی حقوق این وبسایت متعلق به شرکت فناوری و نوآوری شناخت هزارتو است")}{" "}
           </p>
           <div className="flex items-center gap-4">
              <span>{t("قوانین و مقررات")}</span>
