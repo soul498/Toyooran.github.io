@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import {
   audit,
   changePassword,
-  confirmMfa,
   consumeRateLimit,
   createAdminRole,
   createCsrfToken,
@@ -24,18 +23,14 @@ import {
   permissionForState,
   publicTurnstileSiteKey,
   requireAdmin,
-  requireMfaEnrollment,
-  requireMfaPending,
   requirePermission,
   requireSuperadmin,
   resetRateLimit,
   revokeAllSessions,
   setAdminState,
-  startMfaSetup,
   updateAdminRole,
   updateManagedAdmin,
   verifyCsrf,
-  verifyMfaSession,
 } from "./server/auth";
 import { z } from 'zod';
 import { DISABLED_PAGE_REDIRECT, isDisabledPagePath } from "./src/data/disabledPages";
@@ -170,31 +165,9 @@ async function startServer() {
   });
   app.get('/api/auth/sessions', requireAdmin, (req, res) => res.json({ sessions: listSessions(req as any) }));
   app.delete('/api/auth/sessions', requireAdmin, (req, res) => { revokeAllSessions(req as any); res.status(204).end(); });
-  // Logout intentionally works for an MFA-enrolment session too; it remains CSRF-protected.
+  // Logout remains CSRF-protected.
   app.post('/api/auth/logout', (req, res) => { logoutAdmin(req as any, res); res.status(204).end(); });
   app.get('/api/auth/me', requireAdmin, (req, res) => res.json({ authenticated: true, admin: (req as any).admin }));
-  app.post('/api/auth/mfa/verify', requireMfaPending, async (req, res) => {
-    const ok = await verifyMfaSession(req as any, String(req.body?.token || ''));
-    res.status(ok ? 200 : 400).json({ success: ok, error: ok ? undefined : 'کد MFA نامعتبر است.' });
-  });
-  // MFA is intentionally reserved for the master role at this stage. A normal
-  // editor cannot reset or replace an authenticator for its own account.
-  app.post('/api/auth/mfa/setup', requireAdmin, requireSuperadmin, (req, res) => res.json(startMfaSetup((req as any).admin.id)));
-  app.post('/api/auth/mfa/confirm', requireAdmin, requireSuperadmin, async (req, res) => {
-    const ok = await confirmMfa((req as any).admin.id, String(req.body?.token || ''));
-    res.status(ok ? 200 : 400).json({ success: ok, error: ok ? undefined : 'کد MFA نامعتبر است.' });
-  });
-  // A newly-created or migrated master account has a valid session but is restricted
-  // to this short MFA-enrolment flow until a TOTP authenticator is confirmed.
-  app.post('/api/auth/mfa/enroll/setup', requireMfaEnrollment, (req, res) => {
-    const admin = (req as any).admin;
-    res.json(startMfaSetup(admin.id, admin.username));
-  });
-  app.post('/api/auth/mfa/enroll/confirm', requireMfaEnrollment, async (req, res) => {
-    const admin = (req as any).admin;
-    const ok = await confirmMfa(admin.id, String(req.body?.token || ''));
-    res.status(ok ? 200 : 400).json({ success: ok, error: ok ? undefined : 'کد MFA نامعتبر است.' });
-  });
 
   app.get('/api/admin/roles', requireAdmin, requireSuperadmin, (_req, res) => res.json({ roles: listAdminRoles() }));
   app.post('/api/admin/roles', requireAdmin, requireSuperadmin, (req, res) => {

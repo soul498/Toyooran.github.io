@@ -209,7 +209,7 @@ export const UsersTab: React.FC = () => {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <strong className="text-sm text-white">{role.name}</strong>
-                  {role.isSuperadmin && <span className="text-[10px] rounded-full px-2 py-0.5 bg-amber-400/15 border border-amber-400/30 text-amber-200">مدیرکل · MFA اجباری</span>}
+                  {role.isSuperadmin && <span className="text-[10px] rounded-full px-2 py-0.5 bg-amber-400/15 border border-amber-400/30 text-amber-200">مدیرکل</span>}
                 </div>
                 <p className="mt-1 text-[11px] text-slate-500">{role.isSuperadmin ? 'دسترسی کامل به همه بخش‌ها' : role.permissions.map((item) => SECTION_LABELS[item]).join('، ') || 'بدون دسترسی'}</p>
               </div>
@@ -230,7 +230,7 @@ export const UsersTab: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-right">
             <thead className="bg-slate-950/40 text-slate-500">
-              <tr><th className="p-3">کاربر</th><th className="p-3">نقش</th><th className="p-3">وضعیت</th><th className="p-3">MFA</th><th className="p-3 text-left">عملیات</th></tr>
+              <tr><th className="p-3">کاربر</th><th className="p-3">نقش</th><th className="p-3">وضعیت</th><th className="p-3 text-left">عملیات</th></tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
               {users.map((user) => (
@@ -238,7 +238,6 @@ export const UsersTab: React.FC = () => {
                   <td className="p-3"><strong className="block text-slate-200">{user.displayName}</strong><span className="text-[11px] text-slate-500 font-mono">@{user.username}</span></td>
                   <td className="p-3 text-slate-300">{user.roleName}</td>
                   <td className="p-3"><span className={`text-[10px] px-2 py-1 rounded-full ${user.isActive ? 'bg-emerald-400/10 text-emerald-300' : 'bg-slate-700 text-slate-300'}`}>{user.isActive ? 'فعال' : 'غیرفعال'}</span></td>
-                  <td className="p-3 text-slate-400">{user.isSuperadmin ? (user.mfaEnabled ? 'فعال' : 'در انتظار فعال‌سازی') : '—'}</td>
                   <td className="p-3"><div className="flex gap-2 justify-end">
                     <button type="button" onClick={() => openUserEdit(user)} className="p-2 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700" aria-label="ویرایش کاربر"><Pencil className="w-4 h-4" /></button>
                     <button type="button" onClick={() => void removeUser(user)} className="p-2 rounded-xl bg-rose-950/40 text-rose-300 hover:bg-rose-900/60" aria-label="حذف کاربر"><Trash2 className="w-4 h-4" /></button>
@@ -258,7 +257,7 @@ export const UsersTab: React.FC = () => {
               <input required value={roleDraft.name} onChange={(event) => setRoleDraft({ ...roleDraft, name: event.target.value })} disabled={Boolean(editingRole?.isSystem)} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white disabled:opacity-60" />
             </label>
             {editingRole?.isSystem ? (
-              <p className="rounded-2xl bg-amber-400/10 border border-amber-400/30 p-3 text-xs text-amber-100">مدیرکل همیشه به همه بخش‌ها دسترسی دارد و MFA برای آن اجباری است.</p>
+              <p className="rounded-2xl bg-amber-400/10 border border-amber-400/30 p-3 text-xs text-amber-100">مدیرکل همیشه به همه بخش‌ها دسترسی دارد.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {customPermissionSections.map((section) => <label key={section} className="flex items-center gap-2 rounded-xl bg-slate-950 border border-slate-800 p-3 text-xs text-slate-300 cursor-pointer">
@@ -291,7 +290,6 @@ export const UsersTab: React.FC = () => {
               <input required={!editingUser} minLength={16} type="password" value={userDraft.password} onChange={(event) => setUserDraft({ ...userDraft, password: event.target.value })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white" dir="ltr" autoComplete="new-password" />
             </label>
             <label className="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" checked={userDraft.isActive} onChange={(event) => setUserDraft({ ...userDraft, isActive: event.target.checked })} /> حساب فعال باشد</label>
-            <p className="text-[11px] text-slate-500">اگر نقش مدیرکل انتخاب شود، در اولین ورود باید MFA را با برنامه Authenticator فعال کند.</p>
             <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowUserForm(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold">انصراف</button><button className="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 text-xs font-black">ذخیره کاربر</button></div>
           </form>
         </div>

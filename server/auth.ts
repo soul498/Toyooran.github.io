@@ -128,6 +128,11 @@ db.prepare("UPDATE admins SET role_id=? WHERE (role_id IS NULL OR role_id='') AN
 db.prepare("UPDATE admins SET role_id=? WHERE role_id IS NULL OR role_id=''").run(CONTENT_MANAGER_ROLE_ID);
 db.prepare("UPDATE admins SET display_name=username WHERE display_name IS NULL OR trim(display_name)=''").run();
 db.prepare('UPDATE admins SET is_active=1 WHERE is_active IS NULL').run();
+// Password-only sign-in: retire previously enrolled authenticators and pending
+// challenges so existing master accounts are not locked behind a phone.
+db.prepare('UPDATE admins SET mfa_secret=NULL,mfa_enabled=0 WHERE mfa_enabled<>0 OR mfa_secret IS NOT NULL').run();
+db.prepare('DELETE FROM mfa_recovery_codes').run();
+db.prepare('UPDATE sessions SET mfa_verified=1 WHERE mfa_verified<>1').run();
 
 const bootstrapPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
 const bootstrapUser = (process.env.ADMIN_USERNAME || 'admin').trim();
@@ -196,8 +201,6 @@ export function requireAdmin(req: AdminRequest, res: Response, next: NextFunctio
   const row = sessionRow(req);
   if (!row || !row.is_active) return res.status(401).json({ error: 'نشست منقضی، غیرفعال یا نامعتبر است.' });
   const admin = rowToIdentity(row);
-  if (mfaEnrollmentNeeded(admin)) return res.status(401).json({ error: 'فعال‌سازی MFA برای مدیرکل الزامی است.', mfaEnrollmentRequired: true });
-  if (row.mfa_enabled && !row.mfa_verified) return res.status(401).json({ error: 'تأیید MFA لازم است.', mfaRequired: true });
   req.admin = admin;
   next();
 }
@@ -271,7 +274,6 @@ export function consumeRateLimit(rateKey: string, limit: number, windowMs: numbe
 export function resetRateLimit(rateKey: string) { db.prepare('DELETE FROM rate_limits WHERE rate_key=?').run(rateKey); }
 
 export async function loginAdmin(username: string, password: string, turnstileToken: string | undefined, ip: string | undefined, res: Response) {
-  if (!(await verifyTurnstile(turnstileToken, ip))) return { success: false, error: 'اعتبارسنجی CAPTCHA ناموفق بود.' };
   const row = db.prepare(`
     SELECT a.id,a.username,a.display_name,a.role_id,a.role AS legacy_role,a.is_active,a.mfa_enabled,
            r.name AS role_name,r.permissions_json,r.is_superadmin
@@ -282,10 +284,9 @@ export async function loginAdmin(username: string, password: string, turnstileTo
     return { success: false, error: 'نام کاربری یا رمز عبور نادرست است.' };
   }
   const admin = rowToIdentity({ ...row, mfa_verified: 0 });
-  const enrollmentRequired = mfaEnrollmentNeeded(admin);
-  issueSession(admin.id, res, !row.mfa_enabled && !enrollmentRequired);
+  issueSession(admin.id, res, true);
   db.prepare('UPDATE admins SET last_login_at=? WHERE id=?').run(now(), admin.id);
-  return { success: true, mfaRequired: Boolean(row.mfa_enabled), mfaEnrollmentRequired: enrollmentRequired };
+  return { success: true };
 }
 export async function verifyMfaSession(req: AdminRequest, token: string) {
   const row = sessionRow(req);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Lock, 
   User, 
@@ -13,7 +13,6 @@ import {
   Building
 } from '../icons';
 import { useData } from '../context/DataContext';
-import { Turnstile } from '@marsidev/react-turnstile';
 import '../crm/crm.css';
 
 interface AdminLoginProps {
@@ -22,60 +21,19 @@ interface AdminLoginProps {
 }
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'admin' }) => {
-  const { login, verifyMfa, startMfaEnrollment, confirmMfaEnrollment } = useData();
+  const { login } = useData();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [turnstileSiteKey, setTurnstileSiteKey] = useState('');
-  const [turnstileToken, setTurnstileToken] = useState('');
-  const [mfaRequired, setMfaRequired] = useState(false);
-  const [mfaEnrollmentRequired, setMfaEnrollmentRequired] = useState(false);
-  const [mfaSetup, setMfaSetup] = useState<{ secret?: string; uri?: string; recoveryCodes?: string[] } | null>(null);
-  const [mfaCode, setMfaCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetch('/api/auth/csrf', { credentials: 'include' })
-      .then((response) => response.ok ? response.json() : null)
-      .then((data) => {
-        if (data?.turnstileSiteKey) setTurnstileSiteKey(String(data.turnstileSiteKey));
-      })
-      .catch(() => undefined);
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!mfaRequired && !mfaEnrollmentRequired && turnstileSiteKey && !turnstileToken) {
-      setError('ابتدا کادر امنیتی CAPTCHA را کامل کنید.');
-      return;
-    }
     setIsLoading(true);
     try {
-      if (mfaEnrollmentRequired) {
-        const result = await confirmMfaEnrollment(mfaCode);
-        if (!result.success) setError(result.error || 'کد MFA نامعتبر است.');
-        return;
-      }
-      if (mfaRequired) {
-        const result = await verifyMfa(mfaCode);
-        if (!result.success) setError(result.error || 'کد MFA نامعتبر است.');
-        return;
-      }
-      const result = await login(username, password, turnstileToken);
-      if (result.mfaEnrollmentRequired) {
-        setMfaEnrollmentRequired(true);
-        const setup = await startMfaEnrollment();
-        if (setup.success) setMfaSetup(setup);
-        else setError(setup.error || 'شروع فعال‌سازی MFA ناموفق بود.');
-        return;
-      }
-      if (result.mfaRequired) {
-        setMfaRequired(true);
-        setError('کد برنامه Authenticator را وارد کنید.');
-        return;
-      }
+      const result = await login(username, password);
       if (!result.success) setError(result.error || 'اطلاعات ورود نامعتبر است.');
     } finally {
       setIsLoading(false);
@@ -94,7 +52,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'ad
           {error ? <div className="crm-login-error">{error}</div> : null}
 
           <form onSubmit={handleSubmit}>
-            {!mfaRequired && !mfaEnrollmentRequired && (
+            {(
               <div className="crm-field">
                 <label htmlFor="crm-username">نام کاربری</label>
                 <input
@@ -108,7 +66,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'ad
               </div>
             )}
 
-            {!mfaRequired && !mfaEnrollmentRequired && (
+            {(
               <div className="crm-field">
                 <label htmlFor="crm-password">رمز عبور</label>
                 <div className="relative">
@@ -133,30 +91,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'ad
               </div>
             )}
 
-            {mfaEnrollmentRequired ? (
-              <div className="crm-field">
-                <label htmlFor="crm-mfa-enroll">فعال‌سازی MFA مدیرکل</label>
-                <p>کلید را در برنامه Authenticator وارد کنید: <code>{mfaSetup?.secret || 'در حال آماده‌سازی…'}</code></p>
-                <input id="crm-mfa-enroll" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} required />
-              </div>
-            ) : mfaRequired ? (
-              <div className="crm-field">
-                <label htmlFor="crm-mfa">کد شش‌رقمی MFA</label>
-                <input
-                  id="crm-mfa"
-                  inputMode="numeric"
-                  pattern="[0-9]{6}"
-                  maxLength={6}
-                  value={mfaCode}
-                  onChange={(e) => setMfaCode(e.target.value)}
-                  required
-                />
-              </div>
-            ) : turnstileSiteKey ? (
-              <div className="crm-field">
-                <Turnstile siteKey={turnstileSiteKey} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken('')} />
-              </div>
-            ) : null}
 
             <button type="submit" disabled={isLoading} className="crm-btn crm-btn-primary crm-submit">
               {isLoading ? 'در حال ورود…' : 'ادامه'}
@@ -233,7 +167,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'ad
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!mfaRequired && !mfaEnrollmentRequired && <div>
+            {<div>
               <label className="block text-xs font-bold text-slate-300 mb-1.5">
                 نام کاربری مدیر
               </label>
@@ -250,7 +184,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'ad
               </div>
             </div>}
 
-            {!mfaRequired && !mfaEnrollmentRequired && <div>
+            {<div>
               <label className="block text-xs font-bold text-slate-300 mb-1.5">
                 کلمه عبور امنیتی
               </label>
@@ -273,17 +207,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'ad
               </div>
             </div>}
 
-            {mfaEnrollmentRequired ? (
-              <div className="space-y-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-3.5 text-xs text-amber-50">
-                <p className="font-bold">فعال‌سازی MFA برای مدیرکل الزامی است.</p>
-                <p className="leading-6">در Google Authenticator، Microsoft Authenticator یا برنامه مشابه، کلید زیر را دستی وارد کنید؛ سپس کد شش‌رقمی را ثبت کنید.</p>
-                <code className="block break-all rounded-lg bg-slate-950/70 p-2 text-amber-200" dir="ltr">{mfaSetup?.secret || 'در حال آماده‌سازی…'}</code>
-                {mfaSetup?.recoveryCodes?.length ? <div className="rounded-lg bg-slate-950/50 p-2 text-[11px] text-slate-200"><strong className="block mb-1 text-amber-200">کدهای بازیابی — فقط همین یک بار نمایش داده می‌شوند:</strong><span dir="ltr" className="break-words">{mfaSetup.recoveryCodes.join(' · ')}</span></div> : null}
-                <label className="block font-bold">کد شش‌رقمی برنامه Authenticator
-                  <input autoFocus inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} required className="mt-1.5 w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white" />
-                </label>
-              </div>
-            ) : mfaRequired ? <div><label className="block text-xs font-bold text-slate-300 mb-1.5">کد شش‌رقمی MFA</label><input inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} required className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white" /></div> : (turnstileSiteKey ? <Turnstile siteKey={turnstileSiteKey} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken('')} /> : null)}
 
             <button
               type="submit"
@@ -301,7 +224,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToSite, mode = 'ad
             </button>
           </form>
 
-          <p className="mt-6 text-center text-[11px] text-slate-500">ورود فقط با نشست امن backend و CAPTCHA معتبر امکان‌پذیر است.</p>
+          <p className="mt-6 text-center text-[11px] text-slate-500">ورود با نام کاربری و رمز عبور؛ نشست امن و محدودیت تلاش‌های ناموفق فعال است.</p>
 
         </div>
 

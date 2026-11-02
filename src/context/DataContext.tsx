@@ -118,10 +118,7 @@ interface DataContextType {
   // Authentication
   adminUser: AdminUser | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string, turnstileToken?: string) => Promise<{ success: boolean; mfaRequired?: boolean; mfaEnrollmentRequired?: boolean; error?: string }>;
-  verifyMfa: (token: string) => Promise<{ success: boolean; error?: string }>;
-  startMfaEnrollment: () => Promise<{ success: boolean; secret?: string; uri?: string; recoveryCodes?: string[]; error?: string }>;
-  confirmMfaEnrollment: (token: string) => Promise<{ success: boolean; error?: string }>;
+  login: (username: string, password: string, turnstileToken?: string) => Promise<{ success: boolean; error?: string }>;
   canAccess: (section: AdminSection) => boolean;
   hasAdminPassword: boolean;
   logout: () => void;
@@ -571,52 +568,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await response.json().catch(() => ({ error: 'پاسخ ورود نامعتبر است.' }));
       if (response.ok) {
         await refreshCsrf();
-        if (result.mfaEnrollmentRequired) return { success: true, mfaEnrollmentRequired: true };
-        if (result.mfaRequired) return { success: true, mfaRequired: true };
         if (!await loadCurrentAdmin()) return { success: false, error: 'نشست ورود ساخته شد اما اطلاعات مدیر خوانده نشد.' };
         return { success: true };
       }
       return { success: false, error: result.error || 'ورود ناموفق بود.' };
     } catch {
       return { success: false, error: 'ارتباط با سرور ورود برقرار نشد.' };
-    }
-  };
-
-  const verifyMfa = async (token: string) => {
-    const tokenValue = csrfToken || await refreshCsrf();
-    const response = await fetch('/api/auth/mfa/verify', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tokenValue }, body: JSON.stringify({ token }) });
-    const result = await response.json().catch(() => ({}));
-    if (response.ok && await loadCurrentAdmin()) return { success: true };
-    return { success: false, error: result.error || 'کد MFA نامعتبر است.' };
-  };
-
-  const startMfaEnrollment = async () => {
-    try {
-      const tokenValue = csrfToken || await refreshCsrf();
-      const response = await fetch('/api/auth/mfa/enroll/setup', {
-        method: 'POST', credentials: 'include', headers: { 'X-CSRF-Token': tokenValue },
-      });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) return { success: false, error: result.error || 'شروع MFA ناموفق بود.' };
-      return { success: true, secret: result.secret, uri: result.uri, recoveryCodes: result.recoveryCodes };
-    } catch {
-      return { success: false, error: 'ارتباط با سرور برقرار نشد.' };
-    }
-  };
-
-  const confirmMfaEnrollment = async (token: string) => {
-    try {
-      const tokenValue = csrfToken || await refreshCsrf();
-      const response = await fetch('/api/auth/mfa/enroll/confirm', {
-        method: 'POST', credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tokenValue },
-        body: JSON.stringify({ token }),
-      });
-      const result = await response.json().catch(() => ({}));
-      if (response.ok && await loadCurrentAdmin()) return { success: true };
-      return { success: false, error: result.error || 'کد MFA نامعتبر است.' };
-    } catch {
-      return { success: false, error: 'ارتباط با سرور برقرار نشد.' };
     }
   };
 
@@ -759,9 +716,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         adminUser,
         isAuthenticated: !!adminUser,
         login,
-        verifyMfa,
-        startMfaEnrollment,
-        confirmMfaEnrollment,
         canAccess,
         hasAdminPassword,
         logout,
