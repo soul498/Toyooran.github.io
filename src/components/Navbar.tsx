@@ -180,11 +180,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-white shadow-sm z-10">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-auto min-w-[2.5rem] bg-slate-100 rounded-lg flex items-center justify-center px-2 py-1 shadow-inner border border-slate-200/50">
-                  <img src="/images/logo-mark.png" alt={t("طیوران صنعت پویا")} className="h-10 w-auto object-contain" width={50} height={40} />
+                  <img src={logoUrl || "/images/logo-mark.png"} alt={displayBrand} className="h-10 w-auto object-contain" width={50} height={40} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-lg font-black text-[#003F86]">TSPK</span>
-                  <span className="text-[10px] font-extrabold text-slate-500 -mt-1">{t("طیوران صنعت پویا")}</span>
+                  <span className="text-lg font-black text-[#003F86]">{englishBrand}</span>
+                  <span className="text-[10px] font-extrabold text-slate-500 -mt-1">{displayBrand}</span>
                 </div>
               </div>
               
