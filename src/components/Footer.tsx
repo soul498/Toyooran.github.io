@@ -21,7 +21,7 @@ import {
 } from '../icons';
 import { isDisabledPagePath } from '../data/disabledPages';
 
-import { isEn, t, tr, translateDeep } from '../i18n';
+import { hasPersian, isEn, t, tr, translateDeep } from '../i18n';
 const FOOTER_SERVICE_LINKS = [
   { to: '/services/srv-machinery-manufacturing', title: 'ماشین‌آلات خوراک' },
   { to: '/services/srv-poultry-equipment-supply', title: 'تجهیزات دام و طیور' },
@@ -82,7 +82,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
             </div>
             <p className="text-slate-300 text-sm leading-relaxed font-medium mb-8 max-w-sm">
               
-              {isEn() ? (layout?.aboutEn || t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.")) : (layout?.aboutFa || t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند."))}
+              {isEn() ? (layout?.aboutEn && !hasPersian(layout.aboutEn) ? layout.aboutEn : t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.")) : (layout?.aboutFa || t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند."))}
             </p>
             
             {/* Social Links */}

@@ -47,6 +47,7 @@ export const UsersTab: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState<Notice>(null);
   const [userError, setUserError] = useState('');
+  const [savingUser, setSavingUser] = useState(false);
   const [roleDraft, setRoleDraft] = useState(emptyRole);
   const [editingRole, setEditingRole] = useState<AdminRole | null>(null);
   const [userDraft, setUserDraft] = useState(emptyUser);
@@ -55,7 +56,6 @@ export const UsersTab: React.FC = () => {
   const [showUserForm, setShowUserForm] = useState(false);
 
   const customPermissionSections = useMemo(() => ADMIN_SECTIONS.filter((section) => section !== 'users'), []);
-  const defaultRoleId = roles[0]?.id || '';
 
   const refresh = async () => {
     setLoading(true);
@@ -129,7 +129,7 @@ export const UsersTab: React.FC = () => {
   const openNewUser = () => {
     setUserError('');
     setEditingUser(null);
-    setUserDraft(emptyUser(defaultRoleId));
+    setUserDraft(emptyUser());
     setShowUserForm(true);
   };
 
@@ -144,13 +144,18 @@ export const UsersTab: React.FC = () => {
     event.preventDefault();
     setNotice(null);
     setUserError('');
-    if (!roles.length) return setUserError('نقش‌ها بارگذاری نشده‌اند. صفحه را تازه‌سازی کنید و دوباره تلاش کنید.');
+    if (!roles.length) return setUserError('نقش‌ها بارگذاری نشده‌اند. روی «بارگذاری دوباره» بزنید.');
+    if (!editingUser && !/^[A-Za-z0-9._-]{3,80}$/.test(userDraft.username.trim())) return setUserError('نام کاربری باید حداقل ۳ نویسه و فقط شامل حروف انگلیسی، عدد، نقطه، خط تیره یا زیرخط باشد.');
+    if (userDraft.displayName.trim().length < 2) return setUserError('نام و سمت نمایشی را وارد کنید.');
+    if (!userDraft.roleId) return setUserError('نقش کاربر را انتخاب کنید.');
+    if ((!editingUser || userDraft.password) && userDraft.password.length < 16) return setUserError('رمز عبور باید حداقل ۱۶ نویسه باشد.');
     const payload = {
       displayName: userDraft.displayName,
       roleId: userDraft.roleId,
       isActive: userDraft.isActive,
       ...(editingUser ? (userDraft.password ? { password: userDraft.password } : {}) : { username: userDraft.username, password: userDraft.password }),
     };
+    setSavingUser(true);
     try {
       const response = await adminRequest(editingUser ? `/api/admin/users/${editingUser.id}` : '/api/admin/users', {
         method: editingUser ? 'PUT' : 'POST',
@@ -159,12 +164,14 @@ export const UsersTab: React.FC = () => {
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) return setUserError(result.error || 'ذخیره کاربر ناموفق بود.');
+      if (result.user) setUsers((previous) => editingUser ? previous.map((user) => user.id === result.user.id ? result.user : user) : [...previous, result.user]);
       setNotice({ kind: 'success', text: editingUser ? 'کاربر به‌روزرسانی شد.' : 'کاربر جدید ساخته شد.' });
       setShowUserForm(false);
       setEditingUser(null);
-      await refresh();
     } catch {
       setUserError('ارتباط با سرور برقرار نشد. دوباره تلاش کنید.');
+    } finally {
+      setSavingUser(false);
     }
   };
 
@@ -205,6 +212,7 @@ export const UsersTab: React.FC = () => {
           {notice.text}
         </div>
       )}
+      {!loading && !roles.length && <button type="button" onClick={() => void refresh()} className="rounded-xl border border-amber-400/40 px-4 py-2 text-xs text-amber-200">بارگذاری دوبارهٔ نقش‌ها و کاربران</button>}
 
       <section className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
@@ -234,6 +242,7 @@ export const UsersTab: React.FC = () => {
       <section className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <h3 className="text-sm font-black text-white">کاربران</h3>
+          <button type="button" onClick={openNewUser} className="rounded-xl bg-amber-400 px-3 py-2 text-xs font-black text-slate-950 inline-flex items-center gap-1"><Plus className="h-4 w-4" />افزودن کاربر</button>
           <span className="text-[11px] text-slate-500">{users.length.toLocaleString('fa-IR')} کاربر</span>
         </div>
         <div className="overflow-x-auto">
@@ -281,10 +290,9 @@ export const UsersTab: React.FC = () => {
       )}
 
       {showUserForm && (
-        <div className="fixed inset-0 z-[100] bg-slate-950/80 p-4 overflow-y-auto flex items-center justify-center">
-          <form onSubmit={saveUser} className="w-full max-w-lg bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+        <div className="fixed inset-0 z-[100] bg-slate-950/80 p-4 overflow-y-auto flex items-start sm:items-center justify-center">
+          <form noValidate onSubmit={saveUser} className="my-auto w-full max-w-lg bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
             <div className="flex justify-between items-center"><h3 className="text-sm font-black text-white">{editingUser ? 'ویرایش کاربر' : 'کاربر جدید'}</h3><button type="button" onClick={() => setShowUserForm(false)} className="p-1 text-slate-400"><X className="w-5 h-5" /></button></div>
-            {userError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-200">{userError}</p>}
             {!editingUser && <label className="block text-xs text-slate-300">نام کاربری (انگلیسی)
               <input required pattern="[A-Za-z0-9._-]{3,80}" value={userDraft.username} onChange={(event) => setUserDraft({ ...userDraft, username: event.target.value })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-mono" dir="ltr" />
             </label>}
@@ -296,12 +304,13 @@ export const UsersTab: React.FC = () => {
                 <option value="">انتخاب نقش</option>{roles.map((role) => <option key={role.id} value={role.id}>{role.name}</option>)}
               </select>
             </label>
-            {!roles.length && <p className="text-xs text-rose-200">فهرست نقش‌ها بارگذاری نشده است. صفحه را تازه‌سازی کنید و دوباره تلاش کنید.</p>}
+            {!roles.length && <div className="space-y-2"><p className="text-xs text-rose-200">فهرست نقش‌ها بارگذاری نشده است.</p><button type="button" onClick={() => void refresh()} className="rounded-xl border border-amber-400/40 px-3 py-2 text-xs text-amber-200">بارگذاری دوباره</button></div>}
             <label className="block text-xs text-slate-300">{editingUser ? 'رمز جدید (در صورت تغییر)' : 'رمز عبور'} <span className="text-slate-500">حداقل ۱۶ نویسه</span>
               <input required={!editingUser} minLength={16} type="password" value={userDraft.password} onChange={(event) => setUserDraft({ ...userDraft, password: event.target.value })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white" dir="ltr" autoComplete="new-password" />
             </label>
             <label className="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" checked={userDraft.isActive} onChange={(event) => setUserDraft({ ...userDraft, isActive: event.target.checked })} /> حساب فعال باشد</label>
-            <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowUserForm(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold">انصراف</button><button className="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 text-xs font-black">ذخیره کاربر</button></div>
+            {userError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-200">{userError}</p>}
+            <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowUserForm(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold">انصراف</button><button disabled={savingUser} className="px-4 py-2 rounded-xl bg-amber-400 disabled:opacity-60 text-slate-950 text-xs font-black">{savingUser ? 'در حال ذخیره…' : editingUser ? 'ذخیره تغییرات' : 'ساخت کاربر'}</button></div>
           </form>
         </div>
       )}

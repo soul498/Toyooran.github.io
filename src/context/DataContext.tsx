@@ -85,7 +85,7 @@ interface DataContextType {
   heroCms: HeroCmsContent;
   updateHeroCms: (cms: Partial<HeroCmsContent>) => Promise<void>;
   siteLayout: SiteLayoutConfig;
-  updateSiteLayout: (layout: Partial<SiteLayoutConfig>) => void;
+  updateSiteLayout: (layout: Partial<SiteLayoutConfig>) => Promise<void>;
   pageContent: PagesCms;
   updatePageContent: (content: Partial<PagesCms>) => Promise<void>;
   aiConfig: AiAdvisorConfig;
@@ -533,14 +533,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setHeroCms(next);
   };
 
-  const updateSiteLayout = (layout: Partial<SiteLayoutConfig>) => {
-    setSiteLayout((previous) => mergeSiteLayout({
-      ...previous,
+  const updateSiteLayout = async (layout: Partial<SiteLayoutConfig>) => {
+    const next = mergeSiteLayout({
+      ...siteLayout,
       ...layout,
-      header: { ...previous.header, ...(layout.header || {}) },
-      footer: { ...previous.footer, ...(layout.footer || {}) },
-      home: { ...previous.home, ...(layout.home || {}) },
-    }));
+      header: { ...siteLayout.header, ...(layout.header || {}) },
+      footer: { ...siteLayout.footer, ...(layout.footer || {}) },
+      home: { ...siteLayout.home, ...(layout.home || {}) },
+    });
+    await persistAdminState('siteLayout', next);
+    setSiteLayout(next);
   };
 
   const updatePageContent = async (content: Partial<PagesCms>) => {

@@ -15,7 +15,7 @@ import {
 } from '../icons';
 import { PageSection } from '../types';
 
-import { isEn, t } from '../i18n';
+import { hasPersian, isEn, t } from '../i18n';
 import { LangToggle } from './LangToggle';
 interface NavbarProps {
   currentSection: PageSection;
@@ -27,6 +27,8 @@ interface NavbarProps {
   logoUrl?: string;
   brandFa?: string;
   brandEn?: string;
+  navLabelsFa?: import('../types').SiteLayoutConfig['header']['navLabelsFa'];
+  navLabelsEn?: import('../types').SiteLayoutConfig['header']['navLabelsEn'];
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -39,9 +41,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   logoUrl,
   brandFa,
   brandEn,
+  navLabelsFa,
+  navLabelsEn,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const displayBrand = isEn() ? (brandEn || brandFa || 'TSPK') : (brandFa || t("طیوران صنعت پویا"));
+  const englishBrand = brandEn && !hasPersian(brandEn) ? brandEn : 'TSPK';
+  const displayBrand = isEn() ? englishBrand : (brandFa || t("طیوران صنعت پویا"));
 
   // Prevent scrolling when mobile menu is open
   useEffect(() => {
@@ -65,6 +70,10 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'about', path: '/about', label: t("درباره شرکت"), icon: User },
     { id: 'contact', path: '/contact', label: t("تماس"), icon: Compass },
   ];
+  const navLabel = (item: typeof navItems[number]) => {
+    const custom = isEn() ? navLabelsEn?.[item.id as keyof typeof navLabelsEn] : navLabelsFa?.[item.id as keyof typeof navLabelsFa];
+    return custom?.trim() && (!isEn() || !hasPersian(custom)) ? custom : item.label;
+  };
 
   const handleNavClick = (section: PageSection) => {
     onNavigate(section);
@@ -94,7 +103,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div className="flex flex-col justify-center">
             <span className="text-lg sm:text-xl font-black text-[#003F86] tracking-tight group-hover:opacity-90 transition-opacity">
-              {brandEn || 'TSPK'}
+              {englishBrand}
             </span>
             <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-600 tracking-wider -mt-1">
               
@@ -120,7 +129,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-600 hover:bg-white/80 hover:text-[#003F86] hover:shadow-md border border-transparent hover:border-white/50'
                 }`}
               >
-                <span className="relative z-10 tracking-wide">{item.label}</span>
+                <span className="relative z-10 tracking-wide">{navLabel(item)}</span>
               </Link>
             );
           })}
@@ -214,7 +223,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             <Icon className={`w-4 h-4 sm:w-6 sm:h-6 ${isActive ? 'text-amber-400' : ''}`} />
                           </div>
                           <span className={`text-[15px] sm:text-lg font-bold tracking-wide ${isActive ? 'text-[#003F86] font-black' : 'text-slate-600'}`}>
-                            {item.label}
+                            {navLabel(item)}
                           </span>
                         </div>
                         

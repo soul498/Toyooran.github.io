@@ -233,6 +233,8 @@ const MainAppInner: React.FC = () => {
         logoUrl={siteLayout.header.logoUrl}
         brandFa={siteLayout.header.brandFa}
         brandEn={siteLayout.header.brandEn}
+        navLabelsFa={siteLayout.header.navLabelsFa}
+        navLabelsEn={siteLayout.header.navLabelsEn}
       />}
 
       {/* Main Content by Section */}

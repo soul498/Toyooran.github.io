@@ -272,6 +272,8 @@ export interface SiteLayoutConfig {
     logoUrl?: string;
     brandFa?: string;
     brandEn?: string;
+    navLabelsFa?: Partial<Record<'home' | 'services' | 'products' | 'rnd' | 'about' | 'contact', string>>;
+    navLabelsEn?: Partial<Record<'home' | 'services' | 'products' | 'rnd' | 'about' | 'contact', string>>;
   };
   footer: {
     visible: boolean;

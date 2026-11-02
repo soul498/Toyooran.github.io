@@ -134,11 +134,11 @@ export const PagesTab: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <div className="space-y-3">
             <p className="text-xs font-bold text-amber-300">فارسی</p>
-            <label className="block text-xs text-slate-300">تیتر اصلی<input value={activeHero.title || ''} onChange={(event) => updateHero({ title: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">عنوانک بالای تیتر<input value={activeHero.eyebrow || ''} onChange={(event) => updateHero({ eyebrow: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">زیرتیتر<textarea rows={3} value={activeHero.subtitle || ''} onChange={(event) => updateHero({ subtitle: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">متن دکمه اصلی<input value={activeHero.ctaLabel || ''} onChange={(event) => updateHero({ ctaLabel: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">متن دکمه دوم<input value={activeHero.secondaryCtaLabel || ''} onChange={(event) => updateHero({ secondaryCtaLabel: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">تیتر اصلی<input value={activeHero.title ?? baseHero.title} onChange={(event) => updateHero({ title: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">عنوانک بالای تیتر<input value={activeHero.eyebrow ?? baseHero.eyebrow ?? ''} onChange={(event) => updateHero({ eyebrow: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">زیرتیتر<textarea rows={3} value={activeHero.subtitle ?? baseHero.subtitle} onChange={(event) => updateHero({ subtitle: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">متن دکمه اصلی<input value={activeHero.ctaLabel ?? baseHero.cta?.label ?? ''} onChange={(event) => updateHero({ ctaLabel: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">متن دکمه دوم<input value={activeHero.secondaryCtaLabel ?? baseHero.secondaryCta?.label ?? ''} onChange={(event) => updateHero({ secondaryCtaLabel: event.target.value })} className={fieldClass} /></label>
           </div>
           <div className="space-y-3" dir="ltr">
             <p className="text-xs font-bold text-blue-300">English</p>
@@ -158,13 +158,13 @@ export const PagesTab: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <div className="space-y-3">
               <p className="text-xs font-bold text-amber-300">فارسی</p>
-              <label className="block text-xs text-slate-300">تیتر معرفی<input value={draft.about.heading || ''} onChange={(event) => updateAbout({ heading: event.target.value })} className={fieldClass} /></label>
-              <label className="block text-xs text-slate-300">متن معرفی<textarea rows={5} value={draft.about.intro || ''} onChange={(event) => updateAbout({ intro: event.target.value })} className={fieldClass} /></label>
+              <label className="block text-xs text-slate-300">تیتر معرفی<input value={draft.about.heading ?? ABOUT_HEADING} onChange={(event) => updateAbout({ heading: event.target.value })} className={fieldClass} /></label>
+              <label className="block text-xs text-slate-300">متن معرفی<textarea rows={5} value={draft.about.intro ?? ABOUT_INTRO} onChange={(event) => updateAbout({ intro: event.target.value })} className={fieldClass} /></label>
               {[0, 1, 2].map((index) => (
                 <div key={index} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-3 space-y-2">
                   <p className="text-[11px] text-slate-500">مزیت {index + 1}</p>
-                  <input value={draft.about.features?.[index]?.title || ''} onChange={(event) => updateAboutFeature(index, { title: event.target.value })} placeholder="عنوان" className={compactFieldClass} />
-                  <textarea rows={2} value={draft.about.features?.[index]?.description || ''} onChange={(event) => updateAboutFeature(index, { description: event.target.value })} placeholder="توضیح" className={compactFieldClass} />
+                  <input value={draft.about.features?.[index]?.title ?? ABOUT_FEATURES[index][0]} onChange={(event) => updateAboutFeature(index, { title: event.target.value })} placeholder="عنوان" className={compactFieldClass} />
+                  <textarea rows={2} value={draft.about.features?.[index]?.description ?? ABOUT_FEATURES[index][1]} onChange={(event) => updateAboutFeature(index, { description: event.target.value })} placeholder="توضیح" className={compactFieldClass} />
                 </div>
               ))}
             </div>
@@ -188,8 +188,8 @@ export const PagesTab: React.FC = () => {
         <section className="bg-slate-900 border border-slate-800 rounded-3xl p-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
           <div className="space-y-3">
             <p className="text-xs font-bold text-amber-300">متن فارسی بخش در حال آماده‌سازی</p>
-            <label className="block text-xs text-slate-300">عنوان<input value={draft.rnd.title || ''} onChange={(event) => updateRnd({ title: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">توضیح<textarea rows={4} value={draft.rnd.description || ''} onChange={(event) => updateRnd({ description: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">عنوان<input value={draft.rnd.title ?? RND_TITLE} onChange={(event) => updateRnd({ title: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">توضیح<textarea rows={4} value={draft.rnd.description ?? RND_DESCRIPTION} onChange={(event) => updateRnd({ description: event.target.value })} className={fieldClass} /></label>
           </div>
           <div className="space-y-3" dir="ltr">
             <p className="text-xs font-bold text-blue-300">English coming-soon content</p>
