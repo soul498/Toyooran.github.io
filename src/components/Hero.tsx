@@ -25,6 +25,8 @@ interface HeroProps {
   onOpenAiAssistant?: () => void;
   /** Rendered at the top of the drawer sheet, above the «خدمات» section (home product bands). */
   beforeServices?: React.ReactNode;
+  /** CMS visibility switch: preserves the rest of the home page when the hero is hidden. */
+  showHero?: boolean;
   children?: React.ReactNode;
 }
 
@@ -105,6 +107,7 @@ const Hero: React.FC<HeroProps> = ({
   onOpenQuote,
   onOpenAiAssistant,
   beforeServices,
+  showHero = true,
   children,
 }) => {
   const navigate = useNavigate();
@@ -164,7 +167,7 @@ const Hero: React.FC<HeroProps> = ({
       {/* ========================================================================= */}
       {/* 1. 100% FIXED HERO (Redesigned: Clean, Minimalist, Image-Focused) */}
       {/* ========================================================================= */}
-      <section 
+      {showHero && <section
         id="hero-fixed-pinned-section"
         className="fixed top-0 left-0 right-0 w-full h-[100dvh] flex flex-col items-center justify-center overflow-hidden bg-slate-950 z-0 pointer-events-auto"
       >
@@ -234,12 +237,12 @@ const Hero: React.FC<HeroProps> = ({
           <ChevronLeft className="w-5 h-5 text-amber-400 -rotate-90 animate-bounce" aria-hidden="true" />
         </button>
 
-      </section>
+      </section>}
 
       {/* ========================================================================= */}
       {/* 2. INVISIBLE SCROLL SPACER (Fits exact viewport height) */}
       {/* ========================================================================= */}
-      <div className="w-full h-[100dvh] pointer-events-none" />
+      {showHero && <div className="w-full h-[100dvh] pointer-events-none" />}
 
       {/* ========================================================================= */}
       {/* 3. SLIDING DRAWER / COVER SHEET */}

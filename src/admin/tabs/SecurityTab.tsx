@@ -16,7 +16,8 @@ import {
 import { useData } from '../../context/DataContext';
 
 export const SecurityTab: React.FC = () => {
-  const { adminUser, changeAdminPassword } = useData();
+  const { adminUser, changePassword } = useData();
+  const accessLabel = adminUser?.isSuperadmin ? 'مدیرکل (دسترسی کامل)' : adminUser?.role || 'کاربر دارای دسترسی امنیت';
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -80,7 +81,7 @@ export const SecurityTab: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus(null);
 
@@ -89,19 +90,19 @@ export const SecurityTab: React.FC = () => {
       return;
     }
 
-    if (newPassword.length < 5) {
-      setStatus({ type: 'error', message: 'کلمه عبور باید حداقل ۵ کاراکتر باشد.' });
+    if (newPassword.length < 16) {
+      setStatus({ type: 'error', message: 'کلمه عبور باید حداقل ۱۶ کاراکتر باشد.' });
       return;
     }
 
-    const success = changeAdminPassword(oldPassword, newPassword);
-    if (success) {
+    const result = await changePassword(oldPassword, newPassword);
+    if (result.success) {
       setStatus({ type: 'success', message: 'کلمه عبور مدیریت با موفقیت تغییر یافت.' });
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } else {
-      setStatus({ type: 'error', message: 'کلمه عبور فعلی نادرست است.' });
+      setStatus({ type: 'error', message: result.error || 'کلمه عبور فعلی نادرست است.' });
     }
   };
 
@@ -160,7 +161,7 @@ export const SecurityTab: React.FC = () => {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="حداقل ۵ کاراکتر"
+                placeholder="حداقل ۱۶ کاراکتر"
                 required
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-400 font-mono"
               />
@@ -208,7 +209,7 @@ export const SecurityTab: React.FC = () => {
 
             <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
               <span className="text-slate-400 block text-[11px]">سطح دسترسی:</span>
-              <span className="text-emerald-400 font-bold block mt-0.5">مدیر ارشد کل (Super Administrator)</span>
+              <span className="text-emerald-400 font-bold block mt-0.5">{accessLabel}</span>
             </div>
           </div>
         </div>

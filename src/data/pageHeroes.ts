@@ -1,7 +1,8 @@
 import type React from 'react';
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
-import { translateDeep } from '../i18n';
+import { translateCmsRecord, translateDeep } from '../i18n';
 import { Building2, FileCheck, FlaskConical, Phone, Sparkles, type IconProps } from '../icons';
+import type { CmsPageKey, PageHeroCms } from '../types';
 
 export interface PageHeroConfig {
   title: string;
@@ -71,9 +72,33 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
 };
 
 /** Hero for a (language-neutral) path, in the active language. */
-export const pageHeroFor = (pathname: string): PageHeroConfig | undefined => {
-  const hero = PAGE_HEROES[pathname.replace(/\/+$/, '') || '/'];
-  return hero ? translateDeep(hero) : undefined;
+const PAGE_KEY_BY_PATH: Partial<Record<string, CmsPageKey>> = {
+  '/services': 'services',
+  '/magazine': 'magazine',
+  '/about': 'about',
+  '/rnd': 'rnd',
+  '/contact': 'contact',
+};
+
+/** Adds CMS-written copy while preserving the icons, links and structure authored in code. */
+export const pageHeroFor = (
+  pathname: string,
+  overrides?: Partial<Record<CmsPageKey, PageHeroCms>>,
+): PageHeroConfig | undefined => {
+  const normalizedPath = pathname.replace(/\/+$/, '') || '/';
+  const hero = PAGE_HEROES[normalizedPath];
+  if (!hero) return undefined;
+  const rawOverride = PAGE_KEY_BY_PATH[normalizedPath] ? overrides?.[PAGE_KEY_BY_PATH[normalizedPath]!] : undefined;
+  const cms = rawOverride ? translateCmsRecord(rawOverride) : undefined;
+  const merged: PageHeroConfig = {
+    ...hero,
+    title: cms?.title || hero.title,
+    subtitle: cms?.subtitle || hero.subtitle,
+    eyebrow: cms?.eyebrow || hero.eyebrow,
+    cta: cms?.ctaLabel && hero.cta ? { ...hero.cta, label: cms.ctaLabel } : hero.cta,
+    secondaryCta: cms?.secondaryCtaLabel && hero.secondaryCta ? { ...hero.secondaryCta, label: cms.secondaryCtaLabel } : hero.secondaryCta,
+  };
+  return translateDeep(merged);
 };
 
 /** Real catalog file: public/TSPK_catalog.pdf, served by server.ts with Content-Disposition: attachment. */

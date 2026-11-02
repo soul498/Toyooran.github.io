@@ -36,6 +36,6 @@ export function removedProductRedirect(slug: string): string | null {
 }
 
 /** True when a product may appear anywhere public (not flagged hidden and not on the hidden list). */
-export function isPublicProduct(product: Pick<Product, 'id'> & { hidden?: boolean }): boolean {
-  return !product.hidden && !isRemovedProductId(product.id);
+export function isPublicProduct(product: Pick<Product, 'id' | 'status'> & { hidden?: boolean }): boolean {
+  return !product.hidden && product.status !== 'draft' && product.status !== 'review' && !isRemovedProductId(product.id);
 }

@@ -14,6 +14,7 @@ import {
   Image as ImageIcon, 
   Database, 
   KeyRound,
+  LayoutGrid,
   Sparkles,
   ChevronDown
 } from '../icons';
@@ -32,25 +33,36 @@ export type AdminTab =
   | 'consultations'
   | 'company'
   | 'hero'
+  | 'layout'
+  | 'pages'
   | 'ai'
   | 'media'
   | 'backup'
-  | 'security';
+  | 'security'
+  | 'users';
 
 interface AdminSidebarProps {
   currentTab: AdminTab;
   onSelectTab: (tab: AdminTab) => void;
 }
 
+interface SidebarItem {
+  id: AdminTab;
+  label: string;
+  icon: React.ElementType;
+  badge: React.ReactNode;
+  badgeHighlight?: boolean;
+}
+
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentTab, onSelectTab }) => {
-  const { quoteRequests, consultationRequests, allProducts: products, projects, articles } = useData();
+  const { quoteRequests, consultationRequests, allProducts: products, projects, articles, canAccess } = useData();
 
   const newQuotes = quoteRequests.filter(q => q.status === 'new').length;
   const newConsultations = consultationRequests.filter(c => c.status === 'new').length;
   const [expandedGroups, setExpandedGroups] = useState<Record<number, boolean>>({0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 6: true});
   const toggleGroup = (idx: number) => setExpandedGroups(prev => ({...prev, [idx]: !prev[idx]}));
 
-  const menuGroups = [
+  const menuGroups: { groupTitle: string; items: SidebarItem[] }[] = [
     {
       groupTitle: 'داشبورد',
       items: [
@@ -82,6 +94,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentTab, onSelect
       items: [
         { id: 'hero' as AdminTab, label: 'هیرو و بنر', icon: ImageIcon, badge: null },
         { id: 'company' as AdminTab, label: 'اطلاعات شرکت', icon: Building, badge: null },
+        { id: 'layout' as AdminTab, label: 'هدر، فوتر و سکشن‌ها', icon: LayoutGrid, badge: null },
+        { id: 'pages' as AdminTab, label: 'محتوای صفحات', icon: FileText, badge: null },
       ]
     },
     {
@@ -110,6 +124,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentTab, onSelect
       items: [
         { id: 'ai' as AdminTab, label: 'دستیار هوش مصنوعی', icon: Bot, badge: 'فعال' },
         { id: 'security' as AdminTab, label: 'امنیت', icon: KeyRound, badge: null },
+        { id: 'users' as AdminTab, label: 'نقش‌ها و کاربران', icon: Users, badge: null },
         { id: 'backup' as AdminTab, label: 'بکاپ', icon: Database, badge: null },
       ]
     }
@@ -118,7 +133,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentTab, onSelect
   return (
     <aside className="w-64 sm:w-72 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0 min-h-[calc(100vh-61px)]">
       <div className="p-4 space-y-6 flex-1 overflow-y-auto">
-        {menuGroups.map((group, gIdx) => (
+        {menuGroups.map((group, gIdx) => {
+          const items = group.items.filter((item) => canAccess(item.id));
+          if (!items.length) return null;
+          return (
           <div key={gIdx} className="space-y-1.5">
             <button 
               onClick={() => toggleGroup(gIdx)}
@@ -130,7 +148,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentTab, onSelect
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${expandedGroups[gIdx] ? 'rotate-180' : ''}`} />
             </button>
             <div className={`space-y-1 overflow-hidden transition-all duration-300 ${expandedGroups[gIdx] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-              {group.items.map((item) => {
+              {items.map((item) => {
                 const Icon = item.icon;
                 const isActive = currentTab === item.id;
                 return (
@@ -164,7 +182,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentTab, onSelect
               })}
             </div>
           </div>
-        ))}
+        )})}
       </div>
     </aside>
   );

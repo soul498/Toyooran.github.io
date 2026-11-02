@@ -5,7 +5,7 @@ import { catalogCategoryFromPath } from './lib/catalogPath';
 const Toaster = lazy(() => import('react-hot-toast').then((m) => ({ default: m.Toaster })));
 import { ScrollProgress } from './components/ScrollProgress';
 import { DataProvider, useData } from './context/DataContext';
-import { PageSection, Product, Service, Article, ProductCategory } from './types';
+import { PageSection, Product, Service, Article, ProductCategory, PagesCms } from './types';
 
 const AdminLogin = lazy(() => import('./admin/AdminLogin').then((m) => ({ default: m.AdminLogin })));
 const AdminPanel = lazy(() => import('./admin/AdminPanel').then((m) => ({ default: m.AdminPanel })));
@@ -44,14 +44,14 @@ const RouteFallback = () => <div className="min-h-[100svh]" aria-hidden="true" /
 
 // Section hero for nav routes, rendered outside the route Suspense so it (and its H1, the LCP)
 // paints on the first commit and is not re-mounted when the lazy page chunk arrives.
-const RouteHero = ({ categories }: { categories: { id: string; title: string }[] }) => {
+const RouteHero = ({ categories, pageContent }: { categories: { id: string; title: string }[]; pageContent: PagesCms }) => {
   const { pathname } = useLocation();
   const catalogCategory = catalogCategoryFromPath(pathname);
   if (catalogCategory) {
     // /products and every /products/<category> get the section hero with their own H1.
     return <ShopHero selectedCategory={catalogCategory} categories={categories} />;
   }
-  const hero = pageHeroFor(pathname);
+  const hero = pageHeroFor(pathname, pageContent.heroes);
   return hero ? <PageBanner {...hero} /> : null;
 };
 
@@ -94,9 +94,11 @@ const MainAppInner: React.FC = () => {
     magazineReady,
     categories, 
     companyInfo, 
-    heroCms 
+    heroCms,
+    siteLayout,
+    pageContent,
   } = useData();
-  const publicArticles = useMemo(() => sortArticlesNewestFirst(articles.filter((article) => article.status !== 'draft')), [articles]);
+  const publicArticles = useMemo(() => sortArticlesNewestFirst(articles.filter((article) => article.status !== 'draft' && article.status !== 'review')), [articles]);
 
   // Navigation and consultation state
 
@@ -221,33 +223,37 @@ const MainAppInner: React.FC = () => {
       <ScrollProgress />
       
       {/* Top Navbar */}
-      <Navbar
+      {siteLayout.header.visible && <Navbar
         currentSection={currentSection}
         onNavigate={handleNavigateSection}
         onOpenConsultation={() => handleOpenUnifiedConsultation()}
         onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
-      />
+        logoUrl={siteLayout.header.logoUrl}
+        brandFa={siteLayout.header.brandFa}
+        brandEn={siteLayout.header.brandEn}
+      />}
 
       {/* Main Content by Section */}
       <main id="main-content" className="flex-1">
-        <RouteHero categories={categories as { id: string; title: string }[]} />
+        <RouteHero categories={categories as { id: string; title: string }[]} pageContent={pageContent} />
         <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={
             <Hero
               cmsHero={heroCms}
+              showHero={siteLayout.home.hero}
               onNavigate={handleNavigateSection}
               onSelectCategory={handleSelectCategory}
               onOpenConsultation={() => handleOpenUnifiedConsultation()}
               onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
               onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
-              beforeServices={<HomeProductBands />}
+              beforeServices={siteLayout.home.productBands ? <HomeProductBands /> : null}
             >
               <Suspense fallback={null}>
-              <CompactShowcase onNavigate={handleNavigateSection} />
-              <AboutContactUnifiedSection />
+              {siteLayout.home.showcase && <CompactShowcase onNavigate={handleNavigateSection} />}
+              {siteLayout.home.aboutContact && <AboutContactUnifiedSection />}
               </Suspense>
             </Hero>
           } />
@@ -301,14 +307,15 @@ const MainAppInner: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <Footer 
+      {siteLayout.footer.visible && <Footer
         onNavigate={handleNavigateSection}
         onSelectCategory={handleSelectCategory}
         onOpenConsultation={() => handleOpenUnifiedConsultation()}
         onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
         companyInfo={companyInfo}
         categories={categories}
-      />
+        layout={siteLayout.footer}
+      />}
 
       {/* Detail Modals (Technical specifications & info) */}
       {selectedService && (

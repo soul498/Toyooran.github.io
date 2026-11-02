@@ -37,6 +37,11 @@ export const ProjectsTab: React.FC = () => {
     equipmentSummary: ['بشقاب دانخوری پروانه‌ای', 'جت هیتر ۱۰۰'],
     keyOutcome: 'کاهش ضریب تبدیل FCR به ۱.۵۲ و صرفه‌جویی انرژی'
   });
+  const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Project, 'translations'>>;
+
+  const updateEnglish = (patch: Partial<Omit<Project, 'translations'>>) => {
+    setFormData({ ...formData, translations: { en: { ...englishDraft, ...patch } } });
+  };
 
   const projectTypes = [
     { value: 'broiler', label: 'مرغداری گوشتی' },
@@ -59,6 +64,7 @@ export const ProjectsTab: React.FC = () => {
       servicesProvided: ['مشاوره و طراحی سازه سبک', 'نصب خط دانخوری بشقابی', 'سیستم تهویه هوشمند'],
       equipmentSummary: ['بشقاب دانخوری پروانه‌ای', 'جت هیتر ۱۰۰ کیلوکالری', 'هواکش ۱۴۰'],
       keyOutcome: 'بهبود ضریب تبدیل خوراک و کاهش ۳۰ درصدی تلفات هفته اول',
+      status: 'draft',
       caseStudy: {
         problem: 'چالش هدررفت بالای دان با سینی‌های دستی سنتی و افت دما در انتهای سالن.',
         clientNeed: 'نوسازی کامل خطوط دانخوری و بهینه‌سازی تهویه.',
@@ -91,6 +97,7 @@ export const ProjectsTab: React.FC = () => {
     const matchedType = projectTypes.find(t => t.value === formData.type);
 
     const fullProj: Project = {
+      ...(editingProject || {}),
       id: formData.id || `proj-${Date.now()}`,
       title: formData.title,
       type: (formData.type as any) || 'broiler',
@@ -102,7 +109,9 @@ export const ProjectsTab: React.FC = () => {
       servicesProvided: formData.servicesProvided || [],
       equipmentSummary: formData.equipmentSummary || [],
       keyOutcome: formData.keyOutcome || '',
-      caseStudy: formData.caseStudy
+      caseStudy: formData.caseStudy,
+      status: formData.status || editingProject?.status || 'published',
+      translations: formData.translations || editingProject?.translations,
     };
 
     if (isCreating) {
@@ -185,6 +194,9 @@ export const ProjectsTab: React.FC = () => {
               </span>
               <span className="absolute bottom-3 right-3 text-xs font-black text-white">
                 {p.capacity}
+              </span>
+              <span className="absolute bottom-3 left-3 text-[10px] font-bold text-slate-200 bg-slate-950/70 px-2 py-1 rounded-full">
+                {p.status === 'draft' ? 'پیش‌نویس' : p.status === 'review' ? 'در انتظار بررسی' : 'منتشر شده'}
               </span>
             </div>
 
@@ -301,6 +313,15 @@ export const ProjectsTab: React.FC = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">وضعیت انتشار</label>
+                <select value={formData.status || 'published'} onChange={(e) => setFormData({ ...formData, status: e.target.value as Project['status'] })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-400">
+                  <option value="draft">پیش‌نویس</option>
+                  <option value="review">در انتظار بررسی</option>
+                  <option value="published">منتشر شده</option>
+                </select>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-1">نوع پروژه</label>
@@ -355,6 +376,17 @@ export const ProjectsTab: React.FC = () => {
                   placeholder="مثال: ضریب تبدیل ۱.۵۲ و صرفه‌جویی ۲۰ درصدی سوخت"
                   className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-400"
                 />
+              </div>
+
+              <div className="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-4 space-y-3" dir="ltr">
+                <div dir="rtl"><h4 className="text-xs font-black text-blue-200">نسخه انگلیسی پروژه</h4><p className="text-[11px] text-slate-500 mt-1">این اطلاعات برای زمانی است که نمایش عمومی پروژه‌ها فعال شود.</p></div>
+                <input value={englishDraft.title || ''} onChange={(event) => updateEnglish({ title: event.target.value })} placeholder="Project title" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input value={englishDraft.typeTitle || ''} onChange={(event) => updateEnglish({ typeTitle: event.target.value })} placeholder="Project type" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                  <input value={englishDraft.capacity || ''} onChange={(event) => updateEnglish({ capacity: event.target.value })} placeholder="Capacity" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                  <input value={englishDraft.location || ''} onChange={(event) => updateEnglish({ location: event.target.value })} placeholder="Location" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white sm:col-span-2" />
+                </div>
+                <textarea rows={3} value={englishDraft.keyOutcome || ''} onChange={(event) => updateEnglish({ keyOutcome: event.target.value })} placeholder="Key outcome" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">

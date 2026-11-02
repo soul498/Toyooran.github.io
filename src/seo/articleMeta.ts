@@ -2,7 +2,7 @@ import type { Article } from "../types";
 import { t } from "../i18n";
 
 export function isPublicArticle(article: Pick<Article, "status">): boolean {
-  return article.status !== "draft";
+  return article.status !== "draft" && article.status !== "review";
 }
 
 export function effectiveSeoTitle(article: Pick<Article, "title" | "seoTitle">): string {

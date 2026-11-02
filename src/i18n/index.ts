@@ -135,7 +135,15 @@ export function missingIn(value: unknown, out: string[] = []): string[] {
 /** English copy of a product; keeps its Persian name for the URL slug (/en/products/<same slug>). */
 export function translateProduct<T extends { name?: string; slugName?: string }>(product: T): T {
   if (current === 'fa') return product;
-  return { ...deep(product), slugName: product.slugName ?? product.name };
+  const manual = (product as T & { translations?: { en?: Partial<T> } }).translations?.en;
+  return { ...deep(product), ...(manual || {}), slugName: product.slugName ?? product.name };
+}
+
+/** CMS records may carry an explicitly authored English overlay. It wins over the
+ * legacy Persian-key dictionary and lets new content be translated from /admin. */
+export function translateCmsRecord<T extends { translations?: { en?: Partial<T> } }>(value: T): T {
+  if (current === 'fa') return value;
+  return { ...deep(value), ...(value.translations?.en || {}) };
 }
 
 /** Deep copy with every Persian string translated (Persian kept where no entry exists). Identity on fa. */

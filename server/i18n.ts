@@ -10,6 +10,7 @@ import {
   setEnAvailability,
   setEnDictionary,
   translateDeep,
+  translateCmsRecord,
   translateProduct,
   withLang,
   withOverlay,
@@ -60,15 +61,16 @@ export function articleMissing(article: Article): string[] {
 export function englishArticle(article: Article): Article | null {
   return withLang("en", () =>
     withOverlay(MAG[article.id], () => {
-      if (!isFullyTranslated(articleVisibleText(article))) return null;
-      const out = translateDeep(article);
+      const manual = article.translations?.en;
+      const out = manual ? { ...translateDeep(article), ...manual } : translateDeep(article);
+      if (!isFullyTranslated(articleVisibleText(out))) return null;
       return { ...out, date: englishArticleDate(article) || out.date };
     }),
   );
 }
 
 export function productIsTranslated(product: Product): boolean {
-  return withLang("en", () => isFullyTranslated(product));
+  return withLang("en", () => isFullyTranslated(translateProduct(product)));
 }
 
 const enCache = new WeakMap<SeoCatalog, SeoCatalog>();
@@ -82,12 +84,12 @@ export function englishCatalog(catalog: SeoCatalog): SeoCatalog {
   }
   const value = withLang("en", () => ({
     ...catalog,
-    products: catalog.products.filter((p) => isFullyTranslated(p)).map((p) => translateProduct(p)),
-    services: translateDeep(catalog.services),
+    products: catalog.products.filter(productIsTranslated).map((p) => translateProduct(p)),
+    services: catalog.services.map((service) => translateCmsRecord(service)),
     projects: [],
     articles: catalog.articles.map((a) => englishArticle(a)).filter((a): a is Article => Boolean(a)),
     categories: translateDeep(catalog.categories),
-    company: translateDeep(catalog.company),
+    company: translateCmsRecord(catalog.company),
   }));
   enCache.set(catalog, value);
   publishAvailability(value);

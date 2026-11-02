@@ -14,6 +14,11 @@ export const CompanyCmsTab: React.FC = () => {
   const { companyInfo, updateCompanyInfo } = useData();
   const [companyForm, setCompanyForm] = useState<CompanyInfo>({ ...companyInfo });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const englishDraft = (companyForm.translations?.en || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
+
+  const updateEnglish = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
+    setCompanyForm({ ...companyForm, translations: { en: { ...englishDraft, ...patch } } });
+  };
 
   const handleSaveAll = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +96,20 @@ export const CompanyCmsTab: React.FC = () => {
               rows={2}
               className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400"
             />
+          </div>
+
+          <div className="md:col-span-2 lg:col-span-3 rounded-2xl border border-blue-500/30 bg-blue-500/5 p-4 space-y-3" dir="ltr">
+            <div dir="rtl">
+              <h3 className="text-xs font-black text-blue-200">متن‌های انگلیسی شرکت</h3>
+              <p className="text-[11px] text-slate-500 mt-1">نام انگلیسی از فیلد بالایی خوانده می‌شود؛ بقیه متن‌های عمومی را اینجا وارد کنید.</p>
+            </div>
+            <input value={englishDraft.tagline || ''} onChange={(event) => updateEnglish({ tagline: event.target.value })} placeholder="Company tagline" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={englishDraft.subTagline || ''} onChange={(event) => updateEnglish({ subTagline: event.target.value })} rows={2} placeholder="Short company introduction" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input value={englishDraft.address || ''} onChange={(event) => updateEnglish({ address: event.target.value })} placeholder="Head office address" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={englishDraft.factoryAddress || ''} onChange={(event) => updateEnglish({ factoryAddress: event.target.value })} placeholder="Factory address" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={englishDraft.workingHours || ''} onChange={(event) => updateEnglish({ workingHours: event.target.value })} placeholder="Working hours" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white md:col-span-2" />
+            </div>
           </div>
           
           <div className="md:col-span-2 lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">

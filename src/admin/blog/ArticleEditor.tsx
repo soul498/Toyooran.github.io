@@ -72,7 +72,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 }) => {
   const [title, setTitle] = useState(initial?.title || "");
   const [slug, setSlug] = useState(initial?.id || "");
-  const [status, setStatus] = useState<Article["status"]>(initial?.status === "draft" ? "draft" : "published");
+  const [status, setStatus] = useState<Article["status"]>(initial?.status || "published");
   const [category, setCategory] = useState(initial?.category || "technical-guide");
   const [summary, setSummary] = useState(initial?.summary || "");
   const [seoTitle, setSeoTitle] = useState(initial?.seoTitle || "");
@@ -88,6 +88,22 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
   const [reviewerName, setReviewerName] = useState(initial?.reviewerName || "");
   const [reviewerRole, setReviewerRole] = useState(initial?.reviewerRole || "");
   const [sources, setSources] = useState<ArticleSource[]>(initial?.sources?.length ? initial.sources : [{ name: "", url: "" }]);
+  const initialEnglish = (initial?.translations?.en || {}) as Partial<Omit<Article, 'translations'>>;
+  const [englishTitle, setEnglishTitle] = useState(initialEnglish.title || "");
+  const [englishCategoryLabel, setEnglishCategoryLabel] = useState(initialEnglish.categoryLabel || "");
+  const [englishReadTime, setEnglishReadTime] = useState(initialEnglish.readTime || "");
+  const [englishSummary, setEnglishSummary] = useState(initialEnglish.summary || "");
+  const [englishContent, setEnglishContent] = useState(initialEnglish.content?.join("\n") || "");
+  const [englishImageAlt, setEnglishImageAlt] = useState(initialEnglish.imageAlt || "");
+  const [englishTagsText, setEnglishTagsText] = useState(initialEnglish.tags?.join(", ") || "");
+  const [englishSeoTitle, setEnglishSeoTitle] = useState(initialEnglish.seoTitle || "");
+  const [englishSeoDescription, setEnglishSeoDescription] = useState(initialEnglish.seoDescription || "");
+  const [englishFocusKeyword, setEnglishFocusKeyword] = useState(initialEnglish.focusKeyword || "");
+  const [englishAuthorName, setEnglishAuthorName] = useState(initialEnglish.authorName || "");
+  const [englishAuthorRole, setEnglishAuthorRole] = useState(initialEnglish.authorRole || "");
+  const [englishReviewerName, setEnglishReviewerName] = useState(initialEnglish.reviewerName || "");
+  const [englishReviewerRole, setEnglishReviewerRole] = useState(initialEnglish.reviewerRole || "");
+  const [englishSourcesText, setEnglishSourcesText] = useState((initialEnglish.sources || []).map((source) => [source.name, source.url || ""].join(" | ")).join("\n"));
   const [relatedProductIds, setRelatedProductIds] = useState<string[]>(initial?.relatedProductIds || []);
   const [relatedServiceId, setRelatedServiceId] = useState(initial?.relatedServiceId || "");
   const [noindex, setNoindex] = useState(Boolean(initial?.noindex));
@@ -187,7 +203,18 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       setError("آدرس منبع باید لینک http یا https باشد.");
       return;
     }
-    if (status !== "draft") {
+    const englishSources: ArticleSource[] = englishSourcesText
+      .split("\n")
+      .map((line) => {
+        const [name, ...urlParts] = line.split("|");
+        return { name: name?.trim() || "", url: urlParts.join("|").trim() || undefined };
+      })
+      .filter((source) => source.name);
+    if (englishSources.some((source) => source.url && !isSafeHref(source.url))) {
+      setError("آدرس منبع انگلیسی باید لینک http یا https باشد.");
+      return;
+    }
+    if (status === "published") {
       if (!summary.trim() && !seoDescription.trim()) {
         setError("برای انتشار، چکیده یا توضیحات متا لازم است.");
         return;
@@ -202,6 +229,29 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
     if (initial?.id && initial.id !== nextSlug) aliases.add(initial.id);
     const matchedCategory = CATEGORIES.find((item) => item.value === category);
     const cleanSources = sources.filter((source) => source.name.trim());
+    const englishHasContent = [
+      englishTitle, englishCategoryLabel, englishReadTime, englishSummary, englishContent, englishImageAlt,
+      englishTagsText, englishSeoTitle, englishSeoDescription, englishFocusKeyword, englishAuthorName,
+      englishAuthorRole, englishReviewerName, englishReviewerRole, englishSourcesText,
+    ].some((value) => value.trim());
+    const englishTranslation: Partial<Omit<Article, 'translations'>> = {
+      ...initialEnglish,
+      title: englishTitle.trim() || undefined,
+      categoryLabel: englishCategoryLabel.trim() || undefined,
+      readTime: englishReadTime.trim() || undefined,
+      summary: englishSummary.trim() || undefined,
+      content: englishContent.split("\n").map((line) => line.trim()).filter(Boolean),
+      imageAlt: englishImageAlt.trim() || undefined,
+      tags: englishTagsText.split(",").map((tag) => tag.trim()).filter(Boolean),
+      seoTitle: englishSeoTitle.trim() || undefined,
+      seoDescription: englishSeoDescription.trim() || undefined,
+      focusKeyword: englishFocusKeyword.trim() || undefined,
+      authorName: englishAuthorName.trim() || undefined,
+      authorRole: englishAuthorRole.trim() || undefined,
+      reviewerName: englishReviewerName.trim() || undefined,
+      reviewerRole: englishReviewerRole.trim() || undefined,
+      sources: englishSources.length ? englishSources : undefined,
+    };
     const article: Article = {
       ...(initial || { id: nextSlug, title: title.trim(), category, categoryLabel: "", readTime: "", date, summary: "", content: [], relatedProductIds: [] }),
       id: nextSlug,
@@ -225,12 +275,13 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       reviewerName: reviewerName.trim() || undefined,
       reviewerRole: reviewerRole.trim() || undefined,
       sources: cleanSources.length ? cleanSources.map((source) => ({ name: source.name.trim(), url: source.url?.trim() || undefined })) : undefined,
-      status: status === "draft" ? "draft" : "published",
+      status,
       seoTitle: seoTitle.trim() || undefined,
       seoDescription: seoDescription.trim() || undefined,
       focusKeyword: focusKeyword.trim() || undefined,
       noindex: noindex || undefined,
       aliases: aliases.size ? [...aliases] : undefined,
+      translations: englishHasContent ? { en: englishTranslation } : undefined,
     };
     onSave(article);
   };
@@ -255,6 +306,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           <select value={status || "published"} onChange={(event) => setStatus(event.target.value as Article["status"])} className={fieldClass + " w-auto"}>
             <option value="draft">پیش‌نویس</option>
+            <option value="review">در انتظار بررسی</option>
             <option value="published">منتشر شده</option>
           </select>
           <button type="button" onClick={() => setPreview((value) => !value)} className="px-3 py-2 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold">
@@ -356,7 +408,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
               <span className="text-2xl font-black">{score.toLocaleString("fa-IR")}</span>
             </div>
             <p className="text-[11px] mt-1 opacity-80">
-              {status === "draft" ? "پیش‌نویس در سایت و سایت‌مپ نیست." : noindex ? "منتشر می‌شود ولی noindex است." : "پس از ذخیره در مجله و سایت‌مپ می‌آید."}
+              {status === "draft" ? "پیش‌نویس در سایت و سایت‌مپ نیست." : status === "review" ? "این نوشته برای بررسی است و هنوز روی سایت نمایش داده نمی‌شود." : noindex ? "منتشر می‌شود ولی noindex است." : "پس از ذخیره در مجله و سایت‌مپ می‌آید."}
             </p>
           </section>
 
@@ -424,7 +476,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
             <label className="block text-[11px] text-slate-400">متن جایگزین تصویر شاخص
               <input value={imageAlt} onChange={(event) => setImageAlt(event.target.value)} className={fieldClass + " mt-1"} />
             </label>
-            {status !== "draft" && initial && canonicalSlug === initial.id && (
+            {status === "published" && initial && canonicalSlug === initial.id && (
               <a href={`/magazine/${canonicalSlug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[11px] text-amber-300">
                 <ExternalLink className="w-3.5 h-3.5" />
                 مشاهده روی سایت
@@ -501,6 +553,32 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
           </section>
         </aside>
       </div>
+
+      <section className="bg-blue-500/5 border border-blue-500/25 rounded-3xl p-4 sm:p-5 space-y-4" dir="ltr">
+        <div dir="rtl">
+          <h3 className="text-sm font-black text-blue-100">نسخه انگلیسی مقاله</h3>
+          <p className="text-[11px] text-slate-500 mt-1">محتوای انگلیسی مستقل است. تا وقتی ترجمه کامل نباشد، نسخه /en این مقاله منتشر نمی‌شود.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <label className="block text-xs text-slate-300">Article title<input value={englishTitle} onChange={(event) => setEnglishTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Category label<input value={englishCategoryLabel} onChange={(event) => setEnglishCategoryLabel(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Reading time<input value={englishReadTime} onChange={(event) => setEnglishReadTime(event.target.value)} placeholder="5 min read" className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Image alt text<input value={englishImageAlt} onChange={(event) => setEnglishImageAlt(event.target.value)} className={fieldClass + " mt-1"} /></label>
+        </div>
+        <label className="block text-xs text-slate-300">Article summary<textarea rows={3} value={englishSummary} onChange={(event) => setEnglishSummary(event.target.value)} className={fieldClass + " mt-1 leading-6"} /></label>
+        <label className="block text-xs text-slate-300">Article content (keep content markers such as ##, -, [IMG|...], [CTA|...])<textarea rows={12} value={englishContent} onChange={(event) => setEnglishContent(event.target.value)} className={fieldClass + " mt-1 leading-6 font-mono"} /></label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <label className="block text-xs text-slate-300">Tags (comma-separated)<input value={englishTagsText} onChange={(event) => setEnglishTagsText(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Focus keyword<input value={englishFocusKeyword} onChange={(event) => setEnglishFocusKeyword(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">SEO title<input value={englishSeoTitle} onChange={(event) => setEnglishSeoTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">SEO description<textarea rows={2} value={englishSeoDescription} onChange={(event) => setEnglishSeoDescription(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Author name<input value={englishAuthorName} onChange={(event) => setEnglishAuthorName(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Author role<input value={englishAuthorRole} onChange={(event) => setEnglishAuthorRole(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Reviewer name<input value={englishReviewerName} onChange={(event) => setEnglishReviewerName(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Reviewer role<input value={englishReviewerRole} onChange={(event) => setEnglishReviewerRole(event.target.value)} className={fieldClass + " mt-1"} /></label>
+        </div>
+        <label className="block text-xs text-slate-300">Sources — one per line: Name | https://example.com<textarea rows={3} value={englishSourcesText} onChange={(event) => setEnglishSourcesText(event.target.value)} className={fieldClass + " mt-1 font-mono"} /></label>
+      </section>
     </form>
   );
 };

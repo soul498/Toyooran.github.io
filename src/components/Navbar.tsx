@@ -15,7 +15,7 @@ import {
 } from '../icons';
 import { PageSection } from '../types';
 
-import { t } from '../i18n';
+import { isEn, t } from '../i18n';
 import { LangToggle } from './LangToggle';
 interface NavbarProps {
   currentSection: PageSection;
@@ -24,6 +24,9 @@ interface NavbarProps {
   onOpenQuote: () => void;
   onOpenSearch: () => void;
   onOpenAiAssistant?: () => void;
+  logoUrl?: string;
+  brandFa?: string;
+  brandEn?: string;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -33,8 +36,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenQuote,
   onOpenSearch,
   onOpenAiAssistant,
+  logoUrl,
+  brandFa,
+  brandEn,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const displayBrand = isEn() ? (brandEn || brandFa || 'TSPK') : (brandFa || t("طیوران صنعت پویا"));
 
   // Prevent scrolling when mobile menu is open
   useEffect(() => {
@@ -78,8 +85,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Logo Mark: Full Image */}
           <div className="h-10 sm:h-12 flex items-center justify-center relative group-hover:-translate-y-0.5 transition-transform duration-300">
              <img 
-               src="/images/logo-mark.png" 
-               alt={t("طیوران صنعت پویا")}
+               src={logoUrl || "/images/logo-mark.png"}
+               alt={displayBrand}
                width={62}
                height={50}
                className="h-full w-auto object-contain"
@@ -87,11 +94,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div className="flex flex-col justify-center">
             <span className="text-lg sm:text-xl font-black text-[#003F86] tracking-tight group-hover:opacity-90 transition-opacity">
-              TSPK
+              {brandEn || 'TSPK'}
             </span>
             <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-600 tracking-wider -mt-1">
               
-              {t("طیوران صنعت پویا")}
+              {displayBrand}
             </span>
           </div>
           

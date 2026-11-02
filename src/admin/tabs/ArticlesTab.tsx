@@ -41,8 +41,8 @@ export const ArticlesTab: React.FC = () => {
     const haystack = `${article.title} ${article.summary} ${article.focusKeyword || ""}`.toLowerCase();
     const matchesSearch = haystack.includes(searchTerm.trim().toLowerCase());
     const matchesCategory = categoryFilter === "all" || article.category === categoryFilter;
-    const published = isPublicArticle(article);
-    const matchesStatus = statusFilter === "all" || (statusFilter === "published" ? published : !published);
+    const workflowStatus = article.status || "published";
+    const matchesStatus = statusFilter === "all" || workflowStatus === statusFilter;
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
@@ -109,6 +109,7 @@ export const ArticlesTab: React.FC = () => {
           <option value="all">همه وضعیت‌ها</option>
           <option value="published">منتشر شده</option>
           <option value="draft">پیش‌نویس</option>
+          <option value="review">در انتظار بررسی</option>
         </select>
       </div>
 
@@ -119,14 +120,15 @@ export const ArticlesTab: React.FC = () => {
         {filtered.map((article) => {
           const score = scores.get(article.id) || 0;
           const published = isPublicArticle(article);
+          const workflowStatus = article.status || "published";
           return (
             <div key={article.id} className="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="bg-amber-400/15 text-amber-300 border border-amber-400/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full">{article.categoryLabel}</span>
-                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${published ? "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" : "text-slate-300 border-slate-600 bg-slate-800"}`}>
-                      {published ? "منتشر شده" : "پیش‌نویس"}
+                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${published ? "text-emerald-300 border-emerald-400/30 bg-emerald-400/10" : workflowStatus === "review" ? "text-amber-200 border-amber-400/30 bg-amber-400/10" : "text-slate-300 border-slate-600 bg-slate-800"}`}>
+                      {published ? "منتشر شده" : workflowStatus === "review" ? "در انتظار بررسی" : "پیش‌نویس"}
                     </span>
                     {article.noindex && <span className="text-[10px] text-rose-200 border border-rose-400/30 rounded-full px-2 py-0.5">noindex</span>}
                     <span className="text-[11px] text-slate-500 inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{article.date}</span>

@@ -17,12 +17,25 @@ function asArray<T>(key: string, fallback: T[]): T[] {
   }
 }
 
+/** Collections saved by the admin UI are complete snapshots. Unlike seed overlays,
+ * an empty list or a missing record is intentional (for example after deletion). */
+function savedCollection<T>(key: string, fallback: T[]): T[] {
+  try {
+    const value = getAdminState(key);
+    return Array.isArray(value) ? (value as T[]) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 function mergeSeedById<T extends { id: string }>(key: string, seed: T[]): T[] {
   const overlay = asArray<T>(key, []);
   if (!overlay.length) return seed;
+  const overlayById = new Map(overlay.filter((item) => item?.id).map((item) => [item.id, item]));
   const seedIds = new Set(seed.map((item) => item.id));
+  const merged = seed.map((item) => overlayById.get(item.id) ?? item);
   const extras = overlay.filter((item) => item?.id && !seedIds.has(item.id));
-  return extras.length ? [...seed, ...extras] : seed;
+  return extras.length ? [...merged, ...extras] : merged;
 }
 
 function overlaySeedOnly<T extends { id: string }>(key: string, seed: T[]): T[] {
@@ -78,8 +91,10 @@ export function invalidateSeoCatalog(): void {
 
 function buildSeoCatalog(): SeoCatalog {
   return {
-    products: mergeSeedById<Product>("products", PRODUCTS).filter((item) => item && isPublicProduct(item)),
-    services: overlaySeedOnly<Service>("services", SERVICES).map((item) => withContentCorrections(item)),
+    products: savedCollection<Product>("products", PRODUCTS).filter((item) => item && isPublicProduct(item)),
+    services: savedCollection<Service>("services", SERVICES)
+      .filter((item) => item.status !== 'draft' && item.status !== 'review')
+      .map((item) => withContentCorrections(item)),
     // No projects are published yet (user request 2026-10-28): keep admin data, expose none publicly.
     projects: [],
     articles: loadPublicArticles(),

@@ -8,6 +8,11 @@ export const HeroCmsTab: React.FC = () => {
   const { heroCms, updateHeroCms } = useData();
   const [heroForm, setHeroForm] = useState<HeroCms>({ ...heroCms });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const englishDraft = (heroForm.translations?.en || {}) as Partial<Omit<HeroCms, 'translations'>>;
+
+  const updateEnglish = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
+    setHeroForm({ ...heroForm, translations: { en: { ...englishDraft, ...patch } } });
+  };
 
   const handleSaveAll = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,6 +100,20 @@ export const HeroCmsTab: React.FC = () => {
               onChange={(e) => setHeroForm({ ...heroForm, ctaSecondaryText: e.target.value })}
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-400"
             />
+          </div>
+
+          <div className="md:col-span-2 rounded-2xl border border-blue-500/30 bg-blue-500/5 p-4 space-y-3" dir="ltr">
+            <div dir="rtl">
+              <h3 className="text-xs font-black text-blue-200">نسخه انگلیسی هیرو</h3>
+              <p className="text-[11px] text-slate-500 mt-1">متن‌های انگلیسی به‌صورت مستقل ذخیره می‌شوند و فقط در سایت انگلیسی نشان داده خواهند شد.</p>
+            </div>
+            <input value={englishDraft.pillText || ''} onChange={(event) => updateEnglish({ pillText: event.target.value })} placeholder="Pill text" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <input value={englishDraft.title || ''} onChange={(event) => updateEnglish({ title: event.target.value })} placeholder="Hero title" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={englishDraft.subtitle || ''} onChange={(event) => updateEnglish({ subtitle: event.target.value })} rows={3} placeholder="Hero subtitle" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input value={englishDraft.ctaPrimaryText || ''} onChange={(event) => updateEnglish({ ctaPrimaryText: event.target.value })} placeholder="Primary CTA" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={englishDraft.ctaSecondaryText || ''} onChange={(event) => updateEnglish({ ctaSecondaryText: event.target.value })} placeholder="Secondary CTA" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            </div>
           </div>
 
           <div className="md:col-span-2 pt-2 border-t border-slate-800 mt-4">

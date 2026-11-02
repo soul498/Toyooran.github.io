@@ -35,6 +35,11 @@ export const ServicesTab: React.FC = () => {
     sampleProjectIds: [],
     faqs: []
   });
+  const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Service, 'translations'>>;
+
+  const updateEnglish = (patch: Partial<Omit<Service, 'translations'>>) => {
+    setFormData({ ...formData, translations: { en: { ...englishDraft, ...patch } } });
+  };
 
   const openCreateModal = () => {
     setFormData({
@@ -52,7 +57,8 @@ export const ServicesTab: React.FC = () => {
       suitableFor: ['مرغداری‌های گوشتی', 'کارخانجات خوراک', 'فارم‌های تخم‌گذار'],
       relatedEquipmentCategories: ['feeding', 'machinery'],
       sampleProjectIds: [],
-      faqs: []
+      faqs: [],
+      status: 'draft'
     });
     setIsCreating(true);
     setEditingService(null);
@@ -69,6 +75,7 @@ export const ServicesTab: React.FC = () => {
     if (!formData.title) return;
 
     const fullService: Service = {
+      ...(editingService || {}),
       id: formData.id || `srv-${Date.now()}`,
       title: formData.title,
       tagline: formData.tagline || '',
@@ -79,7 +86,9 @@ export const ServicesTab: React.FC = () => {
       suitableFor: formData.suitableFor || [],
       relatedEquipmentCategories: formData.relatedEquipmentCategories || [],
       sampleProjectIds: formData.sampleProjectIds || [],
-      faqs: formData.faqs || []
+      faqs: formData.faqs || [],
+      status: formData.status || editingService?.status || 'published',
+      translations: formData.translations || editingService?.translations,
     };
 
     if (isCreating) {
@@ -125,6 +134,7 @@ export const ServicesTab: React.FC = () => {
                 <div>
                   <h3 className="text-sm font-bold text-white">{s.title}</h3>
                   <p className="text-xs text-amber-400/90 font-medium mt-0.5">{s.tagline}</p>
+                  <span className="inline-block mt-1 text-[10px] text-slate-400">{s.status === 'draft' ? 'پیش‌نویس' : s.status === 'review' ? 'در انتظار بررسی' : 'منتشر شده'}</span>
                 </div>
                 <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/20 flex items-center justify-center shrink-0">
                   <Wrench className="w-4 h-4 text-amber-400" />
@@ -237,6 +247,15 @@ export const ServicesTab: React.FC = () => {
               </div>
 
               <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">وضعیت انتشار</label>
+                <select value={formData.status || 'published'} onChange={(e) => setFormData({ ...formData, status: e.target.value as Service['status'] })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-400">
+                  <option value="draft">پیش‌نویس</option>
+                  <option value="review">در انتظار بررسی</option>
+                  <option value="published">منتشر شده</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="block text-xs font-bold text-slate-300 mb-1">شعار / زیرعنوان کوتاه</label>
                 <input
                   type="text"
@@ -255,6 +274,13 @@ export const ServicesTab: React.FC = () => {
                   rows={2}
                   className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white focus:border-amber-400 leading-relaxed"
                 />
+              </div>
+
+              <div className="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-4 space-y-3" dir="ltr">
+                <div dir="rtl"><h4 className="text-xs font-black text-blue-200">نسخه انگلیسی خدمت</h4><p className="text-[11px] text-slate-500 mt-1">برای مدیریت مستقل نسخه انگلیسی، متن‌های اصلی را وارد کنید.</p></div>
+                <input value={englishDraft.title || ''} onChange={(event) => updateEnglish({ title: event.target.value })} placeholder="Service title" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <input value={englishDraft.tagline || ''} onChange={(event) => updateEnglish({ tagline: event.target.value })} placeholder="Short tagline" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <textarea rows={3} value={englishDraft.problemSolved || ''} onChange={(event) => updateEnglish({ problemSolved: event.target.value })} placeholder="Problem solved" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">

@@ -2,6 +2,35 @@ import type { RichBlock } from "./seo/richText";
 // UI Sync triggered
 export type PageSection = 'home' | 'projects' | 'products' | 'services' | 'knowledge' | 'magazine' | 'about' | 'contact' | 'magazine-article' | 'rnd';
 
+/** Publication workflow used by every CMS-managed record. Legacy records without a
+ * status are treated as published so the current public site never disappears after
+ * the CMS migration. */
+export type PublicationStatus = 'draft' | 'review' | 'published';
+
+/** Sections that can be granted independently to a custom admin role. */
+export const ADMIN_SECTIONS = [
+  'overview',
+  'products',
+  'projects',
+  'services',
+  'articles',
+  'categories',
+  'company',
+  'hero',
+  'layout',
+  'pages',
+  'media',
+  'quotes',
+  'consultations',
+  'customers',
+  'ai',
+  'backup',
+  'security',
+  'users',
+] as const;
+
+export type AdminSection = (typeof ADMIN_SECTIONS)[number];
+
 export type ProductCategory = 
   | 'heating'
   | 'ventilation'
@@ -37,6 +66,9 @@ export interface ProjectCaseStudy {
 }
 
 export interface Project {
+  /** Empty/undefined means published for backwards compatibility. */
+  status?: PublicationStatus;
+  translations?: { en?: Partial<Omit<Project, 'translations'>> };
   id: string;
   title: string;
   type: 'broiler' | 'layer' | 'breeder' | 'feed_mill' | 'agriculture' | string;
@@ -62,6 +94,9 @@ export interface Product {
   isFeatured?: boolean;
   /** Hidden from the public site and search engines; kept for the admin panel (re-enable by clearing it). */
   hidden?: boolean;
+  /** Draft and review products are not visible on the public catalog. */
+  status?: PublicationStatus;
+  translations?: { en?: Partial<Omit<Product, 'translations'>> };
   id: string;
   code: string;
   /** Optional clean Latin URL slug (e.g. "jet-heater"); without it the slug is `<name>-<code>`. */
@@ -111,6 +146,9 @@ export interface ServiceWorkflowStep {
 }
 
 export interface Service {
+  /** Draft and review services stay inside the CMS only. */
+  status?: PublicationStatus;
+  translations?: { en?: Partial<Omit<Service, 'translations'>> };
   id: string;
   title: string;
   tagline: string;
@@ -152,7 +190,10 @@ export interface Article {
   reviewerRole?: string;
   sources?: ArticleSource[];
   /** پیش‌نویس روی سایت، سایت‌مپ و نتایج جستجو نمی‌آید. مقدار خالی یعنی منتشرشده. */
-  status?: 'draft' | 'published';
+  status?: PublicationStatus;
+  /** Manual English copy written in the CMS. The legacy source-key dictionary remains
+   * a fallback for existing content. */
+  translations?: { en?: Partial<Omit<Article, 'translations'>> };
   seoTitle?: string;
   seoDescription?: string;
   focusKeyword?: string;
@@ -164,6 +205,7 @@ export interface Article {
 }
 
 export interface CompanyInfo {
+  translations?: { en?: Partial<Omit<CompanyInfo, 'translations'>> };
   nameFa?: string;
   nameEn?: string;
   tagline?: string;
@@ -215,9 +257,67 @@ export interface HeroCms {
   ctaPrimaryText?: string;
   ctaSecondaryText?: string;
   backgroundImage?: string;
+  /** Optional slideshow images managed from the CMS. */
+  backgroundImages?: string[];
+  translations?: { en?: Partial<Omit<HeroCms, 'translations'>> };
 }
 
 export type HeroCmsContent = HeroCms;
+
+/** Controls for the global shell and the home-page building blocks.  The values are
+ * deliberately small and additive, so toggling a section cannot rewrite public UI. */
+export interface SiteLayoutConfig {
+  header: {
+    visible: boolean;
+    logoUrl?: string;
+    brandFa?: string;
+    brandEn?: string;
+  };
+  footer: {
+    visible: boolean;
+    logoUrl?: string;
+    aboutFa?: string;
+    aboutEn?: string;
+  };
+  home: {
+    hero: boolean;
+    productBands: boolean;
+    showcase: boolean;
+    aboutContact: boolean;
+  };
+}
+
+/** Editable copy for the public pages whose layout is intentionally kept in code. */
+export type CmsPageKey = 'services' | 'magazine' | 'about' | 'rnd' | 'contact';
+
+export interface PageHeroCms {
+  title?: string;
+  subtitle?: string;
+  eyebrow?: string;
+  ctaLabel?: string;
+  secondaryCtaLabel?: string;
+  translations?: { en?: Partial<Omit<PageHeroCms, 'translations'>> };
+}
+
+export interface AboutPageCms {
+  heading?: string;
+  intro?: string;
+  image?: string;
+  features?: { title?: string; description?: string }[];
+  translations?: { en?: Partial<Omit<AboutPageCms, 'translations'>> };
+}
+
+export interface RndPageCms {
+  title?: string;
+  description?: string;
+  translations?: { en?: Partial<Omit<RndPageCms, 'translations'>> };
+}
+
+export interface PagesCms {
+  heroes: Partial<Record<CmsPageKey, PageHeroCms>>;
+  about: AboutPageCms;
+  rnd: RndPageCms;
+}
 
 export interface QuoteFormData {
   projectType: string;
@@ -272,7 +372,34 @@ export interface AiAdvisorConfig {
 export interface AdminUser {
   username: string;
   displayName: string;
-  role: 'superadmin' | 'editor';
+  role: string;
+  roleId: string;
+  permissions: AdminSection[];
+  isSuperadmin: boolean;
+  mfaEnabled: boolean;
+}
+
+export interface AdminRole {
+  id: string;
+  name: string;
+  permissions: AdminSection[];
+  isSuperadmin: boolean;
+  isSystem?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ManagedAdminUser {
+  id: number;
+  username: string;
+  displayName: string;
+  roleId: string;
+  roleName: string;
+  isSuperadmin: boolean;
+  isActive: boolean;
+  mfaEnabled: boolean;
+  createdAt: string;
+  lastLoginAt?: string;
 }
 
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Image as ImageIcon, Link2, UploadCloud, CheckCircle2, X } from '../../icons';
 import { useData } from '../../context/DataContext';
+import { uploadImageFile } from '../mediaApi';
 
 interface ImagePickerProps {
   label: string;
@@ -9,25 +10,33 @@ interface ImagePickerProps {
 }
 
 export const ImagePicker: React.FC<ImagePickerProps> = ({ label, value, onChange }) => {
-  const { mediaLibrary } = useData();
+  const { mediaLibrary, addMedia } = useData();
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<'library' | 'upload' | 'url'>('library');
   const [tempUrl, setTempUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   const handleSelectMedia = (url: string) => {
     onChange(url);
     setIsOpen(false);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onChange(reader.result as string);
-        setIsOpen(false);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    setUploadError('');
+    setUploading(true);
+    try {
+      const media = await uploadImageFile(file);
+      addMedia(media);
+      onChange(media.url);
+      setIsOpen(false);
+    } catch (error: any) {
+      setUploadError(error?.message || 'آپلود تصویر ناموفق بود.');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -153,13 +162,15 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({ label, value, onChange
                 <div className="py-8 flex flex-col items-center justify-center border-2 border-dashed border-slate-700 rounded-2xl bg-slate-950/50 hover:bg-slate-900/50 hover:border-amber-400/50 transition-colors cursor-pointer relative">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp,image/avif"
                     onChange={handleFileUpload}
+                    disabled={uploading}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   <UploadCloud className="w-10 h-10 text-slate-500 mb-3" />
-                  <p className="text-sm font-bold text-slate-300">برای انتخاب فایل از سیستم کلیک کنید</p>
-                  <p className="text-[11px] text-slate-500 mt-2">تصویر به طور خودکار اضافه می‌شود</p>
+                  <p className="text-sm font-bold text-slate-300">{uploading ? 'در حال آپلود امن تصویر…' : 'برای انتخاب فایل از سیستم کلیک کنید'}</p>
+                  <p className="text-[11px] text-slate-500 mt-2">JPEG، PNG، WebP یا AVIF تا ۸ مگابایت</p>
+                  {uploadError && <p className="mt-3 text-[11px] text-rose-300">{uploadError}</p>}
                 </div>
               )}
 

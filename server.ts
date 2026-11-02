@@ -4,19 +4,53 @@ import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import fs from "fs";
 import cookieParser from "cookie-parser";
-import { audit, changePassword, confirmMfa, consumeRateLimit, createCsrfToken, getAdminState, listSessions, loginAdmin, logoutAdmin, publicTurnstileSiteKey, requireAdmin, requireMfaPending, requireRole, resetRateLimit, revokeAllSessions, setAdminState, startMfaSetup, verifyCsrf, verifyMfaSession } from "./server/auth";
+import {
+  audit,
+  changePassword,
+  confirmMfa,
+  consumeRateLimit,
+  createAdminRole,
+  createCsrfToken,
+  createManagedAdmin,
+  deleteAdminRole,
+  deleteManagedAdmin,
+  getAdminState,
+  hasPermission,
+  listAdminRoles,
+  listManagedAdmins,
+  listSessions,
+  loginAdmin,
+  logoutAdmin,
+  permissionForState,
+  publicTurnstileSiteKey,
+  requireAdmin,
+  requireMfaEnrollment,
+  requireMfaPending,
+  requirePermission,
+  requireSuperadmin,
+  resetRateLimit,
+  revokeAllSessions,
+  setAdminState,
+  startMfaSetup,
+  updateAdminRole,
+  updateManagedAdmin,
+  verifyCsrf,
+  verifyMfaSession,
+} from "./server/auth";
 import { z } from 'zod';
 import { DISABLED_PAGE_REDIRECT, isDisabledPagePath } from "./src/data/disabledPages";
 import { CANONICAL_ORIGIN, englishFallbackRedirect, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxtAll, normalizePublicUrl, robotsTxt, seoRedirectForAnyLang, sitemapXml, stripQuery } from "./server/seo";
-import { englishArticle } from "./server/i18n";
+import { englishArticle, englishCatalog } from "./server/i18n";
 import { EN_PREFIX, pathLang } from "./src/i18n";
 import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
 import { gzipResponses } from "./server/gzip";
 import { cmsApiRouter } from "./server/cmsApi";
 import { legacySpamGone } from "./server/legacySpam";
+import { deleteStoredImage, mediaDirectory, saveImageDataUrl } from "./server/media";
 
 dotenv.config();
+const ADMIN_SECTIONS_MAX = 64;
 
 async function startServer() {
   const app = express();
@@ -88,9 +122,20 @@ async function startServer() {
     }
     next();
   });
-  app.use(express.json({ limit: '2mb' }));
+  // Base64 is used for authenticated image uploads. The endpoint still applies an
+  // 8 MB binary cap and validates the image signature before writing anything.
+  app.use(express.json({ limit: '12mb' }));
   app.use(cookieParser());
   app.use(gzipResponses);
+  app.use('/media', express.static(mediaDirectory(), {
+    index: false,
+    fallthrough: false,
+    maxAge: '7d',
+    setHeaders(res) {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    },
+  }));
   app.use("/api/cms/v1", cmsApiRouter);
   app.use('/api', (req, res, next) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && !req.path.startsWith('/auth/login') && !req.path.startsWith('/consultation') && !verifyCsrf(req)) return res.status(403).json({ error: 'CSRF token نامعتبر است.' });
@@ -118,36 +163,177 @@ async function startServer() {
     res.status(result.success ? 200 : 401).json(result);
   });
   app.get('/api/auth/csrf', (_req, res) => res.json({ token: createCsrfToken(res), turnstileSiteKey: publicTurnstileSiteKey() }));
-  app.post('/api/auth/password', requireAdmin, requireRole('superadmin'), (req, res) => {
+  app.post('/api/auth/password', requireAdmin, (req, res) => {
     const parsed = z.object({ oldPassword: z.string().min(1).max(256), newPassword: z.string().min(16).max(256) }).safeParse(req.body);
     if (!parsed.success || !changePassword(req as any, parsed.data.oldPassword, parsed.data.newPassword)) return res.status(400).json({ success: false, error: 'تغییر رمز ناموفق بود.' });
     audit(req as any, 'password_changed'); res.status(204).end();
   });
   app.get('/api/auth/sessions', requireAdmin, (req, res) => res.json({ sessions: listSessions(req as any) }));
   app.delete('/api/auth/sessions', requireAdmin, (req, res) => { revokeAllSessions(req as any); res.status(204).end(); });
-  app.post('/api/auth/logout', requireAdmin, (req, res) => { logoutAdmin(req, res); res.status(204).end(); });
+  // Logout intentionally works for an MFA-enrolment session too; it remains CSRF-protected.
+  app.post('/api/auth/logout', (req, res) => { logoutAdmin(req as any, res); res.status(204).end(); });
   app.get('/api/auth/me', requireAdmin, (req, res) => res.json({ authenticated: true, admin: (req as any).admin }));
   app.post('/api/auth/mfa/verify', requireMfaPending, async (req, res) => {
     const ok = await verifyMfaSession(req as any, String(req.body?.token || ''));
     res.status(ok ? 200 : 400).json({ success: ok, error: ok ? undefined : 'کد MFA نامعتبر است.' });
   });
-  app.post('/api/auth/mfa/setup', requireAdmin, (req, res) => res.json(startMfaSetup((req as any).admin.id)));
-  app.post('/api/auth/mfa/confirm', requireAdmin, async (req, res) => {
+  // MFA is intentionally reserved for the master role at this stage. A normal
+  // editor cannot reset or replace an authenticator for its own account.
+  app.post('/api/auth/mfa/setup', requireAdmin, requireSuperadmin, (req, res) => res.json(startMfaSetup((req as any).admin.id)));
+  app.post('/api/auth/mfa/confirm', requireAdmin, requireSuperadmin, async (req, res) => {
     const ok = await confirmMfa((req as any).admin.id, String(req.body?.token || ''));
     res.status(ok ? 200 : 400).json({ success: ok, error: ok ? undefined : 'کد MFA نامعتبر است.' });
   });
-  app.get('/api/admin/state/:key', requireAdmin, requireRole('superadmin', 'content_manager', 'sales_manager', 'media_manager', 'viewer'), (req, res) => {
+  // A newly-created or migrated master account has a valid session but is restricted
+  // to this short MFA-enrolment flow until a TOTP authenticator is confirmed.
+  app.post('/api/auth/mfa/enroll/setup', requireMfaEnrollment, (req, res) => {
+    const admin = (req as any).admin;
+    res.json(startMfaSetup(admin.id, admin.username));
+  });
+  app.post('/api/auth/mfa/enroll/confirm', requireMfaEnrollment, async (req, res) => {
+    const admin = (req as any).admin;
+    const ok = await confirmMfa(admin.id, String(req.body?.token || ''));
+    res.status(ok ? 200 : 400).json({ success: ok, error: ok ? undefined : 'کد MFA نامعتبر است.' });
+  });
+
+  app.get('/api/admin/roles', requireAdmin, requireSuperadmin, (_req, res) => res.json({ roles: listAdminRoles() }));
+  app.post('/api/admin/roles', requireAdmin, requireSuperadmin, (req, res) => {
+    const parsed = z.object({ name: z.string().trim().min(2).max(80), permissions: z.array(z.string()).max(ADMIN_SECTIONS_MAX) }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'اطلاعات نقش نامعتبر است.' });
+    try {
+      res.status(201).json({ role: createAdminRole(parsed.data) });
+    } catch (error: any) {
+      res.status(400).json({ error: error?.message || 'ساخت نقش ناموفق بود.' });
+    }
+  });
+  app.put('/api/admin/roles/:id', requireAdmin, requireSuperadmin, (req, res) => {
+    const parsed = z.object({ name: z.string().trim().min(2).max(80), permissions: z.array(z.string()).max(ADMIN_SECTIONS_MAX) }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'اطلاعات نقش نامعتبر است.' });
+    try {
+      res.json({ role: updateAdminRole(String(req.params.id), parsed.data) });
+    } catch (error: any) {
+      res.status(400).json({ error: error?.message || 'ویرایش نقش ناموفق بود.' });
+    }
+  });
+  app.delete('/api/admin/roles/:id', requireAdmin, requireSuperadmin, (req, res) => {
+    try {
+      deleteAdminRole(String(req.params.id));
+      res.status(204).end();
+    } catch (error: any) {
+      res.status(400).json({ error: error?.message || 'حذف نقش ناموفق بود.' });
+    }
+  });
+  app.get('/api/admin/users', requireAdmin, requireSuperadmin, (_req, res) => res.json({ users: listManagedAdmins() }));
+  app.post('/api/admin/users', requireAdmin, requireSuperadmin, (req, res) => {
+    const parsed = z.object({
+      username: z.string().trim().min(3).max(80),
+      displayName: z.string().trim().min(2).max(120),
+      password: z.string().min(16).max(256),
+      roleId: z.string().min(1).max(128),
+      isActive: z.boolean().optional(),
+    }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'اطلاعات کاربر نامعتبر است.' });
+    try {
+      res.status(201).json({ user: createManagedAdmin(parsed.data) });
+    } catch (error: any) {
+      res.status(400).json({ error: error?.message || 'ساخت کاربر ناموفق بود.' });
+    }
+  });
+  app.put('/api/admin/users/:id', requireAdmin, requireSuperadmin, (req, res) => {
+    const id = Number(req.params.id);
+    const parsed = z.object({
+      displayName: z.string().trim().min(2).max(120),
+      password: z.string().min(16).max(256).optional(),
+      roleId: z.string().min(1).max(128),
+      isActive: z.boolean(),
+    }).safeParse(req.body);
+    if (!Number.isSafeInteger(id) || id < 1 || !parsed.success) return res.status(400).json({ error: 'اطلاعات کاربر نامعتبر است.' });
+    try {
+      res.json({ user: updateManagedAdmin(id, parsed.data) });
+    } catch (error: any) {
+      res.status(400).json({ error: error?.message || 'ویرایش کاربر ناموفق بود.' });
+    }
+  });
+  app.delete('/api/admin/users/:id', requireAdmin, requireSuperadmin, (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1 || id === (req as any).admin.id) return res.status(400).json({ error: 'حذف حساب فعلی از این بخش مجاز نیست.' });
+    try {
+      deleteManagedAdmin(id);
+      res.status(204).end();
+    } catch (error: any) {
+      res.status(400).json({ error: error?.message || 'حذف کاربر ناموفق بود.' });
+    }
+  });
+
+  app.get('/api/admin/state/:key', requireAdmin, (req, res) => {
     const key = String(req.params.key);
+    const permission = permissionForState(key);
+    if (!permission) return res.status(400).json({ error: 'کلید state نامعتبر است.' });
+    if (!hasPermission((req as any).admin, permission)) return res.status(403).json({ error: 'دسترسی به این بخش ندارید.' });
     const value = getAdminState(key);
     res.json({ value });
   });
-  app.put('/api/admin/state/:key', requireAdmin, requireRole('superadmin', 'content_manager', 'sales_manager', 'media_manager'), (req, res) => {
+  app.put('/api/admin/state/:key', requireAdmin, (req, res) => {
     const key = String(req.params.key);
-    if (!['products', 'projects', 'services', 'articles', 'categories', 'companyInfo', 'heroCms', 'aiConfig', 'quotes', 'consultations', 'customers', 'media'].includes(key)) return res.status(400).json({ error: 'کلید state نامعتبر است.' });
+    const permission = permissionForState(key);
+    if (!permission) return res.status(400).json({ error: 'کلید state نامعتبر است.' });
+    if (!hasPermission((req as any).admin, permission)) return res.status(403).json({ error: 'دسترسی به این بخش ندارید.' });
     if (JSON.stringify(req.body?.value ?? null).length > 2_000_000) return res.status(413).json({ error: 'داده بیش از حد بزرگ است.' });
     setAdminState(req as any, key, req.body?.value);
     invalidateSeoCatalog();
     res.status(204).end();
+  });
+  app.post('/api/admin/media/upload', requireAdmin, requirePermission('media'), (req, res) => {
+    const parsed = z.object({
+      dataUrl: z.string().min(32).max(12_000_000),
+      title: z.string().trim().min(1).max(180),
+    }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'اطلاعات تصویر نامعتبر است.' });
+    try {
+      const saved = saveImageDataUrl(parsed.data.dataUrl);
+      const media = {
+        id: 'media-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        url: saved.url,
+        title: parsed.data.title,
+        createdAt: new Date().toISOString(),
+      };
+      const current = getAdminState('media');
+      const collection = Array.isArray(current) ? current : [];
+      setAdminState(req as any, 'media', [media, ...collection]);
+      res.status(201).json({ media });
+    } catch (error: any) {
+      res.status(400).json({ error: error?.message || 'آپلود تصویر ناموفق بود.' });
+    }
+  });
+  app.delete('/api/admin/media/:filename', requireAdmin, requirePermission('media'), (req, res) => {
+    try {
+      const filename = String(req.params.filename || '');
+      deleteStoredImage(filename);
+      const current = getAdminState('media');
+      if (Array.isArray(current)) {
+        setAdminState(req as any, 'media', current.filter((item: any) => item?.url !== '/media/' + filename));
+      }
+      res.status(204).end();
+    } catch (error: any) {
+      res.status(400).json({ error: error?.message || 'حذف تصویر ناموفق بود.' });
+    }
+  });
+  // Public CMS snapshot: only already-published records. This makes a saved CMS
+  // change visible to ordinary visitors immediately, independently of the admin UI.
+  app.get('/api/public/cms', (req, res) => {
+    const baseCatalog = loadSeoCatalog();
+    const catalog = req.query.lang === 'en' ? englishCatalog(baseCatalog) : baseCatalog;
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    res.json({
+      products: catalog.products,
+      services: catalog.services,
+      articles: catalog.articles,
+      categories: catalog.categories,
+      companyInfo: catalog.company,
+      heroCms: getAdminState('heroCms'),
+      siteLayout: getAdminState('siteLayout'),
+      pageContent: getAdminState('pageContent'),
+    });
   });
   app.get('/api/magazine', (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');

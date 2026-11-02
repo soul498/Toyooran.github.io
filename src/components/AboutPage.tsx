@@ -3,14 +3,25 @@ import { LazyImage } from './LazyImage';
 import { Building2, CheckCircle2, Factory, Globe2 } from '../icons';
 import { SEO } from './SEO';
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
+import { useData } from '../context/DataContext';
 
-import { t, tr } from '../i18n';
+import { t, tr, translateCmsRecord } from '../i18n';
 export const AboutPage: React.FC = () => {
+  const { pageContent } = useData();
+  const cms = translateCmsRecord(pageContent.about);
+  const features = cms.features || [];
+  const feature = (index: number, title: string, description: string) => ({
+    title: features[index]?.title || title,
+    description: features[index]?.description || description,
+  });
+  const imachine = feature(0, t("برند IMACHINE"), t("طراحی و تولید ماشین‌آلات صنعتی با برند IMACHINE در صنعت خوراک."));
+  const manufacturing = feature(1, t("تولید تخصصی ماشین‌آلات"), t("تولیدکننده تخصصی انواع جت هیتر، تجهیزات گرمایشی و ماشین‌آلات خطوط تولید خوراک دام و طیور."));
+  const reach = feature(2, t("گستره فعالیت و توسعه"), t("دارای دفتر تحقیق و توسعه (R&D) مستقر در دانشگاه منابع طبیعی گلستان و حضور فعال در بازارهای داخلی و خارجی."));
   return (
     <div className="bg-blueprint-light min-h-screen relative">
       <SEO 
-        title={t("درباره طیوران صنعت پویا | ۵۰ سال سابقه در صنعت دام و طیور")}
-        description={t("مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان.")}
+        title={cms.heading || t("درباره طیوران صنعت پویا | ۵۰ سال سابقه در صنعت دام و طیور")}
+        description={cms.intro || t("مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان.")}
       />
 
       {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
@@ -23,7 +34,7 @@ export const AboutPage: React.FC = () => {
             {/* Image */}
             <div className="relative h-96 lg:h-auto bg-slate-100">
                <LazyImage
-                  src="/images/about-toyooran.jpg"
+                  src={cms.image || "/images/about-toyooran.jpg"}
                   alt={t("طیوران صنعت پویا")}
                   className="w-full h-full"
                   imgClassName="w-full h-full object-cover"
@@ -41,12 +52,12 @@ export const AboutPage: React.FC = () => {
               
               <h2 className="text-2xl lg:text-3xl font-black text-slate-900 leading-snug mb-5">
                 
-                {t("مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی")}
+                {cms.heading || t("مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی")}
               </h2>
               
               <p className="text-slate-600 leading-relaxed text-sm sm:text-base mb-8 text-justify font-medium">
                 
-                {t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان، مجری بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی است و راهکارهای جامع توسعه، طراحی، ساخت و تجهیز کامل سوله و کارخانه‌ها را ارائه می‌کند.")}
+                {cms.intro || t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان، مجری بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی است و راهکارهای جامع توسعه، طراحی، ساخت و تجهیز کامل سوله و کارخانه‌ها را ارائه می‌کند.")}
               </p>
 
               <div className="space-y-6 mb-10">
@@ -55,8 +66,8 @@ export const AboutPage: React.FC = () => {
                     <CheckCircle2 className="w-6 h-6 text-[#003F86]" />
                   </div>
                   <div>
-                    <h3 className="text-slate-900 font-bold text-base mb-1">{t("برند IMACHINE")}</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{t("طراحی و تولید ماشین‌آلات صنعتی با برند IMACHINE در صنعت خوراک.")}</p>
+                    <h3 className="text-slate-900 font-bold text-base mb-1">{imachine.title}</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{imachine.description}</p>
                   </div>
                 </div>
 
@@ -65,8 +76,8 @@ export const AboutPage: React.FC = () => {
                     <Factory className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="text-slate-900 font-bold text-base mb-1">{t("تولید تخصصی ماشین‌آلات")}</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{t("تولیدکننده تخصصی انواع جت هیتر، تجهیزات گرمایشی و ماشین‌آلات خطوط تولید خوراک دام و طیور.")}</p>
+                    <h3 className="text-slate-900 font-bold text-base mb-1">{manufacturing.title}</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{manufacturing.description}</p>
                   </div>
                 </div>
 
@@ -75,8 +86,8 @@ export const AboutPage: React.FC = () => {
                     <Globe2 className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="text-slate-900 font-bold text-base mb-1">{t("گستره فعالیت و توسعه")}</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{t("دارای دفتر تحقیق و توسعه (R&D) مستقر در دانشگاه منابع طبیعی گلستان و حضور فعال در بازارهای داخلی و خارجی.")}</p>
+                    <h3 className="text-slate-900 font-bold text-base mb-1">{reach.title}</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{reach.description}</p>
                   </div>
                 </div>
               </div>

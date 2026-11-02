@@ -15,7 +15,10 @@ import {
   QuoteFormData,
   ConsultationFormData,
   CustomerContact,
-  MediaItem
+  MediaItem,
+  SiteLayoutConfig,
+  AdminSection,
+  PagesCms
 } from '../types';
 import {
   PROJECTS,
@@ -31,7 +34,7 @@ import {
 } from '../data/mockData';
 import { migrateCustomerRecord } from '../crm/utils/crmRecords';
 import { withProductPhotos } from '../data/productPhotos';
-import { isEn, isFullyTranslated, setEnAvailability, translateDeep, translateProduct } from '../i18n';
+import { isEn, isFullyTranslated, setEnAvailability, translateCmsRecord, translateDeep, translateProduct } from '../i18n';
 
 function loadStoredArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored)) return ARTICLES;
@@ -81,6 +84,10 @@ interface DataContextType {
   updateCompanyInfo: (info: Partial<CompanyInfo>) => void;
   heroCms: HeroCmsContent;
   updateHeroCms: (cms: Partial<HeroCmsContent>) => void;
+  siteLayout: SiteLayoutConfig;
+  updateSiteLayout: (layout: Partial<SiteLayoutConfig>) => void;
+  pageContent: PagesCms;
+  updatePageContent: (content: Partial<PagesCms>) => void;
   aiConfig: AiAdvisorConfig;
   updateAiConfig: (config: Partial<AiAdvisorConfig>) => void;
 
@@ -111,11 +118,14 @@ interface DataContextType {
   // Authentication
   adminUser: AdminUser | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string, turnstileToken?: string) => Promise<{ success: boolean; mfaRequired?: boolean; error?: string }>;
+  login: (username: string, password: string, turnstileToken?: string) => Promise<{ success: boolean; mfaRequired?: boolean; mfaEnrollmentRequired?: boolean; error?: string }>;
   verifyMfa: (token: string) => Promise<{ success: boolean; error?: string }>;
+  startMfaEnrollment: () => Promise<{ success: boolean; secret?: string; uri?: string; recoveryCodes?: string[]; error?: string }>;
+  confirmMfaEnrollment: (token: string) => Promise<{ success: boolean; error?: string }>;
+  canAccess: (section: AdminSection) => boolean;
   hasAdminPassword: boolean;
   logout: () => void;
-  changePassword: (oldPassword: string, newPassword: string) => { success: boolean; error?: string };
+  changePassword: (oldPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
 
   // System & Backup
   resetToDefaults: () => void;
@@ -141,6 +151,44 @@ const STORAGE_KEYS = {
   CUSTOMERS: 'toyooran_customers_v3',
   MEDIA: 'toyooran_media_v3',
 };
+
+export const DEFAULT_SITE_LAYOUT: SiteLayoutConfig = {
+  header: { visible: true, logoUrl: '/images/logo-mark.png', brandFa: 'طیوران صنعت پویا', brandEn: 'TSPK' },
+  footer: { visible: true, logoUrl: '/images/logo-mark.png' },
+  home: { hero: true, productBands: true, showcase: true, aboutContact: true },
+};
+
+export const DEFAULT_PAGES_CMS: PagesCms = {
+  heroes: {},
+  about: { features: [] },
+  rnd: {},
+};
+
+function mergeSiteLayout(value: unknown): SiteLayoutConfig {
+  const source = value && typeof value === 'object' ? value as Partial<SiteLayoutConfig> : {};
+  return {
+    header: { ...DEFAULT_SITE_LAYOUT.header, ...(source.header || {}) },
+    footer: { ...DEFAULT_SITE_LAYOUT.footer, ...(source.footer || {}) },
+    home: { ...DEFAULT_SITE_LAYOUT.home, ...(source.home || {}) },
+  };
+}
+
+function mergePagesCms(value: unknown): PagesCms {
+  const source = value && typeof value === 'object' ? value as Partial<PagesCms> : {};
+  const aboutSource: Partial<PagesCms['about']> = source.about && typeof source.about === 'object' ? source.about : {};
+  return {
+    heroes: source.heroes && typeof source.heroes === 'object' ? source.heroes : {},
+    about: {
+      ...DEFAULT_PAGES_CMS.about,
+      ...aboutSource,
+      features: Array.isArray(aboutSource.features) ? aboutSource.features : [],
+    },
+    rnd: {
+      ...DEFAULT_PAGES_CMS.rnd,
+      ...(source.rnd && typeof source.rnd === 'object' ? source.rnd : {}),
+    },
+  };
+}
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Initialize from LocalStorage or Defaults
@@ -173,6 +221,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(() => { const saved = localStorage.getItem(STORAGE_KEYS.COMPANY_INFO); if (saved) { const parsed = JSON.parse(saved); if (!parsed.locations || parsed.locations.length === 0) return COMPANY_INFO as CompanyInfo; return parsed; } return COMPANY_INFO as CompanyInfo; });
 
   const [heroCms, setHeroCms] = useState<HeroCmsContent>(DEFAULT_HERO_CMS);
+  const [siteLayout, setSiteLayout] = useState<SiteLayoutConfig>(DEFAULT_SITE_LAYOUT);
+  const [pageContent, setPageContent] = useState<PagesCms>(DEFAULT_PAGES_CMS);
 
   const [aiConfig, setAiConfig] = useState<AiAdvisorConfig>(DEFAULT_AI_CONFIG);
 
@@ -197,6 +247,28 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [magazineReady, setMagazineReady] = useState(false);
   const magazineLockedByAdmin = useRef(false);
   const articlesHydrated = useRef(false);
+  // Visitors receive the already-published CMS snapshot as well. Previously only
+  // the authenticated browser hydrated these values, which made a saved change
+  // look local until the next deploy.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(isEn() ? '/api/public/cms?lang=en' : '/api/public/cms')
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (cancelled || magazineLockedByAdmin.current || !data) return;
+        if (Array.isArray(data.products)) setProducts(data.products as Product[]);
+        if (Array.isArray(data.services)) setServices(data.services as Service[]);
+        if (Array.isArray(data.articles)) setArticles(loadStoredArticles(data.articles as Article[]));
+        if (Array.isArray(data.categories)) setCategories(data.categories as CategoryItem[]);
+        if (data.companyInfo && typeof data.companyInfo === 'object') setCompanyInfo(data.companyInfo as CompanyInfo);
+        if (data.heroCms && typeof data.heroCms === 'object') setHeroCms(data.heroCms as HeroCmsContent);
+        if (data.siteLayout && typeof data.siteLayout === 'object') setSiteLayout(mergeSiteLayout(data.siteLayout));
+        if (data.pageContent && typeof data.pageContent === 'object') setPageContent(mergePagesCms(data.pageContent));
+        setCatalogReady(true);
+      })
+      .catch(() => undefined);
+    return () => { cancelled = true; };
+  }, []);
   useEffect(() => {
     let cancelled = false;
     // English pages get the server-translated magazine (only articles with a complete English version).
@@ -220,15 +292,29 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (adminUser) return;
     magazineLockedByAdmin.current = false;
-    setArticles((current) => (current.some((article) => article.status === 'draft') ? current.filter((article) => article.status !== 'draft') : current));
+    setArticles((current) => current.some((article) => article.status === 'draft' || article.status === 'review')
+      ? current.filter((article) => article.status !== 'draft' && article.status !== 'review')
+      : current);
   }, [adminUser]);
-  const refreshCsrf = async () => { const response = await fetch('/api/auth/csrf', { credentials: 'include' }); const result = await response.json(); setCsrfToken(result.token || ''); return result.token || ''; };
+  const refreshCsrf = async () => {
+    const response = await fetch('/api/auth/csrf', { credentials: 'include' });
+    const result = await response.json();
+    setCsrfToken(result.token || '');
+    return result.token || '';
+  };
+  const loadCurrentAdmin = async (): Promise<AdminUser | null> => {
+    const response = await fetch('/api/auth/me', { credentials: 'include' });
+    const result = response.ok ? await response.json() : null;
+    if (!result?.admin) return null;
+    const admin = result.admin as AdminUser;
+    setAdminUser(admin);
+    return admin;
+  };
   useEffect(() => {
     // The admin session (and its save-back effects) only runs on the Persian site.
     if (isEn()) return;
-    fetch('/api/auth/me', { credentials: 'include' })
-      .then(response => response.ok ? response.json() : null)
-      .then(async result => { if (result?.admin) { await refreshCsrf(); setAdminUser({ username: result.admin.username, displayName: 'مدیریت کل سیستم', role: 'superadmin' }); } })
+    loadCurrentAdmin()
+      .then(async result => { if (result) await refreshCsrf(); })
       .catch(() => undefined);
   }, []);
   // Hidden products (e.g. Kolak Gostar) stay listed for the admin even if the stored copy predates them.
@@ -249,7 +335,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!adminUser) { setAdminDataReady(false); return; }
     magazineLockedByAdmin.current = true;
     articlesHydrated.current = false;
-    const keys = ['products', 'projects', 'services', 'articles', 'categories', 'companyInfo', 'heroCms', 'aiConfig', 'quotes', 'consultations', 'customers', 'media'];
+    const keys = ['products', 'projects', 'services', 'articles', 'categories', 'companyInfo', 'heroCms', 'siteLayout', 'pageContent', 'aiConfig', 'quotes', 'consultations', 'customers', 'media'];
     Promise.all(keys.map(async key => [key, await fetch(`/api/admin/state/${key}`, { credentials: 'include' }).then(response => response.ok ? response.json() : { value: null })] as const))
       .then(async entries => {
         const state = Object.fromEntries(entries);
@@ -266,6 +352,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (state.categories.value) setCategories(state.categories.value);
         if (state.companyInfo.value) setCompanyInfo(state.companyInfo.value);
         if (state.heroCms.value) setHeroCms(state.heroCms.value);
+        if (state.siteLayout.value) setSiteLayout(mergeSiteLayout(state.siteLayout.value));
+        if (state.pageContent.value) setPageContent(mergePagesCms(state.pageContent.value));
         if (state.aiConfig.value) setAiConfig(state.aiConfig.value);
         const fakeLeadIds = new Set(["quote-101", "quote-102", "cons-201", "cons-202"]);
         if (Array.isArray(state.quotes.value)) {
@@ -296,6 +384,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => { saveAdminState('categories', categories); }, [categories, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('companyInfo', companyInfo); }, [companyInfo, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('heroCms', heroCms); }, [heroCms, adminUser, adminDataReady]);
+  useEffect(() => { saveAdminState('siteLayout', siteLayout); }, [siteLayout, adminUser, adminDataReady]);
+  useEffect(() => { saveAdminState('pageContent', pageContent); }, [pageContent, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('aiConfig', aiConfig); }, [aiConfig, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('quotes', quoteRequests); }, [quoteRequests, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('consultations', consultationRequests); }, [consultationRequests, adminUser, adminDataReady]);
@@ -307,14 +397,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const en = isEn();
   const shownProducts = useMemo(() => {
     if (!en) return publicProducts;
-    const ok = publicProducts.filter((item) => isFullyTranslated(item));
+    const ok = publicProducts.filter((item) => isFullyTranslated(translateProduct(item)));
     setEnAvailability({ products: ok.map((item) => item.id) });
     return ok.map((item) => translateProduct(item));
   }, [en, publicProducts]);
-  const shownServices = useMemo(() => translateDeep(services), [services, en]);
+  const publicServices = useMemo(() => services.filter((item) => item.status !== 'draft' && item.status !== 'review'), [services]);
+  const shownServices = useMemo(() => (adminUser ? services : publicServices).map((item) => translateCmsRecord(item)), [services, publicServices, adminUser, en]);
   const shownCategories = useMemo(() => translateDeep(categories), [categories, en]);
-  const shownCompanyInfo = useMemo(() => translateDeep(companyInfo), [companyInfo, en]);
-  const shownHeroCms = useMemo(() => translateDeep(heroCms), [heroCms, en]);
+  const shownCompanyInfo = useMemo(() => translateCmsRecord(companyInfo), [companyInfo, en]);
+  const shownHeroCms = useMemo(() => translateCmsRecord(heroCms), [heroCms, en]);
   // Product CRUD
   const addProduct = (product: Product) => {
     setProducts(prev => [product, ...prev]);
@@ -393,6 +484,26 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setHeroCms(prev => ({ ...prev, ...cms }));
   };
 
+  const updateSiteLayout = (layout: Partial<SiteLayoutConfig>) => {
+    setSiteLayout((previous) => mergeSiteLayout({
+      ...previous,
+      ...layout,
+      header: { ...previous.header, ...(layout.header || {}) },
+      footer: { ...previous.footer, ...(layout.footer || {}) },
+      home: { ...previous.home, ...(layout.home || {}) },
+    }));
+  };
+
+  const updatePageContent = (content: Partial<PagesCms>) => {
+    setPageContent((previous) => mergePagesCms({
+      ...previous,
+      ...content,
+      heroes: { ...previous.heroes, ...(content.heroes || {}) },
+      about: { ...previous.about, ...(content.about || {}) },
+      rnd: { ...previous.rnd, ...(content.rnd || {}) },
+    }));
+  };
+
   const updateAiConfig = (config: Partial<AiAdvisorConfig>) => {
     setAiConfig(prev => ({ ...prev, ...config }));
   };
@@ -459,12 +570,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await fetch('/api/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, turnstileToken }) });
       const result = await response.json().catch(() => ({ error: 'پاسخ ورود نامعتبر است.' }));
       if (response.ok) {
-        if (result.mfaRequired) {
-          await refreshCsrf();
-          return { success: true, mfaRequired: true };
-        }
         await refreshCsrf();
-        setAdminUser({ username, displayName: username === 'admin' ? 'مدیریت کل سیستم' : 'مدیر مهندسی و فروش', role: 'superadmin' });
+        if (result.mfaEnrollmentRequired) return { success: true, mfaEnrollmentRequired: true };
+        if (result.mfaRequired) return { success: true, mfaRequired: true };
+        if (!await loadCurrentAdmin()) return { success: false, error: 'نشست ورود ساخته شد اما اطلاعات مدیر خوانده نشد.' };
         return { success: true };
       }
       return { success: false, error: result.error || 'ورود ناموفق بود.' };
@@ -476,16 +585,63 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const verifyMfa = async (token: string) => {
     const tokenValue = csrfToken || await refreshCsrf();
     const response = await fetch('/api/auth/mfa/verify', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tokenValue }, body: JSON.stringify({ token }) });
-    const result = await response.json();
-    if (response.ok) { setAdminUser({ username: 'admin', displayName: 'مدیریت کل سیستم', role: 'superadmin' }); return { success: true }; }
+    const result = await response.json().catch(() => ({}));
+    if (response.ok && await loadCurrentAdmin()) return { success: true };
     return { success: false, error: result.error || 'کد MFA نامعتبر است.' };
+  };
+
+  const startMfaEnrollment = async () => {
+    try {
+      const tokenValue = csrfToken || await refreshCsrf();
+      const response = await fetch('/api/auth/mfa/enroll/setup', {
+        method: 'POST', credentials: 'include', headers: { 'X-CSRF-Token': tokenValue },
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) return { success: false, error: result.error || 'شروع MFA ناموفق بود.' };
+      return { success: true, secret: result.secret, uri: result.uri, recoveryCodes: result.recoveryCodes };
+    } catch {
+      return { success: false, error: 'ارتباط با سرور برقرار نشد.' };
+    }
+  };
+
+  const confirmMfaEnrollment = async (token: string) => {
+    try {
+      const tokenValue = csrfToken || await refreshCsrf();
+      const response = await fetch('/api/auth/mfa/enroll/confirm', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tokenValue },
+        body: JSON.stringify({ token }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok && await loadCurrentAdmin()) return { success: true };
+      return { success: false, error: result.error || 'کد MFA نامعتبر است.' };
+    } catch {
+      return { success: false, error: 'ارتباط با سرور برقرار نشد.' };
+    }
   };
 
   const logout = () => { void fetch('/api/auth/logout', { method: 'POST', credentials: 'include', headers: { 'X-CSRF-Token': csrfToken } }); setAdminUser(null); };
 
-  const changePassword = async (_oldPassword: string, _newPassword: string) => {
-    return { success: false, error: 'تغییر رمز فقط از طریق endpoint امن backend انجام می‌شود.' };
+  const changePassword = async (oldPassword: string, newPassword: string) => {
+    try {
+      const tokenValue = csrfToken || await refreshCsrf();
+      const response = await fetch('/api/auth/password', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tokenValue },
+        body: JSON.stringify({ oldPassword, newPassword }),
+      });
+      if (response.ok) {
+        setAdminUser(null);
+        return { success: true };
+      }
+      const result = await response.json().catch(() => ({}));
+      return { success: false, error: result.error || 'تغییر رمز ناموفق بود.' };
+    } catch {
+      return { success: false, error: 'ارتباط با سرور برقرار نشد.' };
+    }
   };
+
+  const canAccess = (section: AdminSection) => Boolean(adminUser?.isSuperadmin || adminUser?.permissions.includes(section));
 
   // Reset to Defaults
   const resetToDefaults = () => {
@@ -496,6 +652,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCategories(CATEGORIES_DATA as CategoryItem[]);
     setCompanyInfo(COMPANY_INFO as CompanyInfo);
     setHeroCms(DEFAULT_HERO_CMS);
+    setSiteLayout(DEFAULT_SITE_LAYOUT);
+    setPageContent(DEFAULT_PAGES_CMS);
     setAiConfig(DEFAULT_AI_CONFIG);
     setQuoteRequests(INITIAL_QUOTES);
     setConsultationRequests(INITIAL_CONSULTATIONS);
@@ -513,6 +671,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       categories,
       companyInfo,
       heroCms,
+      siteLayout,
+      pageContent,
       aiConfig,
       quoteRequests,
       consultationRequests,
@@ -530,6 +690,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (parsed.categories) setCategories(parsed.categories);
       if (parsed.companyInfo) setCompanyInfo(parsed.companyInfo);
       if (parsed.heroCms) setHeroCms(parsed.heroCms);
+      if (parsed.siteLayout) setSiteLayout(mergeSiteLayout(parsed.siteLayout));
+      if (parsed.pageContent) setPageContent(mergePagesCms(parsed.pageContent));
       if (parsed.aiConfig) setAiConfig(parsed.aiConfig);
       if (parsed.quoteRequests) setQuoteRequests(parsed.quoteRequests);
       if (parsed.consultationRequests) setConsultationRequests(parsed.consultationRequests);
@@ -571,6 +733,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateCompanyInfo,
         heroCms: shownHeroCms,
         updateHeroCms,
+        siteLayout,
+        updateSiteLayout,
+        pageContent,
+        updatePageContent,
         aiConfig,
         updateAiConfig,
         quoteRequests,
@@ -594,6 +760,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!adminUser,
         login,
         verifyMfa,
+        startMfaEnrollment,
+        confirmMfaEnrollment,
+        canAccess,
         hasAdminPassword,
         logout,
         changePassword,

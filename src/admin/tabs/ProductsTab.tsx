@@ -38,6 +38,11 @@ export const ProductsTab: React.FC = () => {
   });
 
   const [advantageInput, setAdvantageInput] = useState('');
+  const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Product, 'translations'>>;
+
+  const updateEnglish = (patch: Partial<Omit<Product, 'translations'>>) => {
+    setFormData({ ...formData, translations: { en: { ...englishDraft, ...patch } } });
+  };
 
   const openCreateModal = () => {
     setFormData({
@@ -49,6 +54,7 @@ export const ProductsTab: React.FC = () => {
       fullDescription: '',
       image: '/images/equipment-1.jpg',
       advantages: [],
+      status: 'draft',
       // Keep other unused required fields empty/default for TS interface
       shortDescription: '',
       applications: [],
@@ -73,6 +79,7 @@ export const ProductsTab: React.FC = () => {
     const categoryTitle = matchedCat ? matchedCat.title : 'سایر تجهیزات';
 
     const fullProduct: Product = {
+      ...(editingProduct || {}),
       id: formData.id || `prod-${Date.now()}`,
       code: formData.code || 'TY-PROD',
       name: formData.name,
@@ -83,10 +90,13 @@ export const ProductsTab: React.FC = () => {
       advantages: formData.advantages || [],
       
       // Preserve other fields if editing, else default
-      shortDescription: formData.fullDescription || '',
-      applications: editingProduct?.applications || [],
-      specs: editingProduct?.specs || [],
-      models: editingProduct?.models || [],
+      shortDescription: formData.shortDescription || editingProduct?.shortDescription || formData.fullDescription || '',
+      applications: formData.applications || editingProduct?.applications || [],
+      specs: formData.specs || editingProduct?.specs || [],
+      models: formData.models || editingProduct?.models || [],
+      isFeatured: formData.isFeatured ?? editingProduct?.isFeatured,
+      status: formData.status || editingProduct?.status || 'published',
+      translations: formData.translations || editingProduct?.translations,
     };
 
     if (isCreating) {
@@ -156,18 +166,6 @@ export const ProductsTab: React.FC = () => {
             ))}
           </select>
         </div>
-                    <div className="flex items-center gap-3 pt-6">
-                      <input
-                        type="checkbox"
-                        id="isFeatured"
-                        checked={formData.isFeatured || false}
-                        onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-900"
-                      />
-                      <label htmlFor="isFeatured" className="text-xs font-bold text-slate-300 select-none cursor-pointer">
-                        نمایش به عنوان محصول پرفروش (پیشنهاد ویژه در صفحه اصلی)
-                      </label>
-                    </div>
       </div>
 
       {/* Product List */}
@@ -180,6 +178,7 @@ export const ProductsTab: React.FC = () => {
                 <th className="py-3 px-4 font-bold">کد محصول</th>
                 <th className="py-3 px-4 font-bold">نام محصول</th>
                 <th className="py-3 px-4 font-bold">دسته‌بندی</th>
+                <th className="py-3 px-4 font-bold">وضعیت</th>
                 <th className="py-3 px-4 font-bold text-left">عملیات</th>
               </tr>
             </thead>
@@ -205,6 +204,11 @@ export const ProductsTab: React.FC = () => {
                   <td className="py-3 px-4 text-slate-400">
                     <span className="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-[10px]">
                       {product.categoryTitle}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className={`text-[10px] px-2 py-1 rounded-full ${product.status === 'draft' ? 'bg-slate-700 text-slate-200' : product.status === 'review' ? 'bg-amber-400/10 text-amber-200' : 'bg-emerald-400/10 text-emerald-300'}`}>
+                      {product.status === 'draft' ? 'پیش‌نویس' : product.status === 'review' ? 'در انتظار بررسی' : 'منتشر شده'}
                     </span>
                   </td>
                   <td className="py-3 px-4">
@@ -244,7 +248,7 @@ export const ProductsTab: React.FC = () => {
               ))}
               {filteredProducts.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-500 text-xs">
+                  <td colSpan={7} className="py-8 text-center text-slate-500 text-xs">
                     محصولی با این مشخصات یافت نشد
                   </td>
                 </tr>
@@ -327,6 +331,27 @@ export const ProductsTab: React.FC = () => {
                         ))}
                       </select>
                     </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 mb-1">وضعیت انتشار</label>
+                      <select
+                        value={formData.status || 'published'}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value as Product['status'] })}
+                        className="w-full bg-slate-800 border border-slate-700 focus:border-amber-400 rounded-xl px-3 py-2.5 text-xs text-white"
+                      >
+                        <option value="draft">پیش‌نویس</option>
+                        <option value="review">در انتظار بررسی</option>
+                        <option value="published">منتشر شده</option>
+                      </select>
+                    </div>
+                    <label className="flex items-center gap-2 self-end pb-2 text-xs font-bold text-slate-300 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.isFeatured || false}
+                        onChange={(event) => setFormData({ ...formData, isFeatured: event.target.checked })}
+                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-900"
+                      />
+                      محصول پرفروش در صفحه اصلی
+                    </label>
                   </div>
                 </div>
 
@@ -356,6 +381,37 @@ export const ProductsTab: React.FC = () => {
                     className="w-full bg-slate-800 border border-slate-700 focus:border-amber-400 rounded-xl px-3 py-2.5 text-xs text-white h-24 custom-scrollbar"
                     placeholder="توضیحات جامع درباره محصول و کاربرد آن بنویسید..."
                   />
+                </div>
+
+                <div className="bg-blue-500/5 p-5 rounded-2xl border border-blue-500/20 space-y-4" dir="ltr">
+                  <div dir="rtl">
+                    <h4 className="text-xs font-bold text-blue-200 flex items-center gap-1.5 mb-1">ترجمه انگلیسی محصول</h4>
+                    <p className="text-[11px] text-slate-500">با تکمیل این بخش، نسخه انگلیسی محصول از داخل پنل مدیریت می‌شود.</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">English product name</label>
+                    <input value={englishDraft.name || ''} onChange={(e) => updateEnglish({ name: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">English category title</label>
+                    <input value={englishDraft.categoryTitle || ''} onChange={(e) => updateEnglish({ categoryTitle: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">English short description</label>
+                    <textarea value={englishDraft.shortDescription || ''} onChange={(e) => updateEnglish({ shortDescription: e.target.value })} rows={2} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">English full description</label>
+                    <textarea value={englishDraft.fullDescription || ''} onChange={(e) => updateEnglish({ fullDescription: e.target.value })} rows={4} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">English advantages — one per line</label>
+                    <textarea value={(englishDraft.advantages || []).join('\n')} onChange={(e) => updateEnglish({ advantages: e.target.value.split('\n').map((item) => item.trim()).filter(Boolean) })} rows={3} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">English image alt text</label>
+                    <input value={englishDraft.imageAlt || ''} onChange={(e) => updateEnglish({ imageAlt: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
                 </div>
 
                 {/* بخش 4: ویژگی‌ها */}

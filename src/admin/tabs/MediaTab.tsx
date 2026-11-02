@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Image as ImageIcon, Copy, Check, Plus, ExternalLink, Trash2, X, Link2 } from '../../icons';
+import { Image as ImageIcon, Copy, Check, Plus, ExternalLink, Trash2, X, Link2, UploadCloud, AlertCircle } from '../../icons';
 import { useData } from '../../context/DataContext';
+import { deleteStoredImage, uploadImageFile } from '../mediaApi';
 
 export const MediaTab: React.FC = () => {
   const { mediaLibrary, addMedia, deleteMedia } = useData();
@@ -8,6 +9,9 @@ export const MediaTab: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newUrl, setNewUrl] = useState('');
   const [newTitle, setNewTitle] = useState('');
+  const [newFile, setNewFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleCopy = (url: string) => {
     navigator.clipboard.writeText(url);
@@ -15,8 +19,24 @@ export const MediaTab: React.FC = () => {
     setTimeout(() => setCopiedUrl(null), 2000);
   };
 
-  const handleAddMedia = (e: React.FormEvent) => {
+  const handleAddMedia = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    if (newFile) {
+      setUploading(true);
+      try {
+        const media = await uploadImageFile(newFile, newTitle || newFile.name);
+        addMedia(media);
+        setNewFile(null);
+        setNewTitle('');
+        setIsAdding(false);
+      } catch (uploadError: any) {
+        setError(uploadError?.message || 'آپلود تصویر ناموفق بود.');
+      } finally {
+        setUploading(false);
+      }
+      return;
+    }
     if (newUrl && newTitle) {
       addMedia({
         id: 'img-' + Date.now(),
@@ -27,6 +47,19 @@ export const MediaTab: React.FC = () => {
       setNewUrl('');
       setNewTitle('');
       setIsAdding(false);
+    } else {
+      setError('یک فایل تصویر انتخاب کنید یا آدرس تصویر و عنوان را وارد کنید.');
+    }
+  };
+
+  const handleDelete = async (asset: { id: string; url: string }) => {
+    if (!window.confirm('آیا از حذف این تصویر اطمینان دارید؟')) return;
+    setError('');
+    try {
+      await deleteStoredImage(asset.url);
+      deleteMedia(asset.id);
+    } catch (deleteError: any) {
+      setError(deleteError?.message || 'حذف تصویر ناموفق بود.');
     }
   };
 
@@ -52,6 +85,7 @@ export const MediaTab: React.FC = () => {
           <span>افزودن تصویر جدید</span>
         </button>
       </div>
+      {error && <div className="bg-rose-500/10 border border-rose-500/30 text-rose-200 p-3 rounded-2xl text-xs flex items-center gap-2"><AlertCircle className="w-4 h-4" />{error}</div>}
 
       {/* Grid of Images */}
       {mediaLibrary.length === 0 ? (
@@ -75,11 +109,7 @@ export const MediaTab: React.FC = () => {
                     <span>{copiedUrl === asset.url ? 'کپی شد!' : 'کپی آدرس تصویر'}</span>
                   </button>
                   <button
-                    onClick={() => {
-                      if (window.confirm('آیا از حذف این تصویر اطمینان دارید؟')) {
-                        deleteMedia(asset.id);
-                      }
-                    }}
+                    onClick={() => void handleDelete(asset)}
                     className="bg-red-500 text-white px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-lg transform scale-95 group-hover:scale-100 transition-transform w-full justify-center"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -136,12 +166,20 @@ export const MediaTab: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">آدرس اینترنتی تصویر (URL) *</label>
+                <label className="block text-xs font-bold text-slate-400 mb-1">آپلود از سیستم</label>
+                <div className="relative border border-dashed border-slate-700 rounded-xl p-4 bg-slate-950/40">
+                  <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => setNewFile(event.target.files?.[0] || null)} className="absolute inset-0 opacity-0 cursor-pointer" />
+                  <div className="flex items-center gap-2 text-xs text-slate-300"><UploadCloud className="w-4 h-4 text-amber-400" />{newFile ? newFile.name : 'JPEG، PNG، WebP یا AVIF تا ۸ مگابایت'}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-[11px] text-slate-500"><span className="h-px flex-1 bg-slate-800" />یا لینک خارجی<span className="h-px flex-1 bg-slate-800" /></div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">آدرس اینترنتی تصویر (URL)</label>
                 <div className="relative">
                   <Link2 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
                   <input
                     type="url"
-                    required
+                    required={!newFile}
                     dir="ltr"
                     value={newUrl}
                     onChange={e => setNewUrl(e.target.value)}
@@ -170,9 +208,10 @@ export const MediaTab: React.FC = () => {
                 </button>
                 <button
                   type="submit"
+                  disabled={uploading}
                   className="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-950 py-2.5 rounded-xl text-xs font-bold shadow-md transition-colors"
                 >
-                  افزودن به کتابخانه
+                  {uploading ? 'در حال آپلود…' : 'افزودن به کتابخانه'}
                 </button>
               </div>
             </form>

@@ -36,9 +36,10 @@ interface FooterProps {
   onOpenQuote: () => void;
   companyInfo: any;
   categories: any[];
+  layout?: { logoUrl?: string; aboutFa?: string; aboutEn?: string };
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, onOpenConsultation, onOpenQuote, companyInfo, categories }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, onOpenConsultation, onOpenQuote, companyInfo, categories, layout }) => {
   const navigation = [
     { title: t("صفحه اصلی"), path: '/' },
     { title: t("درباره شرکت"), path: '/about' },
@@ -51,6 +52,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
   
 
   const hq = companyInfo?.locations?.find(loc => loc.type === 'headquarter');
+  const companyName = isEn() ? (companyInfo?.nameEn || companyInfo?.nameFa) : (companyInfo?.nameFa || companyInfo?.nameEn);
 
   const currentYear = new Date().getFullYear().toLocaleString(isEn() ? 'en-US' : 'fa-IR', { useGrouping: false });
 
@@ -71,16 +73,16 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
           <div className="lg:col-span-4 flex flex-col">
             <div className="flex items-center gap-3 mb-6">
                <div className="h-14 flex items-center justify-center">
-                  <img src="/images/logo-mark.png" alt={t("طیوران صنعت پویا")} width={70} height={56} className="h-full w-auto object-contain" />
+                  <img src={layout?.logoUrl || "/images/logo-mark.png"} alt={t("طیوران صنعت پویا")} width={70} height={56} className="h-full w-auto object-contain" />
                </div>
                <div>
-                  <p className="text-xl font-black text-white tracking-tight">{companyInfo?.name}</p>
-                  <span className="text-xs text-amber-400 font-bold tracking-widest uppercase">{companyInfo?.nameEn}</span>
+                  <p className="text-xl font-black text-white tracking-tight">{companyName}</p>
+                  {!isEn() && <span className="text-xs text-amber-400 font-bold tracking-widest uppercase">{companyInfo?.nameEn}</span>}
                </div>
             </div>
             <p className="text-slate-300 text-sm leading-relaxed font-medium mb-8 max-w-sm">
               
-              {t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.")}
+              {isEn() ? (layout?.aboutEn || t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.")) : (layout?.aboutFa || t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند."))}
             </p>
             
             {/* Social Links */}
@@ -232,7 +234,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
         {/* Copyright & Credits */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-300">
           <p>
-            © {currentYear} {" "}{t("طراحی، توسعه و تمامی حقوق این وبسایت متعلق به شرکت فناوری و نوآوری شناخت هزارتو است")}{" "}
+            © {currentYear} {" "}{tr("طراحی، توسعه و تمامی حقوق این وبسایت متعلق به شرکت فناوری و نوآوری شناخت هزارتو است")}{" "}
           </p>
           <div className="flex items-center gap-4">
              <span>{t("قوانین و مقررات")}</span>
