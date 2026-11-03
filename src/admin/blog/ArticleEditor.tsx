@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MAGAZINE_TOPICS } from "../../seo/topics";
 import {
   AlertCircle,
@@ -25,6 +25,9 @@ import {
   normalizeSlug,
 } from "./contentBlocks";
 import { articleSeoChecks, seoScore } from "./seoChecklist";
+import { importHtmlArticle, importPlainArticle, type ImportedArticle } from "./articleImport";
+import { uploadImageFile } from "../mediaApi";
+import { useData } from "../../context/DataContext";
 
 const CATEGORIES = [
   { value: "technical-guide", label: "راهنمای فنی مهندسی" },
@@ -51,7 +54,7 @@ interface ArticleEditorProps {
   products: Product[];
   services: Service[];
   onCancel: () => void;
-  onSave: (article: Article) => void;
+  onSave: (article: Article) => Promise<void>;
 }
 
 function todayIso(): string {
@@ -70,9 +73,10 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
   onCancel,
   onSave,
 }) => {
+  const { addMedia } = useData();
   const [title, setTitle] = useState(initial?.title || "");
   const [slug, setSlug] = useState(initial?.id || "");
-  const [status, setStatus] = useState<Article["status"]>(initial?.status || "published");
+  const [status, setStatus] = useState<Article["status"]>(initial ? initial.status || "published" : "draft");
   const [category, setCategory] = useState(initial?.category || "technical-guide");
   const [summary, setSummary] = useState(initial?.summary || "");
   const [seoTitle, setSeoTitle] = useState(initial?.seoTitle || "");
@@ -111,6 +115,89 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
   const [productQuery, setProductQuery] = useState("");
   const [preview, setPreview] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [pasteText, setPasteText] = useState("");
+  const [imported, setImported] = useState<ImportedArticle | null>(null);
+  const [importError, setImportError] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [replaceMeta, setReplaceMeta] = useState(!initial);
+  const [importSuccess, setImportSuccess] = useState("");
+  const pastedFiles = useRef(new Map<string, File>());
+
+  useEffect(() => () => {
+    for (const url of pastedFiles.current.keys()) URL.revokeObjectURL(url);
+  }, []);
+
+  const analyzePaste = (text: string, html = "", files: File[] = []) => {
+    setImportError("");
+    setImportSuccess("");
+    if (text.length > 300_000 || html.length > 12_000_000) {
+      setImported(null);
+      setImportError("حجم متن چسبانده‌شده زیاد است. مقاله را در چند بخش وارد کنید.");
+      return;
+    }
+    for (const url of pastedFiles.current.keys()) URL.revokeObjectURL(url);
+    pastedFiles.current.clear();
+    const rich = html ? importHtmlArticle(html) : null;
+    const useRich = Boolean(rich && (rich.title || rich.blocks.length > 1 || rich.blocks.some((block) => block.type !== "p")));
+    const result = useRich && rich ? rich : importPlainArticle(text);
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+    const imageCount = result.blocks.filter((block) => block.type === "img").length;
+    const pairAllImages = imageCount > 0 && imageFiles.length === imageCount;
+    let fileIndex = 0;
+    const blocksWithFiles = result.blocks.map((block) => {
+      if (block.type !== "img" || (!pairAllImages && block.src) || !imageFiles[fileIndex]) return block;
+      const file = imageFiles[fileIndex++];
+      const url = URL.createObjectURL(file);
+      pastedFiles.current.set(url, file);
+      return { ...block, src: url, alt: block.alt || file.name.replace(/\.[^.]+$/, "") };
+    });
+    const imagesWithoutPosition = !blocksWithFiles.some((block) => block.type === "img") && imageFiles.length > 0;
+    if (imagesWithoutPosition) {
+      for (const file of imageFiles) {
+        const url = URL.createObjectURL(file);
+        pastedFiles.current.set(url, file);
+        blocksWithFiles.push({ id: createBlock("img").id, type: "img", src: url, alt: file.name.replace(/\.[^.]+$/, ""), caption: "" });
+      }
+    }
+    setImported({ ...result, blocks: blocksWithFiles, warnings: [
+      ...(pairAllImages ? result.warnings.filter((warning) => !warning.startsWith("یک تصویرِ چسبانده‌شده")) : result.warnings),
+      ...(imagesWithoutPosition ? ["جای تصویرها در متن کلیپ‌بورد مشخص نبود؛ به انتهای مقاله افزوده شدند و می‌توانید بلوک‌ها را جابه‌جا کنید."] : []),
+    ] });
+    if (!blocksWithFiles.length && !result.title) setImportError("تیتر یا پاراگرافی در متن پیدا نشد. متن مقاله را در این کادر بچسبانید.");
+  };
+
+  const applyPaste = async (mode: "replace" | "append") => {
+    if (!imported?.blocks.length) return;
+    setImporting(true);
+    setImportError("");
+    try {
+      const ready: EditorBlock[] = [];
+      for (const block of imported.blocks) {
+        if (block.type !== "img" || !(block.src.startsWith("data:image/") || block.src.startsWith("blob:"))) { ready.push(block); continue; }
+        const file = pastedFiles.current.get(block.src) || await fetch(block.src).then(async (response) => {
+          if (!response.ok) throw new Error("خواندن تصویر چسبانده‌شده ناموفق بود.");
+          const blob = await response.blob();
+          return new File([blob], `article-image.${blob.type.split("/")[1] || "png"}`, { type: blob.type });
+        });
+        const media = await uploadImageFile(file, block.alt || "تصویر مقاله");
+        addMedia(media);
+        ready.push({ ...block, src: media.url });
+      }
+      setBlocks((current) => mode === "replace" ? ready : [...current.filter((block) => block.type !== "p" || block.text.trim()), ...ready]);
+      if (imported.title && (replaceMeta || !title.trim())) setTitle(imported.title);
+      if (imported.summary && (replaceMeta || !summary.trim())) setSummary(imported.summary);
+      setImported(null);
+      setPasteText("");
+      for (const url of pastedFiles.current.keys()) URL.revokeObjectURL(url);
+      pastedFiles.current.clear();
+      setImportSuccess(`${ready.length.toLocaleString("fa-IR")} بلوک وارد شد. پیش‌نمایش را بررسی کنید و سپس مقاله را ذخیره کنید.`);
+    } catch (cause) {
+      setImportError(cause instanceof Error ? cause.message : "ورود مقاله ناموفق بود.");
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const draftArticle = useMemo<Partial<Article>>(
     () => ({
@@ -172,7 +259,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
     });
   };
 
-  const handleSave = (event: React.FormEvent) => {
+  const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
     const nextSlug = normalizeSlug(slug) || `article-${Date.now()}`;
     if (!title.trim()) {
@@ -283,7 +370,15 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       aliases: aliases.size ? [...aliases] : undefined,
       translations: englishHasContent ? { en: englishTranslation } : undefined,
     };
-    onSave(article);
+    setSaving(true);
+    setError("");
+    try {
+      await onSave(article);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "ذخیرهٔ مقاله در سرور انجام نشد. دوباره تلاش کنید.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const productMatches = products
@@ -312,9 +407,9 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
           <button type="button" onClick={() => setPreview((value) => !value)} className="px-3 py-2 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold">
             {preview ? "ویرایش" : "پیش‌نمایش"}
           </button>
-          <button type="submit" className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black inline-flex items-center gap-1.5">
+          <button type="submit" disabled={saving || importing || Boolean(imported)} className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 text-xs font-black inline-flex items-center gap-1.5">
             <Save className="w-4 h-4" />
-            ذخیره
+            {saving ? "در حال ذخیره…" : "ذخیره"}
           </button>
         </div>
       </div>
@@ -351,6 +446,55 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
               <p className="text-[11px] text-amber-300">آدرس قبلی به همین نامک جدید منتقل می‌شود.</p>
             )}
           </div>
+
+          {!preview && (
+            <section className="bg-slate-900 border border-amber-400/30 rounded-3xl p-4 sm:p-5 space-y-3">
+              <div>
+                <h3 className="text-sm font-black text-white">چسباندن کل مقاله</h3>
+                <p className="text-[11px] text-slate-400 mt-1">متن را از Word، Google Docs یا Markdown اینجا بچسبانید. تیتر، تیترهای میانی، پاراگراف‌ها، فهرست‌ها، جدول، تصویر و کپشن به بلوک‌های قابل ویرایش تبدیل می‌شوند. تصاویرِ همراه کلیپ‌بورد هنگام اعمال در رسانه‌های سایت آپلود می‌شوند.</p>
+              </div>
+              <textarea
+                value={pasteText}
+                onChange={(event) => { setPasteText(event.target.value); setImported(null); setImportSuccess(""); }}
+                onPaste={(event) => {
+                  event.preventDefault();
+                  const text = event.clipboardData.getData("text/plain");
+                  const html = event.clipboardData.getData("text/html");
+                  setPasteText(text);
+                  analyzePaste(text, html, Array.from(event.clipboardData.files));
+                }}
+                rows={5}
+                dir="auto"
+                placeholder={"عنوان مقاله\n\n## تیتر بخش اول\nمتن پاراگراف...\n\n![متن جایگزین](/media/image.webp \"کپشن تصویر\")"}
+                className={fieldClass + " leading-7 resize-y"}
+              />
+              <button type="button" onClick={() => analyzePaste(pasteText)} disabled={!pasteText.trim()} className="rounded-xl bg-slate-800 disabled:opacity-50 px-3 py-2 text-xs font-bold text-slate-200">تحلیل متن واردشده</button>
+              {importError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-200">{importError}</p>}
+              {importSuccess && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-200">{importSuccess}</p>}
+              {imported && (imported.title || imported.blocks.length > 0) && (
+                <div className="rounded-2xl border border-slate-700 bg-slate-950/60 p-4 space-y-3">
+                  <div className="flex flex-wrap gap-3 text-[11px] text-slate-300">
+                    <span>{imported.blocks.length.toLocaleString("fa-IR")} بلوک</span>
+                    <span>{imported.blocks.filter((block) => block.type === "h2" || block.type === "h3").length.toLocaleString("fa-IR")} تیتر میانی</span>
+                    <span>{imported.blocks.filter((block) => block.type === "img").length.toLocaleString("fa-IR")} تصویر</span>
+                  </div>
+                  {imported.title && <p className="text-sm font-black text-white">عنوان: {imported.title}</p>}
+                  {imported.summary && <p className="text-xs text-slate-400 leading-6">چکیدهٔ پیشنهادی: {imported.summary}</p>}
+                  <div className="max-h-48 overflow-y-auto space-y-1 text-xs text-slate-300">
+                    {imported.blocks.slice(0, 30).map((block) => <p key={block.id} className="truncate">{block.type === "h2" ? "تیتر ۲: " : block.type === "h3" ? "تیتر ۳: " : block.type === "img" ? "تصویر: " : block.type === "ul" ? "فهرست: " : block.type === "table" ? "جدول: " : "پاراگراف: "}{block.type === "ul" ? block.items.join("، ") : block.type === "img" ? block.caption || block.alt || (block.src.startsWith("data:") || block.src.startsWith("blob:") ? "تصویر چسبانده‌شده" : block.src) : block.type === "table" ? block.source.split("\n")[0] : "text" in block ? block.text : ""}</p>)}
+                    {imported.blocks.length > 30 && <p className="text-slate-500">و {imported.blocks.length - 30} بلوک دیگر…</p>}
+                  </div>
+                  {imported.warnings.map((warning, index) => <p key={index} className="text-[11px] text-amber-200">{warning}</p>)}
+                  <label className="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" checked={replaceMeta} onChange={(event) => setReplaceMeta(event.target.checked)} /> عنوان و چکیدهٔ فعلی نیز با متن واردشده جایگزین شوند</label>
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" disabled={importing || !imported.blocks.length} onClick={() => void applyPaste("replace")} className="rounded-xl bg-amber-400 disabled:opacity-50 px-4 py-2 text-xs font-black text-slate-950">{importing ? "در حال آپلود تصاویر…" : "جایگزینی بلوک‌های مقاله"}</button>
+                    <button type="button" disabled={importing || !imported.blocks.length} onClick={() => void applyPaste("append")} className="rounded-xl bg-slate-800 disabled:opacity-50 px-4 py-2 text-xs font-bold text-slate-200">افزودن به انتهای مقاله</button>
+                  </div>
+                  <p className="text-[11px] text-slate-500">ابتدا بلوک‌ها را اعمال کنید؛ سپس دکمهٔ ذخیرهٔ مقاله فعال می‌شود.</p>
+                </div>
+              )}
+            </section>
+          )}
 
           {preview ? (
             <article className="bg-white text-slate-800 rounded-3xl p-6 sm:p-8 space-y-4">
@@ -619,7 +763,8 @@ const BlockFields: React.FC<{ block: EditorBlock; onChange: (block: EditorBlock)
     return (
       <div className="space-y-2">
         <ImagePicker label="تصویر داخل متن" value={block.src} onChange={(src) => onChange({ ...block, src })} />
-        <input value={block.alt} onChange={(event) => onChange({ ...block, alt: event.target.value })} placeholder="متن جایگزین، الزامی برای سئو" className={fieldClass} />
+        <input value={block.alt} onChange={(event) => onChange({ ...block, alt: event.target.value })} placeholder="متن جایگزین تصویر برای سئو" className={fieldClass} />
+        <input value={block.caption} onChange={(event) => onChange({ ...block, caption: event.target.value })} placeholder="کپشن زیر تصویر (اختیاری)" className={fieldClass} />
       </div>
     );
   }
@@ -657,7 +802,7 @@ const PreviewBlock: React.FC<{ block: EditorBlock }> = ({ block }) => {
     return (
       <figure>
         <img src={block.src} alt={block.alt} className="w-full rounded-2xl max-h-80 object-cover" />
-        {block.alt && <figcaption className="text-center text-xs text-slate-500 mt-1">{block.alt}</figcaption>}
+        {block.caption && <figcaption className="text-center text-xs text-slate-500 mt-1">{block.caption}</figcaption>}
       </figure>
     );
   }

@@ -476,7 +476,7 @@ function articleHtml(article: Article, products: Product[] = []): string {
       if (block.type === "ul") return `<ul>${block.items.map((item) => `<li>${inlineToHtml(item)}</li>`).join("")}</ul>`;
       if (block.type === "img") {
         if (!isSafeImageSrc(block.src)) return "";
-        return `<figure><img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.alt)}" /><figcaption>${escapeHtml(block.alt)}</figcaption></figure>`;
+        return `<figure><img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.alt)}" />${(block.caption ?? block.alt) ? `<figcaption>${escapeHtml(block.caption ?? block.alt)}</figcaption>` : ""}</figure>`;
       }
       if (block.type === "products") {
         const cards = resolveProductCards(block.ids, products);

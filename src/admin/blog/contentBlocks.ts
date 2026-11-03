@@ -6,7 +6,7 @@ export type EditorBlock =
   | { id: string; type: "h2"; text: string }
   | { id: string; type: "h3"; text: string }
   | { id: string; type: "ul"; items: string[] }
-  | { id: string; type: "img"; src: string; alt: string }
+  | { id: string; type: "img"; src: string; alt: string; caption: string }
   | { id: string; type: "cta"; label: string; href: string }
   | { id: string; type: "products"; ids: string }
   | { id: string; type: "table"; source: string };
@@ -21,7 +21,7 @@ export function createBlockId(): string {
 export function createBlock(type: EditorBlock["type"]): EditorBlock {
   const id = createBlockId();
   if (type === "ul") return { id, type, items: [""] };
-  if (type === "img") return { id, type, src: "", alt: "" };
+  if (type === "img") return { id, type, src: "", alt: "", caption: "" };
   if (type === "cta") return { id, type, label: "درخواست مشاوره", href: "/contact" };
   if (type === "table") return { id, type, source: "ستون ۱ | ستون ۲\nمقدار | مقدار" };
   if (type === "h2") return { id, type, text: "" };
@@ -35,7 +35,7 @@ export function contentToBlocks(content: string[] | undefined): EditorBlock[] {
   return parsed.map((block) => {
     const id = createBlockId();
     if (block.type === "ul") return { id, type: "ul", items: block.items.length ? [...block.items] : [""] };
-    if (block.type === "img") return { id, type: "img", src: block.src, alt: block.alt };
+    if (block.type === "img") return { id, type: "img", src: block.src, alt: block.alt, caption: block.caption ?? block.alt };
     if (block.type === "cta") return { id, type: "cta", label: block.label, href: block.href };
     if (block.type === "products") return { id, type: "products", ids: block.ids.join(",") };
     if (block.type === "table") {
@@ -84,7 +84,7 @@ export function blocksToContent(blocks: EditorBlock[]): string[] {
         if (item.trim()) lines.push(`- ${item.trim()}`);
       }
     } else if (block.type === "img" && isSafeImageSrc(block.src)) {
-      lines.push(`[IMG|${markerSafe(block.src)}|${markerSafe(block.alt) || "تصویر مقاله"}]`);
+      lines.push(`[IMG|${markerSafe(block.src)}|${markerSafe(block.alt) || "تصویر مقاله"}|${markerSafe(block.caption)}]`);
     } else if (block.type === "cta" && block.label.trim() && isSafeHref(block.href)) {
       lines.push(`[CTA|${markerSafe(block.label)}|${markerSafe(block.href)}]`);
     } else if (block.type === "products") {

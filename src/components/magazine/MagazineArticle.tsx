@@ -118,7 +118,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
       return (
         <div key={idx} className="my-10 rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-200 bg-white">
           <LazyImage src={block.src} alt={block.alt} className="w-full min-h-[250px] md:min-h-[400px]" imgClassName="w-full h-auto object-cover max-h-[600px]" />
-          {block.alt && <p className="text-center text-sm text-slate-500 py-3 font-medium bg-slate-50">{block.alt}</p>}
+          {(block.caption ?? block.alt) && <p className="text-center text-sm text-slate-500 py-3 font-medium bg-slate-50">{block.caption ?? block.alt}</p>}
         </div>
       );
     }

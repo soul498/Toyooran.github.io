@@ -71,6 +71,7 @@ interface DataContextType {
   addArticle: (article: Article) => void;
   updateArticle: (id: string, article: Partial<Article>) => void;
   deleteArticle: (id: string) => void;
+  saveArticleRecord: (article: Article, previousId?: string) => Promise<void>;
 
   // Categories
   categories: CategoryItem[];
@@ -508,6 +509,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const deleteArticle = (id: string) => {
     setArticles((prev) => prev.filter((article) => article.id !== id));
   };
+  const saveArticleRecord = async (article: Article, previousId?: string) => {
+    const next = [article, ...articles.filter((item) => item.id !== article.id && item.id !== previousId)];
+    await persistAdminState('articles', next);
+    setArticles(next);
+  };
 
   // Category CRUD
   const addCategory = (category: CategoryItem) => {
@@ -737,6 +743,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addArticle,
         updateArticle,
         deleteArticle,
+        saveArticleRecord,
         categories: shownCategories,
         addCategory,
         updateCategory,

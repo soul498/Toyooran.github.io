@@ -3,7 +3,7 @@ export type ArticleBlock =
   | { type: "h3"; text: string }
   | { type: "p"; text: string }
   | { type: "ul"; items: string[] }
-  | { type: "img"; src: string; alt: string }
+  | { type: "img"; src: string; alt: string; caption?: string }
   | { type: "cta"; label: string; href: string }
   | { type: "products"; ids: string[] }
   | { type: "table"; headers: string[]; rows: string[][] };
@@ -50,9 +50,9 @@ export function articleBlocks(content: string[]): ArticleBlock[] {
       continue;
     }
 
-    const img = text.match(/^\[IMG\|([^|]+)\|([^\]]+)\]$/);
+    const img = text.match(/^\[IMG\|([^|]+)\|([^|\]]+)(?:\|([^\]]*))?\]$/);
     if (img) {
-      blocks.push({ type: "img", src: img[1], alt: img[2] });
+      blocks.push({ type: "img", src: img[1], alt: img[2], caption: img[3] });
       i += 1;
       continue;
     }

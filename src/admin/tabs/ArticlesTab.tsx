@@ -24,7 +24,7 @@ const CATEGORIES = [
 ];
 
 export const ArticlesTab: React.FC = () => {
-  const { articles, addArticle, updateArticle, deleteArticle, allProducts: products, services } = useData();
+  const { articles, saveArticleRecord, deleteArticle, allProducts: products, services } = useData();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -46,14 +46,9 @@ export const ArticlesTab: React.FC = () => {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const saveArticle = (article: Article) => {
+  const saveArticle = async (article: Article) => {
     const previous = editing !== "new" && editing ? editing : null;
-    if (!previous) addArticle(article);
-    else if (previous.id === article.id) updateArticle(previous.id, article);
-    else {
-      deleteArticle(previous.id);
-      addArticle(article);
-    }
+    await saveArticleRecord(article, previous?.id);
     setEditing(null);
   };
 
