@@ -5,7 +5,7 @@ import { SEED_ARTICLES } from "../src/data/seedArticles";
 import { isPublicProduct } from "../src/data/removedProducts";
 import { isPublicArticle } from "../src/seo/articleMeta";
 import { productSeoSlug, publicProductPath, seoRedirectFor, type SeoCatalog } from "../src/seo/resolveSeo";
-import { PRODUCT_SLUG_BY_ID } from "../src/seo/productUrls";
+import { PRODUCT_SLUG_BY_ID, LEGACY_COMPETITOR_PRODUCT_SLUGS, isLegacyCompetitorProductSlug } from "../src/seo/productUrls";
 import { DISABLED_PAGE_REDIRECT, isDisabledPagePath, rewriteDisabledHref } from "../src/data/disabledPages";
 import { localizeJsonLd, resolveSeoForPath } from "../src/seo/localizeSeo";
 import { CANONICAL_ORIGIN } from "../src/seo/resolveSeo";
@@ -39,23 +39,23 @@ for (const [id, slug] of Object.entries(PRODUCT_SLUG_BY_ID)) {
   assert.equal(seoRedirectFor(`/products/${slug}`, catalog), null, `${id} new slug is canonical`);
 }
 
-const oldSlugs: Record<string, string> = {
-  "ts-012": "دوزاترون-سیستم-تزریق-دارو-مرغداری-کارنوتک-ts-012",
-  "ts-019": "سیستم-اتوماسیون-مرغداری-کارنو-ts-019",
-  "ts-057": "جت-هیتر-کارنو-ts-057",
-  "ts-071": "سیستم-تهویه-کارنو-ts-071",
-  "ts-072": "ایر-میکسر-کارنوتک-ts-072",
-  "ts-090": "بشقاب-دانخوری-چیکن-کارنوتک-–-قابل-استفاده-از-یکروزگی-ts-090",
-  "ts-108": "سیستم-مه-پاش-کارنو-ts-108",
-  "ts-110": "آبخوری-نیپل-کارنو-–-نیپل-های-تمام-استیل-ts-110",
-  "ts-111": "دریچه-اینلت-کارنو-ts-111",
-};
+const oldSlugs = LEGACY_COMPETITOR_PRODUCT_SLUGS;
 for (const [id, old] of Object.entries(oldSlugs)) {
   const dest = seoRedirectFor(`/products/${old}`, catalog);
   assert.equal(dest, `/products/${PRODUCT_SLUG_BY_ID[id]}`, `${id} old slug 301`);
   assert.ok(!dest.includes("کارنو"), `${id} destination must not contain کارنو`);
-  assert.equal(seoRedirectFor(`/products/${old}`, catalog), `/products/${PRODUCT_SLUG_BY_ID[id]}`);
+  assert.equal(isLegacyCompetitorProductSlug(old), true, `${id} marked as legacy competitor slug`);
 }
+
+// The server composes this: /en/<legacy-slug> → 301 /en/products (one hop).
+for (const old of Object.values(LEGACY_COMPETITOR_PRODUCT_SLUGS)) {
+  assert.equal(isLegacyCompetitorProductSlug(old), true);
+  assert.equal(isLegacyCompetitorProductSlug(encodeURIComponent(old)), true);
+}
+assert.equal(isLegacyCompetitorProductSlug("جت-هیتر-ts-057"), false);
+assert.equal(isLegacyCompetitorProductSlug("jet-heater"), false);
+assert.equal(isLegacyCompetitorProductSlug(encodeURIComponent(encodeURIComponent("جت-هیتر-کارنو-ts-057"))), true);
+
 
 assert.equal(DISABLED_PAGE_REDIRECT, "/services");
 for (const path of ["/services/poultry-hall-fitout", "/services/srv-turnkey-shed", "/services/srv-consulting-efficiency", "/en/services/poultry-hall-fitout"]) {

@@ -17,6 +17,41 @@ export const PRODUCT_SLUG_BY_ID: Readonly<Record<string, string>> = {
   "ts-111": "دریچه-اینلت-دوجداره-فوم‌دار-30-در-60-ts-111",
 };
 
+
+/**
+ * Previous public slugs that included کارنو / کارنوتک. Persian URLs still 301
+ * to the current canonical slug; the same paths under /en 301 in one hop to
+ * /en/products (those product pages are not in the English catalog).
+ */
+export const LEGACY_COMPETITOR_PRODUCT_SLUGS: Readonly<Record<string, string>> = {
+  "ts-012": "دوزاترون-سیستم-تزریق-دارو-مرغداری-کارنوتک-ts-012",
+  "ts-019": "سیستم-اتوماسیون-مرغداری-کارنو-ts-019",
+  "ts-057": "جت-هیتر-کارنو-ts-057",
+  "ts-071": "سیستم-تهویه-کارنو-ts-071",
+  "ts-072": "ایر-میکسر-کارنوتک-ts-072",
+  "ts-090": "بشقاب-دانخوری-چیکن-کارنوتک-–-قابل-استفاده-از-یکروزگی-ts-090",
+  "ts-108": "سیستم-مه-پاش-کارنو-ts-108",
+  "ts-110": "آبخوری-نیپل-کارنو-–-نیپل-های-تمام-استیل-ts-110",
+  "ts-111": "دریچه-اینلت-کارنو-ts-111",
+};
+
+const COMPETITOR_IN_SLUG_RE = /کارنوتک|کارنو|carnotech|karnotech|(?:^|[^a-z0-9])(?:carno|karno)(?:[^a-z0-9]|$)/i;
+
+export function isLegacyCompetitorProductSlug(slug: string): boolean {
+  let decoded = slug;
+  for (let i = 0; i < 3; i++) {
+    try {
+      const next = decodeURIComponent(decoded);
+      if (next === decoded) break;
+      decoded = next;
+    } catch {
+      break;
+    }
+  }
+  if (Object.values(LEGACY_COMPETITOR_PRODUCT_SLUGS).includes(decoded)) return true;
+  return COMPETITOR_IN_SLUG_RE.test(decoded);
+}
+
 /**
  * Pretty (and short-id) product paths. If the product is in the public catalog,
  * the request 200s on the canonical slug or 301s to it; otherwise 301 to the

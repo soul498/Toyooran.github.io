@@ -187,7 +187,16 @@ explicit = {
     "/services/srv-consulting-efficiency": (301, "/services"),
     "/en/services/poultry-hall-fitout": (301, "/en/services"),
     "/products/جت-هیتر-کارنو-ts-057": (301, "/products/جت-هیتر-ts-057"),
-    "/en/products/جت-هیتر-کارنو-ts-057": (301, "/en/products/جت-هیتر-ts-057"),
+    "/en/products/جت-هیتر-کارنو-ts-057": (301, "/en/products"),
+    "/en/products/دوزاترون-سیستم-تزریق-دارو-مرغداری-کارنوتک-ts-012": (301, "/en/products"),
+    "/en/products/سیستم-اتوماسیون-مرغداری-کارنو-ts-019": (301, "/en/products"),
+    "/en/products/سیستم-تهویه-کارنو-ts-071": (301, "/en/products"),
+    "/en/products/ایر-میکسر-کارنوتک-ts-072": (301, "/en/products"),
+    "/en/products/بشقاب-دانخوری-چیکن-کارنوتک-–-قابل-استفاده-از-یکروزگی-ts-090": (301, "/en/products"),
+    "/en/products/سیستم-مه-پاش-کارنو-ts-108": (301, "/en/products"),
+    "/en/products/آبخوری-نیپل-کارنو-–-نیپل-های-تمام-استیل-ts-110": (301, "/en/products"),
+    "/en/products/دریچه-اینلت-کارنو-ts-111": (301, "/en/products"),
+
 }
 # encode paths for request
 def enc(path):
@@ -201,7 +210,7 @@ def enc_path(path):
 
 explicit_ok = []
 for path, (want, dest) in explicit.items():
-    code, loc, final, _, _ = request(enc_path(path), follow=False)
+    code, loc, final, _, _ = request(path, follow=False)
     locp = local_path(loc)
     if code != want or (dest and norm(locp) != norm(dest)):
         errors.append(f"EXPLICIT {path} got {code} {locp}, want {want} {dest}")

@@ -14,6 +14,7 @@ import {
   isPrivateAppPath,
 } from "../src/seo/resolveSeo";
 import { localizeBodyHrefs, localizeJsonLd } from "../src/seo/localizeSeo";
+import { isLegacyCompetitorProductSlug } from "../src/seo/productUrls";
 
 export { CANONICAL_ORIGIN, stripQuery, canonicalPath, resolveSeo, seoRedirectFor, llmsTxt, isPrivateAppPath };
 
@@ -86,8 +87,17 @@ export function englishFallbackRedirect(pathname: string): string | null {
 /** Persian paths of the seo redirects, mapped for /en too. */
 export function seoRedirectForAnyLang(pathname: string, catalog: ReturnType<typeof loadSeoCatalog>): string | null {
   if (pathLang(pathname) !== "en") return seoRedirectFor(pathname, catalog);
-  const r = seoRedirectFor(stripLangPrefix(pathname), catalog);
-  return r ? withLang("en", () => localizeHref(r)) : null;
+  const neutral = stripLangPrefix(pathname);
+  const productSlug = neutral.split("/").filter(Boolean);
+  // Old competitor-name slugs under /en must 301 in a single hop to the listing,
+  // not 301 to the new Persian slug and then 302 because there is no English page.
+  if (productSlug[0] === "products" && productSlug[1] && isLegacyCompetitorProductSlug(productSlug[1])) {
+    return `${EN_PREFIX}/products`;
+  }
+  const r = seoRedirectFor(neutral, catalog);
+  if (!r) return null;
+  const localized = withLang("en", () => localizeHref(r));
+  return englishFallbackRedirect(localized) || localized;
 }
 
 function deferRenderBlockingCss(html: string): string {
