@@ -2,6 +2,7 @@
 
 ## 2026-11-10
 
+- Restore ts-114 and ts-115 product photos under the logo rules: feeder uses detail_01_trough and insitu_01 (feeder-pouya-trough / feeder-pouya-hall-installation); heater does not use jet-heater-v2 (IMACHINE) and falls back to the logo-free heating-category image /images/hero-final-1.jpg. Public JSON-LD for these two omits sku.
 - SEO 404 and redirect fixes: restore ts-114 and ts-115 as public products (`/products/pouya-butterfly-feeder`, `/products/jet-heater`); 301 disabled `/services/*` pages to `/services` (and `/en/services`); rename nine کارنو/کارنوتک product slugs with 301s from the old URLs; localize English canonical, hreflang and JSON-LD `@id` on the client as well as the server.
 
 

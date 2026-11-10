@@ -68,9 +68,13 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
     for slug in $disabled_slugs; do
       if grep -q "/services/${slug}" <<<"$sitemap"; then fail "sitemap lists disabled page /services/${slug}"; fi
       off_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'NR==1{print $2}')"
-      test "$off_code" = "302" || fail "disabled /services/${slug} must 302, got ${off_code}"
+      test "$off_code" = "301" || fail "disabled /services/${slug} must 301, got ${off_code}"
       off_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
-      test "$off_loc" = "https://www.toyooran.com/" || fail "disabled /services/${slug} must redirect home, got ${off_loc}"
+      test "$off_loc" = "https://www.toyooran.com/services" || fail "disabled /services/${slug} must redirect to /services, got ${off_loc}"
+      en_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/en/services/${slug}" | awk 'NR==1{print $2}')"
+      test "$en_code" = "301" || fail "disabled /en/services/${slug} must 301, got ${en_code}"
+      en_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000/en/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
+      test "$en_loc" = "https://www.toyooran.com/en/services" || fail "disabled /en/services/${slug} must redirect to /en/services, got ${en_loc}"
       if grep -q "href=\"/services/${slug}" <<<"$html"; then fail "homepage still links disabled /services/${slug}"; fi
       if grep -q "/services/${slug}" <<<"$(curl_id http://127.0.0.1:3000/llms.txt)"; then fail "llms.txt lists disabled /services/${slug}"; fi
     done
@@ -118,7 +122,9 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   grep -q 'font-src' server.ts || fail "CSP font-src missing"
   redir="$(curl -sI --max-time 5 http://127.0.0.1:3000/services/srv-turnkey-shed | awk 'NR==1{print $2}')"
   if [ "$card_pages_off" = 1 ]; then
-    test "$redir" = "302" || fail "disabled service alias must 302, got ${redir}"
+    test "$redir" = "301" || fail "disabled service alias must 301, got ${redir}"
+    alias_loc="$(curl -sI --max-time 5 http://127.0.0.1:3000/services/srv-turnkey-shed | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
+    test "$alias_loc" = "https://www.toyooran.com/services" || fail "disabled service alias must redirect to /services, got ${alias_loc}"
   else
     test "$redir" = "301" || fail "service alias must 301"
   fi

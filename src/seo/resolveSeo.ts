@@ -888,6 +888,7 @@ ${catServices ? `<h2>${t("خدمات مرتبط")}</h2><ul>${catServices}</ul>` 
         description: product.shortDescription || product.fullDescription,
         h1: product.name,
         ogType: "product",
+        ogImage: imageAbs,
         lastmod: collectionDay(catalog, "products"),
         body: productBody(product, catalog),
         jsonLd: [
@@ -895,7 +896,7 @@ ${catServices ? `<h2>${t("خدمات مرتبط")}</h2><ul>${catServices}</ul>` 
             "@type": "Product",
             name: product.name,
             description: product.shortDescription || product.fullDescription,
-            ...(isEn() ? {} : { sku: product.code }),
+            ...(isEn() || product.hideCode ? {} : { sku: product.code }),
             image: imageAbs,
             ...(product.noBrandSchema
               ? {}

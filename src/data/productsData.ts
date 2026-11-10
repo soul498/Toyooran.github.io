@@ -7,6 +7,7 @@ export const PRODUCTS: Product[] = [
     "slug": "jet-heater",
     "seoTitle": "جت هیتر مرغداری ۱۰۰ هزار کیلوکالری؛ گازی، گازوئیلی و دوگانه‌سوز | طیوران صنعت پویا",
     "noBrandSchema": true,
+    "hideCode": true,
     "name": "جت هیتر مرغداری ۱۰۰ هزار کیلوکالری",
     "nameEn": "",
     "category": "heating",
@@ -25,9 +26,9 @@ export const PRODUCTS: Product[] = [
         "p": "مشخصات هر چهار مدل در مقالهٔ [معرفی جت هیتر](/magazine/imachine-jet-heater) آمده است."
       }
     ],
-    "image": "/images/photos/jet-heater-v2-800.webp",
+    "image": "/images/hero-final-1.jpg",
     "gallery": [
-      "/images/photos/jet-heater-v2-800.webp"
+      "/images/hero-final-1.jpg"
     ],
     "advantages": [
       "شعله‌پخش‌کن دومرحله‌ای",
@@ -232,6 +233,7 @@ export const PRODUCTS: Product[] = [
     "code": "TS-114",
     "relatedExclude": ["ts-013"],
     "slug": "pouya-butterfly-feeder",
+    "hideCode": true,
     "seoTitle": "دانخوری پروانه‌ای پویا؛ تغذیه جوجه از روز اول | طیوران صنعت پویا",
     "name": "دانخوری پروانه‌ای پویا",
     "nameEn": "",

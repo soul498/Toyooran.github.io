@@ -17,8 +17,22 @@ const photo = (name: string, alt: string, large = 1600): ProductPhoto => ({
 
 export const FEEDER_PHOTO = photo('feeder-pouya-trough', 'دانخوری پروانه‌ای پویا، نمای نزدیک کاسه‌ها و دان');
 export const FEEDER_HALL_PHOTO = photo('feeder-pouya-hall-installation', 'نصب دانخوری پروانه‌ای پویا در سالن مرغداری');
-/** Jet heaters firing in a hall (16:9 centre crop of the approved 1536×1024 source; heaters centred). */
-export const HEATER_PHOTO = photo('jet-heater-v2', 'جت هیتر در حال کار', 1536);
+/**
+ * No logo-free jet-heater product photo is already used on the site (jet-heater-v2
+ * shows IMACHINE; catalog heater shots and article_heating show other brands).
+ * Fall back to the live heating-category OG image (hero-final-1), which has no logo.
+ * Same-aspect sources only (1200×670); the 480/800 hero crops are a different ratio.
+ */
+export const HEATER_PHOTO: ProductPhoto = {
+  src: withMediaVersion('/images/hero-final-1.jpg'),
+  srcSet: [
+    `${withMediaVersion('/images/hero-final-1.webp')} 1200w`,
+    `${withMediaVersion('/images/hero-final-1.jpg')} 1200w`,
+  ].join(', '),
+  alt: 'سالن مرغداری',
+  width: 1200,
+  height: 670,
+};
 
 /** Old feeder photo of «introduction-to-pouya-butterfly-feeder» (cover + inline). */
 const OLD_FEEDER_RE = /^\/images\/article_feeder_[^/]*$/i;

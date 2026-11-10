@@ -105,6 +105,8 @@ export interface Product {
   seoTitle?: string;
   /** Third-party product: omit brand/manufacturer from the Product JSON-LD. */
   noBrandSchema?: boolean;
+  /** Do not put the inventory code (sku) in public JSON-LD or visitor-facing copy. */
+  hideCode?: boolean;
   /** Optional Persian alt text for the main product image (defaults to the product name). */
   imageAlt?: string;
   /** Optional display label per related article id (overrides the article title in «راهنمای مرتبط»). */

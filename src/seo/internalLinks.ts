@@ -2,6 +2,8 @@ import type { Product } from "../types";
 
 /** Priority products linked from the homepage (prerender + browser) to raise their crawl priority. */
 export const HOME_PRIORITY_PRODUCT_IDS = [
+  "ts-114", // دانخوری پروانه‌ای پویا
+  "ts-115", // جت هیتر مرغداری ۱۰۰ هزار کیلوکالری
   "ts-062", // هواکش ۱۴۰ سانت شش پره تمام استیل
   "ts-037", // جت هیتر برقی ۱۵ کیلووات
   "ts-038", // جت هیتر برقی ۳ کیلووات
