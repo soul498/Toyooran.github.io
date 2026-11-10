@@ -32,8 +32,8 @@ const OTHER_DISABLED_SERVICE_IDS: readonly string[] = CONSULTING_PAGE_ENABLED ? 
 /** Public slugs that resolve to a card service id (keep in sync with FITOUT_SLUG in seo/resolveSeo.ts). */
 const SERVICE_SLUG_ALIASES: Record<string, string> = { 'poultry-hall-fitout': 'srv-turnkey-shed' };
 
-/** Where visitors who hit a disabled page are sent (temporary 302, so it's easy to undo). */
-export const DISABLED_PAGE_REDIRECT = '/';
+/** Where visitors who hit a disabled page are sent (301). English requests are served as /en/services. */
+export const DISABLED_PAGE_REDIRECT = '/services';
 
 export function isServiceDisabled(idOrSlug: string | undefined | null): boolean {
   if (!idOrSlug) return false;
@@ -61,4 +61,24 @@ export function isDisabledPagePath(pathOrHref: string | undefined | null): boole
   // English pages live under /en: the same page stays disabled there.
   if (parts[0] === 'en') parts.shift();
   return parts[0] === 'services' && parts.length >= 2 && isServiceDisabled(parts[1]);
+}
+
+/**
+ * If href is a switched-off service page, return the hub path (/services).
+ * Absolute toyooran.com URLs keep their origin. Other hrefs are unchanged.
+ * English localisation (/en/services) is applied later by localizeHref / the server.
+ */
+export function rewriteDisabledHref(pathOrHref: string): string {
+  if (!isDisabledPagePath(pathOrHref)) return pathOrHref;
+  const raw = String(pathOrHref).trim();
+  const pathOnly = raw.split(/[?#]/)[0];
+  const abs = /^(https?:\/\/[^/]+)/i.exec(pathOnly);
+  if (abs && /(^|\.)toyooran\.com(:\d+)?$/i.test(abs[1].replace(/^https?:\/\//i, ''))) {
+    return `${abs[1]}${DISABLED_PAGE_REDIRECT}`;
+  }
+  if (/^\/\/([^/]+)/.test(pathOnly)) {
+    const host = pathOnly.slice(2).split('/')[0];
+    if (/(^|\.)toyooran\.com(:\d+)?$/i.test(host)) return `//${host}${DISABLED_PAGE_REDIRECT}`;
+  }
+  return DISABLED_PAGE_REDIRECT;
 }

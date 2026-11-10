@@ -19,7 +19,7 @@ import {
   ArrowLeft,
   ChevronLeft
 } from '../icons';
-import { isDisabledPagePath } from '../data/disabledPages';
+import { rewriteDisabledHref } from '../data/disabledPages';
 
 import { hasPersian, isEn, t, tr, translateDeep } from '../i18n';
 const FOOTER_SERVICE_LINKS = [
@@ -167,18 +167,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
             <ul className="space-y-3">
               {translateDeep(FOOTER_SERVICE_LINKS).map((item) => (
                 <li key={item.to}>
-                  {isDisabledPagePath(item.to) ? (
-                    // Page switched off for now (data/disabledPages.ts): the name stays, as plain text.
-                    <span className="text-slate-300 text-sm font-medium flex items-center gap-1.5">
-                      <ChevronLeft className="w-3.5 h-3.5 ltr:-scale-x-100 text-slate-600" />
-                      {item.title}
-                    </span>
-                  ) : (
-                    <Link to={item.to} className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
+                    <Link to={rewriteDisabledHref(item.to)} className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-1.5 group">
                       <ChevronLeft className="w-3.5 h-3.5 ltr:-scale-x-100 text-slate-600 group-hover:text-blue-400 transition-colors" />
                       {item.title}
                     </Link>
-                  )}
                 </li>
               ))}
             </ul>

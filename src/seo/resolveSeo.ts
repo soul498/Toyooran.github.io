@@ -10,7 +10,8 @@ import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richT
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_E164, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
 import { removedProductRedirect } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
-import { isDisabledPagePath, isServiceDisabled } from "../data/disabledPages";
+import { isDisabledPagePath, isServiceDisabled, rewriteDisabledHref } from "../data/disabledPages";
+import { PRODUCT_SLUG_BY_ID, productAliasTarget } from "./productUrls";
 
 import { EN_PREFIX, isEn, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
@@ -246,15 +247,16 @@ function listedServices(catalog: SeoCatalog): Service[] {
   return PUBLIC_SERVICE_IDS.map((id) => byId.get(id)).filter((s): s is Service => Boolean(s) && !isServiceDisabled(s!.id));
 }
 
-/** `<a>` to the fitout service page, or "" while that page is switched off (data/disabledPages.ts). */
+/** `<a>` to the fitout service page, or to /services while that page is switched off. */
 function fitoutLink(label: string): string {
-  return isServiceDisabled(FITOUT_SERVICE_ID) ? "" : `<a href="/services/${FITOUT_SLUG}">${label}</a>`;
+  const href = isServiceDisabled(FITOUT_SERVICE_ID) ? "/services" : `/services/${FITOUT_SLUG}`;
+  return `<a href="${href}">${label}</a>`;
 }
 
-/** Safety net for prerender HTML: links to switched-off pages become plain text. */
+/** Safety net for prerender HTML: links to switched-off service pages go to /services. */
 function unlinkDisabled(html: string): string {
-  return html.replace(/<a href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/g, (whole, href: string, text: string) =>
-    isDisabledPagePath(href) ? text : whole
+  return html.replace(/<a href="([^"]*)"([^>]*)>([\s\S]*?)<\/a>/g, (whole, href: string, attrs: string, text: string) =>
+    isDisabledPagePath(href) ? `<a href="${rewriteDisabledHref(href)}"${attrs}>${text}</a>` : whole
   );
 }
 
@@ -268,6 +270,8 @@ export function publicProductPath(product: Product): string {
 }
 
 export function productSeoSlug(product: Product): string {
+  const forced = PRODUCT_SLUG_BY_ID[String(product.id || "").toLowerCase()];
+  if (forced) return forced;
   const custom = String(product.slug || "").trim().toLowerCase();
   if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(custom)) return custom;
   const code = String(product.code || product.id || "").toLowerCase();
@@ -303,6 +307,15 @@ export function seoRedirectFor(pathname: string, catalog: SeoCatalog): string | 
     if (isCategorySlug(slug, catalog)) {
       const leaf = `/products/${slug}`;
       return leaf !== path ? leaf : null;
+    }
+    const alias = productAliasTarget(slug);
+    if (alias) {
+      const aliased = catalog.products.find((item) => item.id === alias.productId) || findProduct(slug, catalog);
+      if (aliased) {
+        const canonical = publicProductPath(aliased);
+        return canonical !== path ? canonical : null;
+      }
+      return alias.fallback !== path ? alias.fallback : null;
     }
     const product = findProduct(slug, catalog);
     if (!product) return parts.length === 2 ? removedProductRedirect(slug) : null;
@@ -487,8 +500,8 @@ function articleHtml(article: Article, products: Product[] = []): string {
         return `<section aria-label="${tr(PRODUCT_CARDS_HEADING)}"><h2>${tr(PRODUCT_CARDS_HEADING)}</h2><ul>${items}</ul></section>`;
       }
       if (block.type === "cta") {
-        if (!isSafeHref(block.href) || isDisabledPagePath(block.href)) return "";
-        return `<p><a href="${escapeHtml(block.href)}">${escapeHtml(block.label)}</a></p>`;
+        if (!isSafeHref(block.href)) return "";
+        return `<p><a href="${escapeHtml(rewriteDisabledHref(block.href))}">${escapeHtml(block.label)}</a></p>`;
       }
       const head = `<tr>${block.headers.map((cell) => `<th>${inlineToHtml(cell)}</th>`).join("")}</tr>`;
       const body = block.rows.map((row) => `<tr>${row.map((cell) => `<td>${inlineToHtml(cell)}</td>`).join("")}</tr>`).join("");
@@ -1001,11 +1014,11 @@ ${catServices ? `<h2>${t("خدمات مرتبط")}</h2><ul>${catServices}</ul>` 
         .map((source) => ({
           "@type": "CreativeWork",
           name: source.name.trim(),
-          ...(source.url && isSafeHref(source.url) && !isDisabledPagePath(source.url) ? { url: source.url.trim() } : {}),
+          ...(source.url && isSafeHref(source.url) ? { url: rewriteDisabledHref(source.url.trim()) } : {}),
         }));
       const sourceHtml = (article.sources || [])
         .filter((source) => source.name.trim())
-        .map((source) => (source.url && isSafeHref(source.url) ? `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.name)}</a></li>` : `<li>${escapeHtml(source.name)}</li>`))
+        .map((source) => (source.url && isSafeHref(source.url) ? `<li><a href="${escapeHtml(rewriteDisabledHref(source.url))}">${escapeHtml(source.name)}</a></li>` : `<li>${escapeHtml(source.name)}</li>`))
         .join("");
       const authorHtml = article.authorName
         ? `<p>${t("نویسنده:")} ${escapeHtml(article.authorName)}${article.authorRole ? ` (${escapeHtml(article.authorRole)})` : ""}</p>`

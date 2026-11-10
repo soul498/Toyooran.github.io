@@ -49,7 +49,7 @@ const ADMIN_SECTIONS_MAX = 64;
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
   app.disable('x-powered-by');
   // nginx (and docker bridge) sit in front of Express; trust only local proxies.
   app.set('trust proxy', 'loopback, uniquelocal');
@@ -70,15 +70,14 @@ async function startServer() {
     if (target && target !== req.originalUrl) return res.redirect(301, `${CANONICAL_ORIGIN}${target}`);
     next();
   });
-  // Pages switched off for now (src/data/disabledPages.ts): temporary 302 to the home page, never cached,
-  // noindex on the redirect itself. Runs before seoRedirectFor so aliases don't 301 into a disabled page.
+  // Pages switched off for now (src/data/disabledPages.ts): 301 to /services (or /en/services).
+  // Switches stay in disabledPages.ts. Runs before seoRedirectFor so aliases don't 301 into a disabled page.
   app.use((req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();
     if (!isDisabledPagePath(req.path)) return next();
-    res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('X-Robots-Tag', 'noindex');
-    const home = pathLang(req.path) === 'en' ? (DISABLED_PAGE_REDIRECT === '/' ? EN_PREFIX : `${EN_PREFIX}${DISABLED_PAGE_REDIRECT}`) : DISABLED_PAGE_REDIRECT;
-    return res.redirect(302, `${CANONICAL_ORIGIN}${home}`);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    const dest = pathLang(req.path) === 'en' ? `${EN_PREFIX}${DISABLED_PAGE_REDIRECT}` : DISABLED_PAGE_REDIRECT;
+    return res.redirect(301, `${CANONICAL_ORIGIN}${dest}`);
   });
   app.use((req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();

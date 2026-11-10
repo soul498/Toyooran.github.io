@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useData } from "../context/DataContext";
-import { resolveSeo, type SeoCatalog } from "../seo/resolveSeo";
+import { type SeoCatalog } from "../seo/resolveSeo";
+import { resolveSeoForPath } from "../seo/localizeSeo";
+import { stripLangPrefix } from "../i18n";
 import type { CategoryItem, CompanyInfo } from "../types";
 
 interface SEOProps {
@@ -66,11 +68,12 @@ export const SeoHead = () => {
     categories: categories as CategoryItem[],
     company: companyInfo as CompanyInfo,
   };
-  const doc = resolveSeo(pathname, catalog);
+  const doc = resolveSeoForPath(pathname, catalog);
   // Keep the server-rendered head + #seo-prerender until client data is loaded. Before this,
   // product URLs briefly resolved to the 404 doc (products start as []), which wrote
   // <meta robots="noindex"> + "صفحه پیدا نشد" into the rendered DOM Googlebot snapshots.
-  const isMagazinePath = pathname === "/magazine" || pathname.startsWith("/magazine/");
+  const neutralPath = stripLangPrefix(pathname);
+  const isMagazinePath = neutralPath === "/magazine" || neutralPath.startsWith("/magazine/");
   const holdServerSeo = (!magazineReady && isMagazinePath) || (Boolean(doc.notFound) && !(catalogReady && magazineReady));
   useEffect(() => {
     if (holdServerSeo) return;

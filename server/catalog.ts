@@ -5,6 +5,7 @@ import type { SeoCatalog } from "../src/seo/resolveSeo";
 import type { Article, CategoryItem, CompanyInfo, Product, Service } from "../src/types";
 import { isPublicArticle, sortArticlesNewestFirst } from "../src/seo/articleMeta";
 import { isPublicProduct } from "../src/data/removedProducts";
+import { SEED_FALLBACK_PRODUCT_IDS } from "../src/seo/productUrls";
 import { withProductPhotos } from "../src/data/productPhotos";
 import { withContentCorrections } from "../src/data/contentCorrections";
 
@@ -91,7 +92,7 @@ export function invalidateSeoCatalog(): void {
 
 function buildSeoCatalog(): SeoCatalog {
   return {
-    products: savedCollection<Product>("products", PRODUCTS).filter((item) => item && isPublicProduct(item)),
+    products: withSeedFallbackProducts(savedCollection<Product>("products", PRODUCTS)).filter((item) => item && isPublicProduct(item)),
     services: savedCollection<Service>("services", SERVICES)
       .filter((item) => item.status !== 'draft' && item.status !== 'review')
       .map((item) => withContentCorrections(item)),
@@ -108,4 +109,11 @@ function buildSeoCatalog(): SeoCatalog {
       companyInfo: getAdminStateUpdatedAt("companyInfo"),
     },
   };
+}
+
+/** Re-attach seed product pages omitted from a stored admin snapshot (Pouya feeder, jet heater). */
+function withSeedFallbackProducts(stored: Product[]): Product[] {
+  const ids = new Set(stored.map((item) => item?.id).filter(Boolean));
+  const extra = PRODUCTS.filter((item) => (SEED_FALLBACK_PRODUCT_IDS as readonly string[]).includes(item.id) && !ids.has(item.id));
+  return extra.length ? [...stored, ...extra] : stored;
 }

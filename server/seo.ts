@@ -13,6 +13,7 @@ import {
   stripQuery,
   isPrivateAppPath,
 } from "../src/seo/resolveSeo";
+import { localizeBodyHrefs, localizeJsonLd } from "../src/seo/localizeSeo";
 
 export { CANONICAL_ORIGIN, stripQuery, canonicalPath, resolveSeo, seoRedirectFor, llmsTxt, isPrivateAppPath };
 
@@ -87,30 +88,6 @@ export function seoRedirectForAnyLang(pathname: string, catalog: ReturnType<type
   if (pathLang(pathname) !== "en") return seoRedirectFor(pathname, catalog);
   const r = seoRedirectFor(stripLangPrefix(pathname), catalog);
   return r ? withLang("en", () => localizeHref(r)) : null;
-}
-
-/** Localise canonical / page URLs inside JSON-LD for an English page (ids, images and the bare origin stay). */
-function localizeJsonLd(value: unknown, key = ""): unknown {
-  if (typeof value === "string") {
-    if (key === "@id" || !value.startsWith(CANONICAL_ORIGIN)) return value;
-    const rest = value.slice(CANONICAL_ORIGIN.length);
-    if ((rest === "" || rest === "/") && key !== "item") return value;
-    return localizeHref(value);
-  }
-  if (Array.isArray(value)) return value.map((v) => localizeJsonLd(v, key));
-  if (value && typeof value === "object") {
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-      if (k === "inLanguage" && typeof v === "string") out[k] = "en";
-      else out[k] = localizeJsonLd(v, k);
-    }
-    return out;
-  }
-  return value;
-}
-
-function localizeBodyHrefs(html: string): string {
-  return html.replace(/href="([^"]*)"/g, (_m, href: string) => `href="${localizeHref(href)}"`);
 }
 
 function deferRenderBlockingCss(html: string): string {

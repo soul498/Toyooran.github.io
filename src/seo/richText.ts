@@ -3,7 +3,7 @@
  * Inline syntax: **bold** and [label](/internal-path). Only internal paths ("/...") become links.
  * Shared by the server prerender (blocksToHtml) and the client (components/RichBlocks.tsx).
  */
-import { isDisabledPagePath } from "../data/disabledPages";
+import { rewriteDisabledHref } from "../data/disabledPages";
 
 export type RichBlock = { h2: string } | { p: string } | { ul: string[] };
 
@@ -18,8 +18,8 @@ export function parseInline(text: string): InlinePart[] {
     const idx = m.index ?? 0;
     if (idx > last) parts.push({ text: text.slice(last, idx) });
     if (m[1] !== undefined) parts.push({ text: m[1], bold: true });
-    // Links to switched-off pages (data/disabledPages.ts) render as plain text, server and client alike.
-    else parts.push(isDisabledPagePath(m[3]) ? { text: m[2] } : { text: m[2], href: m[3] });
+    // Links to switched-off service pages point at /services (final URL, no hop).
+    else parts.push({ text: m[2], href: rewriteDisabledHref(m[3]) });
     last = idx + m[0].length;
   }
   if (last < text.length) parts.push({ text: text.slice(last) });

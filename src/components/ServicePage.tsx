@@ -15,7 +15,7 @@ export const ServicePage: React.FC<{ onOpenConsultation: (title: string) => void
   const { services } = useData();
   const resolved = ALIASES[serviceId || ""] || serviceId;
   const service = services.find((s) => s.id === resolved);
-  // Switched off for now (data/disabledPages.ts); the server answers these URLs with a 302 as well.
+  // Switched off for now (data/disabledPages.ts); the server answers these URLs with a 301 to /services as well.
   if (isServiceDisabled(serviceId)) return <Navigate to={DISABLED_PAGE_REDIRECT} replace />;
   if (!service) return <NotFoundPage />;
   const isFitout = serviceId === "poultry-hall-fitout" || service.id === "srv-turnkey-shed";
