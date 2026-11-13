@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-13
+
+- Jet heater (ts-115) product page and homepage heater card show the previous jet-heater-v2 photo again, at the user's request.
+
 ## 2026-11-10
 
 - Restore ts-114 and ts-115 product photos under the logo rules: feeder uses detail_01_trough and insitu_01 (feeder-pouya-trough / feeder-pouya-hall-installation); heater does not use jet-heater-v2 (IMACHINE) and falls back to the logo-free heating-category image /images/hero-final-1.jpg. Public JSON-LD for these two omits sku.

@@ -26,9 +26,9 @@ export const PRODUCTS: Product[] = [
         "p": "مشخصات هر چهار مدل در مقالهٔ [معرفی جت هیتر](/magazine/imachine-jet-heater) آمده است."
       }
     ],
-    "image": "/images/hero-final-1.jpg",
+    "image": "/images/photos/jet-heater-v2-800.webp",
     "gallery": [
-      "/images/hero-final-1.jpg"
+      "/images/photos/jet-heater-v2-800.webp"
     ],
     "advantages": [
       "شعله‌پخش‌کن دومرحله‌ای",

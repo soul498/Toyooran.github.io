@@ -100,6 +100,7 @@ function useNearViewport<T extends Element>(resetKey?: string): [(el: T | null) 
 }
 
 function zoomSrc(src: string): string {
+  if (/jet-heater-v2-800\.webp$/.test(src)) return src.replace(/-800\.webp$/, '-1536.webp');
   if (/\/images\/photos\/.+-800\.webp$/.test(src)) return src.replace(/-800\.webp$/, '-1600.webp');
   return src;
 }
