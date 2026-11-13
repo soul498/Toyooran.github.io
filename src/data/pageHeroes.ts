@@ -1,5 +1,6 @@
 import type React from 'react';
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
+import { ABOUT_EYEBROW, ABOUT_PAGE_NAME, ABOUT_SUBTITLE } from './aboutCopy';
 import { hasPersian, isEn, translateDeep } from '../i18n';
 import { Building2, FileCheck, FlaskConical, Phone, Sparkles, type IconProps } from '../icons';
 import type { CmsPageKey, PageHeroCms } from '../types';
@@ -45,11 +46,11 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
     subtitle: 'راهنماهای فنی انتخاب، نصب و نگهداری تجهیزات مرغداری: تهویه، گرمایش، دانخوری، آبخوری و نوسازی سالن',
   },
   '/about': {
-    title: 'درباره طیوران صنعت پویا',
-    highlight: 'طیوران صنعت پویا',
-    eyebrow: 'درباره شرکت',
+    title: ABOUT_PAGE_NAME,
+    highlight: ABOUT_PAGE_NAME,
+    eyebrow: ABOUT_EYEBROW,
     eyebrowIcon: Building2,
-    subtitle: 'مشاور، طراح و مجری پروژه‌های دام، طیور و آبزیان با بیش از ۵۰ سال تجربه و ۲۰۰ پروژهٔ ملی و بین‌المللی',
+    subtitle: ABOUT_SUBTITLE,
     cta: { label: 'درخواست مشاورهٔ رایگان', href: '/contact' },
   },
   '/rnd': {

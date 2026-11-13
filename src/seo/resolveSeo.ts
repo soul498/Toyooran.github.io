@@ -12,6 +12,12 @@ import { removedProductRedirect } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 import { isDisabledPagePath, isServiceDisabled, rewriteDisabledHref } from "../data/disabledPages";
 import { PRODUCT_SLUG_BY_ID, productAliasTarget } from "./productUrls";
+import {
+  ABOUT_ACTIVITIES, ABOUT_ACTIVITIES_HEADING, ABOUT_FLAGSHIP_CTA, ABOUT_FLAGSHIP_HEADING, ABOUT_FLAGSHIP_HREF,
+  ABOUT_FLAGSHIP_TEXT, ABOUT_INTERNATIONAL_HEADING, ABOUT_INTERNATIONAL_TEXT, ABOUT_INTRO_HEADING,
+  ABOUT_INTRO_PARAGRAPHS, ABOUT_PAGE_NAME, ABOUT_SUBTITLE, ABOUT_TITLE,
+} from "../data/aboutCopy";
+import { faDigits } from "../lib/faDigits";
 
 import { EN_PREFIX, isEn, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
@@ -1103,15 +1109,26 @@ ${sourceHtml ? `<h2>${t("منابع")}</h2><ul>${sourceHtml}</ul>` : ""}
   }
 
   if (path === "/about") {
+    // Approved copy 2026-11-13 (src/data/aboutCopy.ts); contact lines below are unchanged.
+    const activityNumber = (n: number) => (isEn() ? String(n) : faDigits(n));
+    const activities = ABOUT_ACTIVITIES.map(([title, description], index) => `<li><strong>${activityNumber(index + 1)}. ${escapeHtml(tr(title))}</strong> — ${escapeHtml(tr(description))}</li>`).join("");
     return okDoc({
       path,
-      title: t("درباره طیوران صنعت پویا | ۵۰ سال سابقه در صنعت دام و طیور"),
-      description: t("معرفی شرکت طیوران صنعت پویا، دفاتر مشهد و گرگان و حوزه فعالیت در صنعت دام و طیور."),
-      h1: t("درباره طیوران صنعت پویا"),
+      title: tr(ABOUT_TITLE),
+      description: tr(ABOUT_SUBTITLE),
+      h1: tr(ABOUT_PAGE_NAME),
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>${escapeHtml(company.tagline || "")}</p>
-<p>${escapeHtml(company.subTagline || "")}</p>
+      body: `<p>${escapeHtml(tr(ABOUT_SUBTITLE))}</p>
+<h2>${escapeHtml(tr(ABOUT_INTRO_HEADING))}</h2>
+${ABOUT_INTRO_PARAGRAPHS.map((paragraph) => `<p>${escapeHtml(tr(paragraph))}</p>`).join("\n")}
+<h2>${escapeHtml(tr(ABOUT_ACTIVITIES_HEADING))}</h2>
+<ul>${activities}</ul>
+<h2>${escapeHtml(tr(ABOUT_FLAGSHIP_HEADING))}</h2>
+<p>${escapeHtml(tr(ABOUT_FLAGSHIP_TEXT))}</p>
+<p><a href="${ABOUT_FLAGSHIP_HREF}">${escapeHtml(tr(ABOUT_FLAGSHIP_CTA))}</a></p>
+<h2>${escapeHtml(tr(ABOUT_INTERNATIONAL_HEADING))}</h2>
+<p>${escapeHtml(tr(ABOUT_INTERNATIONAL_TEXT))}</p>
 <p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a></p>
 <p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
 <p>${t("ساعات کار:")} ${escapeHtml(company.workingHours)}</p>

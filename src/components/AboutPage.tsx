@@ -1,9 +1,16 @@
 import React from 'react';
 import { LazyImage } from './LazyImage';
-import { Building2, CheckCircle2, Factory, Globe2 } from '../icons';
+import { ArrowLeft, Building2, CheckCircle2, Factory, Globe2 } from '../icons';
 import { SEO } from './SEO';
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { useData } from '../context/DataContext';
+import { Link } from 'react-router-dom';
+import {
+  ABOUT_ACTIVITIES, ABOUT_ACTIVITIES_HEADING, ABOUT_EYEBROW, ABOUT_FLAGSHIP_CTA, ABOUT_FLAGSHIP_HEADING,
+  ABOUT_FLAGSHIP_HREF, ABOUT_FLAGSHIP_TEXT, ABOUT_INTERNATIONAL_HEADING, ABOUT_INTERNATIONAL_TEXT,
+  ABOUT_INTRO_HEADING, ABOUT_INTRO_PARAGRAPHS, ABOUT_SUBTITLE, ABOUT_TITLE,
+} from '../data/aboutCopy';
+import { faDigits } from '../lib/faDigits';
 
 import { isEn, t, tr } from '../i18n';
 export const AboutPage: React.FC = () => {
@@ -16,14 +23,20 @@ export const AboutPage: React.FC = () => {
     title: features[index]?.title || title,
     description: features[index]?.description || description,
   });
-  const imachine = feature(0, t("برند IMACHINE"), t("طراحی و تولید ماشین‌آلات صنعتی با برند IMACHINE در صنعت خوراک."));
-  const manufacturing = feature(1, t("تولید تخصصی ماشین‌آلات"), t("تولیدکننده تخصصی انواع جت هیتر، تجهیزات گرمایشی و ماشین‌آلات خطوط تولید خوراک دام و طیور."));
-  const reach = feature(2, t("گستره فعالیت و توسعه"), t("دارای دفتر تحقیق و توسعه (R&D) مستقر در دانشگاه منابع طبیعی گلستان و حضور فعال در بازارهای داخلی و خارجی."));
+  // Approved copy 2026-11-13: six numbered areas of activity; the existing three icon styles repeat.
+  const ICON_STYLES = [
+    { Icon: CheckCircle2, box: 'bg-[#003F86]/10 border-[#003F86]/10', icon: 'text-[#003F86]' },
+    { Icon: Factory, box: 'bg-amber-500/10 border-amber-500/10', icon: 'text-amber-600' },
+    { Icon: Globe2, box: 'bg-emerald-500/10 border-emerald-500/10', icon: 'text-emerald-600' },
+  ] as const;
+  const numberLabel = (n: number) => (isEn() ? String(n) : faDigits(n));
+  const activities = ABOUT_ACTIVITIES.map(([title, description], index) => feature(index, tr(title), tr(description)));
+  const introParagraphs = cms.intro ? cms.intro.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean) : ABOUT_INTRO_PARAGRAPHS.map((paragraph) => tr(paragraph));
   return (
     <div className="bg-blueprint-light min-h-screen relative">
       <SEO 
-        title={cms.heading || t("درباره طیوران صنعت پویا | ۵۰ سال سابقه در صنعت دام و طیور")}
-        description={cms.intro || t("مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان.")}
+        title={tr(ABOUT_TITLE)}
+        description={tr(ABOUT_SUBTITLE)}
       />
 
       {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
@@ -49,50 +62,52 @@ export const AboutPage: React.FC = () => {
               <div className="inline-flex items-center gap-2 bg-blue-50/50 text-[#003F86] px-4 py-2 rounded-xl mb-6 self-start font-bold text-sm border border-blue-100/50">
                 <Building2 className="w-4 h-4" />
                 
-                {t("درباره طیوران صنعت پویا")}
+                {tr(ABOUT_EYEBROW)}
               </div>
               
               <h2 className="text-2xl lg:text-3xl font-black text-slate-900 leading-snug mb-5">
                 
-                {cms.heading || t("مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی")}
+                {cms.heading || tr(ABOUT_INTRO_HEADING)}
               </h2>
               
-              <p className="text-slate-600 leading-relaxed text-sm sm:text-base mb-8 text-justify font-medium">
-                
-                {cms.intro || t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان، مجری بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی است و راهکارهای جامع توسعه، طراحی، ساخت و تجهیز کامل سوله و کارخانه‌ها را ارائه می‌کند.")}
-              </p>
+              {introParagraphs.map((paragraph, index) => (
+                <p key={index} className={`text-slate-600 leading-relaxed text-sm sm:text-base text-justify font-medium ${index === introParagraphs.length - 1 ? 'mb-8' : 'mb-4'}`}>{paragraph}</p>
+              ))}
 
+              <h2 className="text-2xl lg:text-3xl font-black text-slate-900 leading-snug mb-5">{tr(ABOUT_ACTIVITIES_HEADING)}</h2>
               <div className="space-y-6 mb-10">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-[#003F86]/10 flex items-center justify-center shrink-0 shadow-sm border border-[#003F86]/10">
-                    <CheckCircle2 className="w-6 h-6 text-[#003F86]" />
-                  </div>
-                  <div>
-                    <h3 className="text-slate-900 font-bold text-base mb-1">{imachine.title}</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{imachine.description}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center shrink-0 shadow-sm border border-amber-500/10">
-                    <Factory className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-slate-900 font-bold text-base mb-1">{manufacturing.title}</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{manufacturing.description}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0 shadow-sm border border-emerald-500/10">
-                    <Globe2 className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-slate-900 font-bold text-base mb-1">{reach.title}</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">{reach.description}</p>
-                  </div>
-                </div>
+                {activities.map((activity, index) => {
+                  const style = ICON_STYLES[index % ICON_STYLES.length];
+                  return (
+                    <div key={index} className="flex items-start gap-4">
+                      <div className={`w-12 h-12 rounded-2xl ${style.box} flex items-center justify-center shrink-0 shadow-sm border`}>
+                        <style.Icon className={`w-6 h-6 ${style.icon}`} />
+                      </div>
+                      <div>
+                        <h3 className="text-slate-900 font-bold text-base mb-1">{numberLabel(index + 1)}. {activity.title}</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed font-medium">{activity.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+
+              <h2 className="text-2xl lg:text-3xl font-black text-slate-900 leading-snug mb-5">{tr(ABOUT_FLAGSHIP_HEADING)}</h2>
+              <p className="text-slate-600 leading-relaxed text-sm sm:text-base text-justify font-medium mb-6">{tr(ABOUT_FLAGSHIP_TEXT)}</p>
+              <div className="mb-10">
+                <Link
+                  to={ABOUT_FLAGSHIP_HREF}
+                  className="group/cta inline-flex min-h-[52px] items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-l from-[#FFC303] to-[#FFA800] px-[22px] text-[17px] font-black text-[#333333] shadow-[0_10px_24px_rgba(255,170,0,0.30)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003F84]"
+                >
+                  {tr(ABOUT_FLAGSHIP_CTA)}
+                  <span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-black/[0.12] transition-transform group-hover/cta:-translate-x-1 motion-reduce:transition-none" aria-hidden="true">
+                    <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2.4} />
+                  </span>
+                </Link>
+              </div>
+
+              <h2 className="text-2xl lg:text-3xl font-black text-slate-900 leading-snug mb-5">{tr(ABOUT_INTERNATIONAL_HEADING)}</h2>
+              <p className="text-slate-600 leading-relaxed text-sm sm:text-base text-justify font-medium mb-8">{tr(ABOUT_INTERNATIONAL_TEXT)}</p>
               
               <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/60 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center shadow-sm">
                  <div className="text-slate-700 text-sm font-bold flex flex-wrap items-center gap-x-2 gap-y-1">

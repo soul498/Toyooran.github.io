@@ -2,6 +2,7 @@
 
 ## 2026-11-13
 
+- /about: new user-approved copy (intro, six areas of activity, flagship Pouya butterfly feeder with «مشاهده مشخصات» to /products/pouya-butterfly-feeder, international cooperation); page name «درباره» in H1, menu and footer; new title; prerender (resolveSeo) and /en/about updated. Contact block, hours and addresses unchanged. Copy lives in src/data/aboutCopy.ts.
 - Jet heater (ts-115) product page and homepage heater card show the previous jet-heater-v2 photo again, at the user's request.
 
 ## 2026-11-10

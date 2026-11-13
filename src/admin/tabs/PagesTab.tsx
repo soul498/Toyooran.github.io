@@ -4,19 +4,17 @@ import { useData } from '../../context/DataContext';
 import type { AboutPageCms, CmsPageKey, PageHeroCms, PagesCms, RndPageCms } from '../../types';
 import { ImagePicker } from '../components/ImagePicker';
 import { PAGE_HEROES } from '../../data/pageHeroes';
+import { ABOUT_ACTIVITIES, ABOUT_INTRO_HEADING, ABOUT_INTRO_PARAGRAPHS } from '../../data/aboutCopy';
 import { EN_DICT } from '../../i18n/enDict';
 import { hasPersian } from '../../i18n';
 
 const en = (fa?: string) => fa ? EN_DICT[fa] || '' : '';
 const containsPersian = (value: unknown): boolean => typeof value === 'string' ? hasPersian(value) : Array.isArray(value) ? value.some(containsPersian) : Boolean(value && typeof value === 'object' && Object.values(value).some(containsPersian));
 const PAGE_PATH: Record<CmsPageKey, string> = { services: '/services', magazine: '/magazine', about: '/about', rnd: '/rnd', contact: '/contact' };
-const ABOUT_FEATURES = [
-  ['برند IMACHINE', 'طراحی و تولید ماشین‌آلات صنعتی با برند IMACHINE در صنعت خوراک.'],
-  ['تولید تخصصی ماشین‌آلات', 'تولیدکننده تخصصی انواع جت هیتر، تجهیزات گرمایشی و ماشین‌آلات خطوط تولید خوراک دام و طیور.'],
-  ['گستره فعالیت و توسعه', 'دارای دفتر تحقیق و توسعه (R&D) مستقر در دانشگاه منابع طبیعی گلستان و حضور فعال در بازارهای داخلی و خارجی.'],
-] as const;
-const ABOUT_HEADING = 'مشاور، طراح و مجری توسعه و بهره‌برداری پروژه‌های صنعتی';
-const ABOUT_INTRO = 'شرکت طیوران صنعت پویا با بیش از ۵۰ سال تجربه در صنعت دام، طیور و آبزیان، مجری بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی است و راهکارهای جامع توسعه، طراحی، ساخت و تجهیز کامل سوله و کارخانه‌ها را ارائه می‌کند.';
+// Defaults = the approved /about copy (src/data/aboutCopy.ts). Empty CMS fields fall back to these.
+const ABOUT_FEATURES = ABOUT_ACTIVITIES;
+const ABOUT_HEADING = ABOUT_INTRO_HEADING;
+const ABOUT_INTRO = ABOUT_INTRO_PARAGRAPHS.join('\n\n');
 const RND_TITLE = 'دپارتمان تحقیق و توسعه در حال تجهیز است';
 const RND_DESCRIPTION = 'بخش دستاوردهای علمی و پروژه‌های مشترک دانشگاهی طیوران صنعت پویا در حال آماده‌سازی است و به‌زودی منتشر می‌شود.';
 
@@ -153,16 +151,16 @@ export const PagesTab: React.FC = () => {
 
       {activePage === 'about' && (
         <section className="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-5">
-          <div><h3 className="text-sm font-black text-white">بخش معرفی صفحه درباره شرکت</h3><p className="text-[11px] text-slate-500 mt-1">تصویر، متن معرفی و سه مزیت پایین آن قابل ویرایش‌اند.</p></div>
+          <div><h3 className="text-sm font-black text-white">بخش معرفی صفحه درباره شرکت</h3><p className="text-[11px] text-slate-500 mt-1">تصویر، متن معرفی (پاراگراف‌ها با یک خط خالی جدا می‌شوند) و شش حوزهٔ فعالیت قابل ویرایش‌اند.</p></div>
           <ImagePicker label="تصویر معرفی" value={draft.about.image || ''} onChange={(image) => updateAbout({ image })} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <div className="space-y-3">
               <p className="text-xs font-bold text-amber-300">فارسی</p>
               <label className="block text-xs text-slate-300">تیتر معرفی<input value={draft.about.heading ?? ABOUT_HEADING} onChange={(event) => updateAbout({ heading: event.target.value })} className={fieldClass} /></label>
               <label className="block text-xs text-slate-300">متن معرفی<textarea rows={5} value={draft.about.intro ?? ABOUT_INTRO} onChange={(event) => updateAbout({ intro: event.target.value })} className={fieldClass} /></label>
-              {[0, 1, 2].map((index) => (
+              {ABOUT_FEATURES.map((_, index) => (
                 <div key={index} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-3 space-y-2">
-                  <p className="text-[11px] text-slate-500">مزیت {index + 1}</p>
+                  <p className="text-[11px] text-slate-500">حوزهٔ فعالیت {index + 1}</p>
                   <input value={draft.about.features?.[index]?.title ?? ABOUT_FEATURES[index][0]} onChange={(event) => updateAboutFeature(index, { title: event.target.value })} placeholder="عنوان" className={compactFieldClass} />
                   <textarea rows={2} value={draft.about.features?.[index]?.description ?? ABOUT_FEATURES[index][1]} onChange={(event) => updateAboutFeature(index, { description: event.target.value })} placeholder="توضیح" className={compactFieldClass} />
                 </div>
@@ -171,10 +169,10 @@ export const PagesTab: React.FC = () => {
             <div className="space-y-3" dir="ltr">
               <p className="text-xs font-bold text-blue-300">English</p>
               <label className="block text-xs text-slate-300">Introduction title<input value={aboutEn.heading ?? en(ABOUT_HEADING)} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, heading: event.target.value } } })} className={fieldClass} /></label>
-              <label className="block text-xs text-slate-300">Introduction text<textarea rows={5} value={aboutEn.intro ?? en(ABOUT_INTRO)} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, intro: event.target.value } } })} className={fieldClass} /></label>
-              {[0, 1, 2].map((index) => (
+              <label className="block text-xs text-slate-300">Introduction text<textarea rows={5} value={aboutEn.intro ?? ABOUT_INTRO_PARAGRAPHS.map((paragraph) => en(paragraph)).join('\n\n')} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, intro: event.target.value } } })} className={fieldClass} /></label>
+              {ABOUT_FEATURES.map((_, index) => (
                 <div key={index} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-3 space-y-2">
-                  <p className="text-[11px] text-slate-500">Feature {index + 1}</p>
+                  <p className="text-[11px] text-slate-500">Area of activity {index + 1}</p>
                   <input value={aboutEn.features?.[index]?.title ?? en(ABOUT_FEATURES[index][0])} onChange={(event) => updateAboutFeature(index, { title: event.target.value }, true)} placeholder="Title" className={compactFieldClass} />
                   <textarea rows={2} value={aboutEn.features?.[index]?.description ?? en(ABOUT_FEATURES[index][1])} onChange={(event) => updateAboutFeature(index, { description: event.target.value }, true)} placeholder="Description" className={compactFieldClass} />
                 </div>
