@@ -39,9 +39,13 @@ export const ProductsTab: React.FC = () => {
 
   const [advantageInput, setAdvantageInput] = useState('');
   const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Product, 'translations'>>;
+  const turkishDraft = (formData.translations?.tr || {}) as Partial<Omit<Product, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<Product, 'translations'>>) => {
-    setFormData({ ...formData, translations: { en: { ...englishDraft, ...patch } } });
+    setFormData({ ...formData, translations: { ...formData.translations, en: { ...englishDraft, ...patch } } });
+  };
+  const updateTurkish = (patch: Partial<Omit<Product, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, tr: { ...turkishDraft, ...patch } } });
   };
 
   const openCreateModal = () => {
@@ -411,6 +415,37 @@ export const ProductsTab: React.FC = () => {
                   <div>
                     <label className="block text-xs font-bold text-slate-300 mb-1">English image alt text</label>
                     <input value={englishDraft.imageAlt || ''} onChange={(e) => updateEnglish({ imageAlt: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                </div>
+
+                <div className="bg-emerald-500/5 p-5 rounded-2xl border border-emerald-500/20 space-y-4" dir="ltr">
+                  <div dir="rtl">
+                    <h4 className="text-xs font-bold text-emerald-200 flex items-center gap-1.5 mb-1">ترجمه ترکی محصول</h4>
+                    <p className="text-[11px] text-slate-500">با تکمیل این بخش، نسخه ترکی محصول از داخل پنل مدیریت می‌شود و روی /tr منتشر می‌شود.</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Turkish product name</label>
+                    <input value={turkishDraft.name || ''} onChange={(e) => updateTurkish({ name: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Turkish category title</label>
+                    <input value={turkishDraft.categoryTitle || ''} onChange={(e) => updateTurkish({ categoryTitle: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Turkish short description</label>
+                    <textarea value={turkishDraft.shortDescription || ''} onChange={(e) => updateTurkish({ shortDescription: e.target.value })} rows={2} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Turkish full description</label>
+                    <textarea value={turkishDraft.fullDescription || ''} onChange={(e) => updateTurkish({ fullDescription: e.target.value })} rows={4} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Turkish advantages — one per line</label>
+                    <textarea value={(turkishDraft.advantages || []).join('\n')} onChange={(e) => updateTurkish({ advantages: e.target.value.split('\n').map((item) => item.trim()).filter(Boolean) })} rows={3} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Turkish image alt text</label>
+                    <input value={turkishDraft.imageAlt || ''} onChange={(e) => updateTurkish({ imageAlt: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
                   </div>
                 </div>
 

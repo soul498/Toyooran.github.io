@@ -1,14 +1,18 @@
 /**
- * Server side of the bilingual site: English catalog, article translation and page helpers.
- * Persian (default) is untouched; English pages live under /en (see src/i18n/index.ts, docs/i18n.md).
+ * Server side of fa / en / tr. Persian (default) is untouched.
+ * English pages live under /en and Turkish pages under /tr (see src/i18n/index.ts, docs/i18n.md).
  */
 import { EN_DICT } from "../src/i18n/enDict";
+import { TR_DICT } from "../src/i18n/trDict";
 import MAGAZINE_EN from "../src/i18n/en/magazine.json";
+import MAGAZINE_TR from "../src/i18n/tr/magazine.json";
 import {
+  type ForeignLang,
   isFullyTranslated,
   missingIn,
-  setEnAvailability,
+  setLangAvailability,
   setEnDictionary,
+  setTrDictionary,
   translateDeep,
   translateCmsRecord,
   translateProduct,
@@ -19,10 +23,14 @@ import type { Article, Product } from "../src/types";
 import type { SeoCatalog } from "../src/seo/resolveSeo";
 
 setEnDictionary(EN_DICT);
+setTrDictionary(TR_DICT);
 
-const MAG = MAGAZINE_EN as Record<string, Record<string, string>>;
+const MAG: Record<ForeignLang, Record<string, Record<string, string>>> = {
+  en: MAGAZINE_EN as Record<string, Record<string, string>>,
+  tr: MAGAZINE_TR as Record<string, Record<string, string>>,
+};
 
-/** Article fields that are shown to readers / search engines (Persian → must have English). */
+/** Article fields that are shown to readers / search engines (Persian → must have a translation). */
 export function articleVisibleText(article: Article): unknown {
   return {
     title: article.title,
@@ -43,63 +51,88 @@ export function articleVisibleText(article: Article): unknown {
   };
 }
 
-/** English date for an article (Gregorian, from the ISO dates). */
-export function englishArticleDate(article: Article): string {
+/** Gregorian date for a foreign article page. */
+export function foreignArticleDate(article: Article, lang: ForeignLang): string {
   const iso = article.datePublishedIso || article.dateModifiedIso;
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Tehran" });
+  return d.toLocaleDateString(lang === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Tehran" });
 }
 
-/** Missing English strings of one article (empty = complete). */
-export function articleMissing(article: Article): string[] {
-  return withLang("en", () => withOverlay(MAG[article.id], () => missingIn(articleVisibleText(article))));
+/** English date for an article (Gregorian, from the ISO dates). */
+export function englishArticleDate(article: Article): string {
+  return foreignArticleDate(article, "en");
 }
 
-/** English version of an article, or null when its translation is incomplete (then it has no /en URL). */
-export function englishArticle(article: Article): Article | null {
-  return withLang("en", () =>
-    withOverlay(MAG[article.id], () => {
-      const manual = article.translations?.en;
+/** Missing strings of one article in `lang` (empty = complete). */
+export function articleMissing(article: Article, lang: ForeignLang = "en"): string[] {
+  return withLang(lang, () => withOverlay(MAG[lang][article.id], () => missingIn(articleVisibleText(article))));
+}
+
+/** Translated article, or null when its translation is incomplete (then it has no /en or /tr URL). */
+export function articleFor(lang: ForeignLang, article: Article): Article | null {
+  return withLang(lang, () =>
+    withOverlay(MAG[lang][article.id], () => {
+      const manual = article.translations?.[lang];
       const out = manual ? { ...translateDeep(article), ...manual } : translateDeep(article);
       if (!isFullyTranslated(articleVisibleText(out))) return null;
-      return { ...out, date: englishArticleDate(article) || out.date };
+      return { ...out, date: foreignArticleDate(article, lang) || out.date };
     }),
   );
 }
 
-export function productIsTranslated(product: Product): boolean {
-  return withLang("en", () => isFullyTranslated(translateProduct(product)));
+/** English version of an article, or null when its translation is incomplete (then it has no /en URL). */
+export function englishArticle(article: Article): Article | null {
+  return articleFor("en", article);
 }
 
-const enCache = new WeakMap<SeoCatalog, SeoCatalog>();
+export function productIsTranslated(product: Product, lang: ForeignLang = "en"): boolean {
+  return withLang(lang, () => isFullyTranslated(translateProduct(product)));
+}
 
-/** The English catalog: only fully translated products/articles, everything translated. */
-export function englishCatalog(catalog: SeoCatalog): SeoCatalog {
-  const hit = enCache.get(catalog);
+const caches = new Map<ForeignLang, WeakMap<SeoCatalog, SeoCatalog>>();
+
+function cacheFor(lang: ForeignLang): WeakMap<SeoCatalog, SeoCatalog> {
+  let map = caches.get(lang);
+  if (!map) {
+    map = new WeakMap();
+    caches.set(lang, map);
+  }
+  return map;
+}
+
+/** A foreign catalog: only fully translated products/articles, everything translated. */
+export function localizedCatalog(catalog: SeoCatalog, lang: ForeignLang): SeoCatalog {
+  const cache = cacheFor(lang);
+  const hit = cache.get(catalog);
   if (hit) {
-    publishAvailability(hit);
+    publishAvailability(lang, hit);
     return hit;
   }
-  const value = withLang("en", () => ({
+  const value = withLang(lang, () => ({
     ...catalog,
-    products: catalog.products.filter(productIsTranslated).map((p) => translateProduct(p)),
+    products: catalog.products.filter((product) => productIsTranslated(product, lang)).map((product) => translateProduct(product)),
     services: catalog.services.map((service) => translateCmsRecord(service)),
     projects: [],
-    articles: catalog.articles.map((a) => englishArticle(a)).filter((a): a is Article => Boolean(a)),
+    articles: catalog.articles.map((article) => articleFor(lang, article)).filter((article): article is Article => Boolean(article)),
     categories: translateDeep(catalog.categories),
     company: translateCmsRecord(catalog.company),
   }));
-  enCache.set(catalog, value);
-  publishAvailability(value);
+  cache.set(catalog, value);
+  publishAvailability(lang, value);
   return value;
 }
 
-function publishAvailability(en: SeoCatalog): void {
-  setEnAvailability({
-    articles: en.articles.map((a) => a.id),
-    products: en.products.map((p) => p.id),
-    topics: [...new Set(en.articles.map((a) => a.topic).filter((t): t is string => Boolean(t)))],
+/** The English catalog: only fully translated products/articles, everything translated. */
+export function englishCatalog(catalog: SeoCatalog): SeoCatalog {
+  return localizedCatalog(catalog, "en");
+}
+
+function publishAvailability(lang: ForeignLang, localized: SeoCatalog): void {
+  setLangAvailability(lang, {
+    articles: localized.articles.map((article) => article.id),
+    products: localized.products.map((product) => product.id),
+    topics: [...new Set(localized.articles.map((article) => article.topic).filter((topic): topic is string => Boolean(topic)))],
   });
 }

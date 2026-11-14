@@ -15,7 +15,7 @@ import {
 } from '../icons';
 import { isLiteDevice } from '../lib/device';
 
-import { isEn, t, tr } from '../i18n';
+import { isLtr, t, tr } from '../i18n';
 const ICONS: Record<string, React.ElementType> = {
   LayoutGrid,
   Box,
@@ -34,10 +34,10 @@ interface CategoryMarqueeProps {
   onSelectCategory: (cat: ProductCategory | 'all') => void;
 }
 
-/** English tile label: "Poultry heating systems" → "Heating systems" (the Persian tile drops « مرغداری» the same way). */
-function shortEn(title: string): string {
-  const en = tr(title).replace(/^Poultry\s+/i, '');
-  return en.charAt(0).toUpperCase() + en.slice(1);
+/** Foreign tile label: drop a leading "Poultry" / "Kanatlı" the way the Persian tile drops « مرغداری». */
+function shortForeign(title: string): string {
+  const text = tr(title).replace(/^(?:Poultry|Kanatlı)\s+/i, '');
+  return text.charAt(0).toLocaleUpperCase('tr') + text.slice(1);
 }
 
 export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCategory, onSelectCategory }) => {
@@ -159,7 +159,7 @@ export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCatego
 
               <div className="relative z-20 flex flex-col items-center justify-center gap-1.5 w-full pb-2">
                 <h3 className={`text-lg sm:text-2xl font-black text-center ${isSelected ? 'text-white' : 'text-slate-800'}`}>
-                  {isEn() ? shortEn(cat.title) : cat.title.replace(/ مرغداری$/, '')}
+                  {isLtr() ? shortForeign(cat.title) : cat.title.replace(/ مرغداری$/, '')}
                 </h3>
               </div>
             </div>

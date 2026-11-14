@@ -1,4 +1,4 @@
-import { isEn, localizeHref, pathLang, stripLangPrefix, withLang } from "../i18n";
+import { getLang, localizeHref, pathLang, stripLangPrefix, withLang } from "../i18n";
 import { CANONICAL_ORIGIN, resolveSeo, type SeoCatalog, type SeoDoc } from "./resolveSeo";
 
 export function localizeBodyHrefs(html: string): string {
@@ -22,7 +22,7 @@ export function localizeJsonLd(value: unknown, key = ""): unknown {
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-      if (k === "inLanguage" && typeof v === "string") out[k] = "en";
+      if (k === "inLanguage" && typeof v === "string") out[k] = getLang() === "tr" ? "tr" : "en";
       else out[k] = localizeJsonLd(v, k);
     }
     return out;
@@ -30,14 +30,15 @@ export function localizeJsonLd(value: unknown, key = ""): unknown {
   return value;
 }
 
-/** Language-aware SEO doc for a request path, including /en/... on the client. */
+/** Language-aware SEO doc for a request path, including /en and /tr on the client. */
 export function resolveSeoForPath(pathname: string, catalog: SeoCatalog): SeoDoc {
   const path = (pathname.split(/[?#]/)[0] || "/") || "/";
-  // Client English router uses basename /en, so useLocation() is already unprefixed.
-  const lang = pathLang(path) === "en" || isEn() ? "en" : "fa";
-  const neutral = stripLangPrefix(path);
-  if (lang !== "en") return resolveSeo(path, catalog);
-  return withLang("en", () => {
+  // A foreign router uses basename /en or /tr, so useLocation() is already unprefixed.
+  const fromPath = pathLang(path);
+  const lang = fromPath !== "fa" ? fromPath : getLang();
+  const neutral = fromPath !== "fa" ? stripLangPrefix(path) : path;
+  if (lang === "fa") return resolveSeo(path, catalog);
+  return withLang(lang, () => {
     const d = resolveSeo(neutral, catalog);
     return {
       ...d,

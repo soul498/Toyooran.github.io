@@ -16,7 +16,7 @@ import {
 import { ABOUT_PHOTOS, type SitePhoto } from '../data/sitePhotos';
 import { faDigits } from '../lib/faDigits';
 
-import { isEn, t, tr } from '../i18n';
+import { getLang, isLtr, t, tr } from '../i18n';
 
 type StepKey = (typeof ABOUT_PROCESS_STEPS)[number][0];
 /** Photos per process step (graphic designer's picks, approved by the user 2026-11-14). */
@@ -71,9 +71,10 @@ const StepMedia: React.FC<{ stepKey: StepKey }> = ({ stepKey }) => {
 
 export const AboutPage: React.FC = () => {
   const { pageContent } = useData();
-  const cms = isEn()
-    ? { image: pageContent.about.image, ...(pageContent.about.translations?.en || {}) }
-    : pageContent.about;
+  const lang = getLang();
+  const cms = lang === 'fa'
+    ? pageContent.about
+    : { image: pageContent.about.image, ...(pageContent.about.translations?.[lang] || {}) };
   const features = cms.features || [];
   const feature = (index: number, title: string, description: string) => ({
     title: features[index]?.title || title,
@@ -85,7 +86,7 @@ export const AboutPage: React.FC = () => {
     { Icon: Factory, box: 'bg-amber-500/10 border-amber-500/10', icon: 'text-amber-600' },
     { Icon: Globe2, box: 'bg-emerald-500/10 border-emerald-500/10', icon: 'text-emerald-600' },
   ] as const;
-  const numberLabel = (n: number) => (isEn() ? String(n) : faDigits(n));
+  const numberLabel = (n: number) => (isLtr() ? String(n) : faDigits(n));
   const activities = ABOUT_ACTIVITIES.map(([title, description], index) => feature(index, tr(title), tr(description)));
   const introParagraphs = cms.intro ? cms.intro.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean) : ABOUT_INTRO_PARAGRAPHS.map((paragraph) => tr(paragraph));
   return (

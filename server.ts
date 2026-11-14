@@ -34,9 +34,9 @@ import {
 } from "./server/auth";
 import { z } from 'zod';
 import { isDisabledPagePath, legacyServiceTarget } from "./src/data/disabledPages";
-import { CANONICAL_ORIGIN, englishFallbackRedirect, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxtAll, normalizePublicUrl, robotsTxt, seoRedirectForAnyLang, sitemapXml, stripQuery } from "./server/seo";
-import { englishArticle, englishCatalog } from "./server/i18n";
-import { EN_PREFIX, pathLang } from "./src/i18n";
+import { CANONICAL_ORIGIN, foreignFallbackRedirect, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxtAll, normalizePublicUrl, robotsTxt, seoRedirectForAnyLang, sitemapXml, stripQuery } from "./server/seo";
+import { articleFor, localizedCatalog } from "./server/i18n";
+import { LANG_PREFIX, pathLang, type ForeignLang } from "./src/i18n";
 import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
 import { baleInboxWritable, enqueueConsultationNotice } from "./server/baleInbox";
@@ -78,7 +78,8 @@ async function startServer() {
     if (!isDisabledPagePath(req.path)) return next();
     res.setHeader('Cache-Control', 'public, max-age=3600');
     const target = legacyServiceTarget(req.path);
-    const dest = pathLang(req.path) === 'en' ? `${EN_PREFIX}${target}` : target;
+    const lang = pathLang(req.path);
+    const dest = lang === 'fa' ? target : `${LANG_PREFIX[lang]}${target}`;
     return res.redirect(301, `${CANONICAL_ORIGIN}${dest}`);
   });
   app.use((req, res, next) => {
@@ -89,8 +90,8 @@ async function startServer() {
     if (dest) {
       return res.redirect(301, `${CANONICAL_ORIGIN}${dest}`);
     }
-    // An /en URL whose Persian page has no English version yet → closest English listing (temporary).
-    const enFallback = englishFallbackRedirect(req.path);
+    // A /en or /tr URL whose Persian page has no translation yet → closest listing (temporary).
+    const enFallback = foreignFallbackRedirect(req.path);
     if (enFallback) {
       res.setHeader('Cache-Control', 'no-store');
       res.setHeader('X-Robots-Tag', 'noindex');
@@ -295,7 +296,8 @@ async function startServer() {
   // change visible to ordinary visitors immediately, independently of the admin UI.
   app.get('/api/public/cms', (req, res) => {
     const baseCatalog = loadSeoCatalog();
-    const catalog = req.query.lang === 'en' ? englishCatalog(baseCatalog) : baseCatalog;
+    const requested = req.query.lang === 'en' || req.query.lang === 'tr' ? req.query.lang as ForeignLang : null;
+    const catalog = requested ? localizedCatalog(baseCatalog, requested) : baseCatalog;
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     res.json({
       products: catalog.products,
@@ -310,9 +312,10 @@ async function startServer() {
   });
   app.get('/api/magazine', (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
-    // ?lang=en: only articles with a complete English version (src/i18n/en/magazine.json), translated.
-    if (req.query.lang === 'en') {
-      const articles = loadPublicArticles().map((a) => englishArticle(a)).filter(Boolean);
+    // ?lang=en|tr: only articles with a complete translation, translated.
+    if (req.query.lang === 'en' || req.query.lang === 'tr') {
+      const lang = req.query.lang as ForeignLang;
+      const articles = loadPublicArticles().map((a) => articleFor(lang, a)).filter(Boolean);
       return res.json({ articles, topics: [...new Set(articles.map((a) => a!.topic).filter(Boolean))] });
     }
     res.json({ articles: loadPublicArticles() });

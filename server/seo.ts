@@ -1,7 +1,7 @@
 import { loadSeoCatalog } from "./catalog";
 import { HOME_HERO_MOBILE_PHOTO, HOME_HERO_PHOTO, sitePhotoSrc, sitePhotoSrcSet } from "../src/data/sitePhotos";
-import { englishCatalog } from "./i18n";
-import { EN_PREFIX, localizeHref, pathLang, stripLangPrefix, withLang } from "../src/i18n";
+import { localizedCatalog } from "./i18n";
+import { LANG_PREFIX, type ForeignLang, localizeHref, pathLang, stripLangPrefix, withLang } from "../src/i18n";
 import {
   CANONICAL_ORIGIN,
   canonicalPath,
@@ -47,58 +47,74 @@ export function normalizePublicUrl(originalUrl: string): string | null {
 
 export function isKnownPublicPath(pathname: string): boolean {
   const path = stripQuery(pathname);
-  if (pathLang(path) === "en") {
+  const lang = pathLang(path);
+  if (lang !== "fa") {
     const neutral = stripLangPrefix(path);
     if (isPrivateAppPath(neutral)) return false;
-    const en = englishCatalog(loadSeoCatalog());
-    return withLang("en", () => isKnownWithCatalog(neutral, en) && !(neutral.startsWith("/magazine/topic/") && !topicHasEnglish(neutral, en)));
+    const localized = localizedCatalog(loadSeoCatalog(), lang);
+    return withLang(lang, () => isKnownWithCatalog(neutral, localized) && !(neutral.startsWith("/magazine/topic/") && !topicHasLang(neutral, localized)));
   }
   return isKnownWithCatalog(pathname, loadSeoCatalog());
 }
 
-function topicHasEnglish(neutralPath: string, en: ReturnType<typeof englishCatalog>): boolean {
+function topicHasLang(neutralPath: string, localized: ReturnType<typeof localizedCatalog>): boolean {
   const slug = neutralPath.split("/").filter(Boolean)[2];
-  return en.articles.some((a) => a.topic === slug);
+  return localized.articles.some((a) => a.topic === slug);
+}
+
+/** "/x" → "/en/x" or "/tr/x" for a page that exists in that language, else null. */
+export function foreignEquivalent(neutralPath: string, lang: ForeignLang): string | null {
+  const localized = localizedCatalog(loadSeoCatalog(), lang);
+  const prefix = LANG_PREFIX[lang];
+  const ok = withLang(lang, () => isKnownWithCatalog(neutralPath, localized)) && !(neutralPath.startsWith("/magazine/topic/") && !topicHasLang(neutralPath, localized));
+  if (!ok || isPrivateAppPath(neutralPath)) return null;
+  return neutralPath === "/" ? prefix : `${prefix}${neutralPath}`;
 }
 
 /** "/x" → "/en/x" for a page that exists in English, else null. */
 export function englishEquivalent(neutralPath: string): string | null {
-  const en = englishCatalog(loadSeoCatalog());
-  const ok = withLang("en", () => isKnownWithCatalog(neutralPath, en)) && !(neutralPath.startsWith("/magazine/topic/") && !topicHasEnglish(neutralPath, en));
-  if (!ok || isPrivateAppPath(neutralPath)) return null;
-  return neutralPath === "/" ? EN_PREFIX : `${EN_PREFIX}${neutralPath}`;
+  return foreignEquivalent(neutralPath, "en");
 }
 
 /**
- * /en URL of a Persian page that has no English version yet: send visitors (e.g. from the
- * language switch) to the closest English listing instead of a 404. Temporary (302).
+ * Foreign URL of a Persian page that has no translation yet: send visitors (e.g. from the
+ * language switch) to the closest listing instead of a 404. Temporary (302).
  */
-export function englishFallbackRedirect(pathname: string): string | null {
+export function foreignFallbackRedirect(pathname: string): string | null {
   const path = stripQuery(pathname);
-  if (pathLang(path) !== "en") return null;
+  const lang = pathLang(path);
+  if (lang === "fa") return null;
+  const prefix = LANG_PREFIX[lang];
   const neutral = stripLangPrefix(path);
   if (isKnownPublicPath(path)) return null;
   if (!isKnownWithCatalog(neutral, loadSeoCatalog())) return null;
   const seg = neutral.split("/").filter(Boolean);
-  if (seg[0] === "magazine") return `${EN_PREFIX}/magazine`;
-  if (seg[0] === "products") return `${EN_PREFIX}/products`;
-  return EN_PREFIX;
+  if (seg[0] === "magazine") return `${prefix}/magazine`;
+  if (seg[0] === "products") return `${prefix}/products`;
+  return prefix;
 }
 
-/** Persian paths of the seo redirects, mapped for /en too. */
+/** /en URL of a Persian page that has no English version yet. Temporary (302). */
+export function englishFallbackRedirect(pathname: string): string | null {
+  return pathLang(stripQuery(pathname)) === "en" ? foreignFallbackRedirect(pathname) : null;
+}
+
+/** Persian paths of the seo redirects, mapped for /en and /tr too. */
 export function seoRedirectForAnyLang(pathname: string, catalog: ReturnType<typeof loadSeoCatalog>): string | null {
-  if (pathLang(pathname) !== "en") return seoRedirectFor(pathname, catalog);
+  const lang = pathLang(pathname);
+  if (lang === "fa") return seoRedirectFor(pathname, catalog);
+  const prefix = LANG_PREFIX[lang];
   const neutral = stripLangPrefix(pathname);
   const productSlug = neutral.split("/").filter(Boolean);
-  // Old competitor-name slugs under /en must 301 in a single hop to the listing,
-  // not 301 to the new Persian slug and then 302 because there is no English page.
+  // Old competitor-name slugs under /en or /tr must 301 in a single hop to the listing,
+  // not 301 to the new Persian slug and then 302 because there is no translated page.
   if (productSlug[0] === "products" && productSlug[1] && isLegacyCompetitorProductSlug(productSlug[1])) {
-    return `${EN_PREFIX}/products`;
+    return `${prefix}/products`;
   }
   const r = seoRedirectFor(neutral, catalog);
   if (!r) return null;
-  const localized = withLang("en", () => localizeHref(r));
-  return englishFallbackRedirect(localized) || localized;
+  const localized = withLang(lang, () => localizeHref(r));
+  return foreignFallbackRedirect(localized) || localized;
 }
 
 function deferRenderBlockingCss(html: string): string {
@@ -132,24 +148,24 @@ export function injectSeoTags(html: string, reqPath: string): string {
   const lang = pathLang(path);
   const neutral = stripLangPrefix(path);
   const catalog = loadSeoCatalog();
-  const enCatalog = englishCatalog(catalog);
+  const foreignCatalog = lang === "fa" ? null : localizedCatalog(catalog, lang);
   const doc =
-    lang === "en"
-      ? withLang("en", () => {
-          const d = resolveSeo(neutral, enCatalog);
+    lang === "fa" || !foreignCatalog
+      ? resolveSeo(path, catalog)
+      : withLang(lang, () => {
+          const d = resolveSeo(neutral, foreignCatalog);
           return {
             ...d,
             canonicalHref: d.canonicalHref ? localizeHref(d.canonicalHref) : null,
             body: localizeBodyHrefs(d.body),
             jsonLd: d.jsonLd.map((item) => localizeJsonLd(item)),
           };
-        })
-      : resolveSeo(path, catalog);
+        });
   let out = ensureViewport(html);
   out = deferRenderBlockingCss(out);
-  if (lang === "en") {
-    out = out.replace(/<html\b[^>]*>/i, '<html lang="en" dir="ltr">');
-    // English pages use the Latin cut of the brand font.
+  if (lang === "en" || lang === "tr") {
+    out = out.replace(/<html\b[^>]*>/i, `<html lang="${lang}" dir="ltr">`);
+    // Latin-script pages use the Latin cut of the brand font.
     out = out.replace(/\/fonts\/estedad-(400|700)\.woff2/g, "/fonts/estedad-latin-$1.woff2");
   } else {
     out = out.replace(/<html\b[^>]*>/i, '<html lang="fa-IR" dir="rtl">');
@@ -187,8 +203,8 @@ ${canonical}${neutral === "/" ? HOME_HERO_PRELOAD : ""}    <meta property="og:ti
     <meta property="og:description" content="${escapeHtml(doc.description)}" />
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />
     <meta property="og:type" content="${doc.ogType}" />
-    <meta property="og:site_name" content="${lang === "en" ? "Toyooran Sanat Pouya" : "طیوران صنعت پویا"}" />
-    <meta property="og:locale" content="${lang === "en" ? "en_US" : "fa_IR"}" />
+    <meta property="og:site_name" content="${lang === "fa" ? "طیوران صنعت پویا" : "Toyooran Sanat Pouya"}" />
+    <meta property="og:locale" content="${lang === "tr" ? "tr_TR" : lang === "en" ? "en_US" : "fa_IR"}" />
     <meta property="og:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -207,17 +223,18 @@ ${robots}${jsonLd}`;
   return out;
 }
 
-/** hreflang fa / en / x-default (= Persian) when the page exists in both languages. */
+/** hreflang fa / en / tr / x-default (= Persian) for each language the page exists in. */
 function hreflangLinks(neutralPath: string, doc: { robots: string; notFound?: boolean }): string {
   if (doc.notFound || /noindex/.test(doc.robots)) return "";
-  const en = englishEquivalent(neutralPath);
-  if (!en) return "";
+  const en = foreignEquivalent(neutralPath, "en");
+  const tr = foreignEquivalent(neutralPath, "tr");
+  if (!en && !tr) return "";
   const fa = canonicalPath(neutralPath);
-  const enHref = canonicalPath(en);
-  return `    <link rel="alternate" hreflang="fa" href="${fa}" />
-    <link rel="alternate" hreflang="en" href="${enHref}" />
-    <link rel="alternate" hreflang="x-default" href="${fa}" />
-`;
+  const lines = [`    <link rel="alternate" hreflang="fa" href="${fa}" />`];
+  if (en) lines.push(`    <link rel="alternate" hreflang="en" href="${canonicalPath(en)}" />`);
+  if (tr) lines.push(`    <link rel="alternate" hreflang="tr" href="${canonicalPath(tr)}" />`);
+  lines.push(`    <link rel="alternate" hreflang="x-default" href="${fa}" />`);
+  return `${lines.join("\n")}\n`;
 }
 
 function robotsPrivateDisallows(): string {
@@ -262,21 +279,26 @@ function xmlEscape(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&apos;").replace(/"/g, "&quot;");
 }
 
-/** llms.txt: the Persian section (unchanged) followed by the English section. */
+/** llms.txt: Persian, then English, then Turkish. */
 export function llmsTxtAll(): string {
   const catalog = loadSeoCatalog();
-  const en = englishCatalog(catalog);
-  return `${llmsTxt(catalog)}\n${withLang("en", () => llmsTxt(en))}`;
+  const en = localizedCatalog(catalog, "en");
+  const tr = localizedCatalog(catalog, "tr");
+  return `${llmsTxt(catalog)}\n${withLang("en", () => llmsTxt(en))}\n${withLang("tr", () => llmsTxt(tr))}`;
+}
+
+function localizedSitemapUrls(catalog: ReturnType<typeof loadSeoCatalog>, lang: ForeignLang) {
+  const localized = localizedCatalog(catalog, lang);
+  const prefix = LANG_PREFIX[lang];
+  return withLang(lang, () => sitemapEntries(localized))
+    .filter((u) => !(u.loc.startsWith("/magazine/topic/") && !topicHasLang(u.loc, localized)))
+    .map((u) => ({ ...u, loc: u.loc === "/" ? prefix : `${prefix}${u.loc}` }));
 }
 
 export function sitemapXml(): string {
   const catalog = loadSeoCatalog();
-  const enCatalog = englishCatalog(catalog);
-  // Persian URLs first (unchanged), then the English pages under /en (only what exists in English).
-  const enUrls = withLang("en", () => sitemapEntries(enCatalog))
-    .filter((u) => !(u.loc.startsWith("/magazine/topic/") && !topicHasEnglish(u.loc, enCatalog)))
-    .map((u) => ({ ...u, loc: u.loc === "/" ? EN_PREFIX : `${EN_PREFIX}${u.loc}` }));
-  const urls = [...sitemapEntries(catalog), ...enUrls];
+  // Persian URLs first (unchanged), then /en, then /tr (only pages that exist in that language).
+  const urls = [...sitemapEntries(catalog), ...localizedSitemapUrls(catalog, "en"), ...localizedSitemapUrls(catalog, "tr")];
   const body = urls
     .map((u) => {
       const last = u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : "";

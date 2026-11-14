@@ -38,9 +38,13 @@ export const ProjectsTab: React.FC = () => {
     keyOutcome: 'کاهش ضریب تبدیل FCR به ۱.۵۲ و صرفه‌جویی انرژی'
   });
   const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Project, 'translations'>>;
+  const turkishDraft = (formData.translations?.tr || {}) as Partial<Omit<Project, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<Project, 'translations'>>) => {
-    setFormData({ ...formData, translations: { en: { ...englishDraft, ...patch } } });
+    setFormData({ ...formData, translations: { ...formData.translations, en: { ...englishDraft, ...patch } } });
+  };
+  const updateTurkish = (patch: Partial<Omit<Project, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, tr: { ...turkishDraft, ...patch } } });
   };
 
   const projectTypes = [
@@ -387,6 +391,17 @@ export const ProjectsTab: React.FC = () => {
                   <input value={englishDraft.location || ''} onChange={(event) => updateEnglish({ location: event.target.value })} placeholder="Location" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white sm:col-span-2" />
                 </div>
                 <textarea rows={3} value={englishDraft.keyOutcome || ''} onChange={(event) => updateEnglish({ keyOutcome: event.target.value })} placeholder="Key outcome" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+              </div>
+
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3" dir="ltr">
+                <div dir="rtl"><h4 className="text-xs font-black text-emerald-200">نسخه ترکی پروژه</h4><p className="text-[11px] text-slate-500 mt-1">این متن‌ها روی مسیر /tr استفاده می‌شوند.</p></div>
+                <input value={turkishDraft.title || ''} onChange={(event) => updateTurkish({ title: event.target.value })} placeholder="Proje başlığı" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input value={turkishDraft.typeTitle || ''} onChange={(event) => updateTurkish({ typeTitle: event.target.value })} placeholder="Proje türü" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                  <input value={turkishDraft.capacity || ''} onChange={(event) => updateTurkish({ capacity: event.target.value })} placeholder="Kapasite" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                  <input value={turkishDraft.location || ''} onChange={(event) => updateTurkish({ location: event.target.value })} placeholder="Konum" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white sm:col-span-2" />
+                </div>
+                <textarea rows={3} value={turkishDraft.keyOutcome || ''} onChange={(event) => updateTurkish({ keyOutcome: event.target.value })} placeholder="Sonuç" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">

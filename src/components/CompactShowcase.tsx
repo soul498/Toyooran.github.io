@@ -17,7 +17,7 @@ import { CategoryItem } from '../types';
 import { HOME_LINKS_CATEGORIES_HEADING } from '../seo/resolveSeo';
 import { useData } from '../context/DataContext';
 
-import { isEn, t, tr } from '../i18n';
+import { getLang, t, tr } from '../i18n';
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   LayoutGrid,
   Box,
@@ -35,7 +35,7 @@ interface CompactShowcaseProps {
   onNavigate: (path: string) => void;
 }
 
-const faNum = (value: number) => value.toLocaleString(isEn() ? 'en-US' : 'fa-IR');
+const faNum = (value: number) => value.toLocaleString(getLang() === 'tr' ? 'tr-TR' : getLang() === 'en' ? 'en-US' : 'fa-IR');
 
 /** Home block under the services cards: product categories only (bestsellers slider + magazine column removed 2026-10-27). */
 export const CompactShowcase: React.FC<CompactShowcaseProps> = ({ onNavigate }) => {

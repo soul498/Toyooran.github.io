@@ -16,8 +16,12 @@ export const CompanyCmsTab: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const englishDraft = (companyForm.translations?.en || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
 
+  const turkishDraft = (companyForm.translations?.tr || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
   const updateEnglish = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
-    setCompanyForm({ ...companyForm, translations: { en: { ...englishDraft, ...patch } } });
+    setCompanyForm({ ...companyForm, translations: { ...companyForm.translations, en: { ...englishDraft, ...patch } } });
+  };
+  const updateTurkish = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
+    setCompanyForm({ ...companyForm, translations: { ...companyForm.translations, tr: { ...turkishDraft, ...patch } } });
   };
 
   const handleSaveAll = (e: React.FormEvent) => {
@@ -109,6 +113,20 @@ export const CompanyCmsTab: React.FC = () => {
               <input value={englishDraft.address || ''} onChange={(event) => updateEnglish({ address: event.target.value })} placeholder="Head office address" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={englishDraft.factoryAddress || ''} onChange={(event) => updateEnglish({ factoryAddress: event.target.value })} placeholder="Factory address" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={englishDraft.workingHours || ''} onChange={(event) => updateEnglish({ workingHours: event.target.value })} placeholder="Working hours" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white md:col-span-2" />
+            </div>
+          </div>
+
+          <div className="md:col-span-2 lg:col-span-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3" dir="ltr">
+            <div dir="rtl">
+              <h3 className="text-xs font-black text-emerald-200">متن‌های ترکی شرکت</h3>
+              <p className="text-[11px] text-slate-500 mt-1">این متن‌ها فقط در نسخه /tr نشان داده می‌شوند.</p>
+            </div>
+            <input value={turkishDraft.tagline || ''} onChange={(event) => updateTurkish({ tagline: event.target.value })} placeholder="Şirket sloganı" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={turkishDraft.subTagline || ''} onChange={(event) => updateTurkish({ subTagline: event.target.value })} rows={2} placeholder="Kısa şirket tanıtımı" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input value={turkishDraft.address || ''} onChange={(event) => updateTurkish({ address: event.target.value })} placeholder="Merkez ofis adresi" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={turkishDraft.factoryAddress || ''} onChange={(event) => updateTurkish({ factoryAddress: event.target.value })} placeholder="Fabrika adresi" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={turkishDraft.workingHours || ''} onChange={(event) => updateTurkish({ workingHours: event.target.value })} placeholder="Çalışma saatleri" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white md:col-span-2" />
             </div>
           </div>
           

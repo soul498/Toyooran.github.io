@@ -108,6 +108,22 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
   const [englishReviewerName, setEnglishReviewerName] = useState(initialEnglish.reviewerName || "");
   const [englishReviewerRole, setEnglishReviewerRole] = useState(initialEnglish.reviewerRole || "");
   const [englishSourcesText, setEnglishSourcesText] = useState((initialEnglish.sources || []).map((source) => [source.name, source.url || ""].join(" | ")).join("\n"));
+  const initialTurkish = (initial?.translations?.tr || {}) as Partial<Omit<Article, 'translations'>>;
+  const [turkishTitle, setTurkishTitle] = useState(initialTurkish.title || "");
+  const [turkishCategoryLabel, setTurkishCategoryLabel] = useState(initialTurkish.categoryLabel || "");
+  const [turkishReadTime, setTurkishReadTime] = useState(initialTurkish.readTime || "");
+  const [turkishSummary, setTurkishSummary] = useState(initialTurkish.summary || "");
+  const [turkishContent, setTurkishContent] = useState(initialTurkish.content?.join("\n") || "");
+  const [turkishImageAlt, setTurkishImageAlt] = useState(initialTurkish.imageAlt || "");
+  const [turkishTagsText, setTurkishTagsText] = useState(initialTurkish.tags?.join(", ") || "");
+  const [turkishSeoTitle, setTurkishSeoTitle] = useState(initialTurkish.seoTitle || "");
+  const [turkishSeoDescription, setTurkishSeoDescription] = useState(initialTurkish.seoDescription || "");
+  const [turkishFocusKeyword, setTurkishFocusKeyword] = useState(initialTurkish.focusKeyword || "");
+  const [turkishAuthorName, setTurkishAuthorName] = useState(initialTurkish.authorName || "");
+  const [turkishAuthorRole, setTurkishAuthorRole] = useState(initialTurkish.authorRole || "");
+  const [turkishReviewerName, setTurkishReviewerName] = useState(initialTurkish.reviewerName || "");
+  const [turkishReviewerRole, setTurkishReviewerRole] = useState(initialTurkish.reviewerRole || "");
+  const [turkishSourcesText, setTurkishSourcesText] = useState((initialTurkish.sources || []).map((source) => [source.name, source.url || ""].join(" | ")).join("\n"));
   const [relatedProductIds, setRelatedProductIds] = useState<string[]>(initial?.relatedProductIds || []);
   const [relatedServiceId, setRelatedServiceId] = useState(initial?.relatedServiceId || "");
   const [noindex, setNoindex] = useState(Boolean(initial?.noindex));
@@ -339,6 +355,40 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       reviewerRole: englishReviewerRole.trim() || undefined,
       sources: englishSources.length ? englishSources : undefined,
     };
+    const turkishSources: ArticleSource[] = turkishSourcesText
+      .split("\n")
+      .map((line) => {
+        const [name, ...urlParts] = line.split("|");
+        return { name: name?.trim() || "", url: urlParts.join("|").trim() || undefined };
+      })
+      .filter((source) => source.name);
+    if (turkishSources.some((source) => source.url && !isSafeHref(source.url))) {
+      setError("آدرس منبع ترکی باید لینک http یا https باشد.");
+      return;
+    }
+    const turkishHasContent = [
+      turkishTitle, turkishCategoryLabel, turkishReadTime, turkishSummary, turkishContent, turkishImageAlt,
+      turkishTagsText, turkishSeoTitle, turkishSeoDescription, turkishFocusKeyword, turkishAuthorName,
+      turkishAuthorRole, turkishReviewerName, turkishReviewerRole, turkishSourcesText,
+    ].some((value) => value.trim());
+    const turkishTranslation: Partial<Omit<Article, 'translations'>> = {
+      ...initialTurkish,
+      title: turkishTitle.trim() || undefined,
+      categoryLabel: turkishCategoryLabel.trim() || undefined,
+      readTime: turkishReadTime.trim() || undefined,
+      summary: turkishSummary.trim() || undefined,
+      content: turkishContent.split("\n").map((line) => line.trim()).filter(Boolean),
+      imageAlt: turkishImageAlt.trim() || undefined,
+      tags: turkishTagsText.split(",").map((tag) => tag.trim()).filter(Boolean),
+      seoTitle: turkishSeoTitle.trim() || undefined,
+      seoDescription: turkishSeoDescription.trim() || undefined,
+      focusKeyword: turkishFocusKeyword.trim() || undefined,
+      authorName: turkishAuthorName.trim() || undefined,
+      authorRole: turkishAuthorRole.trim() || undefined,
+      reviewerName: turkishReviewerName.trim() || undefined,
+      reviewerRole: turkishReviewerRole.trim() || undefined,
+      sources: turkishSources.length ? turkishSources : undefined,
+    };
     const article: Article = {
       ...(initial || { id: nextSlug, title: title.trim(), category, categoryLabel: "", readTime: "", date, summary: "", content: [], relatedProductIds: [] }),
       id: nextSlug,
@@ -368,7 +418,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       focusKeyword: focusKeyword.trim() || undefined,
       noindex: noindex || undefined,
       aliases: aliases.size ? [...aliases] : undefined,
-      translations: englishHasContent ? { en: englishTranslation } : undefined,
+      translations: (englishHasContent || turkishHasContent) ? { ...(englishHasContent ? { en: englishTranslation } : {}), ...(turkishHasContent ? { tr: turkishTranslation } : {}) } : undefined,
     };
     setSaving(true);
     setError("");
@@ -722,6 +772,32 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
           <label className="block text-xs text-slate-300">Reviewer role<input value={englishReviewerRole} onChange={(event) => setEnglishReviewerRole(event.target.value)} className={fieldClass + " mt-1"} /></label>
         </div>
         <label className="block text-xs text-slate-300">Sources — one per line: Name | https://example.com<textarea rows={3} value={englishSourcesText} onChange={(event) => setEnglishSourcesText(event.target.value)} className={fieldClass + " mt-1 font-mono"} /></label>
+      </section>
+
+      <section className="bg-emerald-500/5 border border-emerald-500/25 rounded-3xl p-4 sm:p-5 space-y-4" dir="ltr">
+        <div dir="rtl">
+          <h3 className="text-sm font-black text-emerald-100">نسخه ترکی مقاله</h3>
+          <p className="text-[11px] text-slate-500 mt-1">محتوای ترکی مستقل است. تا وقتی ترجمه کامل نباشد، نسخه /tr این مقاله منتشر نمی‌شود.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <label className="block text-xs text-slate-300">Makale başlığı<input value={turkishTitle} onChange={(event) => setTurkishTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Kategori etiketi<input value={turkishCategoryLabel} onChange={(event) => setTurkishCategoryLabel(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Okuma süresi<input value={turkishReadTime} onChange={(event) => setTurkishReadTime(event.target.value)} placeholder="5 dk okuma" className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Görsel alt metni<input value={turkishImageAlt} onChange={(event) => setTurkishImageAlt(event.target.value)} className={fieldClass + " mt-1"} /></label>
+        </div>
+        <label className="block text-xs text-slate-300">Makale özeti<textarea rows={3} value={turkishSummary} onChange={(event) => setTurkishSummary(event.target.value)} className={fieldClass + " mt-1 leading-6"} /></label>
+        <label className="block text-xs text-slate-300">Makale içeriği (##, -, [IMG|...], [CTA|...] işaretlerini koruyun)<textarea rows={12} value={turkishContent} onChange={(event) => setTurkishContent(event.target.value)} className={fieldClass + " mt-1 leading-6 font-mono"} /></label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <label className="block text-xs text-slate-300">Etiketler (virgülle)<input value={turkishTagsText} onChange={(event) => setTurkishTagsText(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Odak anahtar kelime<input value={turkishFocusKeyword} onChange={(event) => setTurkishFocusKeyword(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">SEO başlığı<input value={turkishSeoTitle} onChange={(event) => setTurkishSeoTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">SEO açıklaması<textarea rows={2} value={turkishSeoDescription} onChange={(event) => setTurkishSeoDescription(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Yazar adı<input value={turkishAuthorName} onChange={(event) => setTurkishAuthorName(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">Yazar rolü<input value={turkishAuthorRole} onChange={(event) => setTurkishAuthorRole(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">İnceleyen adı<input value={turkishReviewerName} onChange={(event) => setTurkishReviewerName(event.target.value)} className={fieldClass + " mt-1"} /></label>
+          <label className="block text-xs text-slate-300">İnceleyen rolü<input value={turkishReviewerRole} onChange={(event) => setTurkishReviewerRole(event.target.value)} className={fieldClass + " mt-1"} /></label>
+        </div>
+        <label className="block text-xs text-slate-300">Kaynaklar — satır başına: Ad | https://example.com<textarea rows={3} value={turkishSourcesText} onChange={(event) => setTurkishSourcesText(event.target.value)} className={fieldClass + " mt-1 font-mono"} /></label>
       </section>
     </form>
   );

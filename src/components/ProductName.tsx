@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEn } from '../i18n';
+import { isLtr } from '../i18n';
 
 /**
  * Latin model names inside Persian product names («جت هیتر ۱۰۰ هزار (GLE-100)», «هیتر گازی مدل GH 0625»).
@@ -12,7 +12,7 @@ const LATIN_RUN = /[A-Za-z0-9][A-Za-z0-9\-./*_]*[A-Za-z][A-Za-z0-9\-./*_]*(?:\s+
  * hyphens around model names render in the right order in RTL text. English names render unchanged.
  */
 export const ProductName: React.FC<{ name: string }> = ({ name }) => {
-  if (isEn() || !name || !/[A-Za-z]/.test(name)) return <>{name}</>;
+  if (isLtr() || !name || !/[A-Za-z]/.test(name)) return <>{name}</>;
   const parts: React.ReactNode[] = [];
   let last = 0;
   for (const m of name.matchAll(LATIN_RUN)) {

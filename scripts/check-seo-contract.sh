@@ -54,11 +54,14 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   test "$rnd_code" = "404" || fail "/rnd must 404, got ${rnd_code}"
   en_rnd_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/en/rnd" | awk 'NR==1{print $2}')"
   test "$en_rnd_code" = "404" || fail "/en/rnd must 404, got ${en_rnd_code}"
+  tr_rnd_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/tr/rnd" | awk 'NR==1{print $2}')"
+  test "$tr_rnd_code" = "404" || fail "/tr/rnd must 404, got ${tr_rnd_code}"
   # Six service pages (src/data/servicePages.ts): 200, in the sitemap, linked from the homepage.
   for slug in industrial-buildings farm-equipment-installation feed-machinery feed-products modernization research-collaboration; do
     grep -q "/services/${slug}<" <<<"$sitemap" || fail "sitemap missing /services/${slug}"
     grep -q "/en/services/${slug}<" <<<"$sitemap" || fail "sitemap missing /en/services/${slug}"
-    for prefix in "" "/en"; do
+    grep -q "/tr/services/${slug}<" <<<"$sitemap" || fail "sitemap missing /tr/services/${slug}"
+    for prefix in "" "/en" "/tr"; do
       sc="$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000${prefix}/services/${slug}" || true)"
       test "$sc" = "200" || fail "${prefix}/services/${slug} must be 200, got ${sc}"
     done
@@ -68,7 +71,7 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   for pair in poultry-hall-fitout:modernization srv-turnkey-shed:industrial-buildings srv-poultry-equipment-supply:farm-equipment-installation srv-machinery-manufacturing:feed-machinery srv-feed-formulation-pharma:feed-products srv-consulting-efficiency:modernization; do
     slug="${pair%%:*}"; target="${pair##*:}"
     if grep -q "/services/${slug}<" <<<"$sitemap"; then fail "sitemap lists retired page /services/${slug}"; fi
-    for prefix in "" "/en"; do
+    for prefix in "" "/en" "/tr"; do
       off_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000${prefix}/services/${slug}" | awk 'NR==1{print $2}')"
       test "$off_code" = "301" || fail "retired ${prefix}/services/${slug} must 301, got ${off_code}"
       off_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000${prefix}/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"

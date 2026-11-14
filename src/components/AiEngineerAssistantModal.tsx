@@ -16,7 +16,7 @@ import {
   TrendingUp
 } from '../icons';
 
-import { isEn, t } from '../i18n';
+import { getLang, t } from '../i18n';
 interface AiEngineerAssistantModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -39,7 +39,7 @@ export const AiEngineerAssistantModal: React.FC<AiEngineerAssistantModalProps> =
     {
       sender: 'ai',
       text: t("سلام و احترام! من **مهندس هوشمند طیوران** هستم. در زمینه محاسبات تهویه سالن (CFM)، فرمولاسیون خوراک و ضریب تبدیل (FCR)، مشخصات فنی ماشین‌آلات پرس پلت و استانداردهای ساخت سوله آماده پاسخگویی تخصصی به شما می‌باشم.\n\nچگونه می‌توانم در پروژه شما کمکتان کنم؟"),
-      timestamp: new Date().toLocaleTimeString(isEn() ? 'en-US' : 'fa-IR', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toLocaleTimeString(getLang() === 'tr' ? 'tr-TR' : getLang() === 'en' ? 'en-US' : 'fa-IR', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -77,7 +77,7 @@ export const AiEngineerAssistantModal: React.FC<AiEngineerAssistantModalProps> =
     const userMsg: Message = {
       sender: 'user',
       text: query,
-      timestamp: new Date().toLocaleTimeString(isEn() ? 'en-US' : 'fa-IR', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toLocaleTimeString(getLang() === 'tr' ? 'tr-TR' : getLang() === 'en' ? 'en-US' : 'fa-IR', { hour: '2-digit', minute: '2-digit' }),
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -95,7 +95,7 @@ export const AiEngineerAssistantModal: React.FC<AiEngineerAssistantModalProps> =
       const aiMsg: Message = {
         sender: 'ai',
         text: data.reply || t("پاسخی از سرور هوش مصنوعی دریافت نشد."),
-        timestamp: new Date().toLocaleTimeString(isEn() ? 'en-US' : 'fa-IR', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date().toLocaleTimeString(getLang() === 'tr' ? 'tr-TR' : getLang() === 'en' ? 'en-US' : 'fa-IR', { hour: '2-digit', minute: '2-digit' }),
         source: data.source,
       };
 
@@ -104,7 +104,7 @@ export const AiEngineerAssistantModal: React.FC<AiEngineerAssistantModalProps> =
       const errorMsg: Message = {
         sender: 'ai',
         text: t("متأسفانه در برقراری ارتباط با سرور هوش مصنوعی خطایی رخ داد. لطفاً دوباره امتحان کنید."),
-        timestamp: new Date().toLocaleTimeString(isEn() ? 'en-US' : 'fa-IR', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date().toLocaleTimeString(getLang() === 'tr' ? 'tr-TR' : getLang() === 'en' ? 'en-US' : 'fa-IR', { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {

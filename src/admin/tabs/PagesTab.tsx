@@ -6,9 +6,11 @@ import { ImagePicker } from '../components/ImagePicker';
 import { PAGE_HEROES } from '../../data/pageHeroes';
 import { ABOUT_ACTIVITIES, ABOUT_INTRO_HEADING, ABOUT_INTRO_PARAGRAPHS } from '../../data/aboutCopy';
 import { EN_DICT } from '../../i18n/enDict';
+import { TR_DICT } from '../../i18n/trDict';
 import { hasPersian } from '../../i18n';
 
 const en = (fa?: string) => fa ? EN_DICT[fa] || '' : '';
+const trText = (fa?: string) => fa ? TR_DICT[fa] || '' : '';
 const containsPersian = (value: unknown): boolean => typeof value === 'string' ? hasPersian(value) : Array.isArray(value) ? value.some(containsPersian) : Boolean(value && typeof value === 'object' && Object.values(value).some(containsPersian));
 const PAGE_PATH: Record<CmsPageKey, string> = { services: '/services', magazine: '/magazine', about: '/about', contact: '/contact' };
 // Defaults = the approved /about copy (src/data/aboutCopy.ts). Empty CMS fields fall back to these.
@@ -38,7 +40,9 @@ export const PagesTab: React.FC = () => {
   const activeHero = useMemo(() => draft.heroes[activePage] || {}, [draft.heroes, activePage]);
   const baseHero = PAGE_HEROES[PAGE_PATH[activePage]];
   const activeHeroEn = (activeHero.translations?.en || {}) as Partial<Omit<PageHeroCms, 'translations'>>;
+  const activeHeroTr = (activeHero.translations?.tr || {}) as Partial<Omit<PageHeroCms, 'translations'>>;
   const aboutEn = (draft.about.translations?.en || {}) as Partial<Omit<AboutPageCms, 'translations'>>;
+  const aboutTr = (draft.about.translations?.tr || {}) as Partial<Omit<AboutPageCms, 'translations'>>;
 
   const updateHero = (patch: Partial<PageHeroCms>) => {
     setDraft((previous) => ({
@@ -51,18 +55,22 @@ export const PagesTab: React.FC = () => {
   };
 
   const updateHeroEnglish = (patch: Partial<PageHeroCms>) => {
-    updateHero({ translations: { en: { ...activeHeroEn, ...patch } } });
+    updateHero({ translations: { ...activeHero.translations, en: { ...activeHeroEn, ...patch } } });
+  };
+  const updateHeroTurkish = (patch: Partial<PageHeroCms>) => {
+    updateHero({ translations: { ...activeHero.translations, tr: { ...activeHeroTr, ...patch } } });
   };
 
   const updateAbout = (patch: Partial<AboutPageCms>) => {
     setDraft((previous) => ({ ...previous, about: { ...previous.about, ...patch } }));
   };
 
-  const updateAboutFeature = (index: number, patch: { title?: string; description?: string }, english = false) => {
-    const base = english ? aboutEn : draft.about;
+  const updateAboutFeature = (index: number, patch: { title?: string; description?: string }, locale?: 'en' | 'tr') => {
+    const base = locale === 'en' ? aboutEn : locale === 'tr' ? aboutTr : draft.about;
     const features = [...(base.features || [])];
     features[index] = { ...(features[index] || {}), ...patch };
-    if (english) updateAbout({ translations: { en: { ...aboutEn, features } } });
+    if (locale === 'en') updateAbout({ translations: { ...draft.about.translations, en: { ...aboutEn, features } } });
+    else if (locale === 'tr') updateAbout({ translations: { ...draft.about.translations, tr: { ...aboutTr, features } } });
     else updateAbout({ features });
   };
 
@@ -71,8 +79,9 @@ export const PagesTab: React.FC = () => {
     setSaving(true);
     setSaved(false);
     setSaveError('');
-    if (Object.values(draft.heroes as Record<string, PageHeroCms>).some((hero) => containsPersian(hero?.translations?.en)) || containsPersian(draft.about.translations?.en) || containsPersian(draft.rnd.translations?.en)) {
-      setSaveError('فیلدهای نسخهٔ انگلیسی نباید متن فارسی داشته باشند.');
+    const foreignCopy = [draft.about.translations?.en, draft.about.translations?.tr, draft.rnd.translations?.en, draft.rnd.translations?.tr, ...Object.values(draft.heroes as Record<string, PageHeroCms>).flatMap((hero) => [hero?.translations?.en, hero?.translations?.tr])];
+    if (foreignCopy.some((value) => containsPersian(value))) {
+      setSaveError('فیلدهای نسخهٔ انگلیسی و ترکی نباید متن فارسی داشته باشند.');
       setSaving(false);
       return;
     }
@@ -120,7 +129,7 @@ export const PagesTab: React.FC = () => {
           <h3 className="text-sm font-black text-white">{PAGE_OPTIONS.find((item) => item.key === activePage)?.label} — هیرو صفحه</h3>
           <p className="text-[11px] text-slate-500 mt-1">{PAGE_OPTIONS.find((item) => item.key === activePage)?.description}</p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
           <div className="space-y-3">
             <p className="text-xs font-bold text-amber-300">فارسی</p>
             <label className="block text-xs text-slate-300">تیتر اصلی<input value={activeHero.title ?? baseHero.title} onChange={(event) => updateHero({ title: event.target.value })} className={fieldClass} /></label>
@@ -137,6 +146,14 @@ export const PagesTab: React.FC = () => {
             <label className="block text-xs text-slate-300">Primary button<input value={activeHeroEn.ctaLabel ?? en(baseHero.cta?.label)} onChange={(event) => updateHeroEnglish({ ctaLabel: event.target.value })} className={fieldClass} /></label>
             <label className="block text-xs text-slate-300">Secondary button<input value={activeHeroEn.secondaryCtaLabel ?? en(baseHero.secondaryCta?.label)} onChange={(event) => updateHeroEnglish({ secondaryCtaLabel: event.target.value })} className={fieldClass} /></label>
           </div>
+          <div className="space-y-3" dir="ltr">
+            <p className="text-xs font-bold text-emerald-300">Türkçe</p>
+            <label className="block text-xs text-slate-300">Sayfa başlığı<input value={activeHeroTr.title ?? trText(baseHero.title)} onChange={(event) => updateHeroTurkish({ title: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Üst başlık<input value={activeHeroTr.eyebrow ?? trText(baseHero.eyebrow)} onChange={(event) => updateHeroTurkish({ eyebrow: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Alt metin<textarea rows={3} value={activeHeroTr.subtitle ?? trText(baseHero.subtitle)} onChange={(event) => updateHeroTurkish({ subtitle: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">Birincil düğme<input value={activeHeroTr.ctaLabel ?? trText(baseHero.cta?.label)} onChange={(event) => updateHeroTurkish({ ctaLabel: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">İkincil düğme<input value={activeHeroTr.secondaryCtaLabel ?? trText(baseHero.secondaryCta?.label)} onChange={(event) => updateHeroTurkish({ secondaryCtaLabel: event.target.value })} className={fieldClass} /></label>
+          </div>
         </div>
       </section>
 
@@ -144,7 +161,7 @@ export const PagesTab: React.FC = () => {
         <section className="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-5">
           <div><h3 className="text-sm font-black text-white">بخش معرفی صفحه درباره شرکت</h3><p className="text-[11px] text-slate-500 mt-1">تصویر، متن معرفی (پاراگراف‌ها با یک خط خالی جدا می‌شوند) و شش حوزهٔ فعالیت قابل ویرایش‌اند.</p></div>
           <ImagePicker label="تصویر معرفی" value={draft.about.image || ''} onChange={(image) => updateAbout({ image })} />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
             <div className="space-y-3">
               <p className="text-xs font-bold text-amber-300">فارسی</p>
               <label className="block text-xs text-slate-300">تیتر معرفی<input value={draft.about.heading ?? ABOUT_HEADING} onChange={(event) => updateAbout({ heading: event.target.value })} className={fieldClass} /></label>
@@ -159,13 +176,25 @@ export const PagesTab: React.FC = () => {
             </div>
             <div className="space-y-3" dir="ltr">
               <p className="text-xs font-bold text-blue-300">English</p>
-              <label className="block text-xs text-slate-300">Introduction title<input value={aboutEn.heading ?? en(ABOUT_HEADING)} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, heading: event.target.value } } })} className={fieldClass} /></label>
-              <label className="block text-xs text-slate-300">Introduction text<textarea rows={5} value={aboutEn.intro ?? ABOUT_INTRO_PARAGRAPHS.map((paragraph) => en(paragraph)).join('\n\n')} onChange={(event) => updateAbout({ translations: { en: { ...aboutEn, intro: event.target.value } } })} className={fieldClass} /></label>
+              <label className="block text-xs text-slate-300">Introduction title<input value={aboutEn.heading ?? en(ABOUT_HEADING)} onChange={(event) => updateAbout({ translations: { ...draft.about.translations, en: { ...aboutEn, heading: event.target.value } } })} className={fieldClass} /></label>
+              <label className="block text-xs text-slate-300">Introduction text<textarea rows={5} value={aboutEn.intro ?? ABOUT_INTRO_PARAGRAPHS.map((paragraph) => en(paragraph)).join('\n\n')} onChange={(event) => updateAbout({ translations: { ...draft.about.translations, en: { ...aboutEn, intro: event.target.value } } })} className={fieldClass} /></label>
               {ABOUT_FEATURES.map((_, index) => (
                 <div key={index} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-3 space-y-2">
                   <p className="text-[11px] text-slate-500">Area of activity {index + 1}</p>
-                  <input value={aboutEn.features?.[index]?.title ?? en(ABOUT_FEATURES[index][0])} onChange={(event) => updateAboutFeature(index, { title: event.target.value }, true)} placeholder="Title" className={compactFieldClass} />
-                  <textarea rows={2} value={aboutEn.features?.[index]?.description ?? en(ABOUT_FEATURES[index][1])} onChange={(event) => updateAboutFeature(index, { description: event.target.value }, true)} placeholder="Description" className={compactFieldClass} />
+                  <input value={aboutEn.features?.[index]?.title ?? en(ABOUT_FEATURES[index][0])} onChange={(event) => updateAboutFeature(index, { title: event.target.value }, 'en')} placeholder="Title" className={compactFieldClass} />
+                  <textarea rows={2} value={aboutEn.features?.[index]?.description ?? en(ABOUT_FEATURES[index][1])} onChange={(event) => updateAboutFeature(index, { description: event.target.value }, 'en')} placeholder="Description" className={compactFieldClass} />
+                </div>
+              ))}
+            </div>
+            <div className="space-y-3" dir="ltr">
+              <p className="text-xs font-bold text-emerald-300">Türkçe</p>
+              <label className="block text-xs text-slate-300">Tanıtım başlığı<input value={aboutTr.heading ?? trText(ABOUT_HEADING)} onChange={(event) => updateAbout({ translations: { ...draft.about.translations, tr: { ...aboutTr, heading: event.target.value } } })} className={fieldClass} /></label>
+              <label className="block text-xs text-slate-300">Tanıtım metni<textarea rows={5} value={aboutTr.intro ?? ABOUT_INTRO_PARAGRAPHS.map((paragraph) => trText(paragraph)).join('\n\n')} onChange={(event) => updateAbout({ translations: { ...draft.about.translations, tr: { ...aboutTr, intro: event.target.value } } })} className={fieldClass} /></label>
+              {ABOUT_FEATURES.map((_, index) => (
+                <div key={index} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-3 space-y-2">
+                  <p className="text-[11px] text-slate-500">Faaliyet alanı {index + 1}</p>
+                  <input value={aboutTr.features?.[index]?.title ?? trText(ABOUT_FEATURES[index][0])} onChange={(event) => updateAboutFeature(index, { title: event.target.value }, 'tr')} placeholder="Başlık" className={compactFieldClass} />
+                  <textarea rows={2} value={aboutTr.features?.[index]?.description ?? trText(ABOUT_FEATURES[index][1])} onChange={(event) => updateAboutFeature(index, { description: event.target.value }, 'tr')} placeholder="Açıklama" className={compactFieldClass} />
                 </div>
               ))}
             </div>

@@ -5,6 +5,7 @@ import { ImagePicker } from '../components/ImagePicker';
 import { HeroCms } from '../../types';
 import { DEFAULT_HERO_CMS } from '../../data/mockData';
 import { EN_DICT } from '../../i18n/enDict';
+import { TR_DICT } from '../../i18n/trDict';
 import { hasPersian } from '../../i18n';
 
 export const HeroCmsTab: React.FC = () => {
@@ -14,9 +15,13 @@ export const HeroCmsTab: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const englishDraft = (heroForm.translations?.en || {}) as Partial<Omit<HeroCms, 'translations'>>;
+  const turkishDraft = (heroForm.translations?.tr || {}) as Partial<Omit<HeroCms, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
-    setHeroForm({ ...heroForm, translations: { en: { ...englishDraft, ...patch } } });
+    setHeroForm({ ...heroForm, translations: { ...heroForm.translations, en: { ...englishDraft, ...patch } } });
+  };
+  const updateTurkish = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
+    setHeroForm({ ...heroForm, translations: { ...heroForm.translations, tr: { ...turkishDraft, ...patch } } });
   };
 
   const handleSaveAll = async (e: React.FormEvent) => {
@@ -24,8 +29,8 @@ export const HeroCmsTab: React.FC = () => {
     setSaving(true);
     setSaveSuccess(false);
     setSaveError('');
-    if (Object.values(englishDraft).some((value) => typeof value === 'string' && hasPersian(value))) {
-      setSaveError('فیلدهای نسخهٔ انگلیسی نباید متن فارسی داشته باشند.');
+    if ([...Object.values(englishDraft), ...Object.values(turkishDraft)].some((value) => typeof value === 'string' && hasPersian(value))) {
+      setSaveError('فیلدهای نسخهٔ انگلیسی و ترکی نباید متن فارسی داشته باشند.');
       setSaving(false);
       return;
     }
@@ -134,6 +139,20 @@ export const HeroCmsTab: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input value={englishDraft.ctaPrimaryText ?? EN_DICT[DEFAULT_HERO_CMS.ctaPrimaryText]} onChange={(event) => updateEnglish({ ctaPrimaryText: event.target.value })} placeholder="Primary CTA" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={englishDraft.ctaSecondaryText ?? EN_DICT[DEFAULT_HERO_CMS.ctaSecondaryText]} onChange={(event) => updateEnglish({ ctaSecondaryText: event.target.value })} placeholder="Secondary CTA" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            </div>
+          </div>
+
+          <div className="md:col-span-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3" dir="ltr">
+            <div dir="rtl">
+              <h3 className="text-xs font-black text-emerald-200">نسخه ترکی هیرو</h3>
+              <p className="text-[11px] text-slate-500 mt-1">متن‌های ترکی مستقل ذخیره می‌شوند و فقط در /tr نشان داده می‌شوند.</p>
+            </div>
+            <input value={turkishDraft.pillText ?? TR_DICT[DEFAULT_HERO_CMS.pillText]} onChange={(event) => updateTurkish({ pillText: event.target.value })} placeholder="Üst etiket" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <input value={turkishDraft.title ?? TR_DICT[DEFAULT_HERO_CMS.title]} onChange={(event) => updateTurkish({ title: event.target.value })} placeholder="Hero başlığı" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={turkishDraft.subtitle ?? TR_DICT[DEFAULT_HERO_CMS.subtitle]} onChange={(event) => updateTurkish({ subtitle: event.target.value })} rows={3} placeholder="Hero alt metni" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input value={turkishDraft.ctaPrimaryText ?? TR_DICT[DEFAULT_HERO_CMS.ctaPrimaryText]} onChange={(event) => updateTurkish({ ctaPrimaryText: event.target.value })} placeholder="Birincil düğme" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={turkishDraft.ctaSecondaryText ?? TR_DICT[DEFAULT_HERO_CMS.ctaSecondaryText]} onChange={(event) => updateTurkish({ ctaSecondaryText: event.target.value })} placeholder="İkincil düğme" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
             </div>
           </div>
 

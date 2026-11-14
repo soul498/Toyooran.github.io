@@ -12,7 +12,7 @@ import type { Article, Product, ProductSpec } from '../../types';
 import { faDigits, faSpecValue } from '../../lib/faDigits';
 import './product-detail.css';
 
-import { isEn, t, tf, tr } from '../../i18n';
+import { getLang, t, tf, tr } from '../../i18n';
 /**
  * Product page body (marketplace-style layout, design 31 Oct 2026): gallery | title + key specs | sticky
  * inquiry box, sticky anchor tabs, sections, related products. Shared by every product; a section with
@@ -237,7 +237,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                       type="button"
                       role="listitem"
                       className="pd-thumb"
-                      aria-label={`${t("تصویر")} ${(i + 1).toLocaleString(isEn() ? 'en-US' : 'fa-IR')}`}
+                      aria-label={`${t("تصویر")} ${(i + 1).toLocaleString(getLang() === 'tr' ? 'tr-TR' : getLang() === 'en' ? 'en-US' : 'fa-IR')}`}
                       aria-pressed={i === active}
                       onClick={() => setActive(i)}
                     >

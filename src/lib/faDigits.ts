@@ -5,7 +5,7 @@
  * Latin unit stays. Thousands separators → «٬», decimal point → «٫», percent after a digit → «٪».
  * Never used for SEO head / JSON-LD.
  */
-import { isEn, latinDigits } from '../i18n';
+import { isLtr, latinDigits } from '../i18n';
 
 const FA = '۰۱۲۳۴۵۶۷۸۹';
 // Letters glued to a following digit (NH3, NTAC9/150D, FTP4E-350, A2) or an uppercase code
@@ -22,8 +22,8 @@ function convertPlain(s: string): string {
 
 export function faDigits(text: string | number | null | undefined): string {
   const s = text == null ? '' : String(text);
-  // English pages (/en) keep Latin digits.
-  if (isEn()) return latinDigits(s);
+  // English and Turkish pages keep Latin digits.
+  if (isLtr()) return latinDigits(s);
   if (!/[0-9]/.test(s)) return s;
   let out = '';
   let last = 0;

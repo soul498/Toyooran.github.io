@@ -22,7 +22,7 @@ import {
 import { rewriteDisabledHref } from '../data/disabledPages';
 import { SERVICE_PAGES, servicePagePath } from '../data/servicePages';
 
-import { hasPersian, isEn, t, tr, translateDeep } from '../i18n';
+import { getLang, hasPersian, t, tr, translateDeep } from '../i18n';
 // The six service pages (src/data/servicePages.ts), same order as the cards.
 const FOOTER_SERVICE_LINKS = SERVICE_PAGES.map((page) => ({ to: servicePagePath(page), title: page.title }));
 
@@ -33,7 +33,7 @@ interface FooterProps {
   onOpenQuote: () => void;
   companyInfo: any;
   categories: any[];
-  layout?: { logoUrl?: string; aboutFa?: string; aboutEn?: string };
+  layout?: { logoUrl?: string; aboutFa?: string; aboutEn?: string; aboutTr?: string };
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, onOpenConsultation, onOpenQuote, companyInfo, categories, layout }) => {
@@ -49,9 +49,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
   
 
   const hq = companyInfo?.locations?.find(loc => loc.type === 'headquarter');
-  const companyName = isEn() ? (companyInfo?.nameEn || companyInfo?.nameFa) : (companyInfo?.nameFa || companyInfo?.nameEn);
-
-  const currentYear = new Date().getFullYear().toLocaleString(isEn() ? 'en-US' : 'fa-IR', { useGrouping: false });
+  const lang = getLang();
+  const companyName = lang === 'fa' ? (companyInfo?.nameFa || companyInfo?.nameEn) : (companyInfo?.nameEn || companyInfo?.nameFa);
+  const yearLocale = lang === 'tr' ? 'tr-TR' : lang === 'en' ? 'en-US' : 'fa-IR';
+  const currentYear = new Date().getFullYear().toLocaleString(yearLocale, { useGrouping: false });
+  const aboutFallback = t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.");
+  const aboutForeign = lang === 'en' ? layout?.aboutEn : lang === 'tr' ? layout?.aboutTr : undefined;
+  const aboutText = lang === 'fa' ? (layout?.aboutFa || aboutFallback) : (aboutForeign && !hasPersian(aboutForeign) ? aboutForeign : aboutFallback);
 
   return (
     <footer className="relative w-full bg-[#020b18] pt-20 pb-6 overflow-hidden border-t border-white/5 z-20">
@@ -74,12 +78,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                </div>
                <div>
                   <p className="text-xl font-black text-white tracking-tight">{companyName}</p>
-                  {!isEn() && <span className="text-xs text-amber-400 font-bold tracking-widest uppercase">{companyInfo?.nameEn}</span>}
+                  {lang === 'fa' && <span className="text-xs text-amber-400 font-bold tracking-widest uppercase">{companyInfo?.nameEn}</span>}
                </div>
             </div>
             <p className="text-slate-300 text-sm leading-relaxed font-medium mb-8 max-w-sm">
               
-              {isEn() ? (layout?.aboutEn && !hasPersian(layout.aboutEn) ? layout.aboutEn : t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.")) : (layout?.aboutFa || t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند."))}
+              {aboutText}
             </p>
             
             {/* Social Links */}

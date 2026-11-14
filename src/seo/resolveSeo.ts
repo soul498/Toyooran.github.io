@@ -22,7 +22,7 @@ import {
 } from "../data/aboutCopy";
 import { faDigits } from "../lib/faDigits";
 
-import { EN_PREFIX, isEn, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
+import { EN_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
 export const FITOUT_SLUG = "poultry-hall-fitout";
@@ -567,7 +567,7 @@ function articleTagsHtml(article: Article): string {
   if (topic) parts.push(`<p>${t("موضوع:")} <a href="${topicPath(topic)}">${escapeHtml(topic.label)}</a></p>`);
   if (article.categoryLabel) parts.push(`<p>${t("دسته:")} ${escapeHtml(article.categoryLabel)}</p>`);
   const tags = (article.tags || []).filter(Boolean);
-  if (tags.length) parts.push(`<p>${t("برچسب‌ها:")} ${tags.map((tag) => escapeHtml(tag)).join(isEn() ? ", " : "، ")}</p>`);
+  if (tags.length) parts.push(`<p>${t("برچسب‌ها:")} ${tags.map((tag) => escapeHtml(tag)).join(isLtr() ? ", " : "، ")}</p>`);
   return parts.join("\n");
 }
 
@@ -979,7 +979,7 @@ ${catServices ? `<h2>${t("خدمات مرتبط")}</h2><ul>${catServices}</ul>` 
             "@type": "Product",
             name: product.name,
             description: product.shortDescription || product.fullDescription,
-            ...(isEn() || product.hideCode ? {} : { sku: product.code }),
+            ...(isLtr() || product.hideCode ? {} : { sku: product.code }),
             image: imageAbs,
             ...(product.noBrandSchema
               ? {}
@@ -1187,7 +1187,7 @@ ${sourceHtml ? `<h2>${t("منابع")}</h2><ul>${sourceHtml}</ul>` : ""}
 
   if (path === "/about") {
     // Approved copy 2026-11-13 (src/data/aboutCopy.ts); contact lines below are unchanged.
-    const activityNumber = (n: number) => (isEn() ? String(n) : faDigits(n));
+    const activityNumber = (n: number) => (isLtr() ? String(n) : faDigits(n));
     const processSteps = ABOUT_PROCESS_STEPS.map(([, heading, text]) => `<li><strong>${escapeHtml(tr(heading))}</strong> — ${escapeHtml(tr(text))}</li>`).join("");
     const activities = ABOUT_ACTIVITIES.map(([title, description], index) => `<li><strong>${activityNumber(index + 1)}. ${escapeHtml(tr(title))}</strong> — ${escapeHtml(tr(description))}</li>`).join("");
     return okDoc({
@@ -1307,7 +1307,8 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
 
 export function llmsTxt(catalog: SeoCatalog): string {
   // Persian section at the original URLs; the server appends the English section (lang "en", /en URLs).
-  const en = isEn();
+  const lang = getLang();
+  const en = lang === "en";
   const services = [
     ...SERVICE_PAGES.map((s) => `- ${lp(servicePagePath(s))} — ${tr(s.title)}`),
     ...catalog.services.filter((s) => !isServiceDisabled(s.id)).map((s) => `- ${lp(publicServicePath(s))} — ${s.title}`),
@@ -1317,7 +1318,8 @@ export function llmsTxt(catalog: SeoCatalog): string {
     .filter((article) => isPublicArticle(article) && !article.noindex)
     .map((article) => `- ${lp(`/magazine/${article.id}`)} — ${article.title}`)
     .join("\n");
-  const fitout = isServiceDisabled(FITOUT_SERVICE_ID) ? "" : `- ${en ? "Core service:" : keepFa("خدمت محوری:")} ${CANONICAL_ORIGIN}${lp(`/services/${FITOUT_SLUG}`)}\n`;
+  const fitoutLabel = en ? "Core service:" : lang === "tr" ? "Temel hizmet:" : keepFa("خدمت محوری:");
+  const fitout = isServiceDisabled(FITOUT_SERVICE_ID) ? "" : `- ${fitoutLabel} ${CANONICAL_ORIGIN}${lp(`/services/${FITOUT_SLUG}`)}\n`;
   if (en) {
     return `# Toyooran Sanat Pouya (English)
 > Livestock and poultry equipment, feed machinery and poultry house renovation: ventilation, heating, feeding and drinking systems. Offices in Mashhad and Gorgan.
@@ -1335,6 +1337,25 @@ ${posts}
 - Do not quote fan capacity or fuel consumption figures without static pressure, climate and an engineer's confirmation.
 - Product prices on public pages are given on request, not as a fixed figure.
 - Read layouts and specifications from the initial HTML or the product/service page, not from model guesses.
+`;
+  }
+  if (lang === "tr") {
+    return `# Toyooran Sanat Pouya (Türkçe)
+> Hayvancılık ve kanatlı ekipmanları, yem makineleri ve kümes yenileme: havalandırma, ısıtma, yemlik ve suluk sistemleri. Ofisler Meşhed ve Gorgan'dadır.
+
+- Site: ${CANONICAL_ORIGIN}${TR_PREFIX}
+- İletişim: ${CANONICAL_ORIGIN}${TR_PREFIX}/contact
+${fitout}${services ? `\n## Hizmetler\n${services}\n` : ""}
+## Ürün kategorileri
+${cats}
+
+## Dergi
+${posts}
+
+## Alıntı kuralları
+- Fan kapasitesi veya yakıt tüketimi rakamlarını statik basınç, iklim ve bir uzmanın onayı olmadan aktarmayın.
+- Herkese açık sayfalardaki ürün fiyatları sabit bir rakam olarak değil, talep üzerine verilir.
+- Yerleşim ve teknik özellikleri model tahminlerinden değil, ilk HTML'den veya ürün/hizmet sayfasından okuyun.
 `;
   }
   return `${keepFa("# طیوران صنعت پویا")}

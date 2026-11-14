@@ -34,7 +34,7 @@ import {
 } from '../data/mockData';
 import { migrateCustomerRecord } from '../crm/utils/crmRecords';
 import { withProductPhotos } from '../data/productPhotos';
-import { hasPersian, isEn, isFullyTranslated, setEnAvailability, translateCmsRecord, translateDeep, translateProduct } from '../i18n';
+import { getLang, hasPersian, isFullyTranslated, setLangAvailability, translateCmsRecord, translateDeep, translateProduct, type ForeignLang } from '../i18n';
 
 function loadStoredArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored)) return ARTICLES;
@@ -256,7 +256,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // look local until the next deploy.
   useEffect(() => {
     let cancelled = false;
-    fetch(isEn() ? '/api/public/cms?lang=en' : '/api/public/cms')
+    fetch(getLang() === 'fa' ? '/api/public/cms' : `/api/public/cms?lang=${getLang()}`)
       .then((response) => response.ok ? response.json() : null)
       .then((data) => {
         if (cancelled || magazineLockedByAdmin.current || !data) return;
@@ -275,13 +275,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
   useEffect(() => {
     let cancelled = false;
-    // English pages get the server-translated magazine (only articles with a complete English version).
-    fetch(isEn() ? '/api/magazine?lang=en' : '/api/magazine')
+    // Foreign pages get the server-translated magazine (only articles with a complete translation).
+    fetch(getLang() === 'fa' ? '/api/magazine' : `/api/magazine?lang=${getLang()}`)
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
         if (cancelled || magazineLockedByAdmin.current) return;
         if (Array.isArray(data?.articles)) {
-          if (isEn()) setEnAvailability({ articles: data.articles.map((item: Article) => item.id), topics: Array.isArray(data.topics) ? data.topics : undefined });
+          const lang = getLang();
+          if (lang !== 'fa') setLangAvailability(lang, { articles: data.articles.map((item: Article) => item.id), topics: Array.isArray(data.topics) ? data.topics : undefined });
           setArticles(data.articles);
         }
       })
@@ -316,7 +317,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   useEffect(() => {
     // The admin session (and its save-back effects) only runs on the Persian site.
-    if (isEn()) return;
+    if (getLang() !== 'fa') return;
     loadCurrentAdmin()
       .then(async result => { if (result) await refreshCsrf(); })
       .catch(() => undefined);
@@ -428,32 +429,34 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => { saveAdminState('customers', customers); }, [customers, adminUser, adminDataReady]);
   useEffect(() => { saveAdminState('media', mediaLibrary); }, [mediaLibrary, adminUser, adminDataReady]);
   const publicProducts = useMemo(() => products.filter((item) => item && isPublicProduct(item)), [products]);
-  // English (/en): expose only products with a complete English version, translated; same for the
-  // site data below. State itself always stays Persian (nothing English is ever saved back).
-  const en = isEn();
+  // /en and /tr: expose only records with a complete translation. State itself always stays
+  // Persian on the Persian site (nothing foreign is saved back from a public page).
+  const lang = getLang();
+  const foreign: ForeignLang | null = lang === 'fa' ? null : lang;
   const shownProducts = useMemo(() => {
-    if (!en) return publicProducts;
+    if (!foreign) return publicProducts;
     const ok = publicProducts.filter((item) => isFullyTranslated(translateProduct(item)));
-    setEnAvailability({ products: ok.map((item) => item.id) });
+    setLangAvailability(foreign, { products: ok.map((item) => item.id) });
     return ok.map((item) => translateProduct(item));
-  }, [en, publicProducts]);
+  }, [foreign, publicProducts]);
   const publicServices = useMemo(() => services.filter((item) => item.status !== 'draft' && item.status !== 'review'), [services]);
-  const shownServices = useMemo(() => (adminUser ? services : publicServices).map((item) => translateCmsRecord(item)), [services, publicServices, adminUser, en]);
-  const shownCategories = useMemo(() => translateDeep(categories), [categories, en]);
-  const shownCompanyInfo = useMemo(() => translateCmsRecord(companyInfo), [companyInfo, en]);
+  const shownServices = useMemo(() => (adminUser ? services : publicServices).map((item) => translateCmsRecord(item)), [services, publicServices, adminUser, foreign]);
+  const shownCategories = useMemo(() => translateDeep(categories), [categories, foreign]);
+  const shownCompanyInfo = useMemo(() => translateCmsRecord(companyInfo), [companyInfo, foreign]);
   const shownHeroCms = useMemo(() => {
-    if (!en) return heroCms;
+    if (!foreign) return heroCms;
     const defaults = translateDeep(DEFAULT_HERO_CMS);
-    const englishCopy = (value: string | undefined, fallback: string) => value && !hasPersian(value) ? value : fallback;
+    const copy = heroCms.translations?.[foreign];
+    const localizedCopy = (value: string | undefined, fallback: string) => value && !hasPersian(value) ? value : fallback;
     return {
       ...heroCms,
-      title: englishCopy(heroCms.translations?.en?.title, defaults.title),
-      subtitle: englishCopy(heroCms.translations?.en?.subtitle, defaults.subtitle),
-      pillText: englishCopy(heroCms.translations?.en?.pillText, defaults.pillText),
-      ctaPrimaryText: englishCopy(heroCms.translations?.en?.ctaPrimaryText, defaults.ctaPrimaryText),
-      ctaSecondaryText: englishCopy(heroCms.translations?.en?.ctaSecondaryText, defaults.ctaSecondaryText),
+      title: localizedCopy(copy?.title, defaults.title),
+      subtitle: localizedCopy(copy?.subtitle, defaults.subtitle),
+      pillText: localizedCopy(copy?.pillText, defaults.pillText),
+      ctaPrimaryText: localizedCopy(copy?.ctaPrimaryText, defaults.ctaPrimaryText),
+      ctaSecondaryText: localizedCopy(copy?.ctaSecondaryText, defaults.ctaSecondaryText),
     };
-  }, [heroCms, en]);
+  }, [heroCms, foreign]);
   // Product CRUD
   const addProduct = (product: Product) => {
     setProducts(prev => [product, ...prev]);

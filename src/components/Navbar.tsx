@@ -14,7 +14,7 @@ import {
 } from '../icons';
 import { PageSection } from '../types';
 
-import { hasPersian, isEn, t } from '../i18n';
+import { getLang, hasPersian, isLtr, t } from '../i18n';
 import { LangToggle } from './LangToggle';
 interface NavbarProps {
   currentSection: PageSection;
@@ -28,6 +28,7 @@ interface NavbarProps {
   brandEn?: string;
   navLabelsFa?: import('../types').SiteLayoutConfig['header']['navLabelsFa'];
   navLabelsEn?: import('../types').SiteLayoutConfig['header']['navLabelsEn'];
+  navLabelsTr?: import('../types').SiteLayoutConfig['header']['navLabelsTr'];
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -42,10 +43,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   brandEn,
   navLabelsFa,
   navLabelsEn,
+  navLabelsTr,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const englishBrand = brandEn && !hasPersian(brandEn) ? brandEn : 'TSPK';
-  const displayBrand = isEn() ? englishBrand : (brandFa || t("طیوران صنعت پویا"));
+  const displayBrand = isLtr() ? englishBrand : (brandFa || t("طیوران صنعت پویا"));
 
   // Prevent scrolling when mobile menu is open
   useEffect(() => {
@@ -68,8 +70,10 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'contact', path: '/contact', label: t("تماس"), icon: Compass },
   ];
   const navLabel = (item: typeof navItems[number]) => {
-    const custom = isEn() ? navLabelsEn?.[item.id as keyof typeof navLabelsEn] : navLabelsFa?.[item.id as keyof typeof navLabelsFa];
-    return custom?.trim() && (!isEn() || !hasPersian(custom)) ? custom : item.label;
+    const lang = getLang();
+    const labels = lang === 'en' ? navLabelsEn : lang === 'tr' ? navLabelsTr : navLabelsFa;
+    const custom = labels?.[item.id as keyof typeof labels];
+    return custom?.trim() && (lang === 'fa' || !hasPersian(custom)) ? custom : item.label;
   };
 
   const handleNavClick = (section: PageSection) => {

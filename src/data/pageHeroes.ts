@@ -1,7 +1,7 @@
 import type React from 'react';
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
 import { ABOUT_EYEBROW, ABOUT_PAGE_NAME, ABOUT_SUBTITLE } from './aboutCopy';
-import { hasPersian, isEn, translateDeep } from '../i18n';
+import { getLang, hasPersian, translateDeep } from '../i18n';
 import { Building2, FileCheck, Phone, Sparkles, type IconProps } from '../icons';
 import type { CmsPageKey, PageHeroCms } from '../types';
 
@@ -81,15 +81,16 @@ export const pageHeroFor = (
   const hero = PAGE_HEROES[normalizedPath];
   if (!hero) return undefined;
   const rawOverride = PAGE_KEY_BY_PATH[normalizedPath] ? overrides?.[PAGE_KEY_BY_PATH[normalizedPath]!] : undefined;
-  // English copy is independent. A Persian CMS edit without an English edit must
-  // keep the original English text instead of leaking the new Persian text.
-  const english = rawOverride?.translations?.en;
-  const safeEnglish = (value?: string) => value && !hasPersian(value) ? value : undefined;
-  const cms = isEn() ? {
-    title: safeEnglish(english?.title), subtitle: safeEnglish(english?.subtitle),
-    eyebrow: safeEnglish(english?.eyebrow), ctaLabel: safeEnglish(english?.ctaLabel),
-    secondaryCtaLabel: safeEnglish(english?.secondaryCtaLabel),
-  } : rawOverride;
+  // Foreign copy is independent. A Persian CMS edit without a translation must
+  // keep the dictionary text instead of leaking the new Persian text.
+  const lang = getLang();
+  const foreign = lang === 'fa' ? undefined : rawOverride?.translations?.[lang];
+  const safeForeign = (value?: string) => value && !hasPersian(value) ? value : undefined;
+  const cms = lang === 'fa' ? rawOverride : {
+    title: safeForeign(foreign?.title), subtitle: safeForeign(foreign?.subtitle),
+    eyebrow: safeForeign(foreign?.eyebrow), ctaLabel: safeForeign(foreign?.ctaLabel),
+    secondaryCtaLabel: safeForeign(foreign?.secondaryCtaLabel),
+  };
   const merged: PageHeroConfig = {
     ...hero,
     title: cms?.title || hero.title,

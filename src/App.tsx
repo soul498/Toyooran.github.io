@@ -37,7 +37,7 @@ import { useParams } from 'react-router-dom';
 import { SeoHead } from "./components/SEO";
 import { publicProductPath } from "./seo/resolveSeo";
 
-import { t, isEn, keepFa, EN_PREFIX } from './i18n';
+import { t, getLang, isLtr, keepFa, LANG_PREFIX } from './i18n';
 // Reserve a full viewport while a lazy route loads so the footer never paints in view and then jumps (CLS).
 const RouteFallback = () => <div className="min-h-[100svh]" aria-hidden="true" />;
 
@@ -214,7 +214,7 @@ const MainAppInner: React.FC = () => {
 
   // Public Website View
   return (
-    <div className={`min-h-screen bg-blueprint-light text-[#333132] ${isEn() ? "font-['Estedad_Latin',ui-sans-serif,system-ui,sans-serif]" : "font-['Estedad',sans-serif]"} flex flex-col selection:bg-amber-400 selection:text-slate-950`} dir={isEn() ? 'ltr' : 'rtl'} lang={isEn() ? 'en' : undefined}>
+    <div className={`min-h-screen bg-blueprint-light text-[#333132] ${isLtr() ? "font-['Estedad_Latin',ui-sans-serif,system-ui,sans-serif]" : "font-['Estedad',sans-serif]"} flex flex-col selection:bg-amber-400 selection:text-slate-950`} dir={isLtr() ? 'ltr' : 'rtl'} lang={getLang() === 'fa' ? undefined : getLang()}>
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:start-2 focus:z-[100] bg-white text-[#003F86] font-bold px-4 py-2 rounded-xl">
         
         {t("رفتن به محتوای اصلی")}
@@ -237,6 +237,7 @@ const MainAppInner: React.FC = () => {
         brandEn={siteLayout.header.brandEn}
         navLabelsFa={siteLayout.header.navLabelsFa}
         navLabelsEn={siteLayout.header.navLabelsEn}
+        navLabelsTr={siteLayout.header.navLabelsTr}
       />}
 
       {/* Main Content by Section */}
@@ -366,10 +367,10 @@ const MainAppInner: React.FC = () => {
 export default function App() {
   return (
     <DataProvider>
-      <BrowserRouter basename={isEn() ? EN_PREFIX : undefined}>
+      <BrowserRouter basename={getLang() === 'fa' ? undefined : LANG_PREFIX[getLang() === 'tr' ? 'tr' : 'en']}>
         <MainAppInner />
         <Suspense fallback={null}>
-          <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '12px', fontFamily: isEn() ? 'system-ui, sans-serif' : 'Estedad, sans-serif' } }} />
+          <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '12px', fontFamily: isLtr() ? 'system-ui, sans-serif' : 'Estedad, sans-serif' } }} />
         </Suspense>
       </BrowserRouter>
     </DataProvider>
