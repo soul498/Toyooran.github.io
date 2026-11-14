@@ -172,7 +172,7 @@ function catSeo(slug: string) {
 }
 
 /** H1 of the /products hub. The company covers the whole livestock & poultry industry, not only poultry halls. */
-export const PRODUCTS_HUB_H1 = "هایپرمارکت صنعت دام و طیور";
+export const PRODUCTS_HUB_H1 = "فروشگاه";
 
 /**
  * Single source of truth for the catalog H1 (server prerender and client UI must match).
@@ -917,7 +917,7 @@ ${homeExtras(catalog)}`,
       ogType: "website",
       lastmod: collectionDay(catalog, "products"),
       body: `<p>${t("کاتالوگ تجهیزات صنعت دام و طیور طیوران صنعت پویا؛ از تهویه، گرمایش، دانخوری و آبخوری سالن مرغداری تا قفس و سیلو.")}</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">${t("دانلود کاتالوگ PDF")}</a> · <a href="/contact">${t("استعلام قیمت")}</a></p>`,
-      jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: t("محصولات"), path: "/products" }])],
+      jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: tr(PRODUCTS_HUB_H1), path: "/products" }])],
     });
   }
 

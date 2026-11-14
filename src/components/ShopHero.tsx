@@ -18,12 +18,13 @@ export const ShopHero: React.FC<{
   selectedCategory: string;
   categories: { id: string; title: string }[];
 }> = ({ selectedCategory, categories }) => {
+  const title = catalogHeading(selectedCategory, categories);
   const rich = selectedCategory !== 'all' ? categoryIntroRich(selectedCategory) : undefined;
   return (
 <PageBanner
   short
-  title={catalogHeading(selectedCategory, categories)}
-  highlight={t("دام و طیور")}
+  title={title}
+  highlight={selectedCategory === 'all' ? title : t("دام و طیور")}
   subtitle={rich ? <RichInline text={rich} /> : tr(SHOP_SUBTITLE)}
 >
   <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
