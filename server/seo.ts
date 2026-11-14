@@ -1,4 +1,5 @@
 import { loadSeoCatalog } from "./catalog";
+import { HOME_HERO_MOBILE_PHOTO, HOME_HERO_PHOTO, sitePhotoSrc, sitePhotoSrcSet } from "../src/data/sitePhotos";
 import { englishCatalog } from "./i18n";
 import { EN_PREFIX, localizeHref, pathLang, stripLangPrefix, withLang } from "../src/i18n";
 import {
@@ -118,6 +119,14 @@ function stripSocialMeta(html: string): string {
     .replace(/<link[^>]*rel="canonical"[^>]*>\s*/gi, "");
 }
 
+/**
+ * Home hero (src/components/LazyHeroImage.tsx, site photo 05): preload the same AVIF the <picture> picks,
+ * the 4:5 mobile crop up to 767px and the landscape photo above. Only on the home page, where it is the LCP.
+ */
+const HOME_HERO_PRELOAD = `    <link rel="preload" as="image" type="image/avif" media="(max-width: 767px)" href="${sitePhotoSrc(HOME_HERO_MOBILE_PHOTO).replace(/\.webp$/, ".avif")}" imagesrcset="${sitePhotoSrcSet(HOME_HERO_MOBILE_PHOTO, "avif")}" imagesizes="100vw" fetchpriority="high" />
+    <link rel="preload" as="image" type="image/avif" media="(min-width: 768px)" href="${sitePhotoSrc(HOME_HERO_PHOTO).replace(/\.webp$/, ".avif")}" imagesrcset="${sitePhotoSrcSet(HOME_HERO_PHOTO, "avif")}" imagesizes="100vw" fetchpriority="high" />
+`;
+
 export function injectSeoTags(html: string, reqPath: string): string {
   const path = stripQuery(reqPath);
   const lang = pathLang(path);
@@ -174,8 +183,7 @@ export function injectSeoTags(html: string, reqPath: string): string {
     ? `    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": doc.jsonLd }).replace(/</g, "\\u003c")}</script>\n`
     : "";
   const extra = `
-${canonical}    <link rel="preload" as="image" type="image/webp" href="/images/hero-final-1-480.webp" imagesrcset="/images/hero-final-1-480.webp 480w, /images/hero-final-1-800.webp 800w, /images/hero-final-1.webp 1400w" imagesizes="100vw" />
-    <meta property="og:title" content="${escapeHtml(doc.title)}" />
+${canonical}${neutral === "/" ? HOME_HERO_PRELOAD : ""}    <meta property="og:title" content="${escapeHtml(doc.title)}" />
     <meta property="og:description" content="${escapeHtml(doc.description)}" />
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />
     <meta property="og:type" content="${doc.ogType}" />

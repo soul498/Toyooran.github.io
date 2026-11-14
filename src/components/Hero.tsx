@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LazyImage } from "./LazyImage";
 import { LazyHeroImage } from './LazyHeroImage';
+import { HOME_HERO_KEY } from '../data/sitePhotos';
 import {
   ChevronLeft,
   ShieldCheck,
@@ -114,12 +115,9 @@ const Hero: React.FC<HeroProps> = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const cardsSectionRef = useRef<HTMLDivElement>(null);
 
-  // Default beautiful images for poultry & feed mill
-  const defaultImages = [
-    '/images/hero-final-1.jpg',
-    '/images/hero-final-2.jpg',
-    '/images/hero-final-3.jpg',
-  ];
+  // Default hero: the equipped hall (site photo 05, approved 2026-11-14); one image, no rotation.
+  // LazyHeroImage renders its AVIF/WebP sources and the mobile crop; server/seo.ts preloads them on "/".
+  const defaultImages = [HOME_HERO_KEY];
 
   const validCmsImages = cmsHero?.backgroundImages?.filter(img => img && img.trim() !== '') || [];
   

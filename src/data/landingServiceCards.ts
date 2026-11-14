@@ -1,3 +1,4 @@
+import { HOME_EQUIPMENT_CARD_IMAGE } from './sitePhotos';
 import { Building2, Factory, Fan, Pill } from '../icons';
 
 export const LANDING_SERVICE_CARDS = [
@@ -29,7 +30,7 @@ export const LANDING_SERVICE_CARDS = [
     badgeBg: 'bg-amber-50',
     badgeText: 'text-amber-700',
     specs: ['بشقاب دانخوری پروانه‌ای', 'جت هیتر و سیستم‌های گرمایشی'],
-    bgImage: '/images/service_farm_equipment.webp',
+    bgImage: HOME_EQUIPMENT_CARD_IMAGE,
   },
   {
     id: 'cooling' as const,

@@ -16,6 +16,7 @@ import {
   ABOUT_ACTIVITIES, ABOUT_ACTIVITIES_HEADING, ABOUT_FLAGSHIP_CTA, ABOUT_FLAGSHIP_HEADING, ABOUT_FLAGSHIP_HREF,
   ABOUT_FLAGSHIP_TEXT, ABOUT_INTERNATIONAL_HEADING, ABOUT_INTERNATIONAL_TEXT, ABOUT_INTRO_HEADING,
   ABOUT_INTRO_PARAGRAPHS, ABOUT_PAGE_NAME, ABOUT_SUBTITLE, ABOUT_TITLE,
+  ABOUT_CTA_LABEL, ABOUT_CTA_TEXT, ABOUT_PROCESS_HEADING, ABOUT_PROCESS_INTRO, ABOUT_PROCESS_STEPS,
 } from "../data/aboutCopy";
 import { faDigits } from "../lib/faDigits";
 
@@ -1111,6 +1112,7 @@ ${sourceHtml ? `<h2>${t("منابع")}</h2><ul>${sourceHtml}</ul>` : ""}
   if (path === "/about") {
     // Approved copy 2026-11-13 (src/data/aboutCopy.ts); contact lines below are unchanged.
     const activityNumber = (n: number) => (isEn() ? String(n) : faDigits(n));
+    const processSteps = ABOUT_PROCESS_STEPS.map(([, heading, text]) => `<li><strong>${escapeHtml(tr(heading))}</strong> — ${escapeHtml(tr(text))}</li>`).join("");
     const activities = ABOUT_ACTIVITIES.map(([title, description], index) => `<li><strong>${activityNumber(index + 1)}. ${escapeHtml(tr(title))}</strong> — ${escapeHtml(tr(description))}</li>`).join("");
     return okDoc({
       path,
@@ -1124,6 +1126,10 @@ ${sourceHtml ? `<h2>${t("منابع")}</h2><ul>${sourceHtml}</ul>` : ""}
 ${ABOUT_INTRO_PARAGRAPHS.map((paragraph) => `<p>${escapeHtml(tr(paragraph))}</p>`).join("\n")}
 <h2>${escapeHtml(tr(ABOUT_ACTIVITIES_HEADING))}</h2>
 <ul>${activities}</ul>
+<h2>${escapeHtml(tr(ABOUT_PROCESS_HEADING))}</h2>
+<p>${escapeHtml(tr(ABOUT_PROCESS_INTRO))}</p>
+<ol>${processSteps}</ol>
+<p>${escapeHtml(tr(ABOUT_CTA_TEXT))} <a href="/contact">${escapeHtml(tr(ABOUT_CTA_LABEL))}</a></p>
 <h2>${escapeHtml(tr(ABOUT_FLAGSHIP_HEADING))}</h2>
 <p>${escapeHtml(tr(ABOUT_FLAGSHIP_TEXT))}</p>
 <p><a href="${ABOUT_FLAGSHIP_HREF}">${escapeHtml(tr(ABOUT_FLAGSHIP_CTA))}</a></p>

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-14
+
+- Real site photos (Z:\tspk, user-approved 2026-11-14; graphic designer's picks) under public/images/site/ as AVIF + WebP at several widths (src/data/sitePhotos.ts, alt text fa/en).
+- Home: hero is the equipped hall (photo 05), a single image with a 4:5 mobile crop on the feeder line; AVIF preload with media queries, now only on "/" (was on every page). Service card «تجهیزات دام و طیور» uses photo 10 (chicks along the feeder line). Layout unchanged.
+- /about: new structure: panorama banner (07) with intro and areas of activity; new section «از طراحی تا تحویل» in six steps (design drawing 22 shown as an illustration, structure 20/28, supply 13, installation 02/17/06, field team 14, handover 10 with the free consultation CTA); flagship product, international cooperation and phones kept. Copy in src/data/aboutCopy.ts, English in ui.json, prerender updated.
+
 ## 2026-11-13
 
 - /about: new user-approved copy (intro, six areas of activity, flagship Pouya butterfly feeder with «مشاهده مشخصات» to /products/pouya-butterfly-feeder, international cooperation); page name «درباره» in H1, menu and footer; new title; prerender (resolveSeo) and /en/about updated. Contact block, hours and addresses unchanged. Copy lives in src/data/aboutCopy.ts.

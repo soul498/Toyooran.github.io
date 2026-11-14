@@ -172,6 +172,7 @@ const { MAGAZINE_TOPICS } = await import("../src/seo/topics");
 const contact = await import("../src/data/contact");
 const photos = await import("../src/data/productPhotos");
 const aboutCopy = await import("../src/data/aboutCopy");
+const sitePhotos = await import("../src/data/sitePhotos");
 
 requireAll("COMPANY_INFO", mock.COMPANY_INFO, report.missing.site);
 requireAll("CATEGORIES_DATA", mock.CATEGORIES_DATA, report.missing.site);
@@ -182,6 +183,7 @@ requireAll("SERVICES", mock.SERVICES.filter((s) => !isServiceDisabled(s.id)).map
 requireAll("SERVICES[srv-turnkey-shed].workflow (home)", mock.SERVICES.filter((s) => s.id === "srv-turnkey-shed").map((s) => withContentCorrections(s).workflow), report.missing.site);
 requireAll("PAGE_HEROES", PAGE_HEROES, report.missing.site);
 requireAll("aboutCopy", Object.fromEntries(Object.entries(aboutCopy)), report.missing.site);
+requireAll("sitePhotos (alt)", [sitePhotos.HOME_HERO_PHOTO, ...Object.values(sitePhotos.ABOUT_PHOTOS)].map((p) => p.alt), report.missing.site);
 requireAll("LANDING_SERVICE_CARDS", LANDING_SERVICE_CARDS, report.missing.site);
 requireAll("MAGAZINE_TOPICS", MAGAZINE_TOPICS, report.missing.site);
 requireAll("contact", Object.fromEntries(Object.entries(contact).filter(([, v]) => typeof v === "string")), report.missing.site);
