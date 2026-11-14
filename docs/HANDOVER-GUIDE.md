@@ -212,7 +212,7 @@ echo "$TOKEN"
 
 - **ورود ادمین:** از مسیر `/admin` انجام می‌شود. کد بک‌اند احراز هویت در `server/auth.ts` است (شامل رمز عبور bcrypt، کوکی نشست `HttpOnly`، توکن CSRF، کد دو مرحله‌ای TOTP MFA و کپچای Cloudflare Turnstile در محیط Production).
 - **CRM:** در مسیر `/crm` قرار دارد (`src/crm/CrmApp.tsx`) و با همان نشست ادمین کار می‌کند. شامل مدیریت سرنخ‌ها (Leads)، قیف فروش (Pipeline)، پرسوناها و ورود/خروج اکسل (`src/crm/utils/crmExcel.ts`) است.
-- **فرم‌های مشاوره سایت:** هر فرم که در سایت پر شود به `POST /api/consultation` ارسال می‌شود، در `/opt/toyooran-data/qualified-leads.jsonl` ذخیره می‌گردد و در صورت تنظیم بودن `BALE_BOT_TOKEN` و `BALE_CHAT_ID` در `/etc/toyooran.env`، به پیام‌رسان **بله** ارسال می‌شود.
+- **فرم‌های مشاوره سایت:** هر فرم که در سایت پر شود به `POST /api/consultation` ارسال می‌شود و در `/opt/toyooran-data/qualified-leads.jsonl` ذخیره می‌گردد. همان مشخصات (نام، تلفن و بقیهٔ فیلدها) در `/opt/toyooran-data/bale-inbox/leads.jsonl` هم صف می‌شود تا سرویس میزبان `bale-monitor` آن را به گفتگوی تأییدشده در بله بفرستد. توکن بله داخل کانتینر سایت نیست.
 
 ---
 

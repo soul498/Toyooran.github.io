@@ -39,6 +39,7 @@ import { englishArticle, englishCatalog } from "./server/i18n";
 import { EN_PREFIX, pathLang } from "./src/i18n";
 import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./server/catalog";
 import { appendLead, leadsToCsv } from "./server/leads";
+import { baleInboxWritable, enqueueConsultationNotice } from "./server/baleInbox";
 import { gzipResponses } from "./server/gzip";
 import { cmsApiRouter } from "./server/cmsApi";
 import { legacySpamGone } from "./server/legacySpam";
@@ -330,13 +331,12 @@ async function startServer() {
         location,
         message,
         source,
-        timestamp,
         isDecisionMaker,
         timing,
         pagePath,
         conversionEvent
       } = req.body;
-      appendLead({
+      const lead = appendLead({
         fullName,
         phoneNumber,
         companyName,
@@ -352,62 +352,20 @@ async function startServer() {
         conversionEvent,
       });
 
-      const baleToken = process.env.BALE_BOT_TOKEN === 'AI_STUDIO_PREVIEW_DISABLED' ? '' : process.env.BALE_BOT_TOKEN;
-      const baleChatId = process.env.BALE_CHAT_ID === 'AI_STUDIO_PREVIEW_DISABLED' ? '' : process.env.BALE_CHAT_ID;
-
-      // Construct formatted Persian message for Bale Messenger
-      const formattedLines = [
-        `🔔 *درخواست جدید از وب‌سایت طیوران صنعت پویا*`,
-        `━━━━━━━━━━━━━━━━━━`,
-        `👤 *نام متقاضی:* ${fullName || 'ثبت نشده'}`,
-        `📞 *شماره تماس:* ${phoneNumber || 'ثبت نشده'}`,
-        companyName ? `🏢 *نام واحد / مرغداری:* ${companyName}` : null,
-        subject ? `📋 *موضوع:* ${subject}` : null,
-        productName ? `📦 *محصول انتخابی:* ${productName}` : null,
-        location ? `📍 *شهر / استان:* ${location}` : null,
-        capacity ? `📐 *ظرفیت سالن:* ${capacity}` : null,
-        message ? `📝 *توضیحات:* ${message}` : null,
-        source ? `🏷 *بخش ارسال‌کننده:* ${source}` : null,
-        `━━━━━━━━━━━━━━━━━━`,
-        `⏰ *زمان ثبت:* ${timestamp || new Date().toLocaleString('fa-IR')}`,
-        `🌐 *سامانه آنلاین طیوران صنعت پویا*`
-      ].filter(Boolean);
-
-      const formattedMessage = formattedLines.join('\n');
-
-      let baleResult: any = null;
-      let sent = false;
-
-      if (baleToken && baleChatId) {
-        try {
-          const response = await fetch(`https://tapi.bale.ai/bot${baleToken}/sendMessage`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              chat_id: baleChatId,
-              text: formattedMessage,
-            })
-          });
-          baleResult = await response.json();
-          sent = response.ok;
-          if (!response.ok) {
-            console.error("Bale API responded with error:", baleResult);
-          }
-        } catch (fetchError) {
-          console.error("Error connecting to Bale API:", fetchError);
-        }
-      } else {
-        console.log("ℹ️ Bale Bot Token or Chat ID not configured in .env. Message formatted:\n", formattedMessage);
+      // The site container does not hold the Bale token. The host monitor reads this queue
+      // and sends the person's name and phone to the verified owner chat.
+      let queued = false;
+      try {
+        queued = enqueueConsultationNotice(lead);
+      } catch (inboxError) {
+        console.error("Consultation saved, but the monitor queue was not written:", inboxError instanceof Error ? inboxError.message : "failed");
       }
 
       res.status(200).json({
         success: true,
-        sentToBale: sent,
-        baleResult,
-        message: sent 
-          ? 'درخواست با موفقیت ثبت و پیام به ربات بله ارسال گردید.' 
+        sentToBale: queued,
+        message: queued
+          ? 'درخواست ثبت شد و برای بات مانیتور فرستاده شد.'
           : 'درخواست در سیستم ثبت شد.'
       });
     } catch (error: any) {
@@ -418,12 +376,13 @@ async function startServer() {
 
   // Bale bot configuration status
   app.get("/api/bale/status", (_req, res) => {
-    const hasToken = !!process.env.BALE_BOT_TOKEN && process.env.BALE_BOT_TOKEN !== 'AI_STUDIO_PREVIEW_DISABLED';
-    const hasChatId = !!process.env.BALE_CHAT_ID && process.env.BALE_CHAT_ID !== 'AI_STUDIO_PREVIEW_DISABLED';
+    const inbox = baleInboxWritable();
     res.json({
-      configured: hasToken && hasChatId,
-      hasToken,
-      hasChatId
+      configured: inbox,
+      via: "bale-monitor",
+      inbox,
+      hasToken: inbox,
+      hasChatId: inbox,
     });
   });
 

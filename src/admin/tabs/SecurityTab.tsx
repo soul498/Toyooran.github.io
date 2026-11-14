@@ -70,7 +70,7 @@ export const SecurityTab: React.FC = () => {
       } else {
         setBaleTestResult({ 
           success: false, 
-          message: data.baleResult?.description || 'توکن ربات یا شناسه چت بله در متغیرهای محیطی (.env) تنظیم نشده است.' 
+          message: 'درخواست در پنل ماند، ولی صف بات مانیتور نوشته نشد.' 
         });
       }
     } catch (err: any) {
@@ -237,7 +237,7 @@ export const SecurityTab: React.FC = () => {
                 )}
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
-                ارسال آنی تمام فرم‌های ثبت‌شده سایت (مشاوره، استعلام قیمت، مشخصات متقاضی) به چت یا کانال بله
+                هر درخواست مشاوره، با نام و تلفن شخص، علاوه بر پنل به بات مانیتور سرور در بله می‌رود
               </p>
             </div>
           </div>
@@ -269,19 +269,13 @@ export const SecurityTab: React.FC = () => {
           <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
             <h4 className="font-bold text-slate-200 flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-amber-400" />
-              <span>وضعیت متغیرهای محیطی</span>
+              <span>وضعیت ارسال</span>
             </h4>
             <div className="space-y-1.5 text-[11px]">
               <div className="flex items-center justify-between text-slate-400">
-                <span>توکن ربات (<code className="text-amber-300">BALE_BOT_TOKEN</code>):</span>
-                <span className={`font-bold ${baleStatus?.hasToken ? 'text-emerald-400' : 'text-slate-500'}`}>
-                  {baleStatus?.hasToken ? '✓ تنظیم شده' : 'تنظیم نشده'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-slate-400">
-                <span>شناسه دریافت‌کننده (<code className="text-amber-300">BALE_CHAT_ID</code>):</span>
-                <span className={`font-bold ${baleStatus?.hasChatId ? 'text-emerald-400' : 'text-slate-500'}`}>
-                  {baleStatus?.hasChatId ? '✓ تنظیم شده' : 'تنظیم نشده'}
+                <span>صف بات مانیتور:</span>
+                <span className={`font-bold ${baleStatus?.configured ? 'text-emerald-400' : 'text-slate-500'}`}>
+                  {baleStatus?.configured ? '✓ آماده' : 'در دسترس نیست'}
                 </span>
               </div>
             </div>
@@ -293,9 +287,9 @@ export const SecurityTab: React.FC = () => {
               <span>راهنمای راه‌اندازی ربات بله</span>
             </h4>
             <ol className="list-decimal list-inside text-slate-400 space-y-1 text-[11px] leading-relaxed">
-              <li>در پیام‌رسان بله به ربات <code className="text-amber-300">@BotFather</code> پیام داده و ربات جدید بسازید.</li>
-              <li>توکن دریافتی را در متغیر <code className="text-amber-300">BALE_BOT_TOKEN</code> قرار دهید.</li>
-              <li>شناسه کاربری یا کانال خود را در <code className="text-amber-300">BALE_CHAT_ID</code> وارد کنید.</li>
+              <li>سایت توکن بله را نگه نمی‌دارد. فرم در صف <code className="text-amber-300">bale-inbox</code> نوشته می‌شود.</li>
+              <li>سرویس <code className="text-amber-300">bale-monitor</code> همان صف را می‌خواند و به گفتگوی تأییدشده می‌فرستد.</li>
+              <li>پیام نام، تلفن، واحد، موضوع، شهر، ظرفیت و توضیح همان شخص را دارد.</li>
             </ol>
           </div>
         </div>
