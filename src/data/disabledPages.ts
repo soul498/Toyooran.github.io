@@ -1,5 +1,11 @@
 /**
- * Temporarily switched-off pages (user request t61u, 31 Oct 2026):
+ * Retired service pages.
+ *
+ * 14 Nov 2026: the user replaced the four card services with six services, each with its own page
+ * (src/data/servicePages.ts). Every old service URL now 301s to the closest new page
+ * (LEGACY_SERVICE_TARGETS), not to /services. The flags below stay false: the old pages are not coming back.
+ *
+ * History, temporarily switched-off pages (user request t61u, 31 Oct 2026):
  * the four service cards on the home page and /services stay on screen as display-only tiles,
  * and the service pages behind them are not viewable for now.
  *
@@ -32,12 +38,37 @@ const OTHER_DISABLED_SERVICE_IDS: readonly string[] = CONSULTING_PAGE_ENABLED ? 
 /** Public slugs that resolve to a card service id (keep in sync with FITOUT_SLUG in seo/resolveSeo.ts). */
 const SERVICE_SLUG_ALIASES: Record<string, string> = { 'poultry-hall-fitout': 'srv-turnkey-shed' };
 
-/** Where visitors who hit a disabled page are sent (301). English requests are served as /en/services. */
+/** Fallback for a retired service page with no mapped target. English requests are served as /en/services. */
 export const DISABLED_PAGE_REDIRECT = '/services';
+
+/** Old service id or slug → new service page (src/data/servicePages.ts). */
+export const LEGACY_SERVICE_TARGETS: Record<string, string> = {
+  'srv-turnkey-shed': '/services/industrial-buildings',
+  'srv-poultry-equipment-supply': '/services/farm-equipment-installation',
+  'srv-machinery-manufacturing': '/services/feed-machinery',
+  'srv-feed-formulation-pharma': '/services/feed-products',
+  'poultry-hall-fitout': '/services/modernization',
+  'srv-consulting-efficiency': '/services/modernization',
+};
+
+/** New page for a retired service URL (Persian path; /en is added by the caller), else /services. */
+export function legacyServiceTarget(pathOrHref: string): string {
+  let path = String(pathOrHref || '').trim().split(/[?#]/)[0].replace(/^(?:https?:)?\/\/[^/]+/i, '');
+  try {
+    path = decodeURIComponent(path);
+  } catch {
+    /* keep raw */
+  }
+  const parts = path.split('/').filter(Boolean);
+  if (parts[0] === 'en') parts.shift();
+  const slug = (parts[1] || '').toLowerCase();
+  return LEGACY_SERVICE_TARGETS[slug] || DISABLED_PAGE_REDIRECT;
+}
 
 export function isServiceDisabled(idOrSlug: string | undefined | null): boolean {
   if (!idOrSlug) return false;
   const raw = String(idOrSlug).trim().toLowerCase();
+  if (raw in LEGACY_SERVICE_TARGETS) return true;
   const id = SERVICE_SLUG_ALIASES[raw] || raw;
   if (!CARD_SERVICE_PAGES_ENABLED && (CARD_SERVICE_IDS as readonly string[]).includes(id)) return true;
   return OTHER_DISABLED_SERVICE_IDS.includes(id);
@@ -64,21 +95,22 @@ export function isDisabledPagePath(pathOrHref: string | undefined | null): boole
 }
 
 /**
- * If href is a switched-off service page, return the hub path (/services).
+ * If href is a retired service page, return its new service page (LEGACY_SERVICE_TARGETS).
  * Absolute toyooran.com URLs keep their origin. Other hrefs are unchanged.
  * English localisation (/en/services) is applied later by localizeHref / the server.
  */
 export function rewriteDisabledHref(pathOrHref: string): string {
   if (!isDisabledPagePath(pathOrHref)) return pathOrHref;
+  const target = legacyServiceTarget(pathOrHref);
   const raw = String(pathOrHref).trim();
   const pathOnly = raw.split(/[?#]/)[0];
   const abs = /^(https?:\/\/[^/]+)/i.exec(pathOnly);
   if (abs && /(^|\.)toyooran\.com(:\d+)?$/i.test(abs[1].replace(/^https?:\/\//i, ''))) {
-    return `${abs[1]}${DISABLED_PAGE_REDIRECT}`;
+    return `${abs[1]}${target}`;
   }
   if (/^\/\/([^/]+)/.test(pathOnly)) {
     const host = pathOnly.slice(2).split('/')[0];
-    if (/(^|\.)toyooran\.com(:\d+)?$/i.test(host)) return `//${host}${DISABLED_PAGE_REDIRECT}`;
+    if (/(^|\.)toyooran\.com(:\d+)?$/i.test(host)) return `//${host}${target}`;
   }
-  return DISABLED_PAGE_REDIRECT;
+  return target;
 }

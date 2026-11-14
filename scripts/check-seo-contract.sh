@@ -50,35 +50,29 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   sitemap="$(curl_id http://127.0.0.1:3000/sitemap.xml)"
   grep -q 'www.toyooran.com' <<<"$sitemap" || fail "live sitemap"
   grep -q '/rnd' <<<"$sitemap" || fail "sitemap missing /rnd"
-  # Card service pages can be switched off (src/data/disabledPages.ts); the contract follows that flag.
-  card_pages_off=0
-  disabled_slugs=""
-  if grep -q 'CARD_SERVICE_PAGES_ENABLED = false' src/data/disabledPages.ts; then
-    card_pages_off=1
-    disabled_slugs="poultry-hall-fitout srv-machinery-manufacturing srv-poultry-equipment-supply srv-feed-formulation-pharma"
-  else
-    grep -q 'poultry-hall-fitout' <<<"$sitemap" || fail "sitemap missing fitout slug"
-  fi
-  if grep -q 'CONSULTING_PAGE_ENABLED = false' src/data/disabledPages.ts; then
-    disabled_slugs="${disabled_slugs} srv-consulting-efficiency"
-  else
-    grep -q 'srv-consulting-efficiency' <<<"$sitemap" || fail "sitemap missing consulting page"
-  fi
-  if [ -n "$disabled_slugs" ]; then
-    for slug in $disabled_slugs; do
-      if grep -q "/services/${slug}" <<<"$sitemap"; then fail "sitemap lists disabled page /services/${slug}"; fi
-      off_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'NR==1{print $2}')"
-      test "$off_code" = "301" || fail "disabled /services/${slug} must 301, got ${off_code}"
-      off_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
-      test "$off_loc" = "https://www.toyooran.com/services" || fail "disabled /services/${slug} must redirect to /services, got ${off_loc}"
-      en_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/en/services/${slug}" | awk 'NR==1{print $2}')"
-      test "$en_code" = "301" || fail "disabled /en/services/${slug} must 301, got ${en_code}"
-      en_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000/en/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
-      test "$en_loc" = "https://www.toyooran.com/en/services" || fail "disabled /en/services/${slug} must redirect to /en/services, got ${en_loc}"
-      if grep -q "href=\"/services/${slug}" <<<"$html"; then fail "homepage still links disabled /services/${slug}"; fi
-      if grep -q "/services/${slug}" <<<"$(curl_id http://127.0.0.1:3000/llms.txt)"; then fail "llms.txt lists disabled /services/${slug}"; fi
+  # Six service pages (src/data/servicePages.ts): 200, in the sitemap, linked from the homepage.
+  for slug in industrial-buildings farm-equipment-installation feed-machinery feed-products modernization research-collaboration; do
+    grep -q "/services/${slug}<" <<<"$sitemap" || fail "sitemap missing /services/${slug}"
+    grep -q "/en/services/${slug}<" <<<"$sitemap" || fail "sitemap missing /en/services/${slug}"
+    for prefix in "" "/en"; do
+      sc="$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000${prefix}/services/${slug}" || true)"
+      test "$sc" = "200" || fail "${prefix}/services/${slug} must be 200, got ${sc}"
     done
-  fi
+    grep -q "href=\"/services/${slug}\"" <<<"$html" || fail "homepage prerender missing /services/${slug}"
+  done
+  # Retired service URLs (src/data/disabledPages.ts) 301 to the closest new page, same language.
+  for pair in poultry-hall-fitout:modernization srv-turnkey-shed:industrial-buildings srv-poultry-equipment-supply:farm-equipment-installation srv-machinery-manufacturing:feed-machinery srv-feed-formulation-pharma:feed-products srv-consulting-efficiency:modernization; do
+    slug="${pair%%:*}"; target="${pair##*:}"
+    if grep -q "/services/${slug}<" <<<"$sitemap"; then fail "sitemap lists retired page /services/${slug}"; fi
+    for prefix in "" "/en"; do
+      off_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000${prefix}/services/${slug}" | awk 'NR==1{print $2}')"
+      test "$off_code" = "301" || fail "retired ${prefix}/services/${slug} must 301, got ${off_code}"
+      off_loc="$(curl -sI --max-time 5 "http://127.0.0.1:3000${prefix}/services/${slug}" | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
+      test "$off_loc" = "https://www.toyooran.com${prefix}/services/${target}" || fail "retired ${prefix}/services/${slug} must redirect to ${prefix}/services/${target}, got ${off_loc}"
+    done
+    if grep -q "href=\"/services/${slug}" <<<"$html"; then fail "homepage still links retired /services/${slug}"; fi
+    if grep -q "/services/${slug}" <<<"$(curl_id http://127.0.0.1:3000/llms.txt)"; then fail "llms.txt lists retired /services/${slug}"; fi
+  done
   if grep -q 'srv-turnkey-shed' <<<"$sitemap"; then fail "sitemap still has non-canonical service id"; fi
   if grep -Eq '/admin|/crm' <<<"$sitemap"; then fail "sitemap must not list /admin or /crm"; fi
   for private_path in /admin /crm; do
@@ -120,14 +114,6 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   heater_html="$(curl_id "http://127.0.0.1:3000${heater_enc}")"
   grep -q 'هیتر گازی' <<<"$heater_html" || fail "encoded heater slug missing product content"
   grep -q 'font-src' server.ts || fail "CSP font-src missing"
-  redir="$(curl -sI --max-time 5 http://127.0.0.1:3000/services/srv-turnkey-shed | awk 'NR==1{print $2}')"
-  if [ "$card_pages_off" = 1 ]; then
-    test "$redir" = "301" || fail "disabled service alias must 301, got ${redir}"
-    alias_loc="$(curl -sI --max-time 5 http://127.0.0.1:3000/services/srv-turnkey-shed | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"
-    test "$alias_loc" = "https://www.toyooran.com/services" || fail "disabled service alias must redirect to /services, got ${alias_loc}"
-  else
-    test "$redir" = "301" || fail "service alias must 301"
-  fi
   nested="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/heating/not-a-page | awk 'NR==1{print $2}')"
   test "$nested" = "301" || fail "nested category path must 301, got ${nested}"
   nested_loc="$(curl -sI --max-time 5 http://127.0.0.1:3000/products/heating/not-a-page | awk 'tolower($1)=="location:"{print $2}' | tr -d '\r')"

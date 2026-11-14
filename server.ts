@@ -33,7 +33,7 @@ import {
   verifyCsrf,
 } from "./server/auth";
 import { z } from 'zod';
-import { DISABLED_PAGE_REDIRECT, isDisabledPagePath } from "./src/data/disabledPages";
+import { isDisabledPagePath, legacyServiceTarget } from "./src/data/disabledPages";
 import { CANONICAL_ORIGIN, englishFallbackRedirect, injectSeoTags, isKnownPublicPath, isPrivateAppPath, llmsTxtAll, normalizePublicUrl, robotsTxt, seoRedirectForAnyLang, sitemapXml, stripQuery } from "./server/seo";
 import { englishArticle, englishCatalog } from "./server/i18n";
 import { EN_PREFIX, pathLang } from "./src/i18n";
@@ -70,13 +70,14 @@ async function startServer() {
     if (target && target !== req.originalUrl) return res.redirect(301, `${CANONICAL_ORIGIN}${target}`);
     next();
   });
-  // Pages switched off for now (src/data/disabledPages.ts): 301 to /services (or /en/services).
+  // Retired service pages (src/data/disabledPages.ts): 301 to the closest new service page (same language).
   // Switches stay in disabledPages.ts. Runs before seoRedirectFor so aliases don't 301 into a disabled page.
   app.use((req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();
     if (!isDisabledPagePath(req.path)) return next();
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    const dest = pathLang(req.path) === 'en' ? `${EN_PREFIX}${DISABLED_PAGE_REDIRECT}` : DISABLED_PAGE_REDIRECT;
+    const target = legacyServiceTarget(req.path);
+    const dest = pathLang(req.path) === 'en' ? `${EN_PREFIX}${target}` : target;
     return res.redirect(301, `${CANONICAL_ORIGIN}${dest}`);
   });
   app.use((req, res, next) => {

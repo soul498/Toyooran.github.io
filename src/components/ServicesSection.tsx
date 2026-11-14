@@ -20,7 +20,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
         <div className="relative z-10 w-full py-8 lg:py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 w-full">
             {translateDeep(LANDING_SERVICE_CARDS).map((card, idx) => (
               <ServiceCard key={card.serviceId} idx={idx} card={card} onClick={() => navigate(card.to)} />
             ))}

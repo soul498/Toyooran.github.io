@@ -7,6 +7,7 @@ import { isPublicArticle } from "../src/seo/articleMeta";
 import { productSeoSlug, publicProductPath, seoRedirectFor, type SeoCatalog } from "../src/seo/resolveSeo";
 import { PRODUCT_SLUG_BY_ID, LEGACY_COMPETITOR_PRODUCT_SLUGS, isLegacyCompetitorProductSlug } from "../src/seo/productUrls";
 import { DISABLED_PAGE_REDIRECT, isDisabledPagePath, rewriteDisabledHref } from "../src/data/disabledPages";
+import { SERVICE_PAGE_SLUGS } from "../src/data/servicePages";
 import { localizeJsonLd, resolveSeoForPath } from "../src/seo/localizeSeo";
 import { CANONICAL_ORIGIN } from "../src/seo/resolveSeo";
 import { setLang } from "../src/i18n";
@@ -58,11 +59,21 @@ assert.equal(isLegacyCompetitorProductSlug(encodeURIComponent(encodeURIComponent
 
 
 assert.equal(DISABLED_PAGE_REDIRECT, "/services");
-for (const path of ["/services/poultry-hall-fitout", "/services/srv-turnkey-shed", "/services/srv-consulting-efficiency", "/en/services/poultry-hall-fitout"]) {
+// Retired service pages point at the closest of the six new service pages (src/data/disabledPages.ts).
+for (const [path, target] of [
+  ["/services/poultry-hall-fitout", "/services/modernization"],
+  ["/services/srv-turnkey-shed", "/services/industrial-buildings"],
+  ["/services/srv-poultry-equipment-supply", "/services/farm-equipment-installation"],
+  ["/services/srv-machinery-manufacturing", "/services/feed-machinery"],
+  ["/services/srv-feed-formulation-pharma", "/services/feed-products"],
+  ["/services/srv-consulting-efficiency", "/services/modernization"],
+  ["/en/services/poultry-hall-fitout", "/services/modernization"],
+]) {
   assert.equal(isDisabledPagePath(path), true, path);
-  assert.equal(rewriteDisabledHref(path), "/services");
+  assert.equal(rewriteDisabledHref(path), target, path);
 }
-assert.equal(rewriteDisabledHref("https://www.toyooran.com/services/poultry-hall-fitout"), "https://www.toyooran.com/services");
+for (const slug of SERVICE_PAGE_SLUGS) assert.equal(isDisabledPagePath(`/services/${slug}`), false, slug);
+assert.equal(rewriteDisabledHref("https://www.toyooran.com/services/poultry-hall-fitout"), "https://www.toyooran.com/services/modernization");
 assert.equal(rewriteDisabledHref("/products/heating"), "/products/heating");
 
 const ld = localizeJsonLd({

@@ -20,14 +20,11 @@ import {
   ChevronLeft
 } from '../icons';
 import { rewriteDisabledHref } from '../data/disabledPages';
+import { SERVICE_PAGES, servicePagePath } from '../data/servicePages';
 
 import { hasPersian, isEn, t, tr, translateDeep } from '../i18n';
-const FOOTER_SERVICE_LINKS = [
-  { to: '/services/srv-machinery-manufacturing', title: 'ماشین‌آلات خوراک' },
-  { to: '/services/srv-poultry-equipment-supply', title: 'تجهیزات دام و طیور' },
-  { to: '/services/poultry-hall-fitout', title: 'تجهیز و نوسازی سالن مرغداری' },
-  { to: '/services/srv-feed-formulation-pharma', title: 'خوراک و مکمل' },
-];
+// The six service pages (src/data/servicePages.ts), same order as the cards.
+const FOOTER_SERVICE_LINKS = SERVICE_PAGES.map((page) => ({ to: servicePagePath(page), title: page.title }));
 
 interface FooterProps {
   onNavigate: (id: string) => void;

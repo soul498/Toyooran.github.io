@@ -1,65 +1,17 @@
-import { HOME_EQUIPMENT_CARD_IMAGE } from './sitePhotos';
-import { Building2, Factory, Fan, Pill } from '../icons';
+import { Building2, Factory, Fan, FlaskConical, Pill, RefreshCw } from '../icons';
+import { SERVICE_PAGES, servicePagePath } from './servicePages';
 
-export const LANDING_SERVICE_CARDS = [
-  {
-    id: 'silo' as const,
-    serviceId: 'srv-machinery-manufacturing',
-    to: '/services/srv-machinery-manufacturing',
-    title: 'ماشین‌آلات خوراک',
-    categoryEn: 'Feed Machinery',
-    icon: Factory,
-    desc: 'پرس پلت، اکسترودر، میکرودایزینگ و آسیاب میکسر',
-    badge: 'کارخانجات خوراک',
-    accentColor: '#003F86',
-    badgeBg: 'bg-blue-50',
-    badgeText: 'text-[#003F86]',
-    specs: ['پرس پلت ۲ الی ۲۰ تن/ساعت', 'میکرودایزینگ دقیق افزودنی‌ها'],
-    bgImage: '/images/service_feed_machinery.webp',
-  },
-  {
-    id: 'feeding' as const,
-    serviceId: 'srv-poultry-equipment-supply',
-    to: '/services/srv-poultry-equipment-supply',
-    title: 'تجهیزات دام و طیور',
-    categoryEn: 'Farm Equipment',
-    icon: Fan,
-    desc: 'بشقاب پروانه‌ای، آبخوری نیپل و جت هیتر',
-    badge: 'بشقاب دانخوری پروانه‌ای',
-    accentColor: '#FF9F14',
-    badgeBg: 'bg-amber-50',
-    badgeText: 'text-amber-700',
-    specs: ['بشقاب دانخوری پروانه‌ای', 'جت هیتر و سیستم‌های گرمایشی'],
-    bgImage: HOME_EQUIPMENT_CARD_IMAGE,
-  },
-  {
-    id: 'cooling' as const,
-    serviceId: 'srv-turnkey-shed',
-    to: '/services/poultry-hall-fitout',
-    title: 'تجهیز و نوسازی سالن مرغداری',
-    categoryEn: 'Turnkey Shed',
-    icon: Building2,
-    desc: 'طراحی، ساخت سازه و تجهیز کامل سالن',
-    badge: 'اجرای صفر تا صد',
-    accentColor: '#003F86',
-    badgeBg: 'bg-emerald-50',
-    badgeText: 'text-emerald-700',
-    specs: ['سازه‌های سبک و بهداشتی', 'عایق‌بندی و هوابندی کامل'],
-    bgImage: '/images/service_turnkey_shed.webp',
-  },
-  {
-    id: 'other' as const,
-    serviceId: 'srv-feed-formulation-pharma',
-    to: '/services/srv-feed-formulation-pharma',
-    title: 'خوراک و مکمل',
-    categoryEn: 'Feed & Supplements',
-    icon: Pill,
-    desc: 'کنسانتره تخصصی، پریمیکس و روغن خام سویا',
-    badge: 'فرمولاسیون علمی',
-    accentColor: '#FF9F14',
-    badgeBg: 'bg-purple-50',
-    badgeText: 'text-purple-700',
-    specs: ['کنسانتره گوشتی و تخم‌گذار', 'پریمیکس دامی و روغن‌های گیاهی'],
-    bgImage: '/images/service_supplements.webp',
-  },
-];
+/**
+ * Service cards on the home page and /services: the six services (user request, 14 Nov 2026),
+ * each linking to its own page. Titles and order come from src/data/servicePages.ts.
+ * The card shows the icon and title over a decorative photo (ServiceCard in components/Hero.tsx).
+ */
+const ICONS = [Building2, Fan, Factory, Pill, RefreshCw, FlaskConical];
+
+export const LANDING_SERVICE_CARDS = SERVICE_PAGES.map((page, i) => ({
+  serviceId: page.slug,
+  to: servicePagePath(page),
+  title: page.title,
+  icon: ICONS[i],
+  bgImage: page.cardImage,
+}));

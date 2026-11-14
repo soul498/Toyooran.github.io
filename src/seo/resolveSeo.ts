@@ -11,6 +11,8 @@ import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_E164, OFFICE_PHONE_TEL, SALES_PHONE_
 import { removedProductRedirect } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 import { isDisabledPagePath, isServiceDisabled, rewriteDisabledHref } from "../data/disabledPages";
+import { SERVICE_PAGES, SERVICE_PAGE_LABELS, findServicePage, servicePagePath, type ServicePageData } from "../data/servicePages";
+import { sitePhotoSrc } from "../data/sitePhotos";
 import { PRODUCT_SLUG_BY_ID, productAliasTarget } from "./productUrls";
 import {
   ABOUT_ACTIVITIES, ABOUT_ACTIVITIES_HEADING, ABOUT_FLAGSHIP_CTA, ABOUT_FLAGSHIP_HEADING, ABOUT_FLAGSHIP_HREF,
@@ -26,7 +28,6 @@ export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
 export const FITOUT_SLUG = "poultry-hall-fitout";
 
 export const SEO_REDIRECTS: Record<string, string> = {
-  [`/services/${FITOUT_SERVICE_ID}`]: `/services/${FITOUT_SLUG}`,
   "/magazine/poultry-hall-audit-checklist": "/magazine/before-and-after-renovation",
 };
 
@@ -252,6 +253,49 @@ export function isPrivateAppPath(pathname: string): boolean {
 function listedServices(catalog: SeoCatalog): Service[] {
   const byId = new Map(catalog.services.map((s) => [s.id, s]));
   return PUBLIC_SERVICE_IDS.map((id) => byId.get(id)).filter((s): s is Service => Boolean(s) && !isServiceDisabled(s!.id));
+}
+
+/** `<li>` links to the six service pages (src/data/servicePages.ts), in the user's order. */
+function servicePageLinks(): string {
+  return SERVICE_PAGES.map((s) => `<li><a href="${servicePagePath(s)}">${escapeHtml(tr(s.title))}</a></li>`).join("");
+}
+
+/** Related product links of a service page: fixed links plus catalog products (by id) at their public URL. */
+export function servicePageRelated(page: ServicePageData, products: Product[]): { label: string; href: string }[] {
+  const fixed = (page.related || []).map((l) => ({ label: tr(l.label), href: l.href }));
+  const fromCatalog = (page.relatedProductIds || [])
+    .map((id) => products.find((p) => String(p.id).toLowerCase() === id))
+    .filter((p): p is Product => Boolean(p))
+    .map((p) => ({ label: p.name, href: publicProductPath(p) }));
+  return [...fixed, ...fromCatalog];
+}
+
+function servicePageBody(page: ServicePageData, catalog: SeoCatalog): string {
+  const p = (text: string) => `<p>${escapeHtml(tr(text))}</p>`;
+  const related = servicePageRelated(page, catalog.products);
+  const others = SERVICE_PAGES.filter((s) => s.slug !== page.slug)
+    .map((s) => `<li><a href="${servicePagePath(s)}">${escapeHtml(tr(s.title))}</a></li>`)
+    .join("");
+  const sections = (page.sections || [])
+    .map(
+      (sec) =>
+        `<h2>${escapeHtml(tr(sec.heading))}</h2>${sec.paragraphs.map(p).join("")}${
+          sec.items?.length ? `<ul>${sec.items.map((i) => `<li><strong>${escapeHtml(tr(i.label))}:</strong> ${escapeHtml(tr(i.text))}</li>`).join("")}</ul>` : ""
+        }`
+    )
+    .join("\n");
+  return `${page.intro.map(p).join("")}
+<h2>${escapeHtml(tr(page.listHeading))}</h2>
+<ul>${page.items.map((i) => `<li>${escapeHtml(tr(i))}</li>`).join("")}</ul>
+${(page.outro || []).map(p).join("")}
+${page.feature ? `<h2>${escapeHtml(tr(page.feature.heading))}</h2>${p(page.feature.text)}<p><a href="${page.feature.href}">${escapeHtml(tr(page.feature.cta))}</a></p>` : ""}
+${sections}
+${related.length ? `<h2>${tr(SERVICE_PAGE_LABELS.related)}</h2><ul>${related.map((l) => `<li><a href="${l.href}">${escapeHtml(l.label)}</a></li>`).join("")}</ul>` : ""}
+<h2>${tr(SERVICE_PAGE_LABELS.ctaHeading)}</h2>
+<p><a href="/contact">${tr(SERVICE_PAGE_LABELS.cta)}</a></p>
+<p>${tr(SERVICE_PAGE_LABELS.phones)} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · ${tr(SERVICE_PAGE_LABELS.office)} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
+<h2>${tr(SERVICE_PAGE_LABELS.others)}</h2>
+<ul>${others}</ul>`;
 }
 
 /** `<a>` to the fitout service page, or to /services while that page is switched off. */
@@ -723,9 +767,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
   }
 
   if (path === "/") {
-    const serviceLinks = listedServices(catalog)
-      .map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a></li>`)
-      .join("");
+    const serviceLinks = servicePageLinks();
     return okDoc({
       path,
       title: t("طیوران صنعت پویا | تجهیزات دام و طیور و نوسازی سالن مرغداری"),
@@ -759,7 +801,7 @@ ${homeExtras(catalog)}`,
   }
 
   if (path === "/services") {
-    const links = listedServices(catalog).map((s) => `<li><a href="${publicServicePath(s)}">${escapeHtml(s.title)}</a> — ${escapeHtml(s.tagline)}</li>`).join("");
+    const links = servicePageLinks();
     return okDoc({
       path,
       title: t("خدمات تجهیز دام و طیور و مرغداری | طیوران صنعت پویا"),
@@ -767,8 +809,42 @@ ${homeExtras(catalog)}`,
       h1: t("خدمات طراحی و تجهیز صنعت دام و طیور"),
       ogType: "website",
       lastmod: collectionDay(catalog, "services"),
-      body: `<p>${t("خدمات مهندسی و اجرایی طیوران صنعت پویا در صنعت دام و طیور: سالن مرغداری، کارخانه خوراک و خوراک و مکمل.")}</p>${links ? `<ul>${links}</ul>` : ""}${fitoutLink("") ? `<p>${fitoutLink(t("تجهیز و نوسازی سالن مرغداری"))}</p>` : ""}`,
+      body: `<p>${t("حوزه‌های اصلی فعالیت و خدمات طیوران صنعت پویا عبارت‌اند از:")}</p><ul>${links}</ul>`,
       jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: t("خدمات"), path: "/services" }])],
+    });
+  }
+
+  const servicePage = path.startsWith("/services/") && publicSegments(path).length === 2 ? findServicePage(path.split("/")[2]) : undefined;
+  if (servicePage) {
+    const pagePath = servicePagePath(servicePage);
+    const h1 = tr(servicePage.title);
+    const description = tr(servicePage.description);
+    return okDoc({
+      path: pagePath,
+      title: `${h1} | ${t("طیوران صنعت پویا")}`,
+      description,
+      h1,
+      ogType: "website",
+      ogImage: servicePage.photo ? `${CANONICAL_ORIGIN}${sitePhotoSrc(servicePage.photo)}` : undefined,
+      lastmod: collectionDay(catalog, "services"),
+      body: servicePageBody(servicePage, catalog),
+      jsonLd: [
+        orgSchema(company),
+        {
+          "@type": "Service",
+          name: h1,
+          serviceType: h1,
+          description,
+          provider: { "@id": `${CANONICAL_ORIGIN}/#org` },
+          url: canonicalPath(pagePath),
+          ...(servicePage.photo ? { image: `${CANONICAL_ORIGIN}${sitePhotoSrc(servicePage.photo)}` } : {}),
+        },
+        breadcrumb([
+          { name: t("خانه"), path: "/" },
+          { name: t("خدمات"), path: "/services" },
+          { name: h1, path: pagePath },
+        ]),
+      ],
     });
   }
 
@@ -1208,7 +1284,7 @@ export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolea
     if (isCategorySlug(slug, catalog)) return true;
     return catalog.products.some((p) => p.id === slug || p.code === slug || productSeoSlug(p) === slug);
   }
-  if (parts[0] === "services") return !isServiceDisabled(parts[1]) && Boolean(findService(parts[1], catalog));
+  if (parts[0] === "services") return Boolean(findServicePage(parts[1])) || (!isServiceDisabled(parts[1]) && Boolean(findService(parts[1], catalog)));
   if (parts[0] === "projects") return catalog.projects.some((p) => p.id === parts[1]);
   return false;
 }
@@ -1230,6 +1306,7 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
     seen.add(loc);
     urls.push({ loc, priority, lastmod });
   };
+  for (const page of SERVICE_PAGES) add(servicePagePath(page), "0.8", collectionDay(catalog, "services"));
   for (const cat of catalog.categories) add(`/products/${cat.id}`, "0.8", collectionDay(catalog, "products"));
   for (const service of catalog.services) if (!isServiceDisabled(service.id)) add(publicServicePath(service), "0.8", collectionDay(catalog, "services"));
   for (const product of catalog.products) add(publicProductPath(product), "0.7", collectionDay(catalog, "products"));
@@ -1245,7 +1322,10 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
 export function llmsTxt(catalog: SeoCatalog): string {
   // Persian section at the original URLs; the server appends the English section (lang "en", /en URLs).
   const en = isEn();
-  const services = catalog.services.filter((s) => !isServiceDisabled(s.id)).map((s) => `- ${lp(publicServicePath(s))} — ${s.title}`).join("\n");
+  const services = [
+    ...SERVICE_PAGES.map((s) => `- ${lp(servicePagePath(s))} — ${tr(s.title)}`),
+    ...catalog.services.filter((s) => !isServiceDisabled(s.id)).map((s) => `- ${lp(publicServicePath(s))} — ${s.title}`),
+  ].join("\n");
   const cats = catalog.categories.map((c) => `- ${lp(`/products/${c.id}`)} — ${c.title}`).join("\n");
   const posts = catalog.articles
     .filter((article) => isPublicArticle(article) && !article.noindex)

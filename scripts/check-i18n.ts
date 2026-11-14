@@ -173,6 +173,7 @@ const contact = await import("../src/data/contact");
 const photos = await import("../src/data/productPhotos");
 const aboutCopy = await import("../src/data/aboutCopy");
 const sitePhotos = await import("../src/data/sitePhotos");
+const servicePages = await import("../src/data/servicePages");
 
 requireAll("COMPANY_INFO", mock.COMPANY_INFO, report.missing.site);
 requireAll("CATEGORIES_DATA", mock.CATEGORIES_DATA, report.missing.site);
@@ -185,6 +186,8 @@ requireAll("PAGE_HEROES", PAGE_HEROES, report.missing.site);
 requireAll("aboutCopy", Object.fromEntries(Object.entries(aboutCopy)), report.missing.site);
 requireAll("sitePhotos (alt)", [sitePhotos.HOME_HERO_PHOTO, ...Object.values(sitePhotos.ABOUT_PHOTOS)].map((p) => p.alt), report.missing.site);
 requireAll("LANDING_SERVICE_CARDS", LANDING_SERVICE_CARDS, report.missing.site);
+requireAll("SERVICE_PAGES", servicePages.SERVICE_PAGES.map(({ photo, ...rest }) => ({ ...rest, alt: photo?.alt })), report.missing.site);
+requireAll("SERVICE_PAGE_LABELS", servicePages.SERVICE_PAGE_LABELS, report.missing.site);
 requireAll("MAGAZINE_TOPICS", MAGAZINE_TOPICS, report.missing.site);
 requireAll("contact", Object.fromEntries(Object.entries(contact).filter(([, v]) => typeof v === "string")), report.missing.site);
 requireAll("productPhotos", Object.values(photos).filter((v) => v && typeof v === "object").map((v) => (v as { alt?: string }).alt), report.missing.site);
@@ -265,6 +268,11 @@ const RULES: { rule: string; re: RegExp }[] = [
   { rule: "Persian text left in English", re: /[\u0600-\u06FF]/ },
 ];
 const IMACHINE_ARTICLE = "imachine-jet-heater";
+/** Service 3 names its machinery brand IMACHINE in the user's own copy (14 Nov 2026); allowed on that page only. */
+const IMACHINE_SERVICE_PAGE = "/services/feed-machinery";
+const IMACHINE_ALLOWED_FA = new Set(
+  servicePages.SERVICE_PAGES.filter((p) => `/services/${p.slug}` === IMACHINE_SERVICE_PAGE).flatMap((p) => p.intro.filter((t) => /IMACHINE/.test(t)).map((t) => t.trim()))
+);
 /** Visible text only: markdown link targets, [PRODUCTS|…] directives and [IMG|path|…] paths are not shown. */
 function visibleText(en: string): string {
   return en
@@ -280,7 +288,7 @@ function policy(rawEn: string, where: string, fa?: string, allowImachine = false
   if (!allowImachine && /imachine/i.test(en)) report.policy.push({ rule: "IMACHINE only in the imachine-jet-heater article", en: en.slice(0, 200), fa: fa?.slice(0, 120), where });
 }
 for (const [file, dict] of [["ui.json", UI], ["site.json", SITE], ["products.json", PRODUCTS_EN]] as const) {
-  for (const [fa, en] of Object.entries(dict)) if (used.has(fa) || uiNeeded.has(fa)) policy(en, file, fa);
+  for (const [fa, en] of Object.entries(dict)) if (used.has(fa) || uiNeeded.has(fa)) policy(en, file, fa, IMACHINE_ALLOWED_FA.has(fa));
 }
 for (const [id, dict] of Object.entries(MAGAZINE_EN)) for (const [fa, en] of Object.entries(dict)) policy(en, `magazine.json#${id}`, fa, id === IMACHINE_ARTICLE);
 const allowedGlobally = (s: string) => s;
@@ -314,7 +322,7 @@ if (base) {
             const text = pre.replace(/<[^>]+>/g, " ");
             if (re.test(text) && !(rule.startsWith("feeder") && false)) report.render.push({ url: u, problem: rule });
           }
-          if (!u.includes(IMACHINE_ARTICLE) && /imachine/i.test(pre.replace(/<[^>]+>/g, " "))) report.render.push({ url: u, problem: "IMACHINE outside its article" });
+          if (!u.includes(IMACHINE_ARTICLE) && !u.endsWith(IMACHINE_SERVICE_PAGE) && /imachine/i.test(pre.replace(/<[^>]+>/g, " "))) report.render.push({ url: u, problem: "IMACHINE outside its article" });
         } catch (error) {
           report.render.push({ url: u, problem: (error as Error).message });
         }

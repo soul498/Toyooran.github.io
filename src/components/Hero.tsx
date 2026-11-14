@@ -48,21 +48,22 @@ export interface CircleCategoryCard {
 
 
 
-export const ServiceCard: React.FC<{ card: any, idx: number, onClick: () => void }> = ({ card, onClick }) => {
+export const ServiceCard: React.FC<{ card: any, idx: number, onClick?: () => void }> = ({ card }) => {
   const Icon = card.icon;
   // While the page behind a card is switched off (data/disabledPages.ts) the card is a display-only tile:
   // same look, but a plain <div> with no click, focus or pointer cursor. It keeps the decorative CSS hover
   // (lift, photo zoom, icon glow; see .service-card-shell in index.css).
+  // Interactive cards are real links (crawlable <a href>) to the service page.
   const interactive = !isDisabledPagePath(card.to);
-  const Tag = (interactive ? 'button' : 'div') as 'button';
+  const Tag = (interactive ? Link : 'div') as unknown as React.ElementType;
   const tagProps = interactive
-    ? { type: 'button' as const, onClick, 'aria-label': card.title }
+    ? { to: card.to }
     : {};
   return (
     <div className="service-card-shell relative">
     <Tag
       {...tagProps}
-      className={`service-card relative w-full h-[280px] sm:h-[320px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 ${interactive ? 'cursor-pointer' : 'service-card--static cursor-default'}`}
+      className={`service-card block relative w-full h-[280px] sm:h-[320px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 ${interactive ? 'cursor-pointer' : 'service-card--static cursor-default'}`}
     >
       <div className="absolute inset-[2px] rounded-[calc(2rem-2px)] bg-[#001c3d] z-10 overflow-hidden flex flex-col items-center justify-center p-6">
         {card.bgImage && (
@@ -272,7 +273,7 @@ const Hero: React.FC<HeroProps> = ({
 
           {/* 🎨 Dribbble-Worthy High-Fidelity Magic Cards */}
               <div className="relative z-10 w-full">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 w-full">
                   
                   {categoryCards.map((card, idx) => (
                     <ServiceCard
