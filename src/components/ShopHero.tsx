@@ -21,6 +21,7 @@ export const ShopHero: React.FC<{
   const rich = selectedCategory !== 'all' ? categoryIntroRich(selectedCategory) : undefined;
   return (
 <PageBanner
+  short
   title={catalogHeading(selectedCategory, categories)}
   highlight={t("دام و طیور")}
   subtitle={rich ? <RichInline text={rich} /> : tr(SHOP_SUBTITLE)}
