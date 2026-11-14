@@ -157,7 +157,7 @@ const MainAppInner: React.FC = () => {
     setIsAiAssistantOpen(false);
 
     if (currentSection === 'home' && location.pathname === '/contact') {
-      const formEl = document.getElementById('free-consultation-form');
+      const formEl = document.getElementById('consultation-form');
       if (formEl) {
         formEl.scrollIntoView({ behavior: 'smooth' });
         return;
@@ -165,14 +165,19 @@ const MainAppInner: React.FC = () => {
     }
 
     navigate('/contact');
-    setTimeout(() => {
-      document.getElementById('free-consultation-form')?.scrollIntoView({ behavior: 'smooth' });
-    }, 200);
+    // The contact page is a lazy chunk: wait (up to ~3 s) until the form exists, then bring it into view.
+    let tries = 0;
+    const scrollToForm = () => {
+      const formEl = document.getElementById('consultation-form');
+      if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else if (++tries < 30) window.setTimeout(scrollToForm, 100);
+    };
+    window.setTimeout(scrollToForm, 150);
   };
 
   const handleRequestQuoteForProduct = (product: Product) => {
     handleOpenUnifiedConsultation(
-      keepFa("استعلام قیمت و پیش‌فاکتور"),
+      keepFa("استعلام قیمت"),
       product.name,
       `${t("درخواست استعلام قیمت و مشخصات فنی برای محصول:")} ${product.name}`
     );
@@ -227,7 +232,7 @@ const MainAppInner: React.FC = () => {
         currentSection={currentSection}
         onNavigate={handleNavigateSection}
         onOpenConsultation={() => handleOpenUnifiedConsultation()}
-        onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
+        onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت"))}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
         logoUrl={siteLayout.header.logoUrl}
@@ -249,7 +254,7 @@ const MainAppInner: React.FC = () => {
               onNavigate={handleNavigateSection}
               onSelectCategory={handleSelectCategory}
               onOpenConsultation={() => handleOpenUnifiedConsultation()}
-              onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
+              onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت"))}
               onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
               beforeServices={siteLayout.home.productBands ? <HomeProductBands /> : null}
             >
@@ -313,7 +318,7 @@ const MainAppInner: React.FC = () => {
         onNavigate={handleNavigateSection}
         onSelectCategory={handleSelectCategory}
         onOpenConsultation={() => handleOpenUnifiedConsultation()}
-        onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"))}
+        onOpenQuote={() => handleOpenUnifiedConsultation(keepFa("استعلام قیمت"))}
         companyInfo={companyInfo}
         categories={categories}
         layout={siteLayout.footer}
@@ -352,7 +357,7 @@ const MainAppInner: React.FC = () => {
         onClose={() => setIsAiAssistantOpen(false)}
         onOpenQuote={() => {
           setIsAiAssistantOpen(false);
-          handleOpenUnifiedConsultation(keepFa("استعلام قیمت و پیش‌فاکتور"));
+          handleOpenUnifiedConsultation(keepFa("استعلام قیمت"));
         }}
       />
       </Suspense>

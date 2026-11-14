@@ -158,7 +158,14 @@ async function startServer() {
   app.delete('/api/auth/sessions', requireAdmin, (req, res) => { revokeAllSessions(req as any); res.status(204).end(); });
   // Logout remains CSRF-protected.
   app.post('/api/auth/logout', (req, res) => { logoutAdmin(req as any, res); res.status(204).end(); });
-  app.get('/api/auth/me', requireAdmin, (req, res) => res.json({ authenticated: true, admin: (req as any).admin }));
+  // Visitors without a session cookie get a plain 200 "not signed in" (no console 401 on every public page);
+  // any request that carries a session cookie still goes through requireAdmin unchanged.
+  app.get('/api/auth/me', (req, res, next) => {
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.setHeader('Vary', 'Cookie');
+    if (!req.cookies?.toyooran_admin_session) return res.json({ authenticated: false });
+    next();
+  }, requireAdmin, (req, res) => res.json({ authenticated: true, admin: (req as any).admin }));
 
   app.get('/api/admin/roles', requireAdmin, requireSuperadmin, (_req, res) => res.json({ roles: listAdminRoles() }));
   app.post('/api/admin/roles', requireAdmin, requireSuperadmin, (req, res) => {

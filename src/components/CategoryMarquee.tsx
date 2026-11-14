@@ -56,7 +56,7 @@ export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCatego
               role="tab"
               aria-selected={isSelected}
               onClick={() => onSelectCategory(cat.id as ProductCategory | 'all')}
-              className={`flex items-center gap-3 min-h-[4.5rem] rounded-2xl border px-3 py-3 text-right transition-colors ${
+              className={`flex items-center gap-3 min-h-[4.5rem] rounded-2xl border px-3 py-3 text-start transition-colors ${
                 isSelected
                   ? 'bg-[#003F86] border-[#003F86] text-white shadow-lg shadow-blue-900/20'
                   : 'bg-white border-slate-200 text-slate-800 hover:border-[#003F86]/30'

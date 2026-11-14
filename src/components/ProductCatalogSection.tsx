@@ -9,7 +9,8 @@ import { Link } from 'react-router-dom';
 import { Product, ProductCategory } from '../types';
 import { catalogHeading, publicProductPath } from '../seo/resolveSeo';
 import { useData } from '../context/DataContext';
-import { LazyImage } from './LazyImage';
+import { ProductThumb } from './ProductThumb';
+import { ProductName } from './ProductName';
 import { CategoryMarquee } from './CategoryMarquee';
 
 import { t, tf } from '../i18n';
@@ -84,8 +85,8 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
 
   const filteredProducts = products.filter((p) => {
     const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          p.code.toLowerCase().includes(searchQuery.toLowerCase());
+    // Name only: product codes (ts-xxx) are never shown to visitors, so they must not be searchable either.
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.trim().toLowerCase());
     const matchesIndustrial = true;
     return matchesCat && matchesSearch && matchesIndustrial;
   });
@@ -193,7 +194,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-10">
-                  {displayedProducts.map((product) => (
+                  {displayedProducts.map((product, index) => (
                     <div
                       key={`${product.id}-${selectedCategory}`}
                       className="group bg-white rounded-[2rem] p-4 shadow-sm border border-slate-100 hover:border-slate-200 transition-colors flex flex-col"
@@ -203,16 +204,16 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                       to={publicProductPath(product)}
                       className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden bg-slate-50 mb-6 block"
                     >
-                      <LazyImage
+                      <ProductThumb
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full"
-                        imgClassName="w-full h-full object-cover"
+                        sizes="(min-width: 1280px) 380px, (min-width: 1024px) 30vw, (min-width: 768px) 45vw, 92vw"
+                        eager={index < 3}
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
 
                       {/* Floating Badges */}
-                      <div className="absolute top-4 right-4 bg-white/90  px-4 py-1.5 rounded-full text-[11px] font-bold text-[#003F86] shadow-sm border border-white">
+                      <div className="absolute top-4 right-4 z-20 bg-white/90  px-4 py-1.5 rounded-full text-[11px] font-bold text-[#003F86] shadow-sm border border-white">
                         {product.categoryTitle.replace(/ مرغداری$/, '')}
                       </div>
                       
@@ -223,7 +224,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                         to={publicProductPath(product)}
                         className="text-xl md:text-2xl font-black text-slate-900 mb-8 group-hover:text-[#003F86] transition-colors line-clamp-2"
                       >
-                        {product.name}
+                        <ProductName name={product.name} />
                       </Link>
 
                       {/* Action Buttons */}
@@ -231,6 +232,8 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
                         <Link
                           to="/contact"
                           onClick={(e) => {
+                            // The handler navigates to /contact itself and then scrolls to the form.
+                            e.preventDefault();
                             e.stopPropagation();
                             onRequestQuoteForProduct(product);
                           }}
@@ -268,7 +271,7 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
               <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1.5">
                 {filteredProducts.map((p) => (
                   <li key={p.id} className="text-sm leading-7">
-                    <Link to={publicProductPath(p)} className="text-[#003F86] hover:underline font-bold">{p.name}</Link>
+                    <Link to={publicProductPath(p)} className="text-[#003F86] hover:underline font-bold"><ProductName name={p.name} /></Link>
                   </li>
                 ))}
               </ul>

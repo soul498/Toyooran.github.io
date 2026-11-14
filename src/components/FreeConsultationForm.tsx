@@ -3,13 +3,15 @@ import { useLocation } from 'react-router-dom';
 import { Send, User, Phone, FileText, Layers, CheckCircle2 } from '../icons';
 import { sendNotificationToBale } from '../utils/sendToBale';
 
-import { keepFa, t } from '../i18n';
+import { keepFa, t, tr } from '../i18n';
 interface FreeConsultationFormProps {
   initialSubject?: string;
   initialProduct?: string;
   initialMessage?: string;
   className?: string;
 }
+
+const SUBJECT_OPTIONS: string[] = [keepFa('مرغداری گوشتی'), keepFa('کارخانه خوراک و مکمل'), keepFa('سوله و سالن صنعتی'), keepFa('تجهیزات گرمایشی و جت هیتر'), keepFa('استعلام قیمت'), keepFa('سایر موارد')];
 
 export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
   initialSubject = '',
@@ -22,7 +24,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
     fullName: '',
     phoneNumber: '',
     subject: initialSubject || keepFa('مرغداری گوشتی'),
-    message: initialMessage + (initialProduct ? ` \n${t("محصول مورد نظر:")} ${initialProduct}` : ''),
+    // The quote handler already names the product in the message; add the product line only when it does not.
+    message: initialMessage + (initialProduct && !initialMessage.includes(initialProduct) ? ` \n${t("محصول مورد نظر:")} ${initialProduct}` : ''),
     location: '',
     capacity: '',
     isDecisionMaker: false,
@@ -161,6 +164,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                   <option value={keepFa("تجهیزات گرمایشی و جت هیتر")}>{t("سیستم‌های گرمایشی و تهویه")}</option>
                   <option value={keepFa("استعلام قیمت")}>{t("استعلام قیمت")}</option>
                   <option value={keepFa("سایر موارد")}>{t("مشاوره عمومی / سایر")}</option>
+                  {/* A subject set by another page (e.g. a service title) that is not one of the options above. */}
+                  {formData.subject && !SUBJECT_OPTIONS.includes(formData.subject) ? <option value={formData.subject}>{tr(formData.subject)}</option> : null}
                 </select>
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400"><path d="m6 9 6 6 6-6"/></svg>

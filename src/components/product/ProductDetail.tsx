@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LazyImage } from '../LazyImage';
+import { productThumbBase } from '../ProductThumb';
+import { ProductName } from '../ProductName';
 import { RichInline } from '../RichBlocks';
 import { categoryIntro, publicProductPath } from '../../seo/resolveSeo';
 import { relatedInCategory } from '../../seo/internalLinks';
@@ -206,7 +208,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
             <li aria-hidden="true" className="pd-sep">›</li>
             <li><Link to={`/products/${product.category}`}>{product.categoryTitle}</Link></li>
             <li aria-hidden="true" className="pd-sep">›</li>
-            <li aria-current="page">{product.name}</li>
+            <li aria-current="page"><ProductName name={product.name} /></li>
           </ol>
         </nav>
 
@@ -251,7 +253,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                 <Icon name="layers" className="pd-ic-sm" />
                 {product.categoryTitle}
               </Link>
-              <h1 id="pd-title">{product.name}</h1>
+              <h1 id="pd-title"><ProductName name={product.name} /></h1>
               {subline ? <p className="pd-subline">{subline}</p> : null}
               {keySpecs.length ? (
                 <>
@@ -404,10 +406,10 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                           <div className="pd-rel-thumb">
                             {relNear && (
                               <img
-                                src={withMediaVersion(p.image)}
+                                src={withMediaVersion(productThumbBase(p.image) ? `${productThumbBase(p.image)}-400.webp` : p.image)}
                                 alt={p.imageAlt || p.name}
                                 width={400}
-                                height={225}
+                                height={300}
                                 decoding="async"
                                 onError={() => setRelBroken((b) => ({ ...b, [p.id]: true }))}
                               />
@@ -415,7 +417,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                           </div>
                           <div className="pd-rel-meta">
                             <small>{p.categoryTitle}</small>
-                            <b>{p.name}</b>
+                            <b><ProductName name={p.name} /></b>
                             <span className="pd-go">{t("مشاهده")}<Icon name="left" className="pd-ic-xs pd-dir-flip" /></span>
                           </div>
                         </Link>
