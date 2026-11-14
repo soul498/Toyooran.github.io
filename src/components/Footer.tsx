@@ -42,7 +42,7 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, onOpenConsultation, onOpenQuote, companyInfo, categories, layout }) => {
   const navigation = [
     { title: t("صفحه اصلی"), path: '/' },
-    { title: t("درباره"), path: '/about' },
+    { title: t("درباره ما"), path: '/about' },
     { title: t("محصولات"), path: '/products' },
     { title: t("خدمات"), path: '/services' },
     { title: t("مجله"), path: '/magazine' },

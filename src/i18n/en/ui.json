@@ -81,7 +81,6 @@
  "راه‌های ارتباط مستقیم": "Direct contact options",
  "ساعات پاسخگویی مهندسان:": "Engineers' response hours:",
  "صفحه اصلی": "Home",
- "درباره": "About",
  "محصولات": "Products",
  "خدمات": "Services",
  "مجله": "Magazine",
@@ -327,7 +326,6 @@
  "صفحه پیدا نشد": "Page not found",
  "این مسیر در سایت وجود ندارد.": "This path does not exist on the site.",
  "بازگشت به خانه": "Back to home",
- "درباره | طیوران صنعت پویا، بیش از نیم قرن تجربه در صنایع دام، طیور و آبزیان": "About | Toyooran Sanat Pouya, over half a century of experience in the livestock, poultry and aquaculture industries",
  "همراهی تخصص، مهندسی و تولید در توسعه زیرساخت‌های صنعت دام، طیور و آبزیان": "Combining expertise, engineering and manufacturing to develop infrastructure for the livestock, poultry and aquaculture industries",
  "طیوران صنعت پویا با اتکا به بیش از نیم قرن تجربهٔ تخصصی مؤسسان و مدیران خود در صنایع دام، طیور و آبزیان، در زمینهٔ مشاوره، طراحی، ساخت، تجهیز، راه‌اندازی و توسعهٔ پروژه‌های صنعتی و کشاورزی فعالیت می‌کند.": "Drawing on more than half a century of specialist experience of its founders and managers in the livestock, poultry and aquaculture industries, Toyooran Sanat Pouya works in consulting, design, construction, equipping, commissioning and development of industrial and agricultural projects.",
  "این مجموعه از مطالعات اولیه و نیازسنجی تا طراحی، ساخت، تأمین تجهیزات، نصب، راه‌اندازی و پشتیبانی فنی، در کنار پروژه حضور دارد.": "From initial studies and needs assessment through design, construction, equipment supply, installation, commissioning and technical support, the company stays alongside each project.",
@@ -377,5 +375,7 @@
  "تیم نصب در حال نصب خط دانخوری در سالن مرغداری": "Installation team fitting a feeder line in a poultry house",
  "نصب و تنظیم خطوط دانخوری و آبخوری در سالن": "Installing and adjusting feeder and drinker lines in the house",
  "جوجه‌ها در کنار خط دانخوری در سالن در حال بهره‌برداری": "Chicks along a feeder line in an operating poultry house",
- "هماهنگی تیم فنی و بررسی تجهیزات در محل اجرا": "Technical team coordinating and checking equipment on site"
+ "هماهنگی تیم فنی و بررسی تجهیزات در محل اجرا": "Technical team coordinating and checking equipment on site",
+ "درباره ما": "About",
+ "درباره ما | طیوران صنعت پویا، بیش از نیم قرن تجربه در صنایع دام، طیور و آبزیان": "About | Toyooran Sanat Pouya, over half a century of experience in the livestock, poultry and aquaculture industries"
 }

@@ -3,8 +3,8 @@
  * Shared by the page (src/components/AboutPage.tsx), its hero (src/data/pageHeroes.ts), the
  * server prerender (src/seo/resolveSeo.ts) and the admin pages tab defaults. English is in src/i18n/en/ui.json.
  */
-export const ABOUT_PAGE_NAME = "درباره" as const;
-export const ABOUT_TITLE = "درباره | طیوران صنعت پویا، بیش از نیم قرن تجربه در صنایع دام، طیور و آبزیان" as const;
+export const ABOUT_PAGE_NAME = "درباره ما" as const;
+export const ABOUT_TITLE = "درباره ما | طیوران صنعت پویا، بیش از نیم قرن تجربه در صنایع دام، طیور و آبزیان" as const;
 export const ABOUT_SUBTITLE = "همراهی تخصص، مهندسی و تولید در توسعه زیرساخت‌های صنعت دام، طیور و آبزیان" as const;
 export const ABOUT_EYEBROW = "طیوران صنعت پویا" as const;
 export const ABOUT_INTRO_HEADING = "معرفی" as const;
