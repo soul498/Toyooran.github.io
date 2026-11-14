@@ -18,8 +18,6 @@ interface PageBannerProps {
   secondaryCta?: { label: string; href: string };
   /** Compact card header (detail pages). Default is the full section hero. */
   compact?: boolean;
-  /** Shorter hero so the page content is not pushed below an empty viewport. */
-  short?: boolean;
   children?: React.ReactNode;
 }
 
@@ -70,7 +68,6 @@ export const PageBanner: React.FC<PageBannerProps> = ({
   cta,
   secondaryCta,
   compact,
-  short,
   children,
 }) => {
   if (compact) {
@@ -90,7 +87,7 @@ export const PageBanner: React.FC<PageBannerProps> = ({
   }
 
   return (
-    <div className={`page-hero relative z-10 w-full flex flex-col justify-center overflow-hidden px-4 sm:px-6 lg:px-8 ${short ? 'min-h-0 pt-28 pb-10 sm:pt-32 sm:pb-12' : 'min-h-[100svh] pt-24 pb-24'}`}>
+    <div className="page-hero relative z-10 w-full min-h-[100svh] flex flex-col justify-center overflow-hidden pt-24 pb-24 px-4 sm:px-6 lg:px-8">
       {/* Mesh gradient (static, painted by CSS — no image request) */}
       <div className="absolute inset-0 -z-10 pointer-events-none" aria-hidden="true">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[radial-gradient(circle_at_center,_rgba(96,165,250,0.15)_0%,_transparent_60%)]" />
@@ -118,7 +115,6 @@ export const PageBanner: React.FC<PageBannerProps> = ({
         {children}
       </div>
 
-      {!short && (
       <button
         type="button"
         onClick={scrollPastHero}
@@ -129,7 +125,6 @@ export const PageBanner: React.FC<PageBannerProps> = ({
           <span className="page-hero-cue-bar w-full h-1/2 bg-[#003F86] group-hover:bg-amber-500 absolute top-0 left-0 rounded-full" />
         </span>
       </button>
-      )}
     </div>
   );
 };

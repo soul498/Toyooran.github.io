@@ -135,13 +135,14 @@ export const ProductCatalogSection: React.FC<ProductCatalogSectionProps> = ({
           FILTERS & SEARCH
           ========================================================
         */}
-        <div ref={filterRef} className="w-full flex flex-col justify-start mb-4 relative z-20 pt-6 sm:pt-8">
-          <div className="flex items-center justify-center gap-4 mb-6 w-full">
-            <div className="h-px bg-slate-300 flex-1 max-w-[4rem]" />
-            <h2 className="text-sm sm:text-base font-black text-slate-700 whitespace-nowrap">
+        <div ref={filterRef} className="w-full flex flex-col justify-start mb-4 relative z-20 pt-8 sm:pt-12 md:pt-16">
+          <div className="flex items-center justify-center gap-4 mb-10 w-full opacity-60">
+            <div className="h-px bg-slate-400 flex-1 max-w-[40px] sm:max-w-[60px]" />
+            <h3 className="text-[11px] sm:text-xs font-bold text-slate-500 tracking-widest whitespace-nowrap">
+              
               {t("دسته‌بندی محصولات")}
-            </h2>
-            <div className="h-px bg-slate-300 flex-1 max-w-[4rem]" />
+            </h3>
+            <div className="h-px bg-slate-400 flex-1 max-w-[40px] sm:max-w-[60px]" />
           </div>
           {/* Infinite Draggable Category Marquee */}
           <CategoryMarquee 

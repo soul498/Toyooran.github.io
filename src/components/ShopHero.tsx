@@ -22,7 +22,6 @@ export const ShopHero: React.FC<{
   const rich = selectedCategory !== 'all' ? categoryIntroRich(selectedCategory) : undefined;
   return (
 <PageBanner
-  short
   title={title}
   highlight={selectedCategory === 'all' ? title : t("دام و طیور")}
   subtitle={rich ? <RichInline text={rich} /> : tr(SHOP_SUBTITLE)}
