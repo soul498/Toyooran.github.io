@@ -23,7 +23,7 @@ export const ShopHero: React.FC<{
   return (
 <PageBanner
   title={title}
-  highlight={selectedCategory === 'all' ? title : t("دام و طیور")}
+  highlight={t("دام و طیور")}
   subtitle={rich ? <RichInline text={rich} /> : tr(SHOP_SUBTITLE)}
 >
   <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">

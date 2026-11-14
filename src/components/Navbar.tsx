@@ -59,11 +59,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
   }, [mobileMenuOpen]);
 
-  // Nav items ordered right to left: خانه، خدمات، محصولات، درباره ما، تماس
+  // Nav items ordered right to left: خانه، خدمات، فروشگاه، درباره ما، تماس
   const navItems: { id: PageSection; path: string; label: string; icon: React.ElementType }[] = [
     { id: 'home', path: '/', label: t("خانه"), icon: Home },
     { id: 'services', path: '/services', label: t("خدمات"), icon: Wrench },
-    { id: 'products', path: '/products', label: t("محصولات"), icon: Package },
+    { id: 'products', path: '/products', label: t("فروشگاه"), icon: Package },
     { id: 'about', path: '/about', label: t("درباره ما"), icon: User },
     { id: 'contact', path: '/contact', label: t("تماس"), icon: Compass },
   ];
