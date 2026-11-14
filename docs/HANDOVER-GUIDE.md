@@ -167,7 +167,7 @@ curl -fsS http://127.0.0.1:3000/api/health
 ## ۵. سیستم سئو (SEO) و قوانین تغییرناپذیر آن
 
 فایل‌های اصلی سئو:
-- `src/seo/resolveSeo.ts`: قلب سئو. برای هر مسیر (`/`، `/products`، `/products/:slug`، `/services/:slug`، `/projects/:id`، `/magazine/:id`، `/about`، `/rnd`، `/contact`) خروجی `title`، `description`، `h1`، `canonicalHref`، `robots`، `jsonLd` و `body` (محتوای HTML داخل `#seo-prerender`) را تولید می‌کند.
+- `src/seo/resolveSeo.ts`: قلب سئو. برای هر مسیر (`/`، `/products`، `/products/:slug`، `/services/:slug`، `/projects/:id`، `/magazine/:id`، `/about`، `/contact`) خروجی `title`، `description`، `h1`، `canonicalHref`، `robots`، `jsonLd` و `body` (محتوای HTML داخل `#seo-prerender`) را تولید می‌کند. `/rnd` صفحهٔ عمومی نیست و باید ۴۰۴ بدهد.
 - `server/seo.ts`: تزریق خروجی `resolveSeo` به `index.html`، تولید `/robots.txt`، `/sitemap.xml` و `/llms.txt`، نرمال‌سازی URLها (حذف اسلش اضافه، ریدایرکت ۳۰۱ کد محصول به اسلاگ).
 - `server/legacySpam.ts`: برگرداندن وضعیت `410 Gone` با هدر `X-Robots-Tag: noindex, nofollow` برای URLهای اسپم ژاپنی قدیمی (`/?goods/...`، `/?jp/...`، `/0x...`) که از سایت قبلی در گوگل مانده بود.
 

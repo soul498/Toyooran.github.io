@@ -45,7 +45,6 @@
 | `FeaturedProjectsSection.tsx`, `ProjectPage.tsx` | `/projects`, `/projects/:projectId` |
 | `magazine/MagazineFeed.tsx`, `magazine/MagazineArticle.tsx` | `/magazine`, `/magazine/:articleId` |
 | `AboutPage.tsx` | `/about` |
-| `RnDPage.tsx` | `/rnd` |
 | `ContactPage.tsx`, `FreeConsultationForm.tsx` | `/contact` و فرم مشاوره → `POST /api/consultation` |
 | `Navbar.tsx`, `Footer.tsx` | پوسته |
 | `SEO.tsx` | به‌روز کردن title/meta در مرورگر بعد از hydrate؛ منبع خزنده `server/seo.ts` است |

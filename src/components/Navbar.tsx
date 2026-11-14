@@ -10,8 +10,7 @@ import {
   Menu,
   X,
   Search,
-  ChevronLeft,
-  FlaskConical
+  ChevronLeft
 } from '../icons';
 import { PageSection } from '../types';
 
@@ -60,13 +59,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
   }, [mobileMenuOpen]);
 
-  // Nav items ordered right to left as requested:
-  // خانه, خدمات, محصولات, تحقیق و توسعه, مجله, درباره ما, تماس
+  // Nav items ordered right to left: خانه، خدمات، محصولات، درباره ما، تماس
   const navItems: { id: PageSection; path: string; label: string; icon: React.ElementType }[] = [
     { id: 'home', path: '/', label: t("خانه"), icon: Home },
     { id: 'services', path: '/services', label: t("خدمات"), icon: Wrench },
     { id: 'products', path: '/products', label: t("محصولات"), icon: Package },
-    { id: 'rnd', path: '/rnd', label: t("تحقیق و توسعه"), icon: FlaskConical },
     { id: 'about', path: '/about', label: t("درباره ما"), icon: User },
     { id: 'contact', path: '/contact', label: t("تماس"), icon: Compass },
   ];

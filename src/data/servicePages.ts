@@ -192,7 +192,6 @@ export const SERVICE_PAGES: ServicePageData[] = [
         ],
       },
     ],
-    related: [{ label: 'تحقیق و توسعه', href: '/rnd' }],
     cardImage: '/images/site/about-design-drawing-640.webp',
   },
 ];

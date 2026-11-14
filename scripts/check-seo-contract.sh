@@ -49,7 +49,11 @@ if curl -fsS --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
   grep -q 'Disallow: /crm' <<<"$gpt_block" || fail "GPTBot must disallow /crm"
   sitemap="$(curl_id http://127.0.0.1:3000/sitemap.xml)"
   grep -q 'www.toyooran.com' <<<"$sitemap" || fail "live sitemap"
-  grep -q '/rnd' <<<"$sitemap" || fail "sitemap missing /rnd"
+  if grep -q '/rnd' <<<"$sitemap"; then fail "sitemap still lists /rnd"; fi
+  rnd_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/rnd" | awk 'NR==1{print $2}')"
+  test "$rnd_code" = "404" || fail "/rnd must 404, got ${rnd_code}"
+  en_rnd_code="$(curl -sI --max-time 5 "http://127.0.0.1:3000/en/rnd" | awk 'NR==1{print $2}')"
+  test "$en_rnd_code" = "404" || fail "/en/rnd must 404, got ${en_rnd_code}"
   # Six service pages (src/data/servicePages.ts): 200, in the sitemap, linked from the homepage.
   for slug in industrial-buildings farm-equipment-installation feed-machinery feed-products modernization research-collaboration; do
     grep -q "/services/${slug}<" <<<"$sitemap" || fail "sitemap missing /services/${slug}"

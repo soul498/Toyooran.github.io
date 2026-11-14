@@ -1242,19 +1242,6 @@ ${ABOUT_INTRO_PARAGRAPHS.map((paragraph) => `<p>${escapeHtml(tr(paragraph))}</p>
     });
   }
 
-  if (path === "/rnd") {
-    return okDoc({
-      path,
-      title: t("تحقیق و توسعه | طیوران صنعت پویا"),
-      description: t("واحد تحقیق و توسعه طیوران صنعت پویا در گرگان."),
-      h1: t("واحد تحقیق و توسعه"),
-      ogType: "website",
-      lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>${escapeHtml(company.rdAddress || "")}</p><p><a href="/contact">${t("ارتباط با واحد فنی")}</a></p>`,
-      jsonLd: [orgSchema(company)],
-    });
-  }
-
   return {
     title: t("صفحه پیدا نشد | طیوران صنعت پویا"),
     description: t("صفحه مورد نظر یافت نشد."),
@@ -1271,7 +1258,7 @@ ${ABOUT_INTRO_PARAGRAPHS.map((paragraph) => `<p>${escapeHtml(tr(paragraph))}</p>
 export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolean {
   const path = decodePathname(stripQuery(pathname));
   const parts = publicSegments(path);
-  if (["/", "/products", "/services", "/magazine", "/about", "/contact", "/rnd"].includes(path)) {
+  if (["/", "/products", "/services", "/magazine", "/about", "/contact"].includes(path)) {
     return true;
   }
   // Only the real app prefixes (/admin, /admin/..., /crm/...), not /administrator or /admin.php.
@@ -1298,7 +1285,6 @@ export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: st
     { loc: "/magazine", priority: "0.6", lastmod: collectionDay(catalog, "articles") },
     { loc: "/about", priority: "0.5", lastmod: collectionDay(catalog, "companyInfo") },
     { loc: "/contact", priority: "0.8", lastmod: collectionDay(catalog, "companyInfo") },
-    { loc: "/rnd", priority: "0.4", lastmod: collectionDay(catalog, "companyInfo") },
   ];
   const seen = new Set(urls.map((u) => u.loc));
   const add = (loc: string, priority: string, lastmod?: string) => {

@@ -2,7 +2,7 @@ import type React from 'react';
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
 import { ABOUT_EYEBROW, ABOUT_PAGE_NAME, ABOUT_SUBTITLE } from './aboutCopy';
 import { hasPersian, isEn, translateDeep } from '../i18n';
-import { Building2, FileCheck, FlaskConical, Phone, Sparkles, type IconProps } from '../icons';
+import { Building2, FileCheck, Phone, Sparkles, type IconProps } from '../icons';
 import type { CmsPageKey, PageHeroCms } from '../types';
 
 export interface PageHeroConfig {
@@ -53,14 +53,6 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
     subtitle: ABOUT_SUBTITLE,
     cta: { label: 'درخواست مشاورهٔ رایگان', href: '/contact' },
   },
-  '/rnd': {
-    title: 'واحد تحقیق و توسعه',
-    highlight: 'تحقیق و توسعه',
-    eyebrow: 'تحقیق و توسعه',
-    eyebrowIcon: FlaskConical,
-    subtitle: 'بومی‌سازی تجهیزات مرغداری و خطوط خوراک با همکاری دانشگاه منابع طبیعی گلستان',
-    cta: { label: 'تماس با واحد فنی', href: '/contact' },
-  },
   '/contact': {
     title: 'تماس و درخواست مشاوره',
     highlight: 'درخواست مشاوره',
@@ -77,7 +69,6 @@ const PAGE_KEY_BY_PATH: Partial<Record<string, CmsPageKey>> = {
   '/services': 'services',
   '/magazine': 'magazine',
   '/about': 'about',
-  '/rnd': 'rnd',
   '/contact': 'contact',
 };
 

@@ -17,7 +17,6 @@ const MagazineFeed = lazy(() => import('./components/magazine/MagazineFeed').the
 const MagazineTopic = lazy(() => import('./components/magazine/MagazineTopic').then((m) => ({ default: m.MagazineTopic })));
 const MagazineArticle = lazy(() => import('./components/magazine/MagazineArticle').then((m) => ({ default: m.MagazineArticle })));
 const AboutPage = lazy(() => import('./components/AboutPage').then((m) => ({ default: m.AboutPage })));
-const RnDPage = lazy(() => import('./components/RnDPage').then((m) => ({ default: m.RnDPage })));
 const ContactPage = lazy(() => import('./components/ContactPage').then((m) => ({ default: m.ContactPage })));
 const CompactShowcase = lazy(() => import('./components/CompactShowcase').then((m) => ({ default: m.CompactShowcase })));
 const AboutContactUnifiedSection = lazy(() => import('./components/AboutContactUnifiedSection').then((m) => ({ default: m.AboutContactUnifiedSection })));
@@ -128,7 +127,6 @@ const MainAppInner: React.FC = () => {
     else if (section === 'services') navigate('/services');
     else if (section === 'knowledge' || section === 'magazine' || section === 'magazine-article') navigate('/magazine');
     else if (section === 'about') navigate('/about');
-    else if (section === 'rnd') navigate('/rnd');
     else if (section === 'contact') navigate('/contact');
   };
   
@@ -138,7 +136,6 @@ const MainAppInner: React.FC = () => {
                          (location.pathname === '/services' || location.pathname.startsWith('/services/')) ? 'services' : 
                          location.pathname.startsWith('/magazine') ? 'knowledge' : 
                          location.pathname === '/about' ? 'about' : 
-                         location.pathname === '/rnd' ? 'rnd' : 
                          location.pathname === '/contact' ? 'contact' : 'home';
 
   const handleSelectCategory = (cat: ProductCategory | 'all') => {
@@ -299,7 +296,6 @@ const MainAppInner: React.FC = () => {
             />
           } />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/rnd" element={<RnDPage />} />
           <Route path="/contact" element={
             <ContactPage 
               initialSubject={consultationSubject}

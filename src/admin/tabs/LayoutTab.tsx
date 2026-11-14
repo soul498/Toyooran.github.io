@@ -8,7 +8,7 @@ import { hasPersian } from '../../i18n';
 
 const NAV_LABELS = [
   { key: 'home', fa: 'خانه' }, { key: 'services', fa: 'خدمات' },
-  { key: 'products', fa: 'محصولات' }, { key: 'rnd', fa: 'تحقیق و توسعه' },
+  { key: 'products', fa: 'محصولات' },
   { key: 'about', fa: 'درباره ما' }, { key: 'contact', fa: 'تماس' },
 ] as const;
 const FOOTER_ABOUT_FA = 'شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.';

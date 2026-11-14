@@ -1,6 +1,6 @@
 import type { RichBlock } from "./seo/richText";
 // UI Sync triggered
-export type PageSection = 'home' | 'projects' | 'products' | 'services' | 'knowledge' | 'magazine' | 'about' | 'contact' | 'magazine-article' | 'rnd';
+export type PageSection = 'home' | 'projects' | 'products' | 'services' | 'knowledge' | 'magazine' | 'about' | 'contact' | 'magazine-article';
 
 /** Publication workflow used by every CMS-managed record. Legacy records without a
  * status are treated as published so the current public site never disappears after
@@ -274,8 +274,8 @@ export interface SiteLayoutConfig {
     logoUrl?: string;
     brandFa?: string;
     brandEn?: string;
-    navLabelsFa?: Partial<Record<'home' | 'services' | 'products' | 'rnd' | 'about' | 'contact', string>>;
-    navLabelsEn?: Partial<Record<'home' | 'services' | 'products' | 'rnd' | 'about' | 'contact', string>>;
+    navLabelsFa?: Partial<Record<'home' | 'services' | 'products' | 'about' | 'contact', string>>;
+    navLabelsEn?: Partial<Record<'home' | 'services' | 'products' | 'about' | 'contact', string>>;
   };
   footer: {
     visible: boolean;
@@ -292,7 +292,7 @@ export interface SiteLayoutConfig {
 }
 
 /** Editable copy for the public pages whose layout is intentionally kept in code. */
-export type CmsPageKey = 'services' | 'magazine' | 'about' | 'rnd' | 'contact';
+export type CmsPageKey = 'services' | 'magazine' | 'about' | 'contact';
 
 export interface PageHeroCms {
   title?: string;

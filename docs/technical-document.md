@@ -35,7 +35,7 @@
 | `/services`, `/services/:serviceId` | خدمات |
 | `/projects`, `/projects/:projectId` | پروژه‌ها |
 | `/magazine`, `/magazine/:articleId` | مجله |
-| `/about`, `/rnd`, `/contact` | درباره، R&D، تماس |
+| `/about`, `/contact` | درباره، تماس |
 | `/admin` | لاگین یا پنل |
 | سایر | `NotFoundPage` + وضعیت 404 سروری اگر مسیر در `isKnownPublicPath` نباشد |
 

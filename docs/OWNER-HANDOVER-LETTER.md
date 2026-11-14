@@ -104,7 +104,7 @@ cd /opt/Toyooran
 | `src/components/ServicesSection.tsx` و `ServicePage.tsx` | صفحات خدمات (`/services`) |
 | `src/components/FeaturedProjectsSection.tsx` و `ProjectPage.tsx` | صفحات پروژه‌ها (`/projects`) |
 | `src/components/magazine/` | صفحات مجله و مقالات (`/magazine`) |
-| `src/components/ContactPage.tsx` و `AboutPage.tsx` و `RnDPage.tsx` | صفحات تماس با ما، درباره ما و تحقیق و توسعه |
+| `src/components/ContactPage.tsx` و `AboutPage.tsx` | صفحات تماس با ما و درباره ما |
 | `src/admin/` | پنل مدیریت سایت (`/admin`) |
 | `src/crm/` | سامانه مدیریت ارتباط با مشتریان و سرنخ‌های فروش (`/crm`) |
 

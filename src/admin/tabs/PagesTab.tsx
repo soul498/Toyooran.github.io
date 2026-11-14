@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, FileText, Save } from '../../icons';
 import { useData } from '../../context/DataContext';
-import type { AboutPageCms, CmsPageKey, PageHeroCms, PagesCms, RndPageCms } from '../../types';
+import type { AboutPageCms, CmsPageKey, PageHeroCms, PagesCms } from '../../types';
 import { ImagePicker } from '../components/ImagePicker';
 import { PAGE_HEROES } from '../../data/pageHeroes';
 import { ABOUT_ACTIVITIES, ABOUT_INTRO_HEADING, ABOUT_INTRO_PARAGRAPHS } from '../../data/aboutCopy';
@@ -10,19 +10,15 @@ import { hasPersian } from '../../i18n';
 
 const en = (fa?: string) => fa ? EN_DICT[fa] || '' : '';
 const containsPersian = (value: unknown): boolean => typeof value === 'string' ? hasPersian(value) : Array.isArray(value) ? value.some(containsPersian) : Boolean(value && typeof value === 'object' && Object.values(value).some(containsPersian));
-const PAGE_PATH: Record<CmsPageKey, string> = { services: '/services', magazine: '/magazine', about: '/about', rnd: '/rnd', contact: '/contact' };
+const PAGE_PATH: Record<CmsPageKey, string> = { services: '/services', magazine: '/magazine', about: '/about', contact: '/contact' };
 // Defaults = the approved /about copy (src/data/aboutCopy.ts). Empty CMS fields fall back to these.
 const ABOUT_FEATURES = ABOUT_ACTIVITIES;
 const ABOUT_HEADING = ABOUT_INTRO_HEADING;
 const ABOUT_INTRO = ABOUT_INTRO_PARAGRAPHS.join('\n\n');
-const RND_TITLE = 'دپارتمان تحقیق و توسعه در حال تجهیز است';
-const RND_DESCRIPTION = 'بخش دستاوردهای علمی و پروژه‌های مشترک دانشگاهی طیوران صنعت پویا در حال آماده‌سازی است و به‌زودی منتشر می‌شود.';
-
 const PAGE_OPTIONS: { key: CmsPageKey; label: string; description: string }[] = [
   { key: 'services', label: 'صفحه خدمات', description: 'تیتر، زیرتیتر و دعوت به اقدام بالای صفحه خدمات' },
   { key: 'magazine', label: 'صفحه مجله', description: 'تیتر و متن معرفی بالای فهرست مقالات' },
   { key: 'about', label: 'صفحه درباره شرکت', description: 'هیرو و متن‌های معرفی شرکت' },
-  { key: 'rnd', label: 'صفحه تحقیق و توسعه', description: 'هیرو و پیام صفحه تحقیق و توسعه' },
   { key: 'contact', label: 'صفحه تماس', description: 'هیرو بالای فرم تماس و مشاوره' },
 ];
 
@@ -43,7 +39,6 @@ export const PagesTab: React.FC = () => {
   const baseHero = PAGE_HEROES[PAGE_PATH[activePage]];
   const activeHeroEn = (activeHero.translations?.en || {}) as Partial<Omit<PageHeroCms, 'translations'>>;
   const aboutEn = (draft.about.translations?.en || {}) as Partial<Omit<AboutPageCms, 'translations'>>;
-  const rndEn = (draft.rnd.translations?.en || {}) as Partial<Omit<RndPageCms, 'translations'>>;
 
   const updateHero = (patch: Partial<PageHeroCms>) => {
     setDraft((previous) => ({
@@ -69,10 +64,6 @@ export const PagesTab: React.FC = () => {
     features[index] = { ...(features[index] || {}), ...patch };
     if (english) updateAbout({ translations: { en: { ...aboutEn, features } } });
     else updateAbout({ features });
-  };
-
-  const updateRnd = (patch: Partial<RndPageCms>) => {
-    setDraft((previous) => ({ ...previous, rnd: { ...previous.rnd, ...patch } }));
   };
 
   const save = async (event: React.FormEvent) => {
@@ -178,21 +169,6 @@ export const PagesTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
-
-      {activePage === 'rnd' && (
-        <section className="bg-slate-900 border border-slate-800 rounded-3xl p-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div className="space-y-3">
-            <p className="text-xs font-bold text-amber-300">متن فارسی بخش در حال آماده‌سازی</p>
-            <label className="block text-xs text-slate-300">عنوان<input value={draft.rnd.title ?? RND_TITLE} onChange={(event) => updateRnd({ title: event.target.value })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">توضیح<textarea rows={4} value={draft.rnd.description ?? RND_DESCRIPTION} onChange={(event) => updateRnd({ description: event.target.value })} className={fieldClass} /></label>
-          </div>
-          <div className="space-y-3" dir="ltr">
-            <p className="text-xs font-bold text-blue-300">English coming-soon content</p>
-            <label className="block text-xs text-slate-300">Title<input value={rndEn.title ?? en(RND_TITLE)} onChange={(event) => updateRnd({ translations: { en: { ...rndEn, title: event.target.value } } })} className={fieldClass} /></label>
-            <label className="block text-xs text-slate-300">Description<textarea rows={4} value={rndEn.description ?? en(RND_DESCRIPTION)} onChange={(event) => updateRnd({ translations: { en: { ...rndEn, description: event.target.value } } })} className={fieldClass} /></label>
           </div>
         </section>
       )}
