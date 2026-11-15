@@ -91,15 +91,20 @@ export function invalidateSeoCatalog(): void {
 }
 
 function buildSeoCatalog(): SeoCatalog {
+  const products = withSeedFallbackProducts(savedCollection<Product>("products", PRODUCTS)).filter((item) => item && isPublicProduct(item));
+  const categories = withContentCorrections(asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[])).map((category) => ({
+    ...category,
+    productCount: products.filter((item) => item.category === category.id).length,
+  }));
   return {
-    products: withSeedFallbackProducts(savedCollection<Product>("products", PRODUCTS)).filter((item) => item && isPublicProduct(item)),
+    products,
     services: savedCollection<Service>("services", SERVICES)
       .filter((item) => item.status !== 'draft' && item.status !== 'review')
       .map((item) => withContentCorrections(item)),
     // No projects are published yet (user request 2026-10-28): keep admin data, expose none publicly.
     projects: [],
     articles: loadPublicArticles(),
-    categories: asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[]),
+    categories,
     company: asCompany(),
     collectionUpdatedAt: {
       products: getAdminStateUpdatedAt("products"),
