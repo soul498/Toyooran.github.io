@@ -7,8 +7,8 @@ export const BaleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="7 2 26 26"
-      width={28}
-      height={28}
+      width={16}
+      height={16}
       fill="none"
       {...rest}
       role="presentation"
