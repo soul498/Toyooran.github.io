@@ -7,7 +7,7 @@ import { CheckCircle2, PhoneCall } from "../icons";
 import { LazyImage } from "./LazyImage";
 import { FITOUT_CHECKLIST, FITOUT_LEAD, servicePageRelated } from "../seo/resolveSeo";
 import { SERVICE_PAGES, SERVICE_PAGE_LABELS, findServicePage, servicePagePath, type ServicePageData } from "../data/servicePages";
-import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_TEL, SALES_PHONE_ALT_DISPLAY, SALES_PHONE_ALT_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "../data/contact";
+import { ContactPhones } from "./ContactPhones";
 import { SitePicture } from "./SitePicture";
 import { ProductName } from "./ProductName";
 
@@ -216,15 +216,9 @@ const ServiceDetail: React.FC<{
             <PhoneCall className="w-4 h-4" />
             {tr(SERVICE_PAGE_LABELS.cta)}
           </Link>
-          <p className="text-sm text-blue-100 leading-loose">
-            {tr(SERVICE_PAGE_LABELS.phones)}{" "}
-            <a href={SALES_PHONE_TEL} dir="ltr" className="font-bold text-white">{tr(SALES_PHONE_DISPLAY)}</a>
-            <span className="mx-2" aria-hidden="true">·</span>
-            <a href={SALES_PHONE_ALT_TEL} dir="ltr" className="font-bold text-white">{tr(SALES_PHONE_ALT_DISPLAY)}</a>
-            <span className="mx-2" aria-hidden="true">·</span>
-            {tr(SERVICE_PAGE_LABELS.office)}{" "}
-            <a href={OFFICE_PHONE_TEL} dir="ltr" className="font-bold text-white">{tr(OFFICE_PHONE_DISPLAY)}</a>
-          </p>
+          <div className="text-white text-sm">
+            <ContactPhones tone="dark" />
+          </div>
         </section>
 
         <section className="space-y-3">

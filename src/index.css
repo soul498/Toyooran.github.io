@@ -48,6 +48,73 @@ html[lang="en"] .font-\[\'Estedad\'\,sans-serif\] {
   font-family: "Estedad Latin", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Public phone numbers: Estedad (not mono), tel: links, easy to copy, two mobiles clearly split. */
+.phone-num {
+  font-family: "Estedad", "Estedad Latin", ui-sans-serif, system-ui, sans-serif;
+  font-variant-numeric: normal;
+  font-feature-settings: normal;
+  letter-spacing: 0.03em;
+  -webkit-user-select: all;
+  user-select: all;
+  unicode-bidi: isolate;
+  direction: ltr;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.contact-phones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.contact-phones-kicker {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.6;
+}
+.contact-phones-kicker--office {
+  margin-top: 0.85rem;
+}
+.contact-phones-sales {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 0.2rem;
+  width: max-content;
+  max-width: 100%;
+}
+.contact-phones-sales .phone-num {
+  display: block;
+  padding-block: 0.28rem;
+}
+.contact-phones-sales .phone-num + .phone-num {
+  border-top: 1px solid rgba(0, 63, 134, 0.2);
+  margin-top: 0.2rem;
+  padding-top: 0.5rem;
+}
+.contact-phones--dark .contact-phones-sales .phone-num + .phone-num {
+  border-top-color: rgba(255, 255, 255, 0.22);
+}
+.contact-phones--light .phone-num {
+  color: #003F86;
+  font-weight: 700;
+}
+.contact-phones--light .phone-num:hover {
+  text-decoration: underline;
+}
+.contact-phones--dark .phone-num {
+  color: inherit;
+  font-weight: 700;
+}
+.contact-phones--dark .phone-num:hover {
+  color: #fbbf24;
+}
+.contact-phones--sm .phone-num { font-size: 0.875rem; }
+.contact-phones--sm .contact-phones-kicker { font-size: 0.625rem; }
+.contact-phones--md .phone-num { font-size: 1rem; }
+.contact-phones--md .contact-phones-kicker { font-size: 0.75rem; }
+.contact-phones--lg .phone-num { font-size: 1.35rem; }
+.contact-phones--lg .contact-phones-kicker { font-size: 0.75rem; }
+
 @layer utilities {
   .clip-hexagon {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);

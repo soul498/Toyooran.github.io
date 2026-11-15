@@ -27,6 +27,13 @@ export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
 export const FITOUT_SLUG = "poultry-hall-fitout";
 
+function contactPhonesHtml() {
+  return `<p>${t("مشاوره، فروش و پشتیبانی:")}</p>
+<p><a class="phone-num" href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a></p>
+<p><a class="phone-num" href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a></p>
+<p>${t("تلفن دفتر:")} <a class="phone-num" href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>`;
+}
+
 export const SEO_REDIRECTS: Record<string, string> = {
   "/magazine/poultry-hall-audit-checklist": "/magazine/before-and-after-renovation",
   "/products/other": "/products/ventilation",
@@ -271,7 +278,7 @@ ${sections}
 ${related.length ? `<h2>${tr(SERVICE_PAGE_LABELS.related)}</h2><ul>${related.map((l) => `<li><a href="${l.href}">${escapeHtml(l.label)}</a></li>`).join("")}</ul>` : ""}
 <h2>${tr(SERVICE_PAGE_LABELS.ctaHeading)}</h2>
 <p><a href="/contact">${tr(SERVICE_PAGE_LABELS.cta)}</a></p>
-<p>${tr(SERVICE_PAGE_LABELS.phones)} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · <a href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a> · ${tr(SERVICE_PAGE_LABELS.office)} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
+${contactPhonesHtml()}
 <h2>${tr(SERVICE_PAGE_LABELS.others)}</h2>
 <ul>${others}</ul>`;
 }
@@ -759,8 +766,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>${t("طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.")}</p>
-<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · <a href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a></p>
-<p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
+${contactPhonesHtml()}
 <p>${escapeHtml(company.address)}</p>
 <p>${t("واحد تحقیق و توسعه:")} ${escapeHtml(company.rdAddress || "")}</p>
 <p>${[fitoutLink(t("نوسازی و تجهیز کامل سالن")), `<a href="/products">${t("تجهیزات دام و طیور")}</a>`, `<a href="/contact">${t("درخواست مشاوره")}</a>`].filter(Boolean).join(" · ")}</p>
@@ -1193,8 +1199,7 @@ ${ABOUT_INTRO_PARAGRAPHS.map((paragraph) => `<p>${escapeHtml(tr(paragraph))}</p>
 <p><a href="${ABOUT_FLAGSHIP_HREF}">${escapeHtml(tr(ABOUT_FLAGSHIP_CTA))}</a></p>
 <h2>${escapeHtml(tr(ABOUT_INTERNATIONAL_HEADING))}</h2>
 <p>${escapeHtml(tr(ABOUT_INTERNATIONAL_TEXT))}</p>
-<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · <a href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a></p>
-<p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
+${contactPhonesHtml()}
 <p>${t("ساعات کار:")} ${escapeHtml(company.workingHours)}</p>
 <p>${t("دفتر مشهد:")} ${escapeHtml(company.address)}</p>
 <p>${t("کارخانه:")} ${escapeHtml(company.factoryAddress)}</p>
@@ -1215,8 +1220,7 @@ ${ABOUT_INTRO_PARAGRAPHS.map((paragraph) => `<p>${escapeHtml(tr(paragraph))}</p>
       h1: t("تماس و درخواست مشاوره"),
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · <a href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a></p>
-<p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
+      body: `${contactPhonesHtml()}
 <p>${t("ساعات کار:")} ${escapeHtml(company.workingHours)}</p>
 <ul>${locHtml}</ul>
 <p><a href="#free-consultation-form">${t("فرم درخواست بازدید و پیشنهاد فنی")}</a></p>`,

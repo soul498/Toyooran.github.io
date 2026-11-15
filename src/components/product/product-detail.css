@@ -114,7 +114,7 @@
 .pd-rel-thumb{aspect-ratio:4/3;background:var(--pd-blue-50);overflow:hidden}
 .pd-rel-thumb > div{height:100%}
 .pd-rel-thumb img{display:block;width:100%;height:100%;object-fit:cover}
-.pd .pd-phone{word-spacing:.3em;unicode-bidi:isolate;white-space:nowrap}
+.pd .pd-phone{font-family:"Estedad","Estedad Latin",ui-sans-serif,system-ui,sans-serif;word-spacing:.3em;unicode-bidi:isolate;white-space:nowrap;-webkit-user-select:all;user-select:all}
 .pd-rel-meta{padding:12px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
 .pd-rel-meta small{font-size:13px;color:var(--pd-ink-2);font-weight:700}
 .pd-rel-meta b{font-size:15px;line-height:1.7;font-weight:800;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}

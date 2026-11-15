@@ -8,10 +8,10 @@ import {
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
-import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_ALT_DISPLAY, SALES_PHONE_ALT_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
+import { ContactPhones } from './ContactPhones';
 import { LocationDetailPane } from './LocationDetailPane';
 
-import { t, tr } from '../i18n';
+import { t } from '../i18n';
 interface ContactPageProps {
   initialSubject?: string;
   initialProduct?: string;
@@ -64,19 +64,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                     <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-400 flex items-center justify-center shrink-0 shadow-inner shadow-amber-400/20">
                       <Phone className="w-4 h-4" />
                     </div>
-                    <div>
-                      <span className="text-slate-300 block text-xs mb-1">{t("مشاوره، فروش و پشتیبانی:")}</span>
-                      <a href={SALES_PHONE_TEL} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
-                        {tr(SALES_PHONE_DISPLAY)}
-                      </a>
-                      <a href={SALES_PHONE_ALT_TEL} className="block font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
-                        {tr(SALES_PHONE_ALT_DISPLAY)}
-                      </a>
-                      <span className="text-slate-300 block text-xs mt-3 mb-1">{tr(OFFICE_PHONE_LABEL)}:</span>
-                      <a href={OFFICE_PHONE_TEL} className="font-mono font-bold text-white text-base hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr">
-                        {tr(OFFICE_PHONE_DISPLAY)}
-                      </a>
-                    </div>
+                    <ContactPhones tone="dark" />
                   </div>
                   
                   <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-300">

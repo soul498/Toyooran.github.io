@@ -17,10 +17,10 @@ import {
   Tv
 } from '../icons';
 import { useData } from '../context/DataContext';
-import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_ALT_DISPLAY, SALES_PHONE_ALT_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
+import { ContactPhones } from './ContactPhones';
 import { LocationDetailPane } from './LocationDetailPane';
 
-import { t, tr, isLtr } from '../i18n';
+import { t } from '../i18n';
 export const AboutContactUnifiedSection: React.FC = () => {
   const { companyInfo } = useData();
   const [activeLocationIndex, setActiveLocationIndex] = useState(0);
@@ -95,12 +95,8 @@ export const AboutContactUnifiedSection: React.FC = () => {
                   <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-slate-900 transition-colors shrink-0">
                     <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
                   </div>
-                  <div>
-                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mb-1 uppercase tracking-wider">{t("مشاوره، فروش و پشتیبانی")}</span>
-                    <a href={SALES_PHONE_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: isLtr() ? 'left' : 'right' }}>{tr(SALES_PHONE_DISPLAY)}</a>
-                    <a href={SALES_PHONE_ALT_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: isLtr() ? 'left' : 'right' }}>{tr(SALES_PHONE_ALT_DISPLAY)}</a>
-                    <span className="block text-[11px] sm:text-xs text-slate-300 font-bold mt-3 mb-1">{tr(OFFICE_PHONE_LABEL)}</span>
-                    <a href={OFFICE_PHONE_TEL} className="block text-xl sm:text-2xl text-white font-black hover:text-amber-400 transition-colors drop-shadow-md" dir="ltr" style={{ textAlign: isLtr() ? 'left' : 'right' }}>{tr(OFFICE_PHONE_DISPLAY)}</a>
+                  <div className="text-white">
+                    <ContactPhones tone="dark" size="lg" />
                   </div>
                 </div>
               </div>

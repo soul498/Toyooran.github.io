@@ -296,15 +296,15 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
               <a className="pd-btn pd-btn-outline pd-desk-only" href={SALES_PHONE_TEL}>
                 <Icon name="phone" />
                 
-                {t("تماس:")}{" "}<bdi dir="ltr" className="pd-phone">{tr(SALES_PHONE_DISPLAY)}</bdi>
+                {t("تماس:")}{" "}<bdi dir="ltr" className="pd-phone phone-num">{tr(SALES_PHONE_DISPLAY)}</bdi>
               </a>
               <a className="pd-btn pd-btn-outline pd-desk-only" href={SALES_PHONE_ALT_TEL}>
                 <Icon name="phone" />
-                {t("تماس:")}{" "}<bdi dir="ltr" className="pd-phone">{tr(SALES_PHONE_ALT_DISPLAY)}</bdi>
+                {t("تماس:")}{" "}<bdi dir="ltr" className="pd-phone phone-num">{tr(SALES_PHONE_ALT_DISPLAY)}</bdi>
               </a>
             </div>
             <div className="pd-landline">
-              {tr(OFFICE_PHONE_LABEL)}: <a href={OFFICE_PHONE_TEL} dir="ltr" className="pd-phone">{tr(OFFICE_PHONE_DISPLAY)}</a>
+              {tr(OFFICE_PHONE_LABEL)}: <a href={OFFICE_PHONE_TEL} dir="ltr" className="pd-phone phone-num">{tr(OFFICE_PHONE_DISPLAY)}</a>
             </div>
             <ul className="pd-trust">
               <li><Icon name="award" />{t("۵۰ سال سابقه")}</li>
