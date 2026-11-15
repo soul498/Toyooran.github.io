@@ -138,7 +138,7 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     href={companyInfo.socialLinks?.bale}
                     label={t("بله")}
                     comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                    className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#00A86B] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
+                    className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0ACA9B] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
                     <BaleIcon className="w-4 h-4" />
                   </SocialIconLink>

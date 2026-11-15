@@ -114,7 +114,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 href={companyInfo?.socialLinks?.bale}
                 label={t("بله")}
                 comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#00A86B] hover:border-transparent transition-all duration-300 group"
+                className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0ACA9B] hover:border-transparent transition-all duration-300 group"
               >
                 <BaleIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
               </SocialIconLink>
