@@ -228,7 +228,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
   return (
     <div className="article-page min-h-screen bg-[#F8FAFC] pb-24">
       {/* Header: plain light brand background, no image behind the title */}
-      <header className="bg-gradient-to-b from-[#E8F0FA] to-[#F8FAFC] pt-32 pb-8 md:pb-10">
+      <header className="bg-gradient-to-b from-[#E8F0FA] to-[#F8FAFC] pt-28 pb-8 md:pb-10">
         <div className="max-w-[864px] mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center mb-6">
             <button

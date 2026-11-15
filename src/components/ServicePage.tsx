@@ -120,7 +120,7 @@ const ServiceDetail: React.FC<{
   const related = servicePageRelated(page, products);
   const others = SERVICE_PAGES.filter((s) => s.slug !== page.slug);
   return (
-    <div className="pt-32 pb-24 bg-slate-50 min-h-screen">
+    <div className="pt-28 sm:pt-32 pb-24 bg-slate-50 min-h-screen">
       <article className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
         <nav aria-label={t("مسیر صفحه")} className="text-sm text-slate-500">
           <ol className="flex flex-wrap items-center gap-1.5">

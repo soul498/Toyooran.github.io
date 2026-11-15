@@ -377,6 +377,12 @@ button.service-card {
   to { transform: translateY(200%); }
 }
 .page-hero-cue-bar { animation: page-hero-cue 1.5s linear infinite; }
+
+/* Mobile language switch: bottom-right of the page, clear of the product action bar. */
+.lang-dock { bottom: max(1rem, env(safe-area-inset-bottom)); }
+@media (max-width: 820px) {
+  body.pd-has-mbar .lang-dock { bottom: calc(76px + max(0.75rem, env(safe-area-inset-bottom))); }
+}
 @media (max-height: 560px) {
   .page-hero-cue { display: none; }
 }

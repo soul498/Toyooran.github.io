@@ -84,6 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
+    <>
     <header className="fixed top-0 left-0 z-50 lg:top-4 lg:left-1/2 lg:-translate-x-1/2 bg-white/70 backdrop-blur-xl border-b lg:border border-white/60 lg:rounded-3xl px-4 sm:px-6 lg:px-4 py-3 lg:py-2.5 transition-all duration-300 lg:max-w-7xl lg:mx-auto shadow-[0_8px_32px_rgba(0,0,0,0.04)] w-full lg:w-[calc(100%-2rem)]">
       <div className="flex items-center justify-between w-full">
         
@@ -175,11 +176,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Languages sit on their own row, at the physical right of the mobile header. */}
-      <div className="mt-1 flex w-full lg:hidden">
-        <LangToggle className="ltr:ml-auto" />
-      </div>
-
       {/* Perfect Fit Minimalist Mobile Menu */}
       {mobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-[100] bg-slate-50 flex flex-col w-full h-[100dvh] overflow-hidden">
@@ -261,5 +257,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
       )}
     </header>
+    {/* Outside the header: its backdrop-filter would trap a fixed child inside the bar. */}
+    <div className={`lang-dock fixed right-4 z-[45] lg:hidden ${mobileMenuOpen ? 'hidden' : ''}`}>
+      <LangToggle className="rounded-full border border-white/60 bg-white/70 px-1 shadow-[0_8px_32px_rgba(0,0,0,0.08)] backdrop-blur-xl" />
+    </div>
+    </>
   );
 };
