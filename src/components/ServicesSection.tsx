@@ -1,6 +1,6 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { ServiceCard } from './Hero';
+import { ServicePreview } from './ServicePreview';
 import { LANDING_SERVICE_CARDS } from '../data/landingServiceCards';
 import { translateDeep } from '../i18n';
 
@@ -12,7 +12,9 @@ interface ServicesSectionProps {
 }
 
 export const ServicesSection: React.FC<ServicesSectionProps> = () => {
-  const navigate = useNavigate();
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const cards = translateDeep(LANDING_SERVICE_CARDS);
+  const openCard = cards.find((card) => card.serviceId === openSlug);
 
   return (
     <section className="min-h-screen relative z-0" id="services-section">
@@ -21,12 +23,25 @@ export const ServicesSection: React.FC<ServicesSectionProps> = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
         <div className="relative z-10 w-full py-8 lg:py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 w-full">
-            {translateDeep(LANDING_SERVICE_CARDS).map((card, idx) => (
-              <ServiceCard key={card.serviceId} idx={idx} card={card} onClick={() => navigate(card.to)} />
+            {cards.map((card, idx) => (
+              <ServiceCard
+                key={card.serviceId}
+                idx={idx}
+                card={card}
+                preview
+                onClick={() => setOpenSlug(card.serviceId)}
+              />
             ))}
           </div>
         </div>
       </div>
+
+      <ServicePreview
+        slug={openSlug}
+        icon={openCard?.icon}
+        bgImage={openCard?.bgImage}
+        onClose={() => setOpenSlug(null)}
+      />
     </section>
   );
 };

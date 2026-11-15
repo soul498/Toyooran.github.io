@@ -48,15 +48,19 @@ export interface CircleCategoryCard {
 
 
 
-export const ServiceCard: React.FC<{ card: any, idx: number, onClick?: () => void }> = ({ card }) => {
+export const ServiceCard: React.FC<{ card: any, idx: number, onClick?: () => void; preview?: boolean }> = ({ card, onClick, preview }) => {
   const Icon = card.icon;
   // While the page behind a card is switched off (data/disabledPages.ts) the card is a display-only tile:
   // same look, but a plain <div> with no click, focus or pointer cursor. It keeps the decorative CSS hover
   // (lift, photo zoom, icon glow; see .service-card-shell in index.css).
-  // Interactive cards are real links (crawlable <a href>) to the service page.
+  // Interactive cards are real links (crawlable <a href>) to the service page — except on /services,
+  // where preview opens a panel and «مطالعه بیشتر» is the page link.
   const interactive = !isDisabledPagePath(card.to);
-  const Tag = (interactive ? Link : 'div') as unknown as React.ElementType;
-  const tagProps = interactive
+  const openPreview = Boolean(preview && interactive && onClick);
+  const Tag = (openPreview ? 'button' : interactive ? Link : 'div') as unknown as React.ElementType;
+  const tagProps = openPreview
+    ? { type: 'button', onClick, 'aria-haspopup': 'dialog' as const }
+    : interactive
     ? { to: card.to }
     : {};
   return (
