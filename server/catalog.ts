@@ -9,6 +9,7 @@ import { SEED_FALLBACK_PRODUCT_IDS } from "../src/seo/productUrls";
 import { withProductPhotos } from "../src/data/productPhotos";
 import { withContentCorrections } from "../src/data/contentCorrections";
 import { normalizePublicCategories, recategorizeProduct } from "../src/data/catalogNormalize";
+import { BALE_CHANNEL_URL } from "../src/data/contact";
 
 function asArray<T>(key: string, fallback: T[]): T[] {
   try {
@@ -60,16 +61,22 @@ export function loadPublicArticles(): Article[] {
   return sortArticlesNewestFirst(source.filter((item) => item?.id && item?.title && isPublicArticle(item))).map((item) => withProductPhotos(withContentCorrections(item)));
 }
 
+function withPublicSocials(company: CompanyInfo): CompanyInfo {
+  const socialLinks = { ...(company.socialLinks || {}) };
+  if (!String(socialLinks.bale || "").trim()) socialLinks.bale = BALE_CHANNEL_URL;
+  return { ...company, socialLinks };
+}
+
 function asCompany(): CompanyInfo {
   try {
     const value = getAdminState("companyInfo");
     if (value && typeof value === "object") {
-      return { ...(COMPANY_INFO as CompanyInfo), ...(value as CompanyInfo) };
+      return withPublicSocials({ ...(COMPANY_INFO as CompanyInfo), ...(value as CompanyInfo) });
     }
   } catch {
     /* seed */
   }
-  return COMPANY_INFO as CompanyInfo;
+  return withPublicSocials(COMPANY_INFO as CompanyInfo);
 }
 
 let cachedCatalog: { at: number; value: SeoCatalog } | null = null;

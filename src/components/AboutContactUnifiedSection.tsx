@@ -13,6 +13,7 @@ import {
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { ContactPhones } from './ContactPhones';
+import { BALE_CHANNEL_URL } from '../data/contact';
 import { LocationDetailPane } from './LocationDetailPane';
 
 import { t } from '../i18n';
@@ -118,12 +119,13 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     <Send className="w-4 h-4 ml-0.5" aria-hidden="true" />
                   </SocialIconLink>
                   <SocialIconLink
-                    href={companyInfo.socialLinks?.bale}
+                    href={companyInfo.socialLinks?.bale || BALE_CHANNEL_URL}
                     label={t("بله")}
                     comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
+                    size="lg"
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0ACA9B] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
-                    <BaleIcon className="w-4 h-4" />
+                    <BaleIcon className="w-7 h-7" />
                   </SocialIconLink>
                   </div>
                 </div>

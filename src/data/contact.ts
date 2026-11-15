@@ -14,3 +14,5 @@ export const OFFICE_PHONE_LABEL = 'تلفن دفتر';
 export const OFFICE_PHONE_DISPLAY = '۰۵۱ ۳۶۶۶ ۵۶۰۰';
 export const OFFICE_PHONE_E164 = '+985136665600';
 export const OFFICE_PHONE_TEL = `tel:${OFFICE_PHONE_E164}`;
+
+export const BALE_CHANNEL_URL = 'https://ble.ir/toyooranco/';

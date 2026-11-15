@@ -28,7 +28,7 @@ export const COMPANY_INFO = {
     aparat: '',
     youtube: '',
     whatsapp: '',
-    bale: '',
+    bale: 'https://ble.ir/toyooranco/',
     eitaa: '',
   },
   locations: [

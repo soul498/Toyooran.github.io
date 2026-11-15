@@ -8,6 +8,7 @@ import {
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
 import { ContactPhones } from './ContactPhones';
+import { BALE_CHANNEL_URL } from '../data/contact';
 import { LocationDetailPane } from './LocationDetailPane';
 
 import { t } from '../i18n';
@@ -99,12 +100,13 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                         <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
                       </SocialIconLink>
                       <SocialIconLink
-                        href={companyInfo.socialLinks.bale}
+                        href={companyInfo.socialLinks.bale || BALE_CHANNEL_URL}
                         label={t("بله")}
                         comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
+                        size="lg"
                         className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0ACA9B] hover:border-transparent transition-all duration-300 group"
                       >
-                        <BaleIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        <BaleIcon className="w-7 h-7 group-hover:scale-110 transition-transform" />
                       </SocialIconLink>
                     </div>
                   </div>

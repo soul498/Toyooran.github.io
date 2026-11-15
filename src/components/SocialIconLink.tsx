@@ -6,6 +6,7 @@ type SocialIconLinkProps = {
   label: string;
   comingSoon: string;
   className: string;
+  size?: 'md' | 'lg';
   children: React.ReactNode;
 };
 
@@ -14,10 +15,12 @@ export const SocialIconLink: React.FC<SocialIconLinkProps> = ({
   label,
   comingSoon,
   className,
+  size = 'md',
   children,
 }) => {
   const url = typeof href === 'string' && href.trim() && href !== '#' ? href.trim() : '';
-  const cls = `min-w-11 min-h-11 w-11 h-11 ${className}`;
+  const box = size === 'lg' ? 'min-w-12 min-h-12 w-12 h-12' : 'min-w-11 min-h-11 w-11 h-11';
+  const cls = `${box} ${className}`;
   if (url) {
     return (
       <a href={url} target="_blank" rel="noreferrer" aria-label={label} className={cls}>

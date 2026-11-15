@@ -263,7 +263,7 @@ export const CompanyCmsTab: React.FC = () => {
                 socialLinks: { ...companyForm.socialLinks, bale: e.target.value } 
               })}
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono focus:border-amber-400"
-              placeholder="https://ble.ir/..."
+              placeholder="https://ble.ir/toyooranco/"
               dir="ltr"
             />
           </div>
