@@ -22,7 +22,7 @@ export function localizeJsonLd(value: unknown, key = ""): unknown {
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-      if (k === "inLanguage" && typeof v === "string") out[k] = getLang() === "tr" ? "tr" : "en";
+      if (k === "inLanguage" && typeof v === "string") out[k] = getLang() === "fa" ? "fa" : getLang();
       else out[k] = localizeJsonLd(v, k);
     }
     return out;

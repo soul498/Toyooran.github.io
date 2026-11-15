@@ -2,7 +2,7 @@ import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import { pathLang, setEnDictionary, setLang, setTrDictionary } from './i18n';
+import { pathLang, setEnDictionary, setLang, setRuDictionary, setTrDictionary } from './i18n';
 
 const root = createRoot(document.getElementById('root')!);
 const render = () => {
@@ -18,7 +18,7 @@ const render = () => {
 };
 
 // Persian (default) renders synchronously and never downloads a foreign dictionary.
-// /en and /tr pages load their dictionary first (a separate lazy chunk), then render.
+// /en, /tr and /ru pages load their dictionary first (a separate lazy chunk), then render.
 const bootLang = pathLang(window.location.pathname);
 if (bootLang === 'en') {
   import('./i18n/enDict')
@@ -32,6 +32,13 @@ if (bootLang === 'en') {
     .then(({ TR_DICT }) => {
       setTrDictionary(TR_DICT);
       setLang('tr');
+    })
+    .finally(render);
+} else if (bootLang === 'ru') {
+  import('./i18n/ruDict')
+    .then(({ RU_DICT }) => {
+      setRuDictionary(RU_DICT);
+      setLang('ru');
     })
     .finally(render);
 } else {

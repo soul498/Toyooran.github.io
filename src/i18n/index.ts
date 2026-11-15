@@ -1,18 +1,18 @@
 /**
- * Languages: fa = default at the existing URLs, en under /en, tr under /tr.
+ * Languages: fa = default at the existing URLs, en under /en, tr under /tr, ru under /ru.
  *
  * Translation model: every foreign string is keyed by the EXACT Persian source text it translates
  * (src/i18n/<lang>/*.json; magazine articles in magazine.json as {articleId: {fa: translation}}).
  * When the Persian text changes, its old key no longer matches, so the translation is reported as
  * missing/stale by `npm run check:i18n` and the page keeps working (Persian fallback for a UI
- * string; content pages drop out of /en or /tr until complete). See docs/i18n.md.
+ * string; content pages drop out of /en, /tr or /ru until complete). See docs/i18n.md.
  *
- * Persian pages never load a foreign dictionary. The client imports enDict or trDict lazily only
- * for that language's URLs (src/main.tsx); the server imports both directly.
+ * Persian pages never load a foreign dictionary. The client imports one dictionary lazily for
+ * that language's URLs (src/main.tsx); the server imports them directly.
  */
 import type UI_EN from './en/ui.json';
 
-export type Lang = 'fa' | 'en' | 'tr';
+export type Lang = 'fa' | 'en' | 'tr' | 'ru';
 export type ForeignLang = Exclude<Lang, 'fa'>;
 /** Typed UI keys: a Persian UI literal without an entry in en/ui.json fails `npm run lint`. */
 export type UiKey = keyof typeof UI_EN;
@@ -20,20 +20,21 @@ export type UiKey = keyof typeof UI_EN;
 export const EN_PREFIX = '/en';
 export const TR_PREFIX = '/tr';
 export const RU_PREFIX = '/ru';
-export const LANG_PREFIX: Record<ForeignLang, string> = { en: EN_PREFIX, tr: TR_PREFIX };
+export const LANG_PREFIX: Record<ForeignLang, string> = { en: EN_PREFIX, tr: TR_PREFIX, ru: RU_PREFIX };
 
 const FOREIGN_PREFIXES: { lang: ForeignLang; prefix: string }[] = [
   { lang: 'en', prefix: EN_PREFIX },
   { lang: 'tr', prefix: TR_PREFIX },
+  { lang: 'ru', prefix: RU_PREFIX },
 ];
 
 let current: Lang = 'fa';
-const dictionaries: Record<ForeignLang, Record<string, string>> = { en: {}, tr: {} };
+const dictionaries: Record<ForeignLang, Record<string, string>> = { en: {}, tr: {}, ru: {} };
 let dict: Record<string, string> = {};
 /** Per-document overlay (server: one magazine article's own entries), checked before `dict`. */
 let overlay: Record<string, string> | null = null;
 
-/** Language of a pathname: /en and /tr (and their children) are foreign, everything else Persian. */
+/** Language of a pathname: /en, /tr and /ru (and their children) are foreign, everything else Persian. */
 export function pathLang(pathname: string | undefined | null): Lang {
   const p = String(pathname || '/');
   for (const { lang, prefix } of FOREIGN_PREFIXES) {
@@ -42,7 +43,7 @@ export function pathLang(pathname: string | undefined | null): Lang {
   return 'fa';
 }
 
-/** "/en/products/x" or "/tr/products/x" → "/products/x"; a bare prefix → "/". Persian paths are unchanged. */
+/** "/en/products/x", "/tr/products/x" or "/ru/products/x" → "/products/x"; a bare prefix → "/". Persian paths are unchanged. */
 export function stripLangPrefix(pathname: string): string {
   const lang = pathLang(pathname);
   if (lang === 'fa') return pathname || '/';
@@ -55,13 +56,16 @@ export function getLang(): Lang {
 }
 export const isEn = (): boolean => current === 'en';
 export const isTr = (): boolean => current === 'tr';
-/** English and Turkish pages are left-to-right. */
+export const isRu = (): boolean => current === 'ru';
+/** English, Turkish and Russian pages are left-to-right. */
 export const isLtr = (): boolean => current !== 'fa';
 
 /** BCP 47 tag for number and date display. */
 export function intlLocale(): string {
   if (current === 'tr') return 'tr-TR';
-  return current === 'en' ? 'en-US' : 'fa-IR';
+  if (current === 'ru') return 'ru-RU';
+  if (current === 'en') return 'en-US';
+  return 'fa-IR';
 }
 
 /** Install one foreign dictionary (server: both at startup; client: the page language, before first render). */
@@ -72,6 +76,10 @@ export function setEnDictionary(entries: Record<string, string>): void {
 export function setTrDictionary(entries: Record<string, string>): void {
   dictionaries.tr = entries;
   if (current === 'tr') dict = entries;
+}
+export function setRuDictionary(entries: Record<string, string>): void {
+  dictionaries.ru = entries;
+  if (current === 'ru') dict = entries;
 }
 export function setLang(lang: Lang): void {
   current = lang;
@@ -204,6 +212,7 @@ type Availability = { articles: Set<string>; products: Set<string>; topics: Set<
 const available: Record<ForeignLang, Availability> = {
   en: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
   tr: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
+  ru: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
 };
 export function setLangAvailability(lang: ForeignLang, a: { articles?: Iterable<string>; products?: Iterable<string>; topics?: Iterable<string> }): void {
   const slot = available[lang];

@@ -68,7 +68,7 @@ export interface ProjectCaseStudy {
 export interface Project {
   /** Empty/undefined means published for backwards compatibility. */
   status?: PublicationStatus;
-  translations?: { en?: Partial<Omit<Project, 'translations'>>; tr?: Partial<Omit<Project, 'translations'>> };
+  translations?: { en?: Partial<Omit<Project, 'translations'>>; tr?: Partial<Omit<Project, 'translations'>>; ru?: Partial<Omit<Project, 'translations'>> };
   id: string;
   title: string;
   type: 'broiler' | 'layer' | 'breeder' | 'feed_mill' | 'agriculture' | string;
@@ -96,7 +96,7 @@ export interface Product {
   hidden?: boolean;
   /** Draft and review products are not visible on the public catalog. */
   status?: PublicationStatus;
-  translations?: { en?: Partial<Omit<Product, 'translations'>>; tr?: Partial<Omit<Product, 'translations'>> };
+  translations?: { en?: Partial<Omit<Product, 'translations'>>; tr?: Partial<Omit<Product, 'translations'>>; ru?: Partial<Omit<Product, 'translations'>> };
   id: string;
   code: string;
   /** Optional clean Latin URL slug (e.g. "jet-heater"); without it the slug is `<name>-<code>`. */
@@ -150,7 +150,7 @@ export interface ServiceWorkflowStep {
 export interface Service {
   /** Draft and review services stay inside the CMS only. */
   status?: PublicationStatus;
-  translations?: { en?: Partial<Omit<Service, 'translations'>>; tr?: Partial<Omit<Service, 'translations'>> };
+  translations?: { en?: Partial<Omit<Service, 'translations'>>; tr?: Partial<Omit<Service, 'translations'>>; ru?: Partial<Omit<Service, 'translations'>> };
   id: string;
   title: string;
   tagline: string;
@@ -195,7 +195,7 @@ export interface Article {
   status?: PublicationStatus;
   /** Manual English or Turkish copy written in the CMS. The legacy source-key dictionary remains
    * a fallback for existing content. */
-  translations?: { en?: Partial<Omit<Article, 'translations'>>; tr?: Partial<Omit<Article, 'translations'>> };
+  translations?: { en?: Partial<Omit<Article, 'translations'>>; tr?: Partial<Omit<Article, 'translations'>>; ru?: Partial<Omit<Article, 'translations'>> };
   seoTitle?: string;
   seoDescription?: string;
   focusKeyword?: string;
@@ -207,7 +207,7 @@ export interface Article {
 }
 
 export interface CompanyInfo {
-  translations?: { en?: Partial<Omit<CompanyInfo, 'translations'>>; tr?: Partial<Omit<CompanyInfo, 'translations'>> };
+  translations?: { en?: Partial<Omit<CompanyInfo, 'translations'>>; tr?: Partial<Omit<CompanyInfo, 'translations'>>; ru?: Partial<Omit<CompanyInfo, 'translations'>> };
   nameFa?: string;
   nameEn?: string;
   tagline?: string;
@@ -261,7 +261,7 @@ export interface HeroCms {
   backgroundImage?: string;
   /** Optional slideshow images managed from the CMS. */
   backgroundImages?: string[];
-  translations?: { en?: Partial<Omit<HeroCms, 'translations'>>; tr?: Partial<Omit<HeroCms, 'translations'>> };
+  translations?: { en?: Partial<Omit<HeroCms, 'translations'>>; tr?: Partial<Omit<HeroCms, 'translations'>>; ru?: Partial<Omit<HeroCms, 'translations'>> };
 }
 
 export type HeroCmsContent = HeroCms;
@@ -277,6 +277,7 @@ export interface SiteLayoutConfig {
     navLabelsFa?: Partial<Record<'home' | 'services' | 'products' | 'about' | 'contact', string>>;
     navLabelsEn?: Partial<Record<'home' | 'services' | 'products' | 'about' | 'contact', string>>;
     navLabelsTr?: Partial<Record<'home' | 'services' | 'products' | 'about' | 'contact', string>>;
+    navLabelsRu?: Partial<Record<'home' | 'services' | 'products' | 'about' | 'contact', string>>;
   };
   footer: {
     visible: boolean;
@@ -284,6 +285,7 @@ export interface SiteLayoutConfig {
     aboutFa?: string;
     aboutEn?: string;
     aboutTr?: string;
+    aboutRu?: string;
   };
   home: {
     hero: boolean;
@@ -302,7 +304,7 @@ export interface PageHeroCms {
   eyebrow?: string;
   ctaLabel?: string;
   secondaryCtaLabel?: string;
-  translations?: { en?: Partial<Omit<PageHeroCms, 'translations'>>; tr?: Partial<Omit<PageHeroCms, 'translations'>> };
+  translations?: { en?: Partial<Omit<PageHeroCms, 'translations'>>; tr?: Partial<Omit<PageHeroCms, 'translations'>>; ru?: Partial<Omit<PageHeroCms, 'translations'>> };
 }
 
 export interface AboutPageCms {
@@ -310,13 +312,13 @@ export interface AboutPageCms {
   intro?: string;
   image?: string;
   features?: { title?: string; description?: string }[];
-  translations?: { en?: Partial<Omit<AboutPageCms, 'translations'>>; tr?: Partial<Omit<AboutPageCms, 'translations'>> };
+  translations?: { en?: Partial<Omit<AboutPageCms, 'translations'>>; tr?: Partial<Omit<AboutPageCms, 'translations'>>; ru?: Partial<Omit<AboutPageCms, 'translations'>> };
 }
 
 export interface RndPageCms {
   title?: string;
   description?: string;
-  translations?: { en?: Partial<Omit<RndPageCms, 'translations'>>; tr?: Partial<Omit<RndPageCms, 'translations'>> };
+  translations?: { en?: Partial<Omit<RndPageCms, 'translations'>>; tr?: Partial<Omit<RndPageCms, 'translations'>>; ru?: Partial<Omit<RndPageCms, 'translations'>> };
 }
 
 export interface PagesCms {

@@ -1,17 +1,18 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { EN_PREFIX, TR_PREFIX, getLang, keepFa } from '../i18n';
+import { EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, keepFa } from '../i18n';
 
 /**
- * FA / EN / TR switch. A full-page link (each language boots its own dictionary).
- * The router runs with basename "/en" or "/tr" on those pages, so useLocation() is always the
+ * FA / EN / TR / RU switch. A full-page link (each language boots its own dictionary).
+ * The router runs with basename "/en", "/tr" or "/ru" on those pages, so useLocation() is always the
  * language-neutral path. Pages without a translation are redirected by the server
- * (e.g. an untranslated article → /en/magazine or /tr/magazine).
+ * (e.g. an untranslated article → /en/magazine, /tr/magazine or /ru/magazine).
  */
 const OPTIONS = [
   { id: 'fa' as const, label: keepFa('فا'), hrefLang: 'fa', title: keepFa('فارسی'), prefix: '' },
   { id: 'en' as const, label: 'EN', hrefLang: 'en', title: 'English', prefix: EN_PREFIX },
   { id: 'tr' as const, label: 'TR', hrefLang: 'tr', title: 'Türkçe', prefix: TR_PREFIX },
+  { id: 'ru' as const, label: 'RU', hrefLang: 'ru', title: 'Русский', prefix: RU_PREFIX },
 ];
 
 export const LangToggle: React.FC<{ className?: string }> = ({ className = '' }) => {

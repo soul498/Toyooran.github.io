@@ -6,6 +6,7 @@ import { HeroCms } from '../../types';
 import { DEFAULT_HERO_CMS } from '../../data/mockData';
 import { EN_DICT } from '../../i18n/enDict';
 import { TR_DICT } from '../../i18n/trDict';
+import { RU_DICT } from '../../i18n/ruDict';
 import { hasPersian } from '../../i18n';
 
 export const HeroCmsTab: React.FC = () => {
@@ -16,6 +17,7 @@ export const HeroCmsTab: React.FC = () => {
   const [saveError, setSaveError] = useState('');
   const englishDraft = (heroForm.translations?.en || {}) as Partial<Omit<HeroCms, 'translations'>>;
   const turkishDraft = (heroForm.translations?.tr || {}) as Partial<Omit<HeroCms, 'translations'>>;
+  const russianDraft = (heroForm.translations?.ru || {}) as Partial<Omit<HeroCms, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
     setHeroForm({ ...heroForm, translations: { ...heroForm.translations, en: { ...englishDraft, ...patch } } });
@@ -23,14 +25,17 @@ export const HeroCmsTab: React.FC = () => {
   const updateTurkish = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
     setHeroForm({ ...heroForm, translations: { ...heroForm.translations, tr: { ...turkishDraft, ...patch } } });
   };
+  const updateRussian = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
+    setHeroForm({ ...heroForm, translations: { ...heroForm.translations, ru: { ...russianDraft, ...patch } } });
+  };
 
   const handleSaveAll = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setSaveSuccess(false);
     setSaveError('');
-    if ([...Object.values(englishDraft), ...Object.values(turkishDraft)].some((value) => typeof value === 'string' && hasPersian(value))) {
-      setSaveError('فیلدهای نسخهٔ انگلیسی و ترکی نباید متن فارسی داشته باشند.');
+    if ([...Object.values(englishDraft), ...Object.values(turkishDraft), ...Object.values(russianDraft)].some((value) => typeof value === 'string' && hasPersian(value))) {
+      setSaveError('فیلدهای نسخهٔ انگلیسی، ترکی و روسی نباید متن فارسی داشته باشند.');
       setSaving(false);
       return;
     }
@@ -153,6 +158,20 @@ export const HeroCmsTab: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input value={turkishDraft.ctaPrimaryText ?? TR_DICT[DEFAULT_HERO_CMS.ctaPrimaryText]} onChange={(event) => updateTurkish({ ctaPrimaryText: event.target.value })} placeholder="Birincil düğme" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={turkishDraft.ctaSecondaryText ?? TR_DICT[DEFAULT_HERO_CMS.ctaSecondaryText]} onChange={(event) => updateTurkish({ ctaSecondaryText: event.target.value })} placeholder="İkincil düğme" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            </div>
+          </div>
+
+          <div className="md:col-span-2 rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4 space-y-3" dir="ltr">
+            <div dir="rtl">
+              <h3 className="text-xs font-black text-rose-200">نسخه روسی هیرو</h3>
+              <p className="text-[11px] text-slate-500 mt-1">متن‌های روسی مستقل ذخیره می‌شوند و فقط در /ru نشان داده می‌شوند.</p>
+            </div>
+            <input value={russianDraft.pillText ?? RU_DICT[DEFAULT_HERO_CMS.pillText]} onChange={(event) => updateRussian({ pillText: event.target.value })} placeholder="Надпись" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <input value={russianDraft.title ?? RU_DICT[DEFAULT_HERO_CMS.title]} onChange={(event) => updateRussian({ title: event.target.value })} placeholder="Заголовок" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={russianDraft.subtitle ?? RU_DICT[DEFAULT_HERO_CMS.subtitle]} onChange={(event) => updateRussian({ subtitle: event.target.value })} rows={3} placeholder="Подзаголовок" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input value={russianDraft.ctaPrimaryText ?? RU_DICT[DEFAULT_HERO_CMS.ctaPrimaryText]} onChange={(event) => updateRussian({ ctaPrimaryText: event.target.value })} placeholder="Основная кнопка" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={russianDraft.ctaSecondaryText ?? RU_DICT[DEFAULT_HERO_CMS.ctaSecondaryText]} onChange={(event) => updateRussian({ ctaSecondaryText: event.target.value })} placeholder="Вторая кнопка" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
             </div>
           </div>
 

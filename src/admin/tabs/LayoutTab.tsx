@@ -5,6 +5,7 @@ import { useData } from '../../context/DataContext';
 import { ImagePicker } from '../components/ImagePicker';
 import { EN_DICT } from '../../i18n/enDict';
 import { TR_DICT } from '../../i18n/trDict';
+import { RU_DICT } from '../../i18n/ruDict';
 import { hasPersian } from '../../i18n';
 
 const NAV_LABELS = [
@@ -35,8 +36,8 @@ export const LayoutTab: React.FC = () => {
     setSaving(true);
     setSaved(false);
     setSaveError('');
-    if ([draft.header.brandEn, draft.footer.aboutEn, draft.footer.aboutTr, ...Object.values(draft.header.navLabelsEn || {}), ...Object.values(draft.header.navLabelsTr || {})].some((value) => value && hasPersian(value))) {
-      setSaveError('فیلدهای انگلیسی و ترکی هدر و فوتر نباید متن فارسی داشته باشند.');
+    if ([draft.header.brandEn, draft.footer.aboutEn, draft.footer.aboutTr, draft.footer.aboutRu, ...Object.values(draft.header.navLabelsEn || {}), ...Object.values(draft.header.navLabelsTr || {}), ...Object.values(draft.header.navLabelsRu || {})].some((value) => value && hasPersian(value))) {
+      setSaveError('فیلدهای انگلیسی، ترکی و روسی هدر و فوتر نباید متن فارسی داشته باشند.');
       setSaving(false);
       return;
     }
@@ -80,10 +81,11 @@ export const LayoutTab: React.FC = () => {
 
       <section className="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-4">
         <h3 className="text-sm font-black text-white">متن‌های منوی هدر</h3>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-4">
           <div className="space-y-3"><p className="text-xs text-amber-300">فارسی</p>{NAV_LABELS.map(({ key, fa }) => <label key={key} className="block text-xs text-slate-300">{fa}<input value={draft.header.navLabelsFa?.[key] ?? fa} onChange={(event) => setDraft({ ...draft, header: { ...draft.header, navLabelsFa: { ...draft.header.navLabelsFa, [key]: event.target.value } } })} className="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" /></label>)}</div>
           <div className="space-y-3" dir="ltr"><p className="text-xs text-blue-300">English</p>{NAV_LABELS.map(({ key, fa }) => <label key={key} className="block text-xs text-slate-300">{EN_DICT[fa]}<input value={draft.header.navLabelsEn?.[key] ?? EN_DICT[fa] ?? ''} onChange={(event) => setDraft({ ...draft, header: { ...draft.header, navLabelsEn: { ...draft.header.navLabelsEn, [key]: event.target.value } } })} className="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" /></label>)}</div>
           <div className="space-y-3" dir="ltr"><p className="text-xs text-emerald-300">Türkçe</p>{NAV_LABELS.map(({ key, fa }) => <label key={key} className="block text-xs text-slate-300">{TR_DICT[fa]}<input value={draft.header.navLabelsTr?.[key] ?? TR_DICT[fa] ?? ''} onChange={(event) => setDraft({ ...draft, header: { ...draft.header, navLabelsTr: { ...draft.header.navLabelsTr, [key]: event.target.value } } })} className="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" /></label>)}</div>
+          <div className="space-y-3" dir="ltr"><p className="text-xs text-rose-300">Русский</p>{NAV_LABELS.map(({ key, fa }) => <label key={key} className="block text-xs text-slate-300">{RU_DICT[fa]}<input value={draft.header.navLabelsRu?.[key] ?? RU_DICT[fa] ?? ''} onChange={(event) => setDraft({ ...draft, header: { ...draft.header, navLabelsRu: { ...draft.header.navLabelsRu, [key]: event.target.value } } })} className="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" /></label>)}</div>
         </div>
       </section>
 
@@ -98,6 +100,7 @@ export const LayoutTab: React.FC = () => {
             <label className="block text-xs text-slate-300">متن معرفی فارسی<input value={draft.footer.aboutFa ?? FOOTER_ABOUT_FA} onChange={(event) => setDraft({ ...draft, footer: { ...draft.footer, aboutFa: event.target.value } })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" /></label>
             <label className="block text-xs text-slate-300">متن معرفی انگلیسی<input dir="ltr" value={draft.footer.aboutEn ?? EN_DICT[FOOTER_ABOUT_FA] ?? ''} onChange={(event) => setDraft({ ...draft, footer: { ...draft.footer, aboutEn: event.target.value } })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" /></label>
             <label className="block text-xs text-slate-300">متن معرفی ترکی<input dir="ltr" value={draft.footer.aboutTr ?? TR_DICT[FOOTER_ABOUT_FA] ?? ''} onChange={(event) => setDraft({ ...draft, footer: { ...draft.footer, aboutTr: event.target.value } })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" /></label>
+            <label className="block text-xs text-slate-300">متن معرفی روسی<input dir="ltr" value={draft.footer.aboutRu ?? RU_DICT[FOOTER_ABOUT_FA] ?? ''} onChange={(event) => setDraft({ ...draft, footer: { ...draft.footer, aboutRu: event.target.value } })} className="mt-1.5 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white" /></label>
           </div>
         </div>
       </section>

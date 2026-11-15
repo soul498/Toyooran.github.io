@@ -60,7 +60,7 @@ export function legacyServiceTarget(pathOrHref: string): string {
     /* keep raw */
   }
   const parts = path.split('/').filter(Boolean);
-  if (parts[0] === 'en' || parts[0] === 'tr') parts.shift();
+  if (parts[0] === 'en' || parts[0] === 'tr' || parts[0] === 'ru') parts.shift();
   const slug = (parts[1] || '').toLowerCase();
   return LEGACY_SERVICE_TARGETS[slug] || DISABLED_PAGE_REDIRECT;
 }
@@ -90,7 +90,7 @@ export function isDisabledPagePath(pathOrHref: string | undefined | null): boole
   }
   const parts = path.split('/').filter(Boolean);
   // English and Turkish pages live under /en and /tr: the same page stays disabled there.
-  if (parts[0] === 'en' || parts[0] === 'tr') parts.shift();
+  if (parts[0] === 'en' || parts[0] === 'tr' || parts[0] === 'ru') parts.shift();
   return parts[0] === 'services' && parts.length >= 2 && isServiceDisabled(parts[1]);
 }
 

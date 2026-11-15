@@ -29,6 +29,7 @@ interface NavbarProps {
   navLabelsFa?: import('../types').SiteLayoutConfig['header']['navLabelsFa'];
   navLabelsEn?: import('../types').SiteLayoutConfig['header']['navLabelsEn'];
   navLabelsTr?: import('../types').SiteLayoutConfig['header']['navLabelsTr'];
+  navLabelsRu?: import('../types').SiteLayoutConfig['header']['navLabelsRu'];
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -44,6 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   navLabelsFa,
   navLabelsEn,
   navLabelsTr,
+  navLabelsRu,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const englishBrand = brandEn && !hasPersian(brandEn) ? brandEn : 'TSPK';
@@ -71,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
   const navLabel = (item: typeof navItems[number]) => {
     const lang = getLang();
-    const labels = lang === 'en' ? navLabelsEn : lang === 'tr' ? navLabelsTr : navLabelsFa;
+    const labels = lang === 'en' ? navLabelsEn : lang === 'tr' ? navLabelsTr : lang === 'ru' ? navLabelsRu : navLabelsFa;
     const custom = labels?.[item.id as keyof typeof labels];
     return custom?.trim() && (lang === 'fa' || !hasPersian(custom)) ? custom : item.label;
   };

@@ -124,6 +124,12 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
   const [turkishReviewerName, setTurkishReviewerName] = useState(initialTurkish.reviewerName || "");
   const [turkishReviewerRole, setTurkishReviewerRole] = useState(initialTurkish.reviewerRole || "");
   const [turkishSourcesText, setTurkishSourcesText] = useState((initialTurkish.sources || []).map((source) => [source.name, source.url || ""].join(" | ")).join("\n"));
+  const initialRussian = (initial?.translations?.ru || {}) as Partial<Omit<Article, 'translations'>>;
+  const [russianTitle, setRussianTitle] = useState(initialRussian.title || "");
+  const [russianSummary, setRussianSummary] = useState(initialRussian.summary || "");
+  const [russianContent, setRussianContent] = useState(initialRussian.content?.join("\n") || "");
+  const [russianSeoTitle, setRussianSeoTitle] = useState(initialRussian.seoTitle || "");
+  const [russianSeoDescription, setRussianSeoDescription] = useState(initialRussian.seoDescription || "");
   const [relatedProductIds, setRelatedProductIds] = useState<string[]>(initial?.relatedProductIds || []);
   const [relatedServiceId, setRelatedServiceId] = useState(initial?.relatedServiceId || "");
   const [noindex, setNoindex] = useState(Boolean(initial?.noindex));
@@ -389,6 +395,15 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       reviewerRole: turkishReviewerRole.trim() || undefined,
       sources: turkishSources.length ? turkishSources : undefined,
     };
+    const russianHasContent = [russianTitle, russianSummary, russianContent, russianSeoTitle, russianSeoDescription].some((value) => value.trim());
+    const russianTranslation: Partial<Omit<Article, 'translations'>> = {
+      ...initialRussian,
+      title: russianTitle.trim() || undefined,
+      summary: russianSummary.trim() || undefined,
+      content: russianContent.split("\n").map((line) => line.trim()).filter(Boolean),
+      seoTitle: russianSeoTitle.trim() || undefined,
+      seoDescription: russianSeoDescription.trim() || undefined,
+    };
     const article: Article = {
       ...(initial || { id: nextSlug, title: title.trim(), category, categoryLabel: "", readTime: "", date, summary: "", content: [], relatedProductIds: [] }),
       id: nextSlug,
@@ -418,7 +433,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       focusKeyword: focusKeyword.trim() || undefined,
       noindex: noindex || undefined,
       aliases: aliases.size ? [...aliases] : undefined,
-      translations: (englishHasContent || turkishHasContent) ? { ...(englishHasContent ? { en: englishTranslation } : {}), ...(turkishHasContent ? { tr: turkishTranslation } : {}) } : undefined,
+      translations: (englishHasContent || turkishHasContent || russianHasContent) ? { ...(englishHasContent ? { en: englishTranslation } : {}), ...(turkishHasContent ? { tr: turkishTranslation } : {}), ...(russianHasContent ? { ru: russianTranslation } : {}) } : undefined,
     };
     setSaving(true);
     setError("");
@@ -798,6 +813,18 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
           <label className="block text-xs text-slate-300">İnceleyen rolü<input value={turkishReviewerRole} onChange={(event) => setTurkishReviewerRole(event.target.value)} className={fieldClass + " mt-1"} /></label>
         </div>
         <label className="block text-xs text-slate-300">Kaynaklar — satır başına: Ad | https://example.com<textarea rows={3} value={turkishSourcesText} onChange={(event) => setTurkishSourcesText(event.target.value)} className={fieldClass + " mt-1 font-mono"} /></label>
+      </section>
+
+      <section className="bg-rose-500/5 border border-rose-500/25 rounded-3xl p-4 sm:p-5 space-y-4" dir="ltr">
+        <div dir="rtl">
+          <h3 className="text-sm font-black text-rose-100">نسخه روسی مقاله</h3>
+          <p className="text-[11px] text-slate-500 mt-1">محتوای روسی مستقل است. تا وقتی ترجمه کامل نباشد، نسخه /ru این مقاله منتشر نمی‌شود.</p>
+        </div>
+        <label className="block text-xs text-slate-300">Заголовок<input value={russianTitle} onChange={(event) => setRussianTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
+        <label className="block text-xs text-slate-300">Краткое содержание<textarea rows={3} value={russianSummary} onChange={(event) => setRussianSummary(event.target.value)} className={fieldClass + " mt-1 leading-6"} /></label>
+        <label className="block text-xs text-slate-300">Текст (сохраните маркеры ##, -, [IMG|...], [CTA|...])<textarea rows={12} value={russianContent} onChange={(event) => setRussianContent(event.target.value)} className={fieldClass + " mt-1 leading-6 font-mono"} /></label>
+        <label className="block text-xs text-slate-300">SEO-заголовок<input value={russianSeoTitle} onChange={(event) => setRussianSeoTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
+        <label className="block text-xs text-slate-300">SEO-описание<textarea rows={2} value={russianSeoDescription} onChange={(event) => setRussianSeoDescription(event.target.value)} className={fieldClass + " mt-1"} /></label>
       </section>
     </form>
   );

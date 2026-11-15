@@ -39,12 +39,16 @@ export const ProjectsTab: React.FC = () => {
   });
   const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Project, 'translations'>>;
   const turkishDraft = (formData.translations?.tr || {}) as Partial<Omit<Project, 'translations'>>;
+  const russianDraft = (formData.translations?.ru || {}) as Partial<Omit<Project, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<Project, 'translations'>>) => {
     setFormData({ ...formData, translations: { ...formData.translations, en: { ...englishDraft, ...patch } } });
   };
   const updateTurkish = (patch: Partial<Omit<Project, 'translations'>>) => {
     setFormData({ ...formData, translations: { ...formData.translations, tr: { ...turkishDraft, ...patch } } });
+  };
+  const updateRussian = (patch: Partial<Omit<Project, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, ru: { ...russianDraft, ...patch } } });
   };
 
   const projectTypes = [
@@ -402,6 +406,17 @@ export const ProjectsTab: React.FC = () => {
                   <input value={turkishDraft.location || ''} onChange={(event) => updateTurkish({ location: event.target.value })} placeholder="Konum" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white sm:col-span-2" />
                 </div>
                 <textarea rows={3} value={turkishDraft.keyOutcome || ''} onChange={(event) => updateTurkish({ keyOutcome: event.target.value })} placeholder="Sonuç" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+              </div>
+
+              <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4 space-y-3" dir="ltr">
+                <div dir="rtl"><h4 className="text-xs font-black text-rose-200">نسخه روسی پروژه</h4><p className="text-[11px] text-slate-500 mt-1">این متن‌ها روی مسیر /ru استفاده می‌شوند.</p></div>
+                <input value={russianDraft.title || ''} onChange={(event) => updateRussian({ title: event.target.value })} placeholder="Название проекта" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input value={russianDraft.typeTitle || ''} onChange={(event) => updateRussian({ typeTitle: event.target.value })} placeholder="Тип проекта" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                  <input value={russianDraft.capacity || ''} onChange={(event) => updateRussian({ capacity: event.target.value })} placeholder="Мощность" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                  <input value={russianDraft.location || ''} onChange={(event) => updateRussian({ location: event.target.value })} placeholder="Место" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white sm:col-span-2" />
+                </div>
+                <textarea rows={3} value={russianDraft.keyOutcome || ''} onChange={(event) => updateRussian({ keyOutcome: event.target.value })} placeholder="Результат" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">

@@ -37,12 +37,16 @@ export const ServicesTab: React.FC = () => {
   });
   const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Service, 'translations'>>;
   const turkishDraft = (formData.translations?.tr || {}) as Partial<Omit<Service, 'translations'>>;
+  const russianDraft = (formData.translations?.ru || {}) as Partial<Omit<Service, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<Service, 'translations'>>) => {
     setFormData({ ...formData, translations: { ...formData.translations, en: { ...englishDraft, ...patch } } });
   };
   const updateTurkish = (patch: Partial<Omit<Service, 'translations'>>) => {
     setFormData({ ...formData, translations: { ...formData.translations, tr: { ...turkishDraft, ...patch } } });
+  };
+  const updateRussian = (patch: Partial<Omit<Service, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, ru: { ...russianDraft, ...patch } } });
   };
 
   const openCreateModal = () => {
@@ -292,6 +296,13 @@ export const ServicesTab: React.FC = () => {
                 <input value={turkishDraft.title || ''} onChange={(event) => updateTurkish({ title: event.target.value })} placeholder="Hizmet başlığı" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
                 <input value={turkishDraft.tagline || ''} onChange={(event) => updateTurkish({ tagline: event.target.value })} placeholder="Kısa tanıtım" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
                 <textarea rows={3} value={turkishDraft.problemSolved || ''} onChange={(event) => updateTurkish({ problemSolved: event.target.value })} placeholder="Çözülen sorun" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+              </div>
+
+              <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4 space-y-3" dir="ltr">
+                <div dir="rtl"><h4 className="text-xs font-black text-rose-200">نسخه روسی خدمت</h4><p className="text-[11px] text-slate-500 mt-1">متن‌های روسی روی مسیر /ru نشان داده می‌شوند.</p></div>
+                <input value={russianDraft.title || ''} onChange={(event) => updateRussian({ title: event.target.value })} placeholder="Название услуги" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <input value={russianDraft.tagline || ''} onChange={(event) => updateRussian({ tagline: event.target.value })} placeholder="Краткое описание" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <textarea rows={3} value={russianDraft.problemSolved || ''} onChange={(event) => updateRussian({ problemSolved: event.target.value })} placeholder="Какую задачу решает" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
