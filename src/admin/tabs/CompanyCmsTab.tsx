@@ -17,11 +17,15 @@ export const CompanyCmsTab: React.FC = () => {
   const englishDraft = (companyForm.translations?.en || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
 
   const turkishDraft = (companyForm.translations?.tr || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
+  const russianDraft = (companyForm.translations?.ru || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
   const updateEnglish = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
     setCompanyForm({ ...companyForm, translations: { ...companyForm.translations, en: { ...englishDraft, ...patch } } });
   };
   const updateTurkish = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
     setCompanyForm({ ...companyForm, translations: { ...companyForm.translations, tr: { ...turkishDraft, ...patch } } });
+  };
+  const updateRussian = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
+    setCompanyForm({ ...companyForm, translations: { ...companyForm.translations, ru: { ...russianDraft, ...patch } } });
   };
 
   const handleSaveAll = (e: React.FormEvent) => {
@@ -127,6 +131,20 @@ export const CompanyCmsTab: React.FC = () => {
               <input value={turkishDraft.address || ''} onChange={(event) => updateTurkish({ address: event.target.value })} placeholder="Merkez ofis adresi" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={turkishDraft.factoryAddress || ''} onChange={(event) => updateTurkish({ factoryAddress: event.target.value })} placeholder="Fabrika adresi" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={turkishDraft.workingHours || ''} onChange={(event) => updateTurkish({ workingHours: event.target.value })} placeholder="Çalışma saatleri" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white md:col-span-2" />
+            </div>
+          </div>
+
+          <div className="md:col-span-2 lg:col-span-3 rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4 space-y-3" dir="ltr">
+            <div dir="rtl">
+              <h3 className="text-xs font-black text-rose-200">متن‌های روسی شرکت</h3>
+              <p className="text-[11px] text-slate-500 mt-1">این متن‌ها فقط در نسخه /ru نشان داده می‌شوند.</p>
+            </div>
+            <input value={russianDraft.tagline || ''} onChange={(event) => updateRussian({ tagline: event.target.value })} placeholder="Слоган компании" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={russianDraft.subTagline || ''} onChange={(event) => updateRussian({ subTagline: event.target.value })} rows={2} placeholder="Краткое представление" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input value={russianDraft.address || ''} onChange={(event) => updateRussian({ address: event.target.value })} placeholder="Адрес головного офиса" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={russianDraft.factoryAddress || ''} onChange={(event) => updateRussian({ factoryAddress: event.target.value })} placeholder="Адрес завода" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={russianDraft.workingHours || ''} onChange={(event) => updateRussian({ workingHours: event.target.value })} placeholder="Часы работы" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white md:col-span-2" />
             </div>
           </div>
           
@@ -278,16 +296,16 @@ export const CompanyCmsTab: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">روبیکا</label>
+            <label className="block text-xs font-bold text-slate-300 mb-1">بله</label>
             <input
               type="text"
-              value={companyForm.socialLinks?.rubika || ''}
+              value={companyForm.socialLinks?.bale || ''}
               onChange={(e) => setCompanyForm({ 
                 ...companyForm, 
-                socialLinks: { ...companyForm.socialLinks, rubika: e.target.value } 
+                socialLinks: { ...companyForm.socialLinks, bale: e.target.value } 
               })}
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono focus:border-amber-400"
-              placeholder="https://rubika.ir/..."
+              placeholder="https://ble.ir/..."
               dir="ltr"
             />
           </div>

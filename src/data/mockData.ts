@@ -24,7 +24,7 @@ export const COMPANY_INFO = {
     instagram: 'https://www.instagram.com/toyooranco/',
     telegram: 'https://t.me/toyooranco',
     linkedin: 'https://www.linkedin.com/company/toyooranco',
-    rubika: 'https://rubika.ir/toyooranco',
+    rubika: '',
     aparat: 'https://www.aparat.com/toyooranco',
     youtube: 'http://www.youtube.com/@Toyooranco',
     whatsapp: '',

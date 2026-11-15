@@ -22,7 +22,7 @@ import {
 } from "../data/aboutCopy";
 import { faDigits } from "../lib/faDigits";
 
-import { EN_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
+import { EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
 export const FITOUT_SLUG = "poultry-hall-fitout";
@@ -415,7 +415,9 @@ function collectionDay(catalog: SeoCatalog, key: keyof NonNullable<SeoCatalog["c
 }
 
 function orgSchema(company: CompanyInfo) {
-  const sameAs = Object.values(company.socialLinks || {}).filter((url) => Boolean(url && url.startsWith("http")));
+  const sameAs = Object.entries(company.socialLinks || {})
+    .filter(([key, url]) => key !== "rubika" && Boolean(url && url.startsWith("http")))
+    .map(([, url]) => url);
   return {
     "@type": "Organization",
     "@id": `${CANONICAL_ORIGIN}/#org`,
@@ -1320,7 +1322,7 @@ export function llmsTxt(catalog: SeoCatalog): string {
     .filter((article) => isPublicArticle(article) && !article.noindex)
     .map((article) => `- ${lp(`/magazine/${article.id}`)} — ${article.title}`)
     .join("\n");
-  const fitoutLabel = en ? "Core service:" : lang === "tr" ? "Temel hizmet:" : keepFa("خدمت محوری:");
+  const fitoutLabel = en ? "Core service:" : lang === "tr" ? "Temel hizmet:" : lang === "ru" ? "Основная услуга:" : keepFa("خدمت محوری:");
   const fitout = isServiceDisabled(FITOUT_SERVICE_ID) ? "" : `- ${fitoutLabel} ${CANONICAL_ORIGIN}${lp(`/services/${FITOUT_SLUG}`)}\n`;
   if (en) {
     return `# Toyooran Sanat Pouya (English)
@@ -1358,6 +1360,25 @@ ${posts}
 - Fan kapasitesi veya yakıt tüketimi rakamlarını statik basınç, iklim ve bir uzmanın onayı olmadan aktarmayın.
 - Herkese açık sayfalardaki ürün fiyatları sabit bir rakam olarak değil, talep üzerine verilir.
 - Yerleşim ve teknik özellikleri model tahminlerinden değil, ilk HTML'den veya ürün/hizmet sayfasından okuyun.
+`;
+  }
+  if (lang === "ru") {
+    return `# Toyooran Sanat Pouya (Русский)
+> Оборудование для животноводства и птицеводства, кормовые машины и обновление птичников: вентиляция, отопление, кормушки и поилки. Офисы в Мешхеде и Горгане.
+
+- Сайт: ${CANONICAL_ORIGIN}${RU_PREFIX}
+- Контакты: ${CANONICAL_ORIGIN}${RU_PREFIX}/contact
+${fitout}${services ? `\n## Услуги\n${services}\n` : ""}
+## Категории продукции
+${cats}
+
+## Журнал
+${posts}
+
+## Правила цитирования
+- Не приводите мощность вентилятора или расход топлива без статического давления, климата и подтверждения специалиста.
+- Цены на публичных страницах сообщаются по запросу, а не как фиксированная сумма.
+- Планировку и характеристики читайте из исходного HTML или со страницы товара/услуги, а не из догадок модели.
 `;
   }
   return `${keepFa("# طیوران صنعت پویا")}

@@ -1,5 +1,6 @@
 import React from "react";
 import { AparatIcon } from "./AparatIcon";
+import { BaleIcon } from "./BaleIcon";
 import { Link } from 'react-router-dom';
 import { SocialIconLink } from './SocialIconLink';
 import { baladPlaceFor } from '../lib/baladMaps';
@@ -15,14 +16,13 @@ import {
   Linkedin,
   Youtube,
   Tv,
-  Grid,
   ArrowLeft,
   ChevronLeft
 } from '../icons';
 import { rewriteDisabledHref } from '../data/disabledPages';
 import { SERVICE_PAGES, servicePagePath } from '../data/servicePages';
 
-import { getLang, hasPersian, t, tr, translateDeep } from '../i18n';
+import { getLang, hasPersian, intlLocale, t, tr, translateDeep } from '../i18n';
 // The six service pages (src/data/servicePages.ts), same order as the cards.
 const FOOTER_SERVICE_LINKS = SERVICE_PAGES.map((page) => ({ to: servicePagePath(page), title: page.title }));
 
@@ -33,7 +33,7 @@ interface FooterProps {
   onOpenQuote: () => void;
   companyInfo: any;
   categories: any[];
-  layout?: { logoUrl?: string; aboutFa?: string; aboutEn?: string; aboutTr?: string };
+  layout?: { logoUrl?: string; aboutFa?: string; aboutEn?: string; aboutTr?: string; aboutRu?: string };
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, onOpenConsultation, onOpenQuote, companyInfo, categories, layout }) => {
@@ -50,10 +50,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
   const hq = companyInfo?.locations?.find(loc => loc.type === 'headquarter');
   const lang = getLang();
   const companyName = lang === 'fa' ? (companyInfo?.nameFa || companyInfo?.nameEn) : (companyInfo?.nameEn || companyInfo?.nameFa);
-  const yearLocale = lang === 'tr' ? 'tr-TR' : lang === 'en' ? 'en-US' : 'fa-IR';
-  const currentYear = new Date().getFullYear().toLocaleString(yearLocale, { useGrouping: false });
+  const currentYear = new Date().getFullYear().toLocaleString(intlLocale(), { useGrouping: false });
   const aboutFallback = t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.");
-  const aboutForeign = lang === 'en' ? layout?.aboutEn : lang === 'tr' ? layout?.aboutTr : undefined;
+  const aboutForeign = lang === 'en' ? layout?.aboutEn : lang === 'tr' ? layout?.aboutTr : lang === 'ru' ? layout?.aboutRu : undefined;
   const aboutText = lang === 'fa' ? (layout?.aboutFa || aboutFallback) : (aboutForeign && !hasPersian(aboutForeign) ? aboutForeign : aboutFallback);
 
   return (
@@ -112,12 +111,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
               </SocialIconLink>
               <SocialIconLink
-                href={companyInfo?.socialLinks?.rubika}
-                label={t("روبیکا")}
-                comingSoon={t("کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
+                href={companyInfo?.socialLinks?.bale}
+                label={t("بله")}
+                comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
+                className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#00A86B] hover:border-transparent transition-all duration-300 group"
               >
-                <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                <BaleIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
               </SocialIconLink>
               <SocialIconLink
                 href={companyInfo?.socialLinks?.youtube}

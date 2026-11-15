@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AparatIcon } from "./AparatIcon";
+import { BaleIcon } from "./BaleIcon";
 import { SocialIconLink } from './SocialIconLink';
 import { 
   MapPin, 
@@ -13,8 +14,7 @@ import {
   Factory,
   Map,
   Youtube,
-  Tv,
-  Grid
+  Tv
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_ALT_DISPLAY, SALES_PHONE_ALT_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
@@ -135,12 +135,12 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     <AparatIcon className="w-4 h-4" />
                   </SocialIconLink>
                   <SocialIconLink
-                    href={companyInfo.socialLinks?.rubika}
-                    label={t("روبیکا")}
-                    comingSoon={t("کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                    className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
+                    href={companyInfo.socialLinks?.bale}
+                    label={t("بله")}
+                    comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
+                    className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#00A86B] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
-                    <Grid className="w-4 h-4" aria-hidden="true" />
+                    <BaleIcon className="w-4 h-4" />
                   </SocialIconLink>
                   <SocialIconLink
                     href={companyInfo.socialLinks?.youtube}

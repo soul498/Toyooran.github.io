@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { AparatIcon } from "./AparatIcon";
+import { BaleIcon } from "./BaleIcon";
 import { SocialIconLink } from './SocialIconLink';
 import { 
   Phone, Mail, MapPin, Clock, Building2, Factory, Map,
-  MessageCircle, Instagram, Linkedin, FileText, Send, Youtube, Tv, Grid
+  MessageCircle, Instagram, Linkedin, FileText, Send, Youtube, Tv
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { FreeConsultationForm } from './FreeConsultationForm';
@@ -119,12 +120,12 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                         <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
                       </SocialIconLink>
                       <SocialIconLink
-                        href={companyInfo.socialLinks.rubika}
-                        label={t("روبیکا")}
-                        comingSoon={t("کانال روبیکا طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                        className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-gradient-to-r hover:from-[#ff7300] hover:to-[#7600b5] hover:border-transparent transition-all duration-300 group"
+                        href={companyInfo.socialLinks.bale}
+                        label={t("بله")}
+                        comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
+                        className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#00A86B] hover:border-transparent transition-all duration-300 group"
                       >
-                        <Grid className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
+                        <BaleIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
                       </SocialIconLink>
                       <SocialIconLink
                         href={companyInfo.socialLinks.youtube}
