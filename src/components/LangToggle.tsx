@@ -20,13 +20,15 @@ export const LangToggle: React.FC<{ className?: string }> = ({ className = '' })
   const lang = getLang();
   const neutral = pathname || '/';
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div className={`flex items-center gap-0.5 lg:gap-1 ${className}`}>
       {OPTIONS.map((item) => {
         const active = lang === item.id;
         const href = item.prefix
           ? `${neutral === '/' ? item.prefix : `${item.prefix}${neutral}`}${search}`
           : `${neutral}${search}`;
-        const cls = `flex items-center justify-center min-w-11 min-h-11 h-11 px-3 border transition-all duration-300 rounded-full text-[13px] font-black shadow-sm ${active ? 'bg-[#003F86] text-white border-[#003F86]' : 'bg-white/50 hover:bg-white border-slate-200/50 hover:border-blue-200 text-slate-600 hover:text-[#003F86] hover:shadow-md'}`;
+        // Inactive buttons stay transparent so they take the header glass, not a whiter disc.
+        // Width stays compact below the desktop bar; four 44px pills push the menu off small phones.
+        const cls = `flex items-center justify-center h-11 min-w-8 rounded-full border px-1.5 text-[12px] font-black transition-colors duration-300 lg:min-w-11 lg:px-3 lg:text-[13px] ${active ? 'bg-[#003F86] text-white border-[#003F86]' : 'border-transparent bg-transparent text-slate-600 hover:bg-white/30 hover:text-[#003F86]'}`;
         const style = item.id === 'fa' ? { fontFamily: '"Estedad", sans-serif' } : undefined;
         if (active) {
           return <span key={item.id} lang={item.hrefLang} aria-current="page" title={item.title} style={style} className={cls}>{item.label}</span>;

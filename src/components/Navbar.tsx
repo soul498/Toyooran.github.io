@@ -91,11 +91,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         <Link 
           to="/"
           onClick={() => handleNavClick('home')}
-          className="flex items-center gap-3 cursor-pointer select-none group relative z-[60]"
+          className="flex items-center gap-2 sm:gap-3 cursor-pointer select-none group relative z-[60] shrink-0 min-[420px]:min-w-0 min-[420px]:shrink"
           id="brand-logo-btn"
         >
           {/* Logo Mark: Full Image */}
-          <div className="h-10 sm:h-12 flex items-center justify-center relative group-hover:-translate-y-0.5 transition-transform duration-300">
+          <div className="h-10 sm:h-12 shrink-0 flex items-center justify-center relative group-hover:-translate-y-0.5 transition-transform duration-300">
              <img 
                src={logoUrl || "/images/logo-mark.png"}
                alt={displayBrand}
@@ -104,11 +104,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                className="h-full w-auto object-contain"
              />
           </div>
-          <div className="flex flex-col justify-center">
-            <span className="text-lg sm:text-xl font-black text-[#003F86] tracking-tight group-hover:opacity-90 transition-opacity">
+          <div className="hidden min-[420px]:flex flex-col justify-center min-w-0">
+            <span className="text-lg sm:text-xl font-black text-[#003F86] tracking-tight group-hover:opacity-90 transition-opacity truncate">
               {englishBrand}
             </span>
-            <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-600 tracking-wider -mt-1">
+            <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-600 tracking-wider -mt-1 truncate">
               
               {displayBrand}
             </span>
@@ -155,8 +155,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Mobile Menu & Action Buttons */}
-        <div className="flex items-center gap-2 lg:hidden relative z-[60]">
-          <LangToggle className="backdrop-blur-md border-white/60" />
+        <div className="flex items-center gap-1.5 lg:hidden relative z-[60] shrink-0">
+          <LangToggle />
           <button
             onClick={onOpenSearch}
             className="min-w-11 min-h-11 p-2.5 text-slate-500 hover:text-[#003F86] hover:bg-white rounded-full transition-colors bg-white/50 backdrop-blur-md border border-white/60 shadow-sm"
