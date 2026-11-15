@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-15
+
+- Four-language audit: the live CMS ventilation category description (`هواکش‌های صنعتی ۱۴۰ و ۱۰۰، فن‌های سیرکوله و آکسیال`) had no EN/TR/RU dictionary entry, so the Persian sentence appeared on `/en`, `/tr` and `/ru` homepages. Added the missing translations, aligned the seed category text, and gave Categories in `/admin` the same EN/TR/RU overlay fields as products/services so a later Persian edit does not leak. Categories now use `translateCmsRecord`.
+- English product counts no longer say "1 products". Turkish magazine copy had a systematic `kapassit` misspelling of `kapasite` (83). `check:i18n` now also requires used keys to exist in the Turkish and Russian dictionaries.
+
 ## 2026-11-14
 
 - Services: four cards → six (user request, group «سایت طیوران صنعت»), each with its own indexable page: /services/industrial-buildings, /farm-equipment-installation, /feed-machinery, /feed-products, /modernization, /research-collaboration (+ /en). Body text is only the user's copy (src/data/servicePages.ts), edited for brand rules (third person, no «ما»; doubled spaces). Per page: title, meta description from the user's text, H1 = service title, canonical, hreflang, OG, Service + BreadcrumbList JSON-LD, related links (feeder + jet heater on service 2, the feed mill/mixer product on 3, /rnd on 6), free-consultation CTA and phones, links to the other services. Service 2 carries the flagship butterfly feeder block; service 6 the international cooperation and approach sections. Cards are now real links in a 3-column grid (home and /services); footer lists the six pages; /services hero subtitle and prerender use the user's text. Old service URLs 301 to the closest new page (fit-out and consulting → modernization; turnkey shed → industrial-buildings; equipment supply → farm-equipment-installation; machinery → feed-machinery; feed & supplements → feed-products), and in-text links to them are rewritten to the new pages. Sitemap and llms.txt list the six pages.

@@ -17,7 +17,7 @@ import { CategoryItem } from '../types';
 import { HOME_LINKS_CATEGORIES_HEADING } from '../seo/resolveSeo';
 import { useData } from '../context/DataContext';
 
-import { intlLocale, t, tr } from '../i18n';
+import { intlLocale, t, tf, tProducts, tr } from '../i18n';
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   LayoutGrid,
   Box,
@@ -34,8 +34,6 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 interface CompactShowcaseProps {
   onNavigate: (path: string) => void;
 }
-
-const faNum = (value: number) => value.toLocaleString(intlLocale());
 
 /** Home block under the services cards: product categories only (bestsellers slider + magazine column removed 2026-10-27). */
 export const CompactShowcase: React.FC<CompactShowcaseProps> = ({ onNavigate }) => {
@@ -80,9 +78,13 @@ const CategoryBand: React.FC<{ categories: CategoryItem[]; onNavigate: (path: st
                 <Icon className="w-5 h-5" aria-hidden="true" />
               </span>
               <span className="min-w-0">
-                <span className="block text-[13px] sm:text-sm font-black text-slate-800 leading-snug">{category.title}</span>
+                <span className="block text-[13px] sm:text-sm font-black text-slate-800 leading-snug">{tr(category.title)}</span>
                 {category.productCount ? (
-                  <span className="block text-[10px] font-bold text-slate-500 mt-0.5">{faNum(category.productCount)} {" "}{t("محصول")}</span>
+                  <span className="block text-[10px] font-bold text-slate-500 mt-0.5">
+                    {category.productCount === 1
+                      ? `${category.productCount.toLocaleString(intlLocale())} ${t("محصول")}`
+                      : tf("{n} محصول", { n: category.productCount.toLocaleString(intlLocale()) })}
+                  </span>
                 ) : null}
               </span>
             </Link>

@@ -52,6 +52,7 @@ export interface CategoryItem {
   productCount?: number;
   badge?: string;
   image?: string;
+  translations?: { en?: Partial<Omit<CategoryItem, 'translations'>>; tr?: Partial<Omit<CategoryItem, 'translations'>>; ru?: Partial<Omit<CategoryItem, 'translations'>> };
 }
 
 export type CategoryInfo = CategoryItem;

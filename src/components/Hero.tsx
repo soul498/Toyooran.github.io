@@ -196,18 +196,18 @@ const Hero: React.FC<HeroProps> = ({
           <div className="hero-pill inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-7 border border-amber-300/50 bg-amber-400/15 font-black">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse" />
             <span className="text-sm sm:text-base text-white tracking-wide drop-shadow-[0_0_12px_rgba(251,191,36,0.55)]">
-              {cmsHero?.pillText || t("نیم قرن تجربه · بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی")}
+              {tr(cmsHero?.pillText || "") || t("نیم قرن تجربه · بیش از ۲۰۰ پروژهٔ ملی و بین‌المللی")}
             </span>
           </div>
 
           <h1
             className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.15] tracking-tight drop-shadow-2xl mb-6"
           >
-            {cmsHero?.title || t("طیوران صنعت پویا")}
+            {tr(cmsHero?.title || "") || t("طیوران صنعت پویا")}
           </h1>
 
           <p className="text-sm sm:text-base lg:text-xl text-slate-100 leading-relaxed max-w-2xl font-light drop-shadow-lg mb-10 mx-auto">
-            {cmsHero?.subtitle}
+            {tr(cmsHero?.subtitle || "")}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">

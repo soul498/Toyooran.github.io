@@ -331,6 +331,29 @@ if (base) {
   report.notes.push(`rendered ${urls.length} /en URLs from ${base}`);
 }
 
+// ---------------------------------------------------------------- 8. Turkish / Russian dictionaries must cover the same used keys as English
+const readLangJson = <T,>(lang: string, file: string): T =>
+  JSON.parse(fs.readFileSync(path.join(ROOT, "src/i18n", lang, file), "utf8")) as T;
+const TR_ALL: Record<string, string> = {
+  ...readLangJson("tr", "products.json"),
+  ...readLangJson("tr", "site.json"),
+  ...readLangJson("tr", "ui.json"),
+};
+const RU_ALL: Record<string, string> = {
+  ...readLangJson("ru", "products.json"),
+  ...readLangJson("ru", "site.json"),
+  ...readLangJson("ru", "ui.json"),
+};
+const neededKeys = new Set<string>([...used, ...uiNeeded]);
+for (const [lang, dict] of [["tr", TR_ALL], ["ru", RU_ALL]] as const) {
+  for (const key of neededKeys) {
+    if (DICT[key] === undefined || DICT[key] === "") continue;
+    if (dict[key] === undefined || dict[key] === "") {
+      report.missing.site.push({ fa: key, where: `${lang} dictionary` });
+    }
+  }
+}
+
 // ---------------------------------------------------------------- summary
 const dedupe = (list: Missing[]) => [...new Map(list.map((m) => [m.fa, m])).values()];
 report.missing.ui = dedupe(report.missing.ui);

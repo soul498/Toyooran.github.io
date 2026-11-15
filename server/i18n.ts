@@ -123,7 +123,7 @@ export function localizedCatalog(catalog: SeoCatalog, lang: ForeignLang): SeoCat
     services: catalog.services.map((service) => translateCmsRecord(service)),
     projects: [],
     articles: catalog.articles.map((article) => articleFor(lang, article)).filter((article): article is Article => Boolean(article)),
-    categories: translateDeep(catalog.categories),
+    categories: catalog.categories.map((category) => translateCmsRecord(category)),
     company: translateCmsRecord(catalog.company),
   }));
   cache.set(catalog, value);

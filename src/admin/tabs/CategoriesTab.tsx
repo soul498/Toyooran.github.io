@@ -29,6 +29,18 @@ export const CategoriesTab: React.FC = () => {
     iconName: 'Package',
     image: '/images/equipment-1.jpg'
   });
+  const englishDraft = (formData.translations?.en || {}) as Partial<Omit<CategoryInfo, 'translations'>>;
+  const turkishDraft = (formData.translations?.tr || {}) as Partial<Omit<CategoryInfo, 'translations'>>;
+  const russianDraft = (formData.translations?.ru || {}) as Partial<Omit<CategoryInfo, 'translations'>>;
+  const updateEnglish = (patch: Partial<Omit<CategoryInfo, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, en: { ...englishDraft, ...patch } } });
+  };
+  const updateTurkish = (patch: Partial<Omit<CategoryInfo, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, tr: { ...turkishDraft, ...patch } } });
+  };
+  const updateRussian = (patch: Partial<Omit<CategoryInfo, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, ru: { ...russianDraft, ...patch } } });
+  };
 
   const openCreateModal = () => {
     setFormData({
@@ -57,12 +69,13 @@ export const CategoriesTab: React.FC = () => {
     const fullCat: CategoryInfo = {
       id: formData.id as ProductCategory,
       title: formData.title,
-      titleEn: formData.titleEn || '',
+      titleEn: formData.titleEn || englishDraft.title || '',
       description: formData.description || '',
       badge: formData.badge || 'تجهیزات',
       icon: formData.iconName || 'Package',
       iconName: formData.iconName || 'Package',
-      image: formData.image || '/images/equipment-1.jpg'
+      image: formData.image || '/images/equipment-1.jpg',
+      translations: formData.translations,
     };
 
     if (isCreating) {
@@ -185,7 +198,7 @@ export const CategoriesTab: React.FC = () => {
       {/* Create / Edit Modal */}
       {(isCreating || editingCat) && (
         <div className="fixed inset-0 z-50 bg-slate-950/80  flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -259,6 +272,34 @@ export const CategoriesTab: React.FC = () => {
                   rows={2}
                   className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400"
                 />
+              </div>
+
+              <div className="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-4 space-y-3" dir="ltr">
+                <div dir="rtl">
+                  <h4 className="text-xs font-black text-blue-200">ترجمه انگلیسی دسته</h4>
+                  <p className="text-[11px] text-slate-500 mt-1">اگر توضیح فارسی عوض شود و این بخش خالی بماند، متن فارسی روی /en دیده می‌شود.</p>
+                </div>
+                <input value={englishDraft.title || ''} onChange={(e) => updateEnglish({ title: e.target.value })} placeholder="English category title" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <textarea rows={2} value={englishDraft.description || ''} onChange={(e) => updateEnglish({ description: e.target.value })} placeholder="English description" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white" />
+                <input value={englishDraft.badge || ''} onChange={(e) => updateEnglish({ badge: e.target.value })} placeholder="English badge (optional)" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+              </div>
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3" dir="ltr">
+                <div dir="rtl">
+                  <h4 className="text-xs font-black text-emerald-200">ترجمه ترکی دسته</h4>
+                  <p className="text-[11px] text-slate-500 mt-1">متن ترکی روی مسیر /tr نشان داده می‌شود.</p>
+                </div>
+                <input value={turkishDraft.title || ''} onChange={(e) => updateTurkish({ title: e.target.value })} placeholder="Türkçe kategori adı" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <textarea rows={2} value={turkishDraft.description || ''} onChange={(e) => updateTurkish({ description: e.target.value })} placeholder="Türkçe açıklama" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white" />
+                <input value={turkishDraft.badge || ''} onChange={(e) => updateTurkish({ badge: e.target.value })} placeholder="Türkçe rozet (isteğe bağlı)" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+              </div>
+              <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4 space-y-3" dir="ltr">
+                <div dir="rtl">
+                  <h4 className="text-xs font-black text-rose-200">ترجمه روسی دسته</h4>
+                  <p className="text-[11px] text-slate-500 mt-1">متن روسی روی مسیر /ru نشان داده می‌شود.</p>
+                </div>
+                <input value={russianDraft.title || ''} onChange={(e) => updateRussian({ title: e.target.value })} placeholder="Название категории" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <textarea rows={2} value={russianDraft.description || ''} onChange={(e) => updateRussian({ description: e.target.value })} placeholder="Описание" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white" />
+                <input value={russianDraft.badge || ''} onChange={(e) => updateRussian({ badge: e.target.value })} placeholder="Бейдж (необязательно)" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">

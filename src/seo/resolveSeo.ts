@@ -22,7 +22,7 @@ import {
 } from "../data/aboutCopy";
 import { faDigits } from "../lib/faDigits";
 
-import { EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
+import { EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tProducts, tf, tr, translateDeep } from '../i18n';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
 export const FITOUT_SLUG = "poultry-hall-fitout";
@@ -646,7 +646,7 @@ function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string 
   const relatedCats = (service.relatedEquipmentCategories || [])
     .map((id) => catalog.categories.find((c) => c.id === id))
     .filter((c): c is CategoryItem => Boolean(c))
-    .map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.description)}</li>`)
+    .map((c) => `<li><a href="/products/${c.id}">${escapeHtml(tr(c.title))}</a> — ${escapeHtml(tr(c.description))}</li>`)
     .join("");
   const auditLink = isFitout
     ? ` · <a href="/magazine/before-and-after-renovation">${t("قبل و بعد از نوسازی")}</a> · <a href="/contact">${t("درخواست ممیزی")}</a>`
@@ -773,7 +773,7 @@ ${contactPhonesHtml()}
 ${serviceLinks ? `<h2>${t("خدمات")}</h2>
 <ul>${serviceLinks}</ul>` : ""}
 <h2>${t("دسته‌های تجهیزات")}</h2>
-<ul>${catalog.categories.map((c) => `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.description)}</li>`).join("")}</ul>
+<ul>${catalog.categories.map((c) => `<li><a href="/products/${c.id}">${escapeHtml(tr(c.title))}</a> — ${escapeHtml(tr(c.description))}</li>`).join("")}</ul>
 ${homeExtras(catalog)}`,
       jsonLd: [
         orgSchema(company),
@@ -894,7 +894,7 @@ ${homeExtras(catalog)}`,
       .map((c) => {
         const count = catalog.products.filter((p) => p.category === c.id).length;
         const intro = categoryIntro(c.id);
-        return `<li><a href="/products/${c.id}">${escapeHtml(c.title)}</a> (${tf("{n} محصول", { n: count })}) — ${escapeHtml(intro || c.description)}</li>`;
+        return `<li><a href="/products/${c.id}">${escapeHtml(tr(c.title))}</a> (${count === 1 ? tProducts(1) : tf("{n} محصول", { n: count })}) — ${escapeHtml(tr(intro || c.description))}</li>`;
       })
       .join("");
     return okDoc({

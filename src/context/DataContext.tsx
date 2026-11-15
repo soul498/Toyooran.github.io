@@ -441,7 +441,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [foreign, publicProducts]);
   const publicServices = useMemo(() => services.filter((item) => item.status !== 'draft' && item.status !== 'review'), [services]);
   const shownServices = useMemo(() => (adminUser ? services : publicServices).map((item) => translateCmsRecord(item)), [services, publicServices, adminUser, foreign]);
-  const shownCategories = useMemo(() => translateDeep(categories), [categories, foreign]);
+  const shownCategories = useMemo(() => categories.map((item) => translateCmsRecord(item)), [categories, foreign]);
   const shownCompanyInfo = useMemo(() => translateCmsRecord(companyInfo), [companyInfo, foreign]);
   const shownHeroCms = useMemo(() => {
     if (!foreign) return heroCms;

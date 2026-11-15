@@ -15,7 +15,7 @@ import {
 } from '../icons';
 import { isLiteDevice } from '../lib/device';
 
-import { isLtr, t, tr } from '../i18n';
+import { getLang, intlLocale, isLtr, t, tr } from '../i18n';
 const ICONS: Record<string, React.ElementType> = {
   LayoutGrid,
   Box,
@@ -36,8 +36,11 @@ interface CategoryMarqueeProps {
 
 /** Foreign tile label: drop a leading "Poultry" / "Kanatlı" the way the Persian tile drops « مرغداری». */
 function shortForeign(title: string): string {
-  const text = tr(title).replace(/^(?:Poultry|Kanatlı)\s+/i, '');
-  return text.charAt(0).toLocaleUpperCase('tr') + text.slice(1);
+  const lang = getLang();
+  const prefix = lang === 'tr' ? /^(?:Kanatlı)\s+/i : lang === 'en' ? /^(?:Poultry)\s+/i : /^$/;
+  const text = tr(title).replace(prefix, '');
+  const loc = intlLocale();
+  return text.charAt(0).toLocaleUpperCase(loc) + text.slice(1);
 }
 
 export const CategoryMarquee: React.FC<CategoryMarqueeProps> = ({ selectedCategory, onSelectCategory }) => {

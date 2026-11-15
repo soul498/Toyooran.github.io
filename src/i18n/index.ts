@@ -149,6 +149,13 @@ export function tf(template: UiKey, vars: Record<string, string | number>): stri
   return base.replace(/\{(\w+)\}/g, (_m, k: string) => (k in vars ? String(vars[k]) : `{${k}}`));
 }
 
+/** Product count label: Persian digits on fa, English singular "1 product", otherwise `{n} محصول`. */
+export function tProducts(n: number): string {
+  if (current === 'fa') return `${n.toLocaleString('fa-IR')} محصول`;
+  if (current === 'en' && n === 1) return '1 product';
+  return tf('{n} محصول', { n: n.toLocaleString(intlLocale()) });
+}
+
 /** Marks a Persian literal that intentionally stays Persian in every language (e.g. a lead value sent to the sales team). check:i18n skips it. */
 export const keepFa = (fa: string): string => fa;
 

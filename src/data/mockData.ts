@@ -74,7 +74,7 @@ export const CATEGORIES_DATA = [
     image: "/images/poultry-1.jpg",
     badge: "",
     titleEn: "Ventilation",
-    description: "هواکش‌های صنعتی ۱۴۰ و ۱۰۰، فن‌های سیرکوله و آکسیال و سیستم تهویه تونلی"
+    description: "هواکش‌های صنعتی ۱۴۰ و ۱۰۰، فن‌های سیرکوله و آکسیال"
   },
   {
     id: 'drinking',
