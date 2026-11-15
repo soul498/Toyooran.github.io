@@ -12,7 +12,7 @@ export const MagazineTopic: React.FC<{ articles: Article[]; notFound: React.Reac
   if (!topic) return <>{notFound}</>;
   const list = articles.filter((a) => a.topic === topic.slug && !a.noindex);
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pt-28 pb-24">
+    <div className="min-h-screen bg-[#F8FAFC] pt-32 pb-24">
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
         <nav className="text-sm text-slate-500 mb-4" aria-label={t("مسیر")}>
           <Link to="/" className="hover:text-[#003F86]">{t("خانه")}</Link> / <Link to="/magazine" className="hover:text-[#003F86]">{t("مجله")}</Link> / <span className="text-slate-700">{topic.label}</span>
