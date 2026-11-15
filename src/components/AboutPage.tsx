@@ -7,7 +7,7 @@ import { ContactPhones } from './ContactPhones';
 import { useData } from '../context/DataContext';
 import { Link } from 'react-router-dom';
 import {
-  ABOUT_ACTIVITIES, ABOUT_ACTIVITIES_HEADING, ABOUT_CTA_HEADING, ABOUT_CTA_LABEL, ABOUT_CTA_TEXT, ABOUT_DESIGN_CAPTION,
+  ABOUT_ACTIVITIES, ABOUT_ACTIVITIES_HEADING, ABOUT_CTA_HEADING, ABOUT_CTA_LABEL, ABOUT_CTA_TEXT,
   ABOUT_EYEBROW, ABOUT_FLAGSHIP_CTA, ABOUT_FLAGSHIP_HEADING, ABOUT_FLAGSHIP_HREF, ABOUT_FLAGSHIP_TEXT,
   ABOUT_INTERNATIONAL_HEADING, ABOUT_INTERNATIONAL_TEXT, ABOUT_INTRO_HEADING, ABOUT_INTRO_PARAGRAPHS,
   ABOUT_PROCESS_EYEBROW, ABOUT_PROCESS_HEADING, ABOUT_PROCESS_INTRO, ABOUT_PROCESS_STEPS, ABOUT_PROCESS_STEP_LABEL,
@@ -41,11 +41,9 @@ const CtaArrow = () => (
 const StepMedia: React.FC<{ stepKey: StepKey }> = ({ stepKey }) => {
   const photos = STEP_PHOTOS[stepKey];
   if (stepKey === 'design') {
-    // A drawing, not a site photo: framed and captioned as an illustration.
     return (
       <figure className="rounded-[2rem] bg-[#0b3c80] p-2 shadow-lg">
         <SitePicture photo={photos[0]} sizes={ONE_COL} className="block overflow-hidden rounded-[1.6rem] aspect-[16/9]" />
-        <figcaption className="px-3 pt-2 pb-1 text-xs font-bold text-blue-100">{tr(ABOUT_DESIGN_CAPTION)}</figcaption>
       </figure>
     );
   }

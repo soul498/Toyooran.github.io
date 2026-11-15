@@ -46,7 +46,6 @@ export const ABOUT_PROCESS_STEPS = [
   ["handover", "تحویل و بهره‌برداری", "پس از آزمایش نهایی، سالن تحویل می‌شود و آموزش بهره‌برداری و پشتیبانی فنی پس از تحویل ادامه می‌یابد."],
 ] as const;
 export const ABOUT_PROCESS_STEP_LABEL = "مرحلهٔ" as const;
-export const ABOUT_DESIGN_CAPTION = "طرح مفهومی سازهٔ سالن؛ تصویرسازی، نه عکس اجرا" as const;
 export const ABOUT_CTA_HEADING = "مشاورهٔ رایگان پیش از شروع" as const;
 export const ABOUT_CTA_TEXT = "کارشناسان طیوران صنعت پویا پیش از شروع طراحی، نیاز سالن را بررسی می‌کنند و مسیر اجرا را پیشنهاد می‌دهند." as const;
 export const ABOUT_CTA_LABEL = "درخواست مشاورهٔ رایگان" as const;
