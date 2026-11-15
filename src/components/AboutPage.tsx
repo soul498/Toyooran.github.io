@@ -3,7 +3,7 @@ import { LazyImage } from './LazyImage';
 import { SitePicture } from './SitePicture';
 import { ArrowLeft, Building2, CheckCircle2, Factory, Globe2 } from '../icons';
 import { SEO } from './SEO';
-import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
+import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_ALT_DISPLAY, SALES_PHONE_ALT_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { useData } from '../context/DataContext';
 import { Link } from 'react-router-dom';
 import {
@@ -207,6 +207,8 @@ export const AboutPage: React.FC = () => {
             <div className="text-slate-700 text-sm font-bold flex flex-wrap items-center gap-x-2 gap-y-1">
               {t("مشاوره، فروش و پشتیبانی:")}
               <a href={SALES_PHONE_TEL} className="font-mono text-[#003F86] text-base hover:underline whitespace-nowrap" dir="ltr">{tr(SALES_PHONE_DISPLAY)}</a>
+              <span aria-hidden="true">·</span>
+              <a href={SALES_PHONE_ALT_TEL} className="font-mono text-[#003F86] text-base hover:underline whitespace-nowrap" dir="ltr">{tr(SALES_PHONE_ALT_DISPLAY)}</a>
             </div>
             <div className="text-slate-700 text-sm font-bold flex flex-wrap items-center gap-x-2 gap-y-1">
               {tr(OFFICE_PHONE_LABEL)}:

@@ -10,9 +10,15 @@ const CORRECTIONS: [RegExp, string][] = [
   [/بشقاب‌های دانخوری چیکن پلاس و سیستم‌های اتوماسیون/g, 'دانخوری پروانه‌ای پویا و سیستم‌های اتوماسیون'],
 ];
 
+const PHONE_CORRECTIONS: [RegExp, string][] = [
+  [/تماس: ۰۹۱۱ ۵۱۱ ۶۲۵۸ \| تلفن دفتر:/g, 'تماس: ۰۹۱۱ ۵۱۱ ۶۲۵۸ · ۰۹۱۵ ۱۱۲ ۶۲۵۸ | تلفن دفتر:'],
+];
+
 const NEEDS_FIX = /(?:۱۵|15) ?(?:٪|%|درصد)|چیکن پلاس/;
-const fixText = (text: string): string =>
-  NEEDS_FIX.test(text) ? CORRECTIONS.reduce((acc, [re, to]) => acc.replace(re, to), text) : text;
+const fixText = (text: string): string => {
+  let next = NEEDS_FIX.test(text) ? CORRECTIONS.reduce((acc, [re, to]) => acc.replace(re, to), text) : text;
+  return PHONE_CORRECTIONS.reduce((acc, [re, to]) => acc.replace(re, to), next);
+};
 
 /** Deep copy with corrected strings; returns the same reference when nothing changes. */
 export function withContentCorrections<T>(value: T): T {

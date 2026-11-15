@@ -1,5 +1,5 @@
 import type React from 'react';
-import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
+import { SALES_PHONE_ALT_DISPLAY, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
 import { ABOUT_EYEBROW, ABOUT_PAGE_NAME, ABOUT_SUBTITLE } from './aboutCopy';
 import { getLang, hasPersian, translateDeep } from '../i18n';
 import { Building2, FileCheck, Phone, Sparkles, type IconProps } from '../icons';
@@ -58,7 +58,7 @@ export const PAGE_HEROES: Record<string, PageHeroConfig> = {
     highlight: 'درخواست مشاوره',
     eyebrow: 'مشاورهٔ رایگان و استعلام قیمت',
     eyebrowIcon: Phone,
-    subtitle: `فرم را تکمیل کنید یا با \u2066${SALES_PHONE_DISPLAY}\u2069 تماس بگیرید.`,
+    subtitle: `فرم را تکمیل کنید یا با \u2066${SALES_PHONE_DISPLAY}\u2069 یا \u2066${SALES_PHONE_ALT_DISPLAY}\u2069 تماس بگیرید.`,
     cta: { label: 'تماس تلفنی', href: SALES_PHONE_TEL },
     secondaryCta: { label: 'تکمیل فرم', href: '#consultation-form' },
   },

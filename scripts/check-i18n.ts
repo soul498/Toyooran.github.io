@@ -224,7 +224,7 @@ if (!flag("--no-magazine")) {
     report.notes.push(`magazine not checked: ${(error as Error).message}`);
   }
 }
-const articleVisible = (a: LiveArticle) => ({
+const articleVisible = (a: LiveArticle) => withContentCorrections({
   title: a.title, categoryLabel: a.categoryLabel, readTime: a.readTime, summary: a.summary, content: a.content, imageAlt: a.imageAlt, tags: a.tags,
   sources: Array.isArray(a.sources) ? (a.sources as { name?: string }[]).map((s) => s?.name) : [], seoTitle: a.seoTitle, seoDescription: a.seoDescription,
   focusKeyword: a.focusKeyword, authorName: a.authorName, authorRole: a.authorRole, reviewerName: a.reviewerName, reviewerRole: a.reviewerRole,
@@ -261,7 +261,6 @@ const RULES: { rule: string; re: RegExp }[] = [
   { rule: "first person (we/our/us) — use third person", re: /\b(we|we're|we've|our|ours|us)\b/i },
   { rule: '"farmer" — use poultry producers / poultry houses / poultry farm', re: /farmer/i },
   { rule: "product code shown", re: /\bts-\d/i },
-  { rule: "retired phone (0915…)", re: /915/ },
   { rule: "competitor name", re: /carno|karno|کارنو/i },
   { rule: "banned term (Danfoss/MARAS/IP54/Virgin/food or hygienic grade)", re: /danfoss|maras|ip54|virgin|food[\s-]grade|hygienic[\s-]grade/i },
   { rule: "feeder saving must be 3–5%, never 15%", re: /(?<![\d.,])15\s?%/ },

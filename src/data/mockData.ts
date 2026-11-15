@@ -1,4 +1,5 @@
 import { Project, Product, Service, Article } from '../types';
+import { SALES_PHONE_ALT_DISPLAY, SALES_PHONE_DISPLAY } from './contact';
 
 export const COMPANY_INFO = {
   nameFa: 'طیوران صنعت پویا',
@@ -9,9 +10,10 @@ export const COMPANY_INFO = {
   completedProjects: '۲۰۰+',
   activeProvinces: 'ملی و بین‌المللی',
   customerSatisfaction: '۹۸٪',
-  phone: '۰۹۱۱ ۵۱۱ ۶۲۵۸',
-  directSalesPhone: '۰۹۱۱ ۵۱۱ ۶۲۵۸',
-  technicalSupportPhone: '۰۹۱۱ ۵۱۱ ۶۲۵۸',
+  phone: SALES_PHONE_DISPLAY,
+  salesPhone: SALES_PHONE_ALT_DISPLAY,
+  directSalesPhone: SALES_PHONE_DISPLAY,
+  technicalSupportPhone: SALES_PHONE_ALT_DISPLAY,
   website: 'www.toyooran.com',
   address: 'مشهد، میدان مادر، مجتمع تجاری ادیب، طبقه ۳، واحد ۴۰۶',
   rdAddress: 'گرگان، بلوار بهشتی، دانشگاه منابع طبیعی گلستان',

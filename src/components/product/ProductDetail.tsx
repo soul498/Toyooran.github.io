@@ -7,7 +7,7 @@ import { RichInline } from '../RichBlocks';
 import { categoryIntro, publicProductPath } from '../../seo/resolveSeo';
 import { relatedInCategory } from '../../seo/internalLinks';
 import { withMediaVersion } from '../../lib/mediaUrl';
-import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../../data/contact';
+import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_ALT_DISPLAY, SALES_PHONE_ALT_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../../data/contact';
 import type { Article, Product, ProductSpec } from '../../types';
 import { faDigits, faSpecValue } from '../../lib/faDigits';
 import './product-detail.css';
@@ -297,6 +297,10 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
                 <Icon name="phone" />
                 
                 {t("تماس:")}{" "}<bdi dir="ltr" className="pd-phone">{tr(SALES_PHONE_DISPLAY)}</bdi>
+              </a>
+              <a className="pd-btn pd-btn-outline pd-desk-only" href={SALES_PHONE_ALT_TEL}>
+                <Icon name="phone" />
+                {t("تماس:")}{" "}<bdi dir="ltr" className="pd-phone">{tr(SALES_PHONE_ALT_DISPLAY)}</bdi>
               </a>
             </div>
             <div className="pd-landline">

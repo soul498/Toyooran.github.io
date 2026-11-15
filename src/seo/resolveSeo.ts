@@ -7,7 +7,7 @@ import { effectiveSeoDescription, effectiveSeoTitle, isPublicArticle, sortArticl
 import { isSafeHref, isSafeImageSrc } from "./safeUrl";
 import { homePriorityProducts, relatedInCategory } from "./internalLinks";
 import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richText";
-import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_E164, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
+import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_E164, OFFICE_PHONE_TEL, SALES_PHONE_ALT_DISPLAY, SALES_PHONE_ALT_E164, SALES_PHONE_ALT_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
 import { removedProductRedirect, rewriteRemovedProductHref } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 import { isDisabledPagePath, isServiceDisabled, rewriteDisabledHref } from "../data/disabledPages";
@@ -293,7 +293,7 @@ ${sections}
 ${related.length ? `<h2>${tr(SERVICE_PAGE_LABELS.related)}</h2><ul>${related.map((l) => `<li><a href="${l.href}">${escapeHtml(l.label)}</a></li>`).join("")}</ul>` : ""}
 <h2>${tr(SERVICE_PAGE_LABELS.ctaHeading)}</h2>
 <p><a href="/contact">${tr(SERVICE_PAGE_LABELS.cta)}</a></p>
-<p>${tr(SERVICE_PAGE_LABELS.phones)} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · ${tr(SERVICE_PAGE_LABELS.office)} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
+<p>${tr(SERVICE_PAGE_LABELS.phones)} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · <a href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a> · ${tr(SERVICE_PAGE_LABELS.office)} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
 <h2>${tr(SERVICE_PAGE_LABELS.others)}</h2>
 <ul>${others}</ul>`;
 }
@@ -422,9 +422,10 @@ function orgSchema(company: CompanyInfo) {
     name: company.nameFa,
     alternateName: company.nameEn,
     url: CANONICAL_ORIGIN,
-    telephone: SALES_PHONE_E164,
+    telephone: [SALES_PHONE_E164, SALES_PHONE_ALT_E164],
     contactPoint: [
       { "@type": "ContactPoint", telephone: SALES_PHONE_E164, contactType: "sales", name: t("مشاوره، فروش و پشتیبانی"), areaServed: "IR", availableLanguage: "fa" },
+      { "@type": "ContactPoint", telephone: SALES_PHONE_ALT_E164, contactType: "sales", name: t("مشاوره، فروش و پشتیبانی"), areaServed: "IR", availableLanguage: "fa" },
       { "@type": "ContactPoint", telephone: OFFICE_PHONE_E164, contactType: "customer service", name: t("تلفن دفتر"), areaServed: "IR", availableLanguage: "fa" },
     ],
     email: company.email || undefined,
@@ -727,7 +728,7 @@ function localBusinessNodes(company: CompanyInfo) {
     name: `${company.nameFa} — ${loc.title}`,
     parentOrganization: { "@id": `${CANONICAL_ORIGIN}/#org` },
     // The 051 landline is the Mashhad office line; the Gorgan R&D unit lists the mobile only.
-    telephone: loc.type === "rd" ? SALES_PHONE_E164 : [SALES_PHONE_E164, OFFICE_PHONE_E164],
+    telephone: loc.type === "rd" ? [SALES_PHONE_E164, SALES_PHONE_ALT_E164] : [SALES_PHONE_E164, SALES_PHONE_ALT_E164, OFFICE_PHONE_E164],
     address: {
       "@type": "PostalAddress",
       addressCountry: "IR",
@@ -778,7 +779,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>${t("طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.")}</p>
-<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a></p>
+<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · <a href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a></p>
 <p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
 <p>${escapeHtml(company.address)}</p>
 <p>${t("واحد تحقیق و توسعه:")} ${escapeHtml(company.rdAddress || "")}</p>
@@ -1212,7 +1213,7 @@ ${ABOUT_INTRO_PARAGRAPHS.map((paragraph) => `<p>${escapeHtml(tr(paragraph))}</p>
 <p><a href="${ABOUT_FLAGSHIP_HREF}">${escapeHtml(tr(ABOUT_FLAGSHIP_CTA))}</a></p>
 <h2>${escapeHtml(tr(ABOUT_INTERNATIONAL_HEADING))}</h2>
 <p>${escapeHtml(tr(ABOUT_INTERNATIONAL_TEXT))}</p>
-<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a></p>
+<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · <a href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a></p>
 <p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
 <p>${t("ساعات کار:")} ${escapeHtml(company.workingHours)}</p>
 <p>${t("دفتر مشهد:")} ${escapeHtml(company.address)}</p>
@@ -1234,7 +1235,7 @@ ${ABOUT_INTRO_PARAGRAPHS.map((paragraph) => `<p>${escapeHtml(tr(paragraph))}</p>
       h1: t("تماس و درخواست مشاوره"),
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
-      body: `<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a></p>
+      body: `<p>${t("مشاوره، فروش و پشتیبانی:")} <a href="${SALES_PHONE_TEL}" dir="ltr">${tr(SALES_PHONE_DISPLAY)}</a> · <a href="${SALES_PHONE_ALT_TEL}" dir="ltr">${tr(SALES_PHONE_ALT_DISPLAY)}</a></p>
 <p>${t("تلفن دفتر:")} <a href="${OFFICE_PHONE_TEL}" dir="ltr">${tr(OFFICE_PHONE_DISPLAY)}</a></p>
 <p>${t("ساعات کار:")} ${escapeHtml(company.workingHours)}</p>
 <ul>${locHtml}</ul>
