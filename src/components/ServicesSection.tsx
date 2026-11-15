@@ -22,26 +22,29 @@ export const ServicesSection: React.FC<ServicesSectionProps> = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24 relative z-10">
         <div className="relative z-10 w-full py-8 lg:py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 w-full">
-            {cards.map((card, idx) => (
-              <ServiceCard
-                key={card.serviceId}
-                idx={idx}
-                card={card}
-                preview
-                onClick={() => setOpenSlug(card.serviceId)}
-              />
-            ))}
+          <div className={`services-split${openSlug ? ' services-split--open' : ''}`}>
+            <div className={`grid gap-5 lg:gap-6 w-full ${openSlug ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
+              {cards.map((card, idx) => (
+                <ServiceCard
+                  key={card.serviceId}
+                  idx={idx}
+                  card={card}
+                  preview
+                  selected={openSlug === card.serviceId}
+                  onClick={() => setOpenSlug((current) => (current === card.serviceId ? null : card.serviceId))}
+                />
+              ))}
+            </div>
+            <ServicePreview
+              key={openSlug ?? 'closed'}
+              slug={openSlug}
+              icon={openCard?.icon}
+              bgImage={openCard?.bgImage}
+              onClose={() => setOpenSlug(null)}
+            />
           </div>
         </div>
       </div>
-
-      <ServicePreview
-        slug={openSlug}
-        icon={openCard?.icon}
-        bgImage={openCard?.bgImage}
-        onClose={() => setOpenSlug(null)}
-      />
     </section>
   );
 };

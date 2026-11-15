@@ -48,23 +48,23 @@ export interface CircleCategoryCard {
 
 
 
-export const ServiceCard: React.FC<{ card: any, idx: number, onClick?: () => void; preview?: boolean }> = ({ card, onClick, preview }) => {
+export const ServiceCard: React.FC<{ card: any, idx: number, onClick?: () => void; preview?: boolean; selected?: boolean }> = ({ card, onClick, preview, selected }) => {
   const Icon = card.icon;
   // While the page behind a card is switched off (data/disabledPages.ts) the card is a display-only tile:
   // same look, but a plain <div> with no click, focus or pointer cursor. It keeps the decorative CSS hover
   // (lift, photo zoom, icon glow; see .service-card-shell in index.css).
   // Interactive cards are real links (crawlable <a href>) to the service page — except on /services,
-  // where preview opens a panel and «مطالعه بیشتر» is the page link.
+  // where preview opens a page beside the cards and «مطالعه بیشتر» is the independent page link.
   const interactive = !isDisabledPagePath(card.to);
   const openPreview = Boolean(preview && interactive && onClick);
   const Tag = (openPreview ? 'button' : interactive ? Link : 'div') as unknown as React.ElementType;
   const tagProps = openPreview
-    ? { type: 'button', onClick, 'aria-haspopup': 'dialog' as const }
+    ? { type: 'button', onClick, 'aria-expanded': Boolean(selected), 'aria-controls': 'service-detail-panel' }
     : interactive
     ? { to: card.to }
     : {};
   return (
-    <div className="service-card-shell relative">
+    <div className={`service-card-shell relative${selected ? ' service-card-shell--active' : ''}`}>
     <Tag
       {...tagProps}
       className={`service-card block relative w-full h-[280px] sm:h-[320px] rounded-[2rem] overflow-hidden bg-[#001c3d] border border-blue-800/60 ${interactive ? 'cursor-pointer' : 'service-card--static cursor-default'}`}
