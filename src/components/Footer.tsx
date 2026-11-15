@@ -1,5 +1,4 @@
 import React from "react";
-import { AparatIcon } from "./AparatIcon";
 import { BaleIcon } from "./BaleIcon";
 import { Link } from 'react-router-dom';
 import { SocialIconLink } from './SocialIconLink';
@@ -12,10 +11,6 @@ import {
   MapPin, 
   Instagram, 
   Send, 
-  MessageCircle, 
-  Linkedin,
-  Youtube,
-  Tv,
   ArrowLeft,
   ChevronLeft
 } from '../icons';
@@ -103,36 +98,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 <Send className="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </SocialIconLink>
               <SocialIconLink
-                href={companyInfo?.socialLinks?.aparat}
-                label={t("آپارات")}
-                comingSoon={t("کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#263238] hover:border-transparent transition-all duration-300 group"
-              >
-                <AparatIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              </SocialIconLink>
-              <SocialIconLink
                 href={companyInfo?.socialLinks?.bale}
                 label={t("بله")}
                 comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                 className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0ACA9B] hover:border-transparent transition-all duration-300 group"
               >
                 <BaleIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              </SocialIconLink>
-              <SocialIconLink
-                href={companyInfo?.socialLinks?.youtube}
-                label={t("یوتیوب")}
-                comingSoon={t("کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#ff0000] hover:border-transparent transition-all duration-300 group"
-              >
-                <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
-              </SocialIconLink>
-              <SocialIconLink
-                href={companyInfo?.socialLinks?.linkedin}
-                label={t("لینکدین")}
-                comingSoon={t("صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                className="rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#0a66c2] hover:border-transparent transition-all duration-300 group"
-              >
-                <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
               </SocialIconLink>
             </div>
           </div>

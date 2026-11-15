@@ -401,7 +401,7 @@ function collectionDay(catalog: SeoCatalog, key: keyof NonNullable<SeoCatalog["c
 
 function orgSchema(company: CompanyInfo) {
   const sameAs = Object.entries(company.socialLinks || {})
-    .filter(([key, url]) => key !== "rubika" && Boolean(url && url.startsWith("http")))
+    .filter(([key, url]) => !["rubika", "linkedin", "youtube", "aparat"].includes(key) && Boolean(url && url.startsWith("http")))
     .map(([, url]) => url);
   return {
     "@type": "Organization",

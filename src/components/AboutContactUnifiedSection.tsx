@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { AparatIcon } from "./AparatIcon";
 import { BaleIcon } from "./BaleIcon";
 import { SocialIconLink } from './SocialIconLink';
 import { 
@@ -8,13 +7,9 @@ import {
   Mail, 
   Instagram, 
   Send, 
-  MessageCircle, 
-  Linkedin,
   Building2,
   Factory,
-  Map,
-  Youtube,
-  Tv
+  Map
 } from '../icons';
 import { useData } from '../context/DataContext';
 import { ContactPhones } from './ContactPhones';
@@ -123,36 +118,12 @@ export const AboutContactUnifiedSection: React.FC = () => {
                     <Send className="w-4 h-4 ml-0.5" aria-hidden="true" />
                   </SocialIconLink>
                   <SocialIconLink
-                    href={companyInfo.socialLinks?.aparat}
-                    label={t("آپارات")}
-                    comingSoon={t("کانال آپارات طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                    className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#263238] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300"
-                  >
-                    <AparatIcon className="w-4 h-4" />
-                  </SocialIconLink>
-                  <SocialIconLink
                     href={companyInfo.socialLinks?.bale}
                     label={t("بله")}
                     comingSoon={t("کانال بله طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
                     className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0ACA9B] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
                   >
                     <BaleIcon className="w-4 h-4" />
-                  </SocialIconLink>
-                  <SocialIconLink
-                    href={companyInfo.socialLinks?.youtube}
-                    label={t("یوتیوب")}
-                    comingSoon={t("کانال یوتیوب طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                    className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#ff0000] hover:text-white hover:border-transparent hover:scale-110 hover:-rotate-12 transition-all duration-300"
-                  >
-                    <Youtube className="w-4 h-4" aria-hidden="true" />
-                  </SocialIconLink>
-                  <SocialIconLink
-                    href={companyInfo.socialLinks?.linkedin}
-                    label={t("لینکدین")}
-                    comingSoon={t("صفحهٔ لینکدین طیوران صنعت پویا به‌زودی راه‌اندازی می‌شود")}
-                    className="rounded-xl bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center hover:bg-[#0a66c2] hover:text-white hover:border-transparent hover:scale-110 hover:rotate-12 transition-all duration-300"
-                  >
-                    <Linkedin className="w-4 h-4" aria-hidden="true" />
                   </SocialIconLink>
                   </div>
                 </div>

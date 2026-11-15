@@ -23,10 +23,10 @@ export const COMPANY_INFO = {
   socialLinks: {
     instagram: 'https://www.instagram.com/toyooranco/',
     telegram: 'https://t.me/toyooranco',
-    linkedin: 'https://www.linkedin.com/company/toyooranco',
+    linkedin: '',
     rubika: '',
-    aparat: 'https://www.aparat.com/toyooranco',
-    youtube: 'http://www.youtube.com/@Toyooranco',
+    aparat: '',
+    youtube: '',
     whatsapp: '',
     bale: '',
     eitaa: '',
