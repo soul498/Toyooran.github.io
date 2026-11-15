@@ -108,11 +108,11 @@ export const CATEGORIES_DATA = [
     id: 'feeding',
     title: 'بشقاب دانخوری',
     icon: 'Wheat',
-    productCount: 4,
+    productCount: 1,
     image: "/images/equipment-1.jpg",
     badge: "",
     titleEn: "Feeding",
-    description: "بشقاب‌های دانخوری چیکن پلاس و سیستم‌های اتوماسیون"
+    description: "دانخوری پروانه‌ای پویا و سیستم‌های اتوماسیون"
   },
   {
     id: 'cage',

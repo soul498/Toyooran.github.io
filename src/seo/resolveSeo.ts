@@ -8,7 +8,7 @@ import { isSafeHref, isSafeImageSrc } from "./safeUrl";
 import { homePriorityProducts, relatedInCategory } from "./internalLinks";
 import { blocksToHtml, inlinePlain, inlineToHtml, type RichBlock } from "./richText";
 import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_E164, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_E164, SALES_PHONE_TEL } from '../data/contact';
-import { removedProductRedirect } from '../data/removedProducts';
+import { removedProductRedirect, rewriteRemovedProductHref } from '../data/removedProducts';
 import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 import { isDisabledPagePath, isServiceDisabled, rewriteDisabledHref } from "../data/disabledPages";
 import { SERVICE_PAGES, SERVICE_PAGE_LABELS, findServicePage, servicePagePath, type ServicePageData } from "../data/servicePages";
@@ -306,9 +306,10 @@ function fitoutLink(label: string): string {
 
 /** Safety net for prerender HTML: links to switched-off service pages go to /services. */
 function unlinkDisabled(html: string): string {
-  return html.replace(/<a href="([^"]*)"([^>]*)>([\s\S]*?)<\/a>/g, (whole, href: string, attrs: string, text: string) =>
-    isDisabledPagePath(href) ? `<a href="${rewriteDisabledHref(href)}"${attrs}>${text}</a>` : whole
-  );
+  return html.replace(/<a href="([^"]*)"([^>]*)>([\s\S]*?)<\/a>/g, (whole, href: string, attrs: string, text: string) => {
+    const next = rewriteRemovedProductHref(rewriteDisabledHref(href));
+    return next === href ? whole : `<a href="${next}"${attrs}>${text}</a>`;
+  });
 }
 
 export function publicServicePath(service: Service): string {
@@ -552,7 +553,7 @@ function articleHtml(article: Article, products: Product[] = []): string {
       }
       if (block.type === "cta") {
         if (!isSafeHref(block.href)) return "";
-        return `<p><a href="${escapeHtml(rewriteDisabledHref(block.href))}">${escapeHtml(block.label)}</a></p>`;
+        return `<p><a href="${escapeHtml(rewriteRemovedProductHref(rewriteDisabledHref(block.href)))}">${escapeHtml(block.label)}</a></p>`;
       }
       const head = `<tr>${block.headers.map((cell) => `<th>${inlineToHtml(cell)}</th>`).join("")}</tr>`;
       const body = block.rows.map((row) => `<tr>${row.map((cell) => `<td>${inlineToHtml(cell)}</td>`).join("")}</tr>`).join("");

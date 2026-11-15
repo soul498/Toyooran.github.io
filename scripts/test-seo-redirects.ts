@@ -2,11 +2,12 @@ import assert from "node:assert/strict";
 import { PRODUCTS } from "../src/data/productsData";
 import { SERVICES, CATEGORIES_DATA, COMPANY_INFO } from "../src/data/mockData";
 import { SEED_ARTICLES } from "../src/data/seedArticles";
-import { isPublicProduct } from "../src/data/removedProducts";
+import { isPublicProduct, rewriteRemovedProductHref, REMOVED_PRODUCT_LINK_FALLBACK, removedProductRedirect } from "../src/data/removedProducts";
 import { isPublicArticle } from "../src/seo/articleMeta";
 import { productSeoSlug, publicProductPath, seoRedirectFor, type SeoCatalog } from "../src/seo/resolveSeo";
 import { PRODUCT_SLUG_BY_ID, LEGACY_COMPETITOR_PRODUCT_SLUGS, isLegacyCompetitorProductSlug } from "../src/seo/productUrls";
 import { DISABLED_PAGE_REDIRECT, isDisabledPagePath, rewriteDisabledHref } from "../src/data/disabledPages";
+import { parseInline } from "../src/seo/richText";
 import { SERVICE_PAGE_SLUGS } from "../src/data/servicePages";
 import { localizeJsonLd, resolveSeoForPath } from "../src/seo/localizeSeo";
 import { CANONICAL_ORIGIN } from "../src/seo/resolveSeo";
@@ -43,10 +44,35 @@ for (const [id, slug] of Object.entries(PRODUCT_SLUG_BY_ID)) {
 const oldSlugs = LEGACY_COMPETITOR_PRODUCT_SLUGS;
 for (const [id, old] of Object.entries(oldSlugs)) {
   const dest = seoRedirectFor(`/products/${old}`, catalog);
-  assert.equal(dest, `/products/${PRODUCT_SLUG_BY_ID[id]}`, `${id} old slug 301`);
-  assert.ok(!dest.includes("کارنو"), `${id} destination must not contain کارنو`);
+  const current = PRODUCT_SLUG_BY_ID[id];
+  if (current) {
+    assert.equal(dest, `/products/${current}`, `${id} old slug 301`);
+  } else {
+    assert.equal(dest, "/products/feeding", `${id} hidden product old slug 301 to category`);
+  }
+  assert.ok(dest && !dest.includes("کارنو"), `${id} destination must not contain کارنو`);
   assert.equal(isLegacyCompetitorProductSlug(old), true, `${id} marked as legacy competitor slug`);
 }
+
+const hiddenFeedingSlugs = [
+  "بشقاب-دانخوری-چیکن-پلاس-ts-013",
+  "بشقاب-دانخوری-چیکن-–-قابل-استفاده-از-یکروزگی-ts-090",
+  "بشقاب-دانخوری-چیکن-کارنوتک-–-قابل-استفاده-از-یکروزگی-ts-090",
+  "بشقاب-دانخوری-توری-منحنی-ts-091",
+  "بشقاب-دانخوری-کوناوی-konavi-ts-091",
+];
+for (const slug of hiddenFeedingSlugs) {
+  assert.equal(seoRedirectFor(`/products/${slug}`, catalog), "/products/feeding", `fa ${slug}`);
+  assert.equal(removedProductRedirect(slug), "/products/feeding", `category ${slug}`);
+}
+assert.equal(catalog.products.some((p) => ["ts-013", "ts-090", "ts-091"].includes(p.id)), false, "hidden feeding products are not public");
+
+assert.equal(rewriteRemovedProductHref("/products/بشقاب-دانخوری-چیکن-پلاس-ts-013"), REMOVED_PRODUCT_LINK_FALLBACK);
+assert.equal(rewriteRemovedProductHref("https://www.toyooran.com/en/products/بشقاب-دانخوری-چیکن-پلاس-ts-013"), "https://www.toyooran.com/products/pouya-butterfly-feeder");
+assert.equal(rewriteRemovedProductHref("/products/feeding"), "/products/feeding");
+assert.equal(rewriteRemovedProductHref("/products/فن-سیرکوله-صنعتی-کولاک-گستر-ts-002"), "/products/فن-سیرکوله-صنعتی-کولاک-گستر-ts-002");
+const inline = parseInline("بشقاب‌هایی مثل [پروانه‌ای](/products/بشقاب-دانخوری-چیکن-پلاس-ts-013) را بررسی کنید.");
+assert.equal(inline.find((part) => part.href)?.href, REMOVED_PRODUCT_LINK_FALLBACK);
 
 // The server composes this: /en/<legacy-slug> → 301 /en/products (one hop).
 for (const old of Object.values(LEGACY_COMPETITOR_PRODUCT_SLUGS)) {
@@ -76,6 +102,7 @@ for (const slug of SERVICE_PAGE_SLUGS) assert.equal(isDisabledPagePath(`/service
 assert.equal(rewriteDisabledHref("https://www.toyooran.com/services/poultry-hall-fitout"), "https://www.toyooran.com/services/modernization");
 assert.equal(rewriteDisabledHref("/products/heating"), "/products/heating");
 
+setLang("en");
 const ld = localizeJsonLd({
   mainEntityOfPage: { "@type": "WebPage", "@id": `${CANONICAL_ORIGIN}/magazine/feeder-types-comparison` },
   publisher: { "@id": `${CANONICAL_ORIGIN}/#org` },

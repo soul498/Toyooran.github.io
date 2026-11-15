@@ -4,6 +4,7 @@
  * Shared by the server prerender (blocksToHtml) and the client (components/RichBlocks.tsx).
  */
 import { rewriteDisabledHref } from "../data/disabledPages";
+import { rewriteRemovedProductHref } from "../data/removedProducts";
 
 export type RichBlock = { h2: string } | { p: string } | { ul: string[] };
 
@@ -19,7 +20,7 @@ export function parseInline(text: string): InlinePart[] {
     if (idx > last) parts.push({ text: text.slice(last, idx) });
     if (m[1] !== undefined) parts.push({ text: m[1], bold: true });
     // Links to switched-off service pages point at /services (final URL, no hop).
-    else parts.push({ text: m[2], href: rewriteDisabledHref(m[3]) });
+    else parts.push({ text: m[2], href: rewriteRemovedProductHref(rewriteDisabledHref(m[3])) });
     last = idx + m[0].length;
   }
   if (last < text.length) parts.push({ text: text.slice(last) });

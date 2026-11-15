@@ -1,8 +1,9 @@
 import { Product } from '../types';
 
 /**
- * Kolak Gostar (کولاک گستر) products, hidden from the public site on 2026-10-27 — kept, not deleted.
- * Exact original records (as before 519b8b0) plus `hidden: true`. Not part of the public catalog
+ * Products hidden from the public site — kept, not deleted.
+ * Kolak Gostar (کولاک گستر) line, hidden 2026-10-27; Chicken / Chicken Plus / Konavi (چیکن، چیکن پلاس، کوناوی)
+ * line, hidden 2026-11-15. Exact original records plus `hidden: true`. Not part of the public catalog
  * (`PRODUCTS`), the sitemap, prerender, search or structured data; old URLs 301 to their category
  * (see removedProducts.ts). Loaded only by the admin panel, as a separate lazy chunk.
  * To publish one again: move its record back into productsData.ts, drop `hidden`, and remove its
@@ -621,5 +622,136 @@ export const HIDDEN_PRODUCTS: Product[] = [
       "TS-015"
     ],
     "catalogPdfName": "Catalog_TS-015.pdf"
+  },
+  {
+    "id": "ts-013",
+    "hidden": true,
+    "code": "TS-013",
+    "name": "بشقاب دانخوری چیکن پلاس",
+    "nameEn": "",
+    "category": "feeding",
+    "categoryTitle": "بشقاب دانخوری",
+    "isIndustrialMachine": false,
+    "shortDescription": "بشقاب دانخوری چیکن پلاس با لبه کوتاه ۴۵ میلی‌متری، امکان تغذیه مستقیم جوجه از روز اول بدون ...",
+    "fullDescription": "بشقاب دانخوری چیکن پلاس با لبه کوتاه ۴۵ میلی‌متری، امکان تغذیه مستقیم جوجه از روز اول بدون نیاز به سینی را فراهم می‌آورد.",
+    "image": "/images/products/TS-013.webp",
+    "gallery": [
+      "/images/products/TS-013.webp"
+    ],
+    "advantages": [
+      "قابل استفاده از یک‌روزگی تا پایان دوره (حذف کامل سینی)",
+      "طراحی ضدردوبدل لبه جهت جلوگیری از پرت و پاشش دان",
+      "شستشوی آسان و سیستم تنظیم دو مرحله‌ای ریزش دان"
+    ],
+    "applications": [
+      "سالن‌های مرغداری گوشتی، مادر و تخمگذار",
+      "گلخانه‌ها و مزارع پرورشی صنعتی",
+      "کارگاه‌ها و سوله‌های صنعتی"
+    ],
+    "specs": [
+      {
+        "label": "ارتفاع لبه",
+        "value": "45 میلی‌متر"
+      },
+      {
+        "label": "جنس",
+        "value": "پلی‌پروپیلن مرغوب ضد ضربه"
+      },
+      {
+        "label": "نوع لوله سازگار",
+        "value": "لوله‌های تاجدار و بست گازی"
+      }
+    ],
+    "models": [
+      "TS-013"
+    ],
+    "catalogPdfName": "Catalog_TS-013.pdf",
+    "relatedArticleIds": [
+      "introduction-to-pouya-butterfly-feeder"
+    ]
+  },
+  {
+    "id": "ts-090",
+    "hidden": true,
+    "code": "TS-090",
+    "name": "بشقاب دانخوری چیکن – قابل استفاده از یکروزگی",
+    "nameEn": "",
+    "category": "feeding",
+    "categoryTitle": "بشقاب دانخوری",
+    "isIndustrialMachine": false,
+    "shortDescription": "بشقاب دانخوری چیکن با لبه ۴۵ میلی‌متری، امکان تغذیه همزمان ۱۸ سر مرغ از روز اول بدون ورود به بشقاب.",
+    "fullDescription": "بشقاب دانخوری چیکن با لبه ۴۵ میلی‌متری، امکان تغذیه همزمان ۱۸ سر مرغ از روز اول بدون ورود به بشقاب.",
+    "image": "/images/products/TS-090.webp",
+    "gallery": [
+      "/images/products/TS-090.webp"
+    ],
+    "advantages": [
+      "استفاده همزمان ۱۸ سر مرغ از یک بشقاب",
+      "لبه کوتاه ۴۵ میلی‌متری و عدم ورود جوجه به داخل ظرف",
+      "سیستم قطع و وصل مستقل برای هر بشقاب"
+    ],
+    "applications": [
+      "سالن‌های مرغداری گوشتی، مادر و تخمگذار",
+      "گلخانه‌ها و مزارع پرورشی صنعتی",
+      "کارگاه‌ها و سوله‌های صنعتی"
+    ],
+    "specs": [
+      {
+        "label": "ارتفاع لبه",
+        "value": "45 میلی‌متر"
+      },
+      {
+        "label": "ظرفیت تغذیه",
+        "value": "18 سر مرغ در هر بشقاب"
+      },
+      {
+        "label": "رنگ‌بندی",
+        "value": "قرمز و زرد"
+      }
+    ],
+    "models": [
+      "TS-090"
+    ],
+    "catalogPdfName": "Catalog_TS-090.pdf"
+  },
+  {
+    "id": "ts-091",
+    "hidden": true,
+    "code": "TS-091",
+    "name": "بشقاب دانخوری توری منحنی",
+    "nameEn": "",
+    "category": "feeding",
+    "categoryTitle": "بشقاب دانخوری",
+    "isIndustrialMachine": false,
+    "shortDescription": "بشقاب دانخوری با توری زاویه‌دار منحنی و کفی زائده‌دار جهت به حداقل رساندن پرت دان از سن...",
+    "fullDescription": "بشقاب دانخوری با توری زاویه‌دار منحنی و کفی زائده‌دار جهت به حداقل رساندن پرت دان از سن یک‌روزگی.",
+    "image": "/images/products/TS-091.webp",
+    "gallery": [
+      "/images/products/TS-091.webp"
+    ],
+    "advantages": [
+      "حداقل پرت دان به واسطه گریل زاویه‌دار منحنی",
+      "شستشو و نظافت بی‌نقص بدون زوایای کور",
+      "کفی ضخیم ۳.۸ میلی‌متری از کوپلیمر مقاوم به اشعه UV"
+    ],
+    "applications": [
+      "سالن‌های مرغداری گوشتی، مادر و تخمگذار",
+      "گلخانه‌ها و مزارع پرورشی صنعتی",
+      "کارگاه‌ها و سوله‌های صنعتی"
+    ],
+    "specs": [
+      {
+        "label": "ضخامت کفی",
+        "value": "3.8 میلی‌متر کوپلیمر خالص"
+      },
+      {
+        "label": "گریل محافظ",
+        "value": "پره‌های منحنی ضد ورود جوجه"
+      }
+    ],
+    "models": [
+      "TS-091"
+    ],
+    "catalogPdfName": "Catalog_TS-091.pdf"
   }
 ];

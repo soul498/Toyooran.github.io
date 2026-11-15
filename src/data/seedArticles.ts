@@ -243,7 +243,7 @@ export const SEED_ARTICLES: Article[] = [
       '## متریال',
       'یکی از افتخارات طیوران صنعت پویا در تولید این محصول، استفاده از پلی‌پروپیلن (PP) گرید بهداشتی کاملاً نو (Virgin) است. این متریال در برابر اشعه UV، شستشوی مداوم با اسیدها و ضدعفونی‌کننده‌های قوی مرغداری کاملاً مقاوم بوده و طول عمر بالای ۱۰ سال را تضمین می‌کند.'
     ],
-    relatedProductIds: ['ts-013'],
+    relatedProductIds: ['ts-114'],
     relatedServiceId: 'srv-turnkey-shed',
     datePublishedIso: '2024-08-18',
     dateModifiedIso: '2026-09-24',
@@ -275,7 +275,7 @@ export const SEED_ARTICLES: Article[] = [
       '## نتیجه‌گیری سرمایه‌گذاری',
       'برای یک سالن ۲۰ هزار قطعه‌ای، تفاوت تجهیز با لوازم ارزان‌قیمت و لوازم استاندارد (با گارانتی شرکتی)، در طی کمتر از ۴ الی ۵ دوره پرورش (به دلیل کاهش تلفات و بهبود ضریب تبدیل) کاملاً جبران می‌شود. برای دریافت آنالیز دقیق و استعلام قیمت به‌روز، کارشناسان طیوران صنعت پویا آماده مشاوره رایگان هستند.'
     ],
-    relatedProductIds: ['ts-013', 'drink-nipple-steel'],
+    relatedProductIds: ['ts-114', 'drink-nipple-steel'],
     relatedServiceId: 'srv-poultry-equipment-supply'
   },
   {

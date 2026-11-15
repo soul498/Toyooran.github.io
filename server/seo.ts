@@ -16,6 +16,7 @@ import {
 } from "../src/seo/resolveSeo";
 import { localizeBodyHrefs, localizeJsonLd } from "../src/seo/localizeSeo";
 import { isLegacyCompetitorProductSlug } from "../src/seo/productUrls";
+import { removedProductRedirect } from "../src/data/removedProducts";
 
 export { CANONICAL_ORIGIN, stripQuery, canonicalPath, resolveSeo, seoRedirectFor, llmsTxt, isPrivateAppPath };
 
@@ -106,10 +107,15 @@ export function seoRedirectForAnyLang(pathname: string, catalog: ReturnType<type
   const prefix = LANG_PREFIX[lang];
   const neutral = stripLangPrefix(pathname);
   const productSlug = neutral.split("/").filter(Boolean);
-  // Old competitor-name slugs under /en or /tr must 301 in a single hop to the listing,
-  // not 301 to the new Persian slug and then 302 because there is no translated page.
-  if (productSlug[0] === "products" && productSlug[1] && isLegacyCompetitorProductSlug(productSlug[1])) {
-    return `${prefix}/products`;
+  // Hidden products 301 to their category in every language (including old competitor-name slugs).
+  if (productSlug[0] === "products" && productSlug[1]) {
+    const removed = removedProductRedirect(productSlug[1]);
+    if (removed) return `${prefix}${removed}`;
+    // Old competitor-name slugs under /en or /tr must 301 in a single hop to the listing,
+    // not 301 to the new Persian slug and then 302 because there is no translated page.
+    if (isLegacyCompetitorProductSlug(productSlug[1])) {
+      return `${prefix}/products`;
+    }
   }
   const r = seoRedirectFor(neutral, catalog);
   if (!r) return null;

@@ -192,7 +192,7 @@ explicit = {
     "/en/products/سیستم-اتوماسیون-مرغداری-کارنو-ts-019": (301, "/en/products"),
     "/en/products/سیستم-تهویه-کارنو-ts-071": (301, "/en/products"),
     "/en/products/ایر-میکسر-کارنوتک-ts-072": (301, "/en/products"),
-    "/en/products/بشقاب-دانخوری-چیکن-کارنوتک-–-قابل-استفاده-از-یکروزگی-ts-090": (301, "/en/products"),
+    "/en/products/بشقاب-دانخوری-چیکن-کارنوتک-–-قابل-استفاده-از-یکروزگی-ts-090": (301, "/en/products/feeding"),
     "/en/products/سیستم-مه-پاش-کارنو-ts-108": (301, "/en/products"),
     "/en/products/آبخوری-نیپل-کارنو-–-نیپل-های-تمام-استیل-ts-110": (301, "/en/products"),
     "/en/products/دریچه-اینلت-کارنو-ts-111": (301, "/en/products"),

@@ -9,6 +9,7 @@ import { publicProductPath, publicServicePath } from '../../seo/resolveSeo';
 import { isSafeHref, isSafeImageSrc } from '../../seo/safeUrl';
 import { inlinePlain } from '../../seo/richText';
 import { rewriteDisabledHref } from '../../data/disabledPages';
+import { rewriteRemovedProductHref } from '../../data/removedProducts';
 import { withMediaVersion } from '../../lib/mediaUrl';
 import { RichInline } from '../RichBlocks';
 import { findTopic, topicPath } from '../../seo/topics';
@@ -148,7 +149,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
     }
     if (block.type === "cta") {
       if (!isSafeHref(block.href)) return null;
-      const ctaHref = rewriteDisabledHref(block.href);
+      const ctaHref = rewriteRemovedProductHref(rewriteDisabledHref(block.href));
       const external = /^https?:\/\//i.test(block.href);
       const buttonClass = "relative z-10 whitespace-nowrap bg-amber-400 hover:bg-amber-500 text-blue-950 px-8 py-3.5 rounded-xl font-black text-sm transition-all shadow-lg shadow-amber-400/20";
       return (
@@ -318,7 +319,7 @@ export const MagazineArticle: React.FC<MagazineArticleProps> = ({ article, onBac
             {article.sources?.length ? (
               <ul className="list-disc mr-5">
                 {article.sources.map((source, sourceIndex) => (
-                  <li key={`${source.name}-${sourceIndex}`}>{source.url && isSafeHref(source.url) ? <a className="text-[#003F86] font-bold" href={lp(rewriteDisabledHref(source.url))} rel="noopener noreferrer">{source.name}</a> : source.name}</li>
+                  <li key={`${source.name}-${sourceIndex}`}>{source.url && isSafeHref(source.url) ? <a className="text-[#003F86] font-bold" href={lp(rewriteRemovedProductHref(rewriteDisabledHref(source.url)))} rel="noopener noreferrer">{source.name}</a> : source.name}</li>
                 ))}
               </ul>
             ) : null}
