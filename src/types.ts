@@ -40,7 +40,7 @@ export type ProductCategory =
   | 'feeding'
   | 'cage'
   | 'silo'
-  | 'other';
+  | 'automation';
 
 export interface CategoryItem {
   id: ProductCategory | string;

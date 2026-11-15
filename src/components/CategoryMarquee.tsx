@@ -11,7 +11,7 @@ import {
   Wind,
   Wheat,
   Database,
-  MoreHorizontal,
+  Cpu,
 } from '../icons';
 import { isLiteDevice } from '../lib/device';
 
@@ -26,7 +26,7 @@ const ICONS: Record<string, React.ElementType> = {
   Wind,
   Wheat,
   Database,
-  MoreHorizontal,
+  Cpu,
 };
 
 interface CategoryMarqueeProps {

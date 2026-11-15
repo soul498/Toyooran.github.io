@@ -1,6 +1,6 @@
 import type { ProductCategory } from '../types';
 
-export const CATALOG_CATEGORY_IDS: ProductCategory[] = ['heating', 'ventilation', 'drinking', 'cooling', 'inlet', 'feeding', 'cage', 'silo', 'other'];
+export const CATALOG_CATEGORY_IDS: ProductCategory[] = ['heating', 'ventilation', 'drinking', 'cooling', 'inlet', 'feeding', 'cage', 'silo', 'automation'];
 
 /**
  * Catalog listing selected by the URL: 'all' on /products, the category on /products/<category>,

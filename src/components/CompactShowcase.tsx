@@ -11,7 +11,7 @@ import {
   Wind,
   Wheat,
   Database,
-  MoreHorizontal,
+  Cpu,
 } from '../icons';
 import { CategoryItem } from '../types';
 import { HOME_LINKS_CATEGORIES_HEADING } from '../seo/resolveSeo';
@@ -28,7 +28,7 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   Wind,
   Wheat,
   Database,
-  MoreHorizontal,
+  Cpu,
 };
 
 interface CompactShowcaseProps {

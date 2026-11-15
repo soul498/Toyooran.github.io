@@ -1,9 +1,9 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { NotFoundPage } from './NotFoundPage';
 import { ProductCatalogSection } from './ProductCatalogSection';
-import { findProduct, publicProductPath } from '../seo/resolveSeo';
+import { findProduct, publicProductPath, SEO_REDIRECTS } from '../seo/resolveSeo';
 import { Product, ProductCategory } from '../types';
 import { ProductDetail } from './product/ProductDetail';
 import { HomeProductBands } from './spotlight/ProductSpotlight';
@@ -18,6 +18,9 @@ export const ProductPage: React.FC<{ onRequestQuoteForProduct?: (product: Produc
   const { productId } = useParams();
   const navigate = useNavigate();
   const { products, articles, catalogReady } = useData();
+
+  const retiredCategory = productId ? SEO_REDIRECTS[`/products/${productId}`] : undefined;
+  if (retiredCategory) return <Navigate to={retiredCategory} replace />;
 
   if (!productId || CATEGORY_IDS.includes(productId as ProductCategory)) {
     const category = (productId as ProductCategory | undefined) || 'all';

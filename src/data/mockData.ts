@@ -70,11 +70,11 @@ export const CATEGORIES_DATA = [
     id: 'ventilation',
     title: 'تهویه مرغداری',
     icon: 'Fan',
-    productCount: 19,
+    productCount: 20,
     image: "/images/poultry-1.jpg",
     badge: "",
     titleEn: "Ventilation",
-    description: "هواکش‌های صنعتی ۱۴۰ و ۱۰۰، فن‌های سیرکوله و آکسیال"
+    description: "هواکش‌های صنعتی ۱۴۰ و ۱۰۰، فن‌های سیرکوله و آکسیال و سیستم تهویه تونلی"
   },
   {
     id: 'drinking',
@@ -137,14 +137,14 @@ export const CATEGORIES_DATA = [
     description: "سیلوهای ذخیره دان، خطوط اوگر و آسیاب میکسر"
   },
   {
-    id: 'other',
-    title: 'سایر تجهیزات',
-    icon: 'MoreHorizontal',
+    id: 'automation',
+    title: 'اتوماسیون مرغداری',
+    icon: 'Cpu',
     productCount: 1,
     image: "/images/equipment-1.jpg",
     badge: "",
-    titleEn: "Other",
-    description: "سایر ادوات، اتوماسیون و ماشین‌آلات تخصصی"
+    titleEn: "Automation",
+    description: "سامانه پایش و کنترل هوشمند دما، رطوبت، گازها، اینلت و روشنایی سالن"
   }
 ];
 

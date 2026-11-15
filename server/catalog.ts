@@ -8,6 +8,7 @@ import { isPublicProduct } from "../src/data/removedProducts";
 import { SEED_FALLBACK_PRODUCT_IDS } from "../src/seo/productUrls";
 import { withProductPhotos } from "../src/data/productPhotos";
 import { withContentCorrections } from "../src/data/contentCorrections";
+import { normalizePublicCategories, recategorizeProduct } from "../src/data/catalogNormalize";
 
 function asArray<T>(key: string, fallback: T[]): T[] {
   try {
@@ -91,11 +92,11 @@ export function invalidateSeoCatalog(): void {
 }
 
 function buildSeoCatalog(): SeoCatalog {
-  const products = withSeedFallbackProducts(savedCollection<Product>("products", PRODUCTS)).filter((item) => item && isPublicProduct(item));
-  const categories = withContentCorrections(asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[])).map((category) => ({
-    ...category,
-    productCount: products.filter((item) => item.category === category.id).length,
-  }));
+  const products = withSeedFallbackProducts(savedCollection<Product>("products", PRODUCTS)).filter((item) => item && isPublicProduct(item)).map(recategorizeProduct);
+  const categories = normalizePublicCategories(
+    withContentCorrections(asArray<CategoryItem>("categories", CATEGORIES_DATA as CategoryItem[])),
+    products,
+  );
   return {
     products,
     services: savedCollection<Service>("services", SERVICES)

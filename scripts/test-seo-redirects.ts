@@ -102,6 +102,14 @@ for (const slug of SERVICE_PAGE_SLUGS) assert.equal(isDisabledPagePath(`/service
 assert.equal(rewriteDisabledHref("https://www.toyooran.com/services/poultry-hall-fitout"), "https://www.toyooran.com/services/modernization");
 assert.equal(rewriteDisabledHref("/products/heating"), "/products/heating");
 
+assert.equal(seoRedirectFor("/products/other", catalog), "/products/ventilation");
+const tunnel = catalog.products.find((p) => p.id === "ts-071");
+const automation = catalog.products.find((p) => p.id === "ts-019");
+assert.equal(tunnel?.category, "ventilation");
+assert.equal(automation?.category, "automation");
+assert.equal(catalog.categories.some((c) => c.id === "other"), false);
+assert.ok(catalog.categories.some((c) => c.id === "automation"));
+
 setLang("en");
 const ld = localizeJsonLd({
   mainEntityOfPage: { "@type": "WebPage", "@id": `${CANONICAL_ORIGIN}/magazine/feeder-types-comparison` },

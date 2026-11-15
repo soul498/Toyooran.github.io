@@ -14,7 +14,7 @@ import {
   Wind,
   LayoutGrid,
   Database,
-  MoreHorizontal
+  Cpu
 } from '../icons';
 import { ProductCategory, PageSection, CategoryInfo } from '../types';
 import { CATEGORIES_DATA } from '../data/mockData';
@@ -40,7 +40,7 @@ export const CategoryHexSection: React.FC<CategoryHexSectionProps> = ({
     Wheat,
     LayoutGrid,
     Database,
-    MoreHorizontal,
+    Cpu,
     Factory,
     Warehouse,
     Pill

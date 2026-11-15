@@ -84,7 +84,7 @@ export const ProductsTab: React.FC = () => {
     if (!formData.name || !formData.category) return;
 
     const matchedCat = categories.find(c => c.id === formData.category);
-    const categoryTitle = matchedCat ? matchedCat.title : 'سایر تجهیزات';
+    const categoryTitle = matchedCat ? matchedCat.title : (formData.categoryTitle || formData.category);
 
     const fullProduct: Product = {
       ...(editingProduct || {}),
