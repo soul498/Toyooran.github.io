@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { EN_PREFIX, TR_PREFIX, getLang } from '../i18n';
+import { EN_PREFIX, TR_PREFIX, getLang, keepFa } from '../i18n';
 
 /**
  * FA / EN / TR switch. A full-page link (each language boots its own dictionary).
@@ -9,7 +9,7 @@ import { EN_PREFIX, TR_PREFIX, getLang } from '../i18n';
  * (e.g. an untranslated article → /en/magazine or /tr/magazine).
  */
 const OPTIONS = [
-  { id: 'fa' as const, label: 'فا', hrefLang: 'fa', title: 'فارسی', prefix: '' },
+  { id: 'fa' as const, label: keepFa('فا'), hrefLang: 'fa', title: keepFa('فارسی'), prefix: '' },
   { id: 'en' as const, label: 'EN', hrefLang: 'en', title: 'English', prefix: EN_PREFIX },
   { id: 'tr' as const, label: 'TR', hrefLang: 'tr', title: 'Türkçe', prefix: TR_PREFIX },
 ];

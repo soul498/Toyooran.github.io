@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { SocialIconLink } from './SocialIconLink';
 import { baladPlaceFor } from '../lib/baladMaps';
 import { neshanMapsUrl } from '../lib/phone';
-import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
+import { OFFICE_PHONE_DISPLAY, OFFICE_PHONE_LABEL, OFFICE_PHONE_TEL, SALES_PHONE_ALT_DISPLAY, SALES_PHONE_ALT_TEL, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from '../data/contact';
 import { 
   Phone, 
   Mail, 
@@ -42,7 +42,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
     { title: t("درباره ما"), path: '/about' },
     { title: t("محصولات"), path: '/products' },
     { title: t("خدمات"), path: '/services' },
-    { title: t("مجله"), path: '/magazine' },
     { title: t("تماس"), path: '/contact' },
   ];
 
@@ -193,6 +192,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
                 <div className="space-y-1">
                   <span className="block text-[10px] text-slate-300 font-bold">{t("مشاوره، فروش و پشتیبانی")}</span>
                   <a href={SALES_PHONE_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{tr(SALES_PHONE_DISPLAY)}</a>
+                  <a href={SALES_PHONE_ALT_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{tr(SALES_PHONE_ALT_DISPLAY)}</a>
                   <span className="block text-[10px] text-slate-300 font-bold pt-1">{tr(OFFICE_PHONE_LABEL)}</span>
                   <a href={OFFICE_PHONE_TEL} className="block w-fit text-slate-300 hover:text-white font-medium text-sm transition-colors" dir="ltr">{tr(OFFICE_PHONE_DISPLAY)}</a>
                 </div>

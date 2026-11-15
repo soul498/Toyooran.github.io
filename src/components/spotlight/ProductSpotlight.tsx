@@ -192,8 +192,8 @@ const ProductCard: React.FC<{ spot: Spot }> = ({ spot }) => {
           >
             
             {t("مشاهده مشخصات")}
-            <span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-black/[0.12] transition-transform group-hover/cta:-translate-x-1 motion-reduce:transition-none" aria-hidden="true">
-              <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2.4} />
+            <span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-black/[0.12] transition-transform rtl:group-hover/cta:-translate-x-1 ltr:group-hover/cta:translate-x-1 motion-reduce:transition-none" aria-hidden="true">
+              <ArrowLeft className="h-[18px] w-[18px] ltr:-scale-x-100" strokeWidth={2.4} />
             </span>
           </Link>
           <Link

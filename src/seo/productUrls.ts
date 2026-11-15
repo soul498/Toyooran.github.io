@@ -1,19 +1,22 @@
 
+import { keepFa } from "../i18n";
+
 /**
  * Public URL slugs for the products whose previous slugs contained
  * کارنو / کارنوتک. Forced in code so a stored admin snapshot with the old
  * name cannot put those words back in the URL. Display names are unchanged.
  * Old name-based slugs still 301 via the …-ts-0xx suffix in findProduct().
+ * keepFa: these are URL paths, not copy, so they are not translated.
  */
 export const PRODUCT_SLUG_BY_ID: Readonly<Record<string, string>> = {
-  "ts-012": "دوزاترون-سیستم-تزریق-دارو-مرغداری-ts-012",
-  "ts-019": "سیستم-اتوماسیون-مرغداری-ts-019",
-  "ts-057": "جت-هیتر-ts-057",
-  "ts-071": "سیستم-تهویه-تونلی-مرغداری-ts-071",
-  "ts-072": "ایر-میکسر-ts-072",
-  "ts-108": "سیستم-مه-پاش-ts-108",
-  "ts-110": "آبخوری-نیپل-تمام-استیل-ts-110",
-  "ts-111": "دریچه-اینلت-دوجداره-فوم‌دار-30-در-60-ts-111",
+  "ts-012": keepFa("دوزاترون-سیستم-تزریق-دارو-مرغداری-ts-012"),
+  "ts-019": keepFa("سیستم-اتوماسیون-مرغداری-ts-019"),
+  "ts-057": keepFa("جت-هیتر-ts-057"),
+  "ts-071": keepFa("سیستم-تهویه-تونلی-مرغداری-ts-071"),
+  "ts-072": keepFa("ایر-میکسر-ts-072"),
+  "ts-108": keepFa("سیستم-مه-پاش-ts-108"),
+  "ts-110": keepFa("آبخوری-نیپل-تمام-استیل-ts-110"),
+  "ts-111": keepFa("دریچه-اینلت-دوجداره-فوم‌دار-30-در-60-ts-111"),
 };
 
 
@@ -23,15 +26,15 @@ export const PRODUCT_SLUG_BY_ID: Readonly<Record<string, string>> = {
  * /en/products (those product pages are not in the English catalog).
  */
 export const LEGACY_COMPETITOR_PRODUCT_SLUGS: Readonly<Record<string, string>> = {
-  "ts-012": "دوزاترون-سیستم-تزریق-دارو-مرغداری-کارنوتک-ts-012",
-  "ts-019": "سیستم-اتوماسیون-مرغداری-کارنو-ts-019",
-  "ts-057": "جت-هیتر-کارنو-ts-057",
-  "ts-071": "سیستم-تهویه-کارنو-ts-071",
-  "ts-072": "ایر-میکسر-کارنوتک-ts-072",
-  "ts-090": "بشقاب-دانخوری-چیکن-کارنوتک-–-قابل-استفاده-از-یکروزگی-ts-090",
-  "ts-108": "سیستم-مه-پاش-کارنو-ts-108",
-  "ts-110": "آبخوری-نیپل-کارنو-–-نیپل-های-تمام-استیل-ts-110",
-  "ts-111": "دریچه-اینلت-کارنو-ts-111",
+  "ts-012": keepFa("دوزاترون-سیستم-تزریق-دارو-مرغداری-کارنوتک-ts-012"),
+  "ts-019": keepFa("سیستم-اتوماسیون-مرغداری-کارنو-ts-019"),
+  "ts-057": keepFa("جت-هیتر-کارنو-ts-057"),
+  "ts-071": keepFa("سیستم-تهویه-کارنو-ts-071"),
+  "ts-072": keepFa("ایر-میکسر-کارنوتک-ts-072"),
+  "ts-090": keepFa("بشقاب-دانخوری-چیکن-کارنوتک-–-قابل-استفاده-از-یکروزگی-ts-090"),
+  "ts-108": keepFa("سیستم-مه-پاش-کارنو-ts-108"),
+  "ts-110": keepFa("آبخوری-نیپل-کارنو-–-نیپل-های-تمام-استیل-ts-110"),
+  "ts-111": keepFa("دریچه-اینلت-کارنو-ts-111"),
 };
 
 const COMPETITOR_IN_SLUG_RE = /کارنوتک|کارنو|carnotech|karnotech|(?:^|[^a-z0-9])(?:carno|karno)(?:[^a-z0-9]|$)/i;
