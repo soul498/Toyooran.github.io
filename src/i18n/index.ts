@@ -19,6 +19,7 @@ export type UiKey = keyof typeof UI_EN;
 
 export const EN_PREFIX = '/en';
 export const TR_PREFIX = '/tr';
+export const RU_PREFIX = '/ru';
 export const LANG_PREFIX: Record<ForeignLang, string> = { en: EN_PREFIX, tr: TR_PREFIX };
 
 const FOREIGN_PREFIXES: { lang: ForeignLang; prefix: string }[] = [
@@ -56,6 +57,12 @@ export const isEn = (): boolean => current === 'en';
 export const isTr = (): boolean => current === 'tr';
 /** English and Turkish pages are left-to-right. */
 export const isLtr = (): boolean => current !== 'fa';
+
+/** BCP 47 tag for number and date display. */
+export function intlLocale(): string {
+  if (current === 'tr') return 'tr-TR';
+  return current === 'en' ? 'en-US' : 'fa-IR';
+}
 
 /** Install one foreign dictionary (server: both at startup; client: the page language, before first render). */
 export function setEnDictionary(entries: Record<string, string>): void {
