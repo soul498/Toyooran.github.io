@@ -417,17 +417,29 @@ async function startServer() {
     res.send(sitemapXml());
   });
 
-  app.get("/TSPK_catalog.pdf", (_req, res) => {
-    const prodFile = path.join(process.cwd(), "dist", "TSPK_catalog.pdf");
-    const devFile = path.join(process.cwd(), "public", "TSPK_catalog.pdf");
+  const catalogPdfNames = [
+    "TSPK-Catalog-fa.pdf",
+    "TSPK-Catalog-en.pdf",
+    "TSPK-Catalog-tr.pdf",
+    "TSPK-Catalog-ru.pdf",
+  ] as const;
+  const sendCatalogPdf = (res: import("express").Response, filename: (typeof catalogPdfNames)[number]) => {
+    const prodFile = path.join(process.cwd(), "dist", filename);
+    const devFile = path.join(process.cwd(), "public", filename);
     const file = fs.existsSync(prodFile) ? prodFile : devFile;
     if (!fs.existsSync(file)) return res.status(404).type("text/plain").send("catalog not found");
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": 'attachment; filename="TSPK_catalog.pdf"',
+      "Content-Disposition": `attachment; filename="${filename}"`,
       "Cache-Control": "public, max-age=86400",
     });
     res.sendFile(path.resolve(file));
+  };
+  for (const filename of catalogPdfNames) {
+    app.get(`/${filename}`, (_req, res) => sendCatalogPdf(res, filename));
+  }
+  app.get("/TSPK_catalog.pdf", (_req, res) => {
+    res.redirect(301, "/TSPK-Catalog-fa.pdf");
   });
 
   // Vite middleware for development

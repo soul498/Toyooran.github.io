@@ -102,5 +102,18 @@ export const pageHeroFor = (
   return translateDeep(merged);
 };
 
-/** Real catalog file: public/TSPK_catalog.pdf, served by server.ts with Content-Disposition: attachment. */
-export const CATALOG_PDF_HREF = '/TSPK_catalog.pdf';
+/** Language-specific catalog PDFs in public/, served by server.ts with Content-Disposition: attachment. */
+export const CATALOG_PDF_BY_LANG = {
+  fa: '/TSPK-Catalog-fa.pdf',
+  en: '/TSPK-Catalog-en.pdf',
+  tr: '/TSPK-Catalog-tr.pdf',
+  ru: '/TSPK-Catalog-ru.pdf',
+} as const;
+
+export function catalogPdfHref(lang = getLang()): string {
+  return CATALOG_PDF_BY_LANG[lang] ?? CATALOG_PDF_BY_LANG.fa;
+}
+
+export function catalogPdfFilename(lang = getLang()): string {
+  return catalogPdfHref(lang).slice(1);
+}

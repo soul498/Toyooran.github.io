@@ -1,7 +1,7 @@
 import React from 'react';
 import { Download } from '../icons';
 import { catalogHeading, categoryIntroRich } from '../seo/resolveSeo';
-import { CATALOG_PDF_HREF } from '../data/pageHeroes';
+import { catalogPdfFilename, catalogPdfHref } from '../data/pageHeroes';
 import { HeroCta, PageBanner } from './PageBanner';
 import { RichInline } from './RichBlocks';
 
@@ -28,8 +28,8 @@ export const ShopHero: React.FC<{
 >
   <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
     <a
-      href={CATALOG_PDF_HREF}
-      download="TSPK_catalog.pdf"
+      href={catalogPdfHref()}
+      download={catalogPdfFilename()}
       className="page-hero-cta inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#003F86] text-white font-bold text-sm px-6 py-3 shadow-lg shadow-blue-900/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
     >
       <Download className="w-4 h-4" aria-hidden="true" />

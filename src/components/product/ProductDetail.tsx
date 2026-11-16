@@ -4,6 +4,7 @@ import { LazyImage } from '../LazyImage';
 import { productThumbBase } from '../ProductThumb';
 import { ProductName } from '../ProductName';
 import { RichInline } from '../RichBlocks';
+import { catalogPdfHref } from '../../data/pageHeroes';
 import { categoryIntro, publicProductPath } from '../../seo/resolveSeo';
 import { relatedInCategory } from '../../seo/internalLinks';
 import { withMediaVersion } from '../../lib/mediaUrl';
@@ -19,7 +20,6 @@ import { intlLocale, t, tf, tr } from '../../i18n';
  * no data for a product is not rendered (no placeholders).
  */
 
-const CATALOG_PDF = '/TSPK_catalog.pdf';
 const PLACEHOLDER_RE = /product-placeholder/i;
 
 type IconName =
@@ -311,7 +311,7 @@ export const ProductDetail: React.FC<{ product: Product; products: Product[]; ar
               <li><Icon name="check" />{t("بیش از ۲۰۰ پروژه")}</li>
               <li><Icon name="chat" />{t("مشاورهٔ رایگان")}</li>
             </ul>
-            <a className="pd-catalog" href={CATALOG_PDF} target="_blank" rel="noopener">
+            <a className="pd-catalog" href={catalogPdfHref()} target="_blank" rel="noopener">
               <Icon name="doc" />
               
               {t("دانلود کاتالوگ PDF")}

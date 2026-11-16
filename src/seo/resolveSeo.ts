@@ -23,6 +23,7 @@ import {
 import { faDigits } from "../lib/faDigits";
 
 import { EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
+import { catalogPdfHref } from '../data/pageHeroes';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
 export const FITOUT_SLUG = "poultry-hall-fitout";
@@ -626,7 +627,7 @@ ${articles ? `<h2>${t("راهنمای مرتبط")}</h2><ul>${articles}</ul>` : 
 ${fitoutLink("") || services ? `<h2>${t("خدمات مرتبط")}</h2><ul>${fitoutLink("") ? `<li>${fitoutLink(t("تجهیز و نوسازی سالن مرغداری"))}</li>` : ""}${services}</ul>` : ""}
 ${siblings ? `<h2>${tf("محصولات دیگر {category}", { category: escapeHtml(product.categoryTitle) })}</h2><ul>${siblings}</ul>` : ""}
 ${feedingCta}
-<p><a href="/contact">${tf("استعلام قیمت و مشخصات فنی {name}", { name: escapeHtml(product.name) })}</a> · <a href="/TSPK_catalog.pdf">${t("دانلود کاتالوگ PDF")}</a></p>`;
+<p><a href="/contact">${tf("استعلام قیمت و مشخصات فنی {name}", { name: escapeHtml(product.name) })}</a> · <a href="${catalogPdfHref()}">${t("دانلود کاتالوگ PDF")}</a></p>`;
 }
 
 function serviceBody(service: Service, h1: string, catalog: SeoCatalog): string {
@@ -904,7 +905,7 @@ ${homeExtras(catalog)}`,
       h1: tr(PRODUCTS_HUB_H1),
       ogType: "website",
       lastmod: collectionDay(catalog, "products"),
-      body: `<p>${t("کاتالوگ تجهیزات صنعت دام و طیور طیوران صنعت پویا؛ از تهویه، گرمایش، دانخوری و آبخوری سالن مرغداری تا قفس و سیلو.")}</p><ul>${cats}</ul><p><a href="/TSPK_catalog.pdf">${t("دانلود کاتالوگ PDF")}</a> · <a href="/contact">${t("استعلام قیمت")}</a></p>`,
+      body: `<p>${t("کاتالوگ تجهیزات صنعت دام و طیور طیوران صنعت پویا؛ از تهویه، گرمایش، دانخوری و آبخوری سالن مرغداری تا قفس و سیلو.")}</p><ul>${cats}</ul><p><a href="${catalogPdfHref()}">${t("دانلود کاتالوگ PDF")}</a> · <a href="/contact">${t("استعلام قیمت")}</a></p>`,
       jsonLd: [orgSchema(company), breadcrumb([{ name: t("خانه"), path: "/" }, { name: t("محصولات"), path: "/products" }])],
     });
   }
@@ -938,7 +939,7 @@ ${blocksToHtml(categoryIntroBlocks(slug))}
 <h2>${tf("محصولات {category}", { category: escapeHtml(category.h1) })} (${tf("{n} مورد", { n: inCategory.length })})</h2><ul>${items}</ul>
 ${catArticles ? `<h2>${t("راهنماهای مرتبط")}</h2><ul>${catArticles}</ul>` : ""}
 ${catServices ? `<h2>${t("خدمات مرتبط")}</h2><ul>${catServices}</ul>` : ""}
-<p>${[`<a href="/contact">${t("استعلام فنی")}</a>`, fitoutLink(t("تجهیز و نوسازی سالن")), `<a href="/TSPK_catalog.pdf">${t("کاتالوگ PDF")}</a>`].filter(Boolean).join(" · ")}</p>`,
+<p>${[`<a href="/contact">${t("استعلام فنی")}</a>`, fitoutLink(t("تجهیز و نوسازی سالن")), `<a href="${catalogPdfHref()}">${t("کاتالوگ PDF")}</a>`].filter(Boolean).join(" · ")}</p>`,
         jsonLd: [
           orgSchema(company),
           breadcrumb([

@@ -14,7 +14,7 @@ import { ProductName } from './ProductName';
 import { CategoryMarquee } from './CategoryMarquee';
 
 import { t, tf } from '../i18n';
-export { CATALOG_PDF_HREF } from '../data/pageHeroes';
+export { catalogPdfFilename, catalogPdfHref } from '../data/pageHeroes';
 
 interface ProductCatalogSectionProps {
   products: Product[];
