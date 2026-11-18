@@ -100,7 +100,12 @@ export function englishArticle(article: Article): Article | null {
 }
 
 export function productIsTranslated(product: Product, lang: ForeignLang = "en"): boolean {
-  return withLang(lang, () => isFullyTranslated(translateProduct(product)));
+  return withLang(lang, () => {
+    const translated = translateProduct(product) as Product & { slugName?: string };
+    // slugName stays the Persian URL slug on every language and is not visible copy.
+    const { slugName: _slugName, ...visible } = translated;
+    return isFullyTranslated(visible);
+  });
 }
 
 const caches = new Map<ForeignLang, WeakMap<SeoCatalog, SeoCatalog>>();
