@@ -120,9 +120,18 @@ export function seoRedirectForAnyLang(pathname: string, catalog: ReturnType<type
     }
   }
   const localizedCatalogForLang = localizedCatalog(catalog, lang);
-  const r = withLang(lang, () => seoRedirectFor(neutral, localizedCatalogForLang));
-  if (!r) return null;
-  const localized = withLang(lang, () => localizeHref(r));
+  const translated = withLang(lang, () => seoRedirectFor(neutral, localizedCatalogForLang));
+  if (translated) {
+    const localized = withLang(lang, () => localizeHref(translated));
+    return foreignFallbackRedirect(localized) || localized;
+  }
+  // Already the canonical URL in this language: do not rewrite it back to Persian.
+  if (withLang(lang, () => isKnownWithCatalog(neutral, localizedCatalogForLang))) return null;
+  // No page in this language. An old Persian slug still resolves on the Persian catalog
+  // and then falls back to this language's listing, instead of a 404.
+  const faRedirect = seoRedirectFor(neutral, catalog);
+  if (!faRedirect) return null;
+  const localized = withLang(lang, () => localizeHref(faRedirect));
   return foreignFallbackRedirect(localized) || localized;
 }
 
