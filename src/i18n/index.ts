@@ -168,9 +168,24 @@ export const keepFa = (fa: string): string => fa;
 /** Pick between a Persian and an English value at render time. Turkish uses the Persian value; prefer t()/tr() for Turkish. */
 export const pick = <T,>(fa: T, en: T): T => (current === 'en' ? en : fa);
 
+/** Persian slugs inside links are kept on purpose and are not untranslated copy. */
+function withoutKeptPaths(s: string): string {
+  return s
+    .replace(/\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[IMG\|[^|]+\|/g, '')
+    .replace(/\[CTA\|[^|]*\|[^\]]*\]/g, '')
+    .replace(/\/(?:products|magazine|services|contact)\/[^\s)\]|]+/g, '');
+}
+
+/** A string still needs a dictionary hit. Arabic copy is Arabic script; only leftover Persian letters count. */
+function unresolvedForeign(s: string): boolean {
+  if (current === 'ar') return hasPersianOnly(withoutKeptPaths(s));
+  return hasPersian(s) && lookupEn(s) === undefined;
+}
+
 /** True when every Persian string inside `value` has an entry in the active dictionary. */
 export function isFullyTranslated(value: unknown): boolean {
-  if (typeof value === 'string') return !hasPersian(value) || lookupEn(value) !== undefined;
+  if (typeof value === 'string') return !unresolvedForeign(value);
   if (Array.isArray(value)) return value.every(isFullyTranslated);
   if (value && typeof value === 'object') return Object.values(value as Record<string, unknown>).every(isFullyTranslated);
   return true;
@@ -179,7 +194,7 @@ export function isFullyTranslated(value: unknown): boolean {
 /** Collect the Persian strings in `value` that have no entry in the active dictionary. */
 export function missingIn(value: unknown, out: string[] = []): string[] {
   if (typeof value === 'string') {
-    if (hasPersian(value) && lookupEn(value) === undefined) out.push(value);
+    if (unresolvedForeign(value)) out.push(value);
   } else if (Array.isArray(value)) value.forEach((v) => missingIn(v, out));
   else if (value && typeof value === 'object') Object.values(value as Record<string, unknown>).forEach((v) => missingIn(v, out));
   return out;
