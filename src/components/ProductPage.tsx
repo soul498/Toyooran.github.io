@@ -40,7 +40,8 @@ export const ProductPage: React.FC<{ onRequestQuoteForProduct?: (product: Produc
     );
   }
 
-  const product = findProduct(decodeURIComponent(productId || ""), products);
+  const requested = decodeURIComponent(productId || "");
+  const product = findProduct(requested, products);
 
   if (!product) {
     if (!catalogReady) {
@@ -48,6 +49,9 @@ export const ProductPage: React.FC<{ onRequestQuoteForProduct?: (product: Produc
     }
     return <NotFoundPage />;
   }
+
+  const canonical = publicProductPath(product);
+  if (canonical !== `/products/${requested}`) return <Navigate to={canonical} replace />;
 
   return <ProductDetail product={product} products={products} articles={articles} />;
 };

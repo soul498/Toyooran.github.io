@@ -6,6 +6,7 @@ import {
   CANONICAL_ORIGIN,
   canonicalPath,
   escapeHtml,
+  equivalentPublicPath,
   isKnownPublicPath as isKnownWithCatalog,
   llmsTxt,
   resolveSeo,
@@ -63,13 +64,14 @@ function topicHasLang(neutralPath: string, localized: ReturnType<typeof localize
   return localized.articles.some((a) => a.topic === slug);
 }
 
-/** "/x" → "/en/x" or "/tr/x" for a page that exists in that language, else null. */
+/** "/x" → the same page in `lang`, with that language's product slug. Article URLs stay as they are. */
 export function foreignEquivalent(neutralPath: string, lang: ForeignLang): string | null {
   const localized = localizedCatalog(loadSeoCatalog(), lang);
   const prefix = LANG_PREFIX[lang];
-  const ok = withLang(lang, () => isKnownWithCatalog(neutralPath, localized)) && !(neutralPath.startsWith("/magazine/topic/") && !topicHasLang(neutralPath, localized));
-  if (!ok || isPrivateAppPath(neutralPath)) return null;
-  return neutralPath === "/" ? prefix : `${prefix}${neutralPath}`;
+  const mapped = withLang(lang, () => equivalentPublicPath(neutralPath, localized));
+  if (!mapped || isPrivateAppPath(mapped)) return null;
+  if (mapped.startsWith("/magazine/topic/") && !topicHasLang(mapped, localized)) return null;
+  return mapped === "/" ? prefix : `${prefix}${mapped}`;
 }
 
 /** "/x" → "/en/x" for a page that exists in English, else null. */
@@ -117,7 +119,8 @@ export function seoRedirectForAnyLang(pathname: string, catalog: ReturnType<type
       return `${prefix}/products`;
     }
   }
-  const r = seoRedirectFor(neutral, catalog);
+  const localizedCatalogForLang = localizedCatalog(catalog, lang);
+  const r = withLang(lang, () => seoRedirectFor(neutral, localizedCatalogForLang));
   if (!r) return null;
   const localized = withLang(lang, () => localizeHref(r));
   return foreignFallbackRedirect(localized) || localized;
@@ -235,12 +238,14 @@ ${robots}${jsonLd}`;
 /** hreflang fa / en / tr / x-default (= Persian) for each language the page exists in. */
 function hreflangLinks(neutralPath: string, doc: { robots: string; notFound?: boolean }): string {
   if (doc.notFound || /noindex/.test(doc.robots)) return "";
-  const en = foreignEquivalent(neutralPath, "en");
-  const tr = foreignEquivalent(neutralPath, "tr");
-  const ru = foreignEquivalent(neutralPath, "ru");
-  const ar = foreignEquivalent(neutralPath, "ar");
+  const faNeutral = withLang("fa", () => equivalentPublicPath(neutralPath, loadSeoCatalog()));
+  if (!faNeutral) return "";
+  const en = foreignEquivalent(faNeutral, "en");
+  const tr = foreignEquivalent(faNeutral, "tr");
+  const ru = foreignEquivalent(faNeutral, "ru");
+  const ar = foreignEquivalent(faNeutral, "ar");
   if (!en && !tr && !ru && !ar) return "";
-  const fa = canonicalPath(neutralPath);
+  const fa = canonicalPath(faNeutral);
   const lines = [`    <link rel="alternate" hreflang="fa" href="${fa}" />`];
   if (en) lines.push(`    <link rel="alternate" hreflang="en" href="${canonicalPath(en)}" />`);
   if (tr) lines.push(`    <link rel="alternate" hreflang="tr" href="${canonicalPath(tr)}" />`);

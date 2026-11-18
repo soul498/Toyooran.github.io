@@ -4,14 +4,16 @@ import { SERVICES, CATEGORIES_DATA, COMPANY_INFO } from "../src/data/mockData";
 import { SEED_ARTICLES } from "../src/data/seedArticles";
 import { isPublicProduct, rewriteRemovedProductHref, REMOVED_PRODUCT_LINK_FALLBACK, removedProductRedirect } from "../src/data/removedProducts";
 import { isPublicArticle } from "../src/seo/articleMeta";
-import { productSeoSlug, publicProductPath, seoRedirectFor, type SeoCatalog } from "../src/seo/resolveSeo";
+import { persianProductSlug, productPathAliases, productSeoSlug, publicProductPath, seoRedirectFor, type SeoCatalog } from "../src/seo/resolveSeo";
 import { PRODUCT_SLUG_BY_ID, LEGACY_COMPETITOR_PRODUCT_SLUGS, isLegacyCompetitorProductSlug } from "../src/seo/productUrls";
 import { DISABLED_PAGE_REDIRECT, isDisabledPagePath, rewriteDisabledHref } from "../src/data/disabledPages";
 import { parseInline } from "../src/seo/richText";
 import { SERVICE_PAGE_SLUGS } from "../src/data/servicePages";
 import { localizeJsonLd, resolveSeoForPath } from "../src/seo/localizeSeo";
 import { CANONICAL_ORIGIN } from "../src/seo/resolveSeo";
-import { setLang } from "../src/i18n";
+import { hasPersianOnly, localizeHref, setArDictionary, setEnDictionary, setLang, setLangAvailability, translateProduct, withLang } from "../src/i18n";
+import { AR_DICT } from "../src/i18n/arDict";
+import { EN_DICT } from "../src/i18n/enDict";
 
 const catalog: SeoCatalog = {
   products: PRODUCTS.filter((p) => isPublicProduct(p)),
@@ -128,5 +130,49 @@ assert.equal(enGuide.canonicalHref, `${CANONICAL_ORIGIN}/en/magazine/feeder-type
 setLang("fa");
 const faHome = resolveSeoForPath("/", catalog);
 assert.equal(faHome.canonicalHref, `${CANONICAL_ORIGIN}/`);
+
+const heater = catalog.products.find((p) => p.id === "ts-001");
+assert.ok(heater, "ts-001");
+assert.equal(productSeoSlug(heater), "هیتر-گازی-دودکش‌دار-مدل-GH-0625-ts-001");
+assert.equal(publicProductPath(jet), "/products/jet-heater");
+
+setEnDictionary(EN_DICT);
+setArDictionary(AR_DICT);
+const seen = (lang: "en" | "ar") => withLang(lang, () => {
+  const slugs = new Map<string, string>();
+  let translated = 0;
+  for (const product of catalog.products) {
+    const copy = translateProduct(product);
+    const sourceLeft = lang === "ar" ? hasPersianOnly(copy.name || "") : /[\u0600-\u06FF]/.test(copy.name || "");
+    if (sourceLeft) continue;
+    translated += 1;
+    const slug = productSeoSlug(copy);
+    const prev = slugs.get(slug);
+    assert.equal(prev, undefined, `duplicate ${lang} slug ${slug} for ${product.id} and ${prev}`);
+    if (lang === "ar" && !product.slug) assert.equal(hasPersianOnly(slug), false, `${product.id} arabic slug still has Persian letters: ${slug}`);
+    slugs.set(slug, product.id);
+  }
+  assert.ok(translated > 40, `${lang} translated product slugs ${translated}`);
+  return slugs;
+});
+seen("en");
+const arSlugs = seen("ar");
+assert.equal(withLang("ar", () => productSeoSlug(jet)), "jet-heater");
+assert.equal(arSlugs.get("jet-heater"), "ts-115");
+
+const cabinet = catalog.products.find((p) => p.id === "ts-024");
+assert.ok(cabinet, "ts-024");
+const persianCabinet = persianProductSlug(cabinet);
+withLang("en", () => {
+  const copy = translateProduct(cabinet);
+  const canonical = publicProductPath(copy);
+  assert.notEqual(canonical, `/products/${persianCabinet}`);
+  assert.equal(seoRedirectFor(`/products/${persianCabinet}`, { ...catalog, products: [copy] }), canonical);
+  setLangAvailability("en", { articles: ["comparison-of-heating-systems"], productPaths: productPathAliases([copy]) });
+  assert.equal(localizeHref(`/products/${persianCabinet}`), `/en${canonical}`);
+  assert.equal(localizeHref("/magazine/comparison-of-heating-systems"), "/en/magazine/comparison-of-heating-systems");
+  assert.equal(localizeHref("/products/heating"), "/en/products/heating");
+});
+setLang("fa");
 
 console.log("seo redirect + canonical tests OK");

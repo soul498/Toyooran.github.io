@@ -13,6 +13,7 @@ import MAGAZINE_AR from "../src/i18n/ar/magazine.json";
 import {
   type ForeignLang,
   isFullyTranslated,
+  isProductFullyTranslated,
   missingIn,
   setLangAvailability,
   setEnDictionary,
@@ -26,7 +27,7 @@ import {
   withOverlay,
 } from "../src/i18n";
 import type { Article, Product } from "../src/types";
-import type { SeoCatalog } from "../src/seo/resolveSeo";
+import { productPathAliases, type SeoCatalog } from "../src/seo/resolveSeo";
 
 setEnDictionary(EN_DICT);
 setTrDictionary(TR_DICT);
@@ -100,12 +101,7 @@ export function englishArticle(article: Article): Article | null {
 }
 
 export function productIsTranslated(product: Product, lang: ForeignLang = "en"): boolean {
-  return withLang(lang, () => {
-    const translated = translateProduct(product) as Product & { slugName?: string };
-    // slugName stays the Persian URL slug on every language and is not visible copy.
-    const { slugName: _slugName, ...visible } = translated;
-    return isFullyTranslated(visible);
-  });
+  return withLang(lang, () => isProductFullyTranslated(product));
 }
 
 const caches = new Map<ForeignLang, WeakMap<SeoCatalog, SeoCatalog>>();
@@ -124,20 +120,23 @@ export function localizedCatalog(catalog: SeoCatalog, lang: ForeignLang): SeoCat
   const cache = cacheFor(lang);
   const hit = cache.get(catalog);
   if (hit) {
-    publishAvailability(lang, hit);
+    withLang(lang, () => publishAvailability(lang, hit));
     return hit;
   }
-  const value = withLang(lang, () => ({
-    ...catalog,
-    products: catalog.products.filter((product) => productIsTranslated(product, lang)).map((product) => translateProduct(product)),
-    services: catalog.services.map((service) => translateCmsRecord(service)),
-    projects: [],
-    articles: catalog.articles.map((article) => articleFor(lang, article)).filter((article): article is Article => Boolean(article)),
-    categories: translateDeep(catalog.categories),
-    company: translateCmsRecord(catalog.company),
-  }));
+  const value = withLang(lang, () => {
+    const localized: SeoCatalog = {
+      ...catalog,
+      products: catalog.products.filter((product) => isProductFullyTranslated(product)).map((product) => translateProduct(product)),
+      services: catalog.services.map((service) => translateCmsRecord(service)),
+      projects: [],
+      articles: catalog.articles.map((article) => articleFor(lang, article)).filter((article): article is Article => Boolean(article)),
+      categories: translateDeep(catalog.categories),
+      company: translateCmsRecord(catalog.company),
+    };
+    publishAvailability(lang, localized);
+    return localized;
+  });
   cache.set(catalog, value);
-  publishAvailability(lang, value);
   return value;
 }
 
@@ -147,9 +146,11 @@ export function englishCatalog(catalog: SeoCatalog): SeoCatalog {
 }
 
 function publishAvailability(lang: ForeignLang, localized: SeoCatalog): void {
+  // Caller must already be inside withLang(lang): product slugs depend on the active language.
   setLangAvailability(lang, {
     articles: localized.articles.map((article) => article.id),
     products: localized.products.map((product) => product.id),
     topics: [...new Set(localized.articles.map((article) => article.topic).filter((topic): topic is string => Boolean(topic)))],
+    productPaths: productPathAliases(localized.products),
   });
 }

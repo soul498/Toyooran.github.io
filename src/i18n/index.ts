@@ -202,11 +202,19 @@ export function missingIn(value: unknown, out: string[] = []): string[] {
 
 type ManualTranslations<T> = { translations?: Partial<Record<ForeignLang, Partial<T>>> };
 
-/** Foreign copy of a product; keeps its Persian name for the URL slug (/en/products/<same slug>, /tr/products/<same slug>). */
+/** Foreign copy of a product. `slugName` stays the Persian name so the old Persian URL still resolves;
+ * the public slug itself is translated in productSeoSlug (magazine article URLs are not). */
 export function translateProduct<T extends { name?: string; slugName?: string }>(product: T): T {
   if (current === 'fa') return product;
   const manual = (product as T & ManualTranslations<T>).translations?.[current];
   return { ...deep(product), ...(manual || {}), slugName: product.slugName ?? product.name };
+}
+
+/** True when the product's visible copy is fully translated. The Persian URL slug is not copy. */
+export function isProductFullyTranslated<T extends { slugName?: string }>(product: T): boolean {
+  const translated = translateProduct(product) as T & { slugName?: string };
+  const { slugName: _slugName, ...visible } = translated;
+  return isFullyTranslated(visible);
 }
 
 /** CMS records may carry an explicitly authored overlay for the active language. It wins over the
@@ -235,19 +243,23 @@ function deep<T>(value: T): T {
   return value;
 }
 
-/** Ids of magazine articles / products with a complete translation (set by the data layer), per language. */
-type Availability = { articles: Set<string>; products: Set<string>; topics: Set<string>; known: boolean };
+/** Ids of magazine articles / products with a complete translation (set by the data layer), per language.
+ * `productPaths` maps any slug (Persian, id, code, translated) to that language's canonical product path.
+ * Magazine article URLs are not in this map. */
+type Availability = { articles: Set<string>; products: Set<string>; topics: Set<string>; productPaths: Map<string, string>; known: boolean };
+const emptyAvailability = (): Availability => ({ articles: new Set(), products: new Set(), topics: new Set(), productPaths: new Map(), known: false });
 const available: Record<ForeignLang, Availability> = {
-  en: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
-  tr: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
-  ru: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
-  ar: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
+  en: emptyAvailability(),
+  tr: emptyAvailability(),
+  ru: emptyAvailability(),
+  ar: emptyAvailability(),
 };
-export function setLangAvailability(lang: ForeignLang, a: { articles?: Iterable<string>; products?: Iterable<string>; topics?: Iterable<string> }): void {
+export function setLangAvailability(lang: ForeignLang, a: { articles?: Iterable<string>; products?: Iterable<string>; topics?: Iterable<string>; productPaths?: Map<string, string> }): void {
   const slot = available[lang];
   if (a.articles) slot.articles = new Set(a.articles);
   if (a.products) slot.products = new Set(a.products);
   if (a.topics) slot.topics = new Set(a.topics);
+  if (a.productPaths) slot.productPaths = a.productPaths;
   slot.known = true;
 }
 export function setEnAvailability(a: { articles?: Iterable<string>; products?: Iterable<string>; topics?: Iterable<string> }): void {
@@ -262,6 +274,7 @@ export function enArticleAvailable(id: string): boolean {
  * - Persian pages: unchanged.
  * - Foreign pages: "/x" → "/en/x" or "/tr/x", except files, API/admin paths and magazine
  *   articles that have no translation yet (those keep the language's magazine index rather than a 404).
+ * - Product links are rewritten to that language's slug. Magazine article URLs are not translated.
  * Absolute toyooran.com URLs are treated the same way.
  */
 export function lp(href: string): string {
@@ -294,10 +307,28 @@ export function localizeHref(href: string): string {
   const seg = pathOnly.split('/').filter(Boolean);
   if (seg[0] && ['api', 'admin', 'crm', 'login', 'dashboard', 'images', 'assets', 'fonts'].includes(seg[0])) return href;
   // An article without a complete translation has no foreign URL: fall back to that language's magazine index.
+  // Article URLs themselves are not translated.
   if (seg[0] === 'magazine' && seg.length === 2 && seg[1] !== 'topic' && slot.known && !slot.articles.has(decodeURIComponentSafe(seg[1]))) return `${origin}${prefix}/magazine`;
   if (seg[0] === 'magazine' && seg[1] === 'topic' && seg[2] && slot.known && !slot.topics.has(seg[2])) return `${origin}${prefix}/magazine${suffix}`;
-  const localized = pathOnly === '/' ? prefix : `${prefix}${pathOnly}`;
+  let localizedPath = pathOnly;
+  if (seg[0] === 'products' && seg.length === 2) {
+    const translated = foreignProductPath(seg[1]);
+    if (translated) localizedPath = translated;
+  }
+  const localized = localizedPath === '/' ? prefix : `${prefix}${localizedPath}`;
   return `${origin}${localized}${suffix}`;
+}
+
+/** Canonical product path in the active language, if this slug belongs to a translated product. */
+function foreignProductPath(slug: string): string | undefined {
+  if (current === 'fa') return undefined;
+  const map = available[current].productPaths;
+  if (!map || map.size === 0) return undefined;
+  const decoded = decodeURIComponentSafe(slug);
+  const direct = map.get(decoded) || map.get(decoded.toLowerCase());
+  if (direct) return direct;
+  const code = decoded.toLowerCase().match(/-(ts-\d{3})$/);
+  return code ? map.get(code[1]) : undefined;
 }
 
 function decodeURIComponentSafe(s: string): string {

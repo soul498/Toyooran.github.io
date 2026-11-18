@@ -13,7 +13,7 @@ import { PUBLIC_SERVICE_IDS } from "../data/mockData";
 import { isDisabledPagePath, isServiceDisabled, rewriteDisabledHref } from "../data/disabledPages";
 import { SERVICE_PAGES, SERVICE_PAGE_LABELS, findServicePage, servicePagePath, type ServicePageData } from "../data/servicePages";
 import { sitePhotoSrc } from "../data/sitePhotos";
-import { PRODUCT_SLUG_BY_ID, productAliasTarget } from "./productUrls";
+import { PRODUCT_SLUG_BY_ID, isLegacyCompetitorProductSlug, productAliasTarget } from "./productUrls";
 import {
   ABOUT_ACTIVITIES, ABOUT_ACTIVITIES_HEADING, ABOUT_FLAGSHIP_CTA, ABOUT_FLAGSHIP_HEADING, ABOUT_FLAGSHIP_HREF,
   ABOUT_FLAGSHIP_TEXT, ABOUT_INTERNATIONAL_HEADING, ABOUT_INTERNATIONAL_TEXT, ABOUT_INTRO_HEADING,
@@ -22,7 +22,7 @@ import {
 } from "../data/aboutCopy";
 import { faDigits } from "../lib/faDigits";
 
-import { AR_PREFIX, EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
+import { AR_PREFIX, EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, hasPersian, hasPersianOnly, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
 import { catalogPdfHref } from '../data/pageHeroes';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
@@ -307,11 +307,19 @@ export function publicProductPath(product: Product): string {
   return `/products/${productSeoSlug(product)}`;
 }
 
-export function productSeoSlug(product: Product): string {
+const CUSTOM_LATIN_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function customLatinSlug(product: Product): string {
+  const custom = String(product.slug || "").trim().toLowerCase();
+  return CUSTOM_LATIN_SLUG.test(custom) ? custom : "";
+}
+
+/** Persian URL slug. Stable across languages so old links and the Persian site keep this exact path. */
+export function persianProductSlug(product: Product): string {
   const forced = PRODUCT_SLUG_BY_ID[String(product.id || "").toLowerCase()];
   if (forced) return forced;
-  const custom = String(product.slug || "").trim().toLowerCase();
-  if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(custom)) return custom;
+  const custom = customLatinSlug(product);
+  if (custom) return custom;
   const code = String(product.code || product.id || "").toLowerCase();
   const name = String(product.slugName || product.name || "")
     .trim()
@@ -320,6 +328,65 @@ export function productSeoSlug(product: Product): string {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
   return name ? `${name}-${code}` : code;
+}
+
+function slugifyTranslated(name: string): string {
+  return name
+    .toLocaleLowerCase("en-US")
+    .replace(/[\u064B-\u0652\u0670\u0640]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function trimSlugLabel(label: string): string {
+  const max = 80;
+  if (label.length <= max) return label;
+  const cut = label.slice(0, max);
+  const hyphen = cut.lastIndexOf("-");
+  return (hyphen >= 24 ? cut.slice(0, hyphen) : cut).replace(/-+$/g, "");
+}
+
+/**
+ * Public product slug. Persian keeps the Persian name. Every other language uses the translated
+ * name (magazine article slugs are a different path and are not translated). A hand-set Latin
+ * slug such as jet-heater stays as-is in every language.
+ */
+export function productSeoSlug(product: Product): string {
+  if (getLang() === "fa") return persianProductSlug(product);
+  const custom = customLatinSlug(product);
+  if (custom) return custom;
+  const code = String(product.code || product.id || "").toLowerCase();
+  const name = String(product.name || "").trim();
+  const stillSource = getLang() === "ar" ? hasPersianOnly(name) : hasPersian(name);
+  if (!name || stillSource) return persianProductSlug(product);
+  const label = trimSlugLabel(slugifyTranslated(name));
+  if (!label) return persianProductSlug(product);
+  if (!code) return isLegacyCompetitorProductSlug(label) ? persianProductSlug(product) : label;
+  const slug = label === code || label.endsWith(`-${code}`) ? label : `${label}-${code}`;
+  return isLegacyCompetitorProductSlug(slug) ? code : slug;
+}
+
+/** Every slug that should open this product, mapped to its canonical path in the active language. */
+export function productPathAliases(products: Product[]): Map<string, string> {
+  const map = new Map<string, string>();
+  const add = (slug: string | undefined, canonical: string) => {
+    const trimmed = String(slug || "").trim();
+    if (!trimmed) return;
+    map.set(trimmed, canonical);
+    const lower = trimmed.toLowerCase();
+    if (lower !== trimmed) map.set(lower, canonical);
+  };
+  for (const product of products) {
+    const canonical = publicProductPath(product);
+    add(productSeoSlug(product), canonical);
+    add(persianProductSlug(product), canonical);
+    add(product.id, canonical);
+    add(product.code, canonical);
+    add(product.slug, canonical);
+    add(PRODUCT_SLUG_BY_ID[String(product.id || "").toLowerCase()], canonical);
+  }
+  return map;
 }
 
 export function findProduct(slug: string, source: SeoCatalog | Product[]): Product | undefined {
@@ -1261,6 +1328,21 @@ export function isKnownPublicPath(pathname: string, catalog: SeoCatalog): boolea
   if (parts[0] === "services") return Boolean(findServicePage(parts[1])) || (!isServiceDisabled(parts[1]) && Boolean(findService(parts[1], catalog)));
   if (parts[0] === "projects") return catalog.projects.some((p) => p.id === parts[1]);
   return false;
+}
+
+/**
+ * Same page in the active language. Product slugs follow that language's name.
+ * Magazine article URLs stay on their existing slug.
+ */
+export function equivalentPublicPath(neutralPath: string, catalog: SeoCatalog): string | null {
+  const path = decodePathname(stripQuery(neutralPath));
+  const parts = publicSegments(path);
+  if (parts[0] === "products" && parts.length === 2 && !isCategorySlug(parts[1], catalog)) {
+    const product = findProduct(parts[1], catalog);
+    return product ? publicProductPath(product) : null;
+  }
+  if (!isKnownPublicPath(path, catalog)) return null;
+  return path;
 }
 
 export function sitemapEntries(catalog: SeoCatalog): { loc: string; lastmod?: string; priority: string }[] {

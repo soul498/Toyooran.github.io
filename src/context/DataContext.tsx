@@ -34,7 +34,8 @@ import {
 } from '../data/mockData';
 import { migrateCustomerRecord } from '../crm/utils/crmRecords';
 import { withProductPhotos } from '../data/productPhotos';
-import { getLang, hasPersian, isFullyTranslated, setLangAvailability, translateCmsRecord, translateDeep, translateProduct, type ForeignLang } from '../i18n';
+import { getLang, hasPersian, isProductFullyTranslated, setLangAvailability, translateCmsRecord, translateDeep, translateProduct, type ForeignLang } from '../i18n';
+import { productPathAliases } from '../seo/resolveSeo';
 
 function loadStoredArticles(stored: Article[] | null | undefined): Article[] {
   if (!Array.isArray(stored)) return ARTICLES;
@@ -435,9 +436,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const foreign: ForeignLang | null = lang === 'fa' ? null : lang;
   const shownProducts = useMemo(() => {
     if (!foreign) return publicProducts;
-    const ok = publicProducts.filter((item) => isFullyTranslated(translateProduct(item)));
-    setLangAvailability(foreign, { products: ok.map((item) => item.id) });
-    return ok.map((item) => translateProduct(item));
+    // slugName is the Persian URL and must not drop an otherwise translated product.
+    const translated = publicProducts.filter((item) => isProductFullyTranslated(item)).map((item) => translateProduct(item));
+    setLangAvailability(foreign, { products: translated.map((item) => item.id), productPaths: productPathAliases(translated) });
+    return translated;
   }, [foreign, publicProducts]);
   const publicServices = useMemo(() => services.filter((item) => item.status !== 'draft' && item.status !== 'review'), [services]);
   const shownServices = useMemo(() => (adminUser ? services : publicServices).map((item) => translateCmsRecord(item)), [services, publicServices, adminUser, foreign]);
