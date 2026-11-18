@@ -41,6 +41,7 @@ export const ProductsTab: React.FC = () => {
   const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Product, 'translations'>>;
   const turkishDraft = (formData.translations?.tr || {}) as Partial<Omit<Product, 'translations'>>;
   const russianDraft = (formData.translations?.ru || {}) as Partial<Omit<Product, 'translations'>>;
+  const arabicDraft = (formData.translations?.ar || {}) as Partial<Omit<Product, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<Product, 'translations'>>) => {
     setFormData({ ...formData, translations: { ...formData.translations, en: { ...englishDraft, ...patch } } });
@@ -50,6 +51,9 @@ export const ProductsTab: React.FC = () => {
   };
   const updateRussian = (patch: Partial<Omit<Product, 'translations'>>) => {
     setFormData({ ...formData, translations: { ...formData.translations, ru: { ...russianDraft, ...patch } } });
+  };
+  const updateArabic = (patch: Partial<Omit<Product, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, ar: { ...arabicDraft, ...patch } } });
   };
 
   const openCreateModal = () => {
@@ -481,6 +485,37 @@ export const ProductsTab: React.FC = () => {
                   <div>
                     <label className="block text-xs font-bold text-slate-300 mb-1">Russian image alt text</label>
                     <input value={russianDraft.imageAlt || ''} onChange={(e) => updateRussian({ imageAlt: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                </div>
+
+                <div className="bg-amber-500/5 p-5 rounded-2xl border border-amber-500/20 space-y-4" dir="rtl">
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-200 flex items-center gap-1.5 mb-1">الترجمة العربية للمنتج</h4>
+                    <p className="text-[11px] text-slate-500">با تکمیل این بخش، نسخه عربی محصول روی /ar منتشر می‌شود.</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Arabic product name</label>
+                    <input value={arabicDraft.name || ''} onChange={(e) => updateArabic({ name: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Arabic category title</label>
+                    <input value={arabicDraft.categoryTitle || ''} onChange={(e) => updateArabic({ categoryTitle: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Arabic short description</label>
+                    <textarea value={arabicDraft.shortDescription || ''} onChange={(e) => updateArabic({ shortDescription: e.target.value })} rows={2} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Arabic full description</label>
+                    <textarea value={arabicDraft.fullDescription || ''} onChange={(e) => updateArabic({ fullDescription: e.target.value })} rows={4} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Arabic advantages — one per line</label>
+                    <textarea value={(arabicDraft.advantages || []).join('\n')} onChange={(e) => updateArabic({ advantages: e.target.value.split('\n').map((item) => item.trim()).filter(Boolean) })} rows={3} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">Arabic image alt text</label>
+                    <input value={arabicDraft.imageAlt || ''} onChange={(e) => updateArabic({ imageAlt: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
                   </div>
                 </div>
 

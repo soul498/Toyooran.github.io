@@ -239,6 +239,7 @@ const MainAppInner: React.FC = () => {
         navLabelsEn={siteLayout.header.navLabelsEn}
         navLabelsTr={siteLayout.header.navLabelsTr}
         navLabelsRu={siteLayout.header.navLabelsRu}
+        navLabelsAr={siteLayout.header.navLabelsAr}
       />}
 
       {/* Main Content by Section */}
@@ -368,7 +369,7 @@ const MainAppInner: React.FC = () => {
 export default function App() {
   return (
     <DataProvider>
-      <BrowserRouter basename={getLang() === 'fa' ? undefined : LANG_PREFIX[getLang() as 'en' | 'tr' | 'ru']}>
+      <BrowserRouter basename={getLang() === 'fa' ? undefined : LANG_PREFIX[getLang() as 'en' | 'tr' | 'ru' | 'ar']}>
         <MainAppInner />
         <Suspense fallback={null}>
           <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '12px', fontFamily: isLtr() ? 'system-ui, sans-serif' : 'Estedad, sans-serif' } }} />

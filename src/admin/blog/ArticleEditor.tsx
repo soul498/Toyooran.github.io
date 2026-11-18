@@ -130,6 +130,12 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
   const [russianContent, setRussianContent] = useState(initialRussian.content?.join("\n") || "");
   const [russianSeoTitle, setRussianSeoTitle] = useState(initialRussian.seoTitle || "");
   const [russianSeoDescription, setRussianSeoDescription] = useState(initialRussian.seoDescription || "");
+  const initialArabic = (initial?.translations?.ar || {}) as Partial<Omit<Article, 'translations'>>;
+  const [arabicTitle, setArabicTitle] = useState(initialArabic.title || "");
+  const [arabicSummary, setArabicSummary] = useState(initialArabic.summary || "");
+  const [arabicContent, setArabicContent] = useState(initialArabic.content?.join("\n") || "");
+  const [arabicSeoTitle, setArabicSeoTitle] = useState(initialArabic.seoTitle || "");
+  const [arabicSeoDescription, setArabicSeoDescription] = useState(initialArabic.seoDescription || "");
   const [relatedProductIds, setRelatedProductIds] = useState<string[]>(initial?.relatedProductIds || []);
   const [relatedServiceId, setRelatedServiceId] = useState(initial?.relatedServiceId || "");
   const [noindex, setNoindex] = useState(Boolean(initial?.noindex));
@@ -404,6 +410,15 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       seoTitle: russianSeoTitle.trim() || undefined,
       seoDescription: russianSeoDescription.trim() || undefined,
     };
+    const arabicHasContent = [arabicTitle, arabicSummary, arabicContent, arabicSeoTitle, arabicSeoDescription].some((value) => value.trim());
+    const arabicTranslation: Partial<Omit<Article, 'translations'>> = {
+      ...initialArabic,
+      title: arabicTitle.trim() || undefined,
+      summary: arabicSummary.trim() || undefined,
+      content: arabicContent.split("\n").map((line) => line.trim()).filter(Boolean),
+      seoTitle: arabicSeoTitle.trim() || undefined,
+      seoDescription: arabicSeoDescription.trim() || undefined,
+    };
     const article: Article = {
       ...(initial || { id: nextSlug, title: title.trim(), category, categoryLabel: "", readTime: "", date, summary: "", content: [], relatedProductIds: [] }),
       id: nextSlug,
@@ -433,7 +448,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
       focusKeyword: focusKeyword.trim() || undefined,
       noindex: noindex || undefined,
       aliases: aliases.size ? [...aliases] : undefined,
-      translations: (englishHasContent || turkishHasContent || russianHasContent) ? { ...(englishHasContent ? { en: englishTranslation } : {}), ...(turkishHasContent ? { tr: turkishTranslation } : {}), ...(russianHasContent ? { ru: russianTranslation } : {}) } : undefined,
+      translations: (englishHasContent || turkishHasContent || russianHasContent || arabicHasContent) ? { ...(englishHasContent ? { en: englishTranslation } : {}), ...(turkishHasContent ? { tr: turkishTranslation } : {}), ...(russianHasContent ? { ru: russianTranslation } : {}), ...(arabicHasContent ? { ar: arabicTranslation } : {}) } : undefined,
     };
     setSaving(true);
     setError("");
@@ -825,6 +840,18 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
         <label className="block text-xs text-slate-300">Текст (сохраните маркеры ##, -, [IMG|...], [CTA|...])<textarea rows={12} value={russianContent} onChange={(event) => setRussianContent(event.target.value)} className={fieldClass + " mt-1 leading-6 font-mono"} /></label>
         <label className="block text-xs text-slate-300">SEO-заголовок<input value={russianSeoTitle} onChange={(event) => setRussianSeoTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
         <label className="block text-xs text-slate-300">SEO-описание<textarea rows={2} value={russianSeoDescription} onChange={(event) => setRussianSeoDescription(event.target.value)} className={fieldClass + " mt-1"} /></label>
+      </section>
+
+      <section className="bg-amber-500/5 border border-amber-500/25 rounded-3xl p-4 sm:p-5 space-y-4" dir="rtl">
+        <div>
+          <h3 className="text-sm font-black text-amber-100">النسخة العربية للمقال</h3>
+          <p className="text-[11px] text-slate-500 mt-1">محتوای عربی مستقل است. تا وقتی ترجمه کامل نباشد، نسخه /ar این مقاله منتشر نمی‌شود.</p>
+        </div>
+        <label className="block text-xs text-slate-300">العنوان<input value={arabicTitle} onChange={(event) => setArabicTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
+        <label className="block text-xs text-slate-300">الملخص<textarea rows={3} value={arabicSummary} onChange={(event) => setArabicSummary(event.target.value)} className={fieldClass + " mt-1 leading-6"} /></label>
+        <label className="block text-xs text-slate-300">النص (احتفظ بعلامات ## و - و [IMG|...] و [CTA|...])<textarea rows={12} value={arabicContent} onChange={(event) => setArabicContent(event.target.value)} className={fieldClass + " mt-1 leading-6 font-mono"} dir="rtl" /></label>
+        <label className="block text-xs text-slate-300">عنوان SEO<input value={arabicSeoTitle} onChange={(event) => setArabicSeoTitle(event.target.value)} className={fieldClass + " mt-1"} /></label>
+        <label className="block text-xs text-slate-300">وصف SEO<textarea rows={2} value={arabicSeoDescription} onChange={(event) => setArabicSeoDescription(event.target.value)} className={fieldClass + " mt-1"} /></label>
       </section>
     </form>
   );

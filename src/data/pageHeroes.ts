@@ -108,6 +108,8 @@ export const CATALOG_PDF_BY_LANG = {
   en: '/TSPK-Catalog-en.pdf',
   tr: '/TSPK-Catalog-tr.pdf',
   ru: '/TSPK-Catalog-ru.pdf',
+  // No separate Arabic catalogue file yet; the Persian PDF is the RTL catalogue.
+  ar: '/TSPK-Catalog-fa.pdf',
 } as const;
 
 export function catalogPdfHref(lang = getLang()): string {

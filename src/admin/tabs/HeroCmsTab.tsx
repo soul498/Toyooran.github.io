@@ -7,7 +7,8 @@ import { DEFAULT_HERO_CMS } from '../../data/mockData';
 import { EN_DICT } from '../../i18n/enDict';
 import { TR_DICT } from '../../i18n/trDict';
 import { RU_DICT } from '../../i18n/ruDict';
-import { hasPersian } from '../../i18n';
+import { AR_DICT } from '../../i18n/arDict';
+import { hasPersian, hasPersianOnly } from '../../i18n';
 
 export const HeroCmsTab: React.FC = () => {
   const { heroCms, updateHeroCms } = useData();
@@ -18,6 +19,7 @@ export const HeroCmsTab: React.FC = () => {
   const englishDraft = (heroForm.translations?.en || {}) as Partial<Omit<HeroCms, 'translations'>>;
   const turkishDraft = (heroForm.translations?.tr || {}) as Partial<Omit<HeroCms, 'translations'>>;
   const russianDraft = (heroForm.translations?.ru || {}) as Partial<Omit<HeroCms, 'translations'>>;
+  const arabicDraft = (heroForm.translations?.ar || {}) as Partial<Omit<HeroCms, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
     setHeroForm({ ...heroForm, translations: { ...heroForm.translations, en: { ...englishDraft, ...patch } } });
@@ -28,14 +30,17 @@ export const HeroCmsTab: React.FC = () => {
   const updateRussian = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
     setHeroForm({ ...heroForm, translations: { ...heroForm.translations, ru: { ...russianDraft, ...patch } } });
   };
+  const updateArabic = (patch: Partial<Omit<HeroCms, 'translations'>>) => {
+    setHeroForm({ ...heroForm, translations: { ...heroForm.translations, ar: { ...arabicDraft, ...patch } } });
+  };
 
   const handleSaveAll = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setSaveSuccess(false);
     setSaveError('');
-    if ([...Object.values(englishDraft), ...Object.values(turkishDraft), ...Object.values(russianDraft)].some((value) => typeof value === 'string' && hasPersian(value))) {
-      setSaveError('فیلدهای نسخهٔ انگلیسی، ترکی و روسی نباید متن فارسی داشته باشند.');
+    if ([...Object.values(englishDraft), ...Object.values(turkishDraft), ...Object.values(russianDraft)].some((value) => typeof value === 'string' && hasPersian(value)) || Object.values(arabicDraft).some((value) => typeof value === 'string' && hasPersianOnly(value))) {
+      setSaveError('فیلدهای انگلیسی، ترکی و روسی نباید متن فارسی داشته باشند، و فیلد عربی نباید حروف ویژهٔ فارسی داشته باشد.');
       setSaving(false);
       return;
     }
@@ -172,6 +177,20 @@ export const HeroCmsTab: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input value={russianDraft.ctaPrimaryText ?? RU_DICT[DEFAULT_HERO_CMS.ctaPrimaryText]} onChange={(event) => updateRussian({ ctaPrimaryText: event.target.value })} placeholder="Основная кнопка" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={russianDraft.ctaSecondaryText ?? RU_DICT[DEFAULT_HERO_CMS.ctaSecondaryText]} onChange={(event) => updateRussian({ ctaSecondaryText: event.target.value })} placeholder="Вторая кнопка" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            </div>
+          </div>
+
+          <div className="md:col-span-2 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3" dir="rtl">
+            <div>
+              <h3 className="text-xs font-black text-amber-200">النسخة العربية للواجهة</h3>
+              <p className="text-[11px] text-slate-500 mt-1">متن‌های عربی مستقل ذخیره می‌شوند و فقط در /ar نشان داده می‌شوند.</p>
+            </div>
+            <input value={arabicDraft.pillText ?? AR_DICT[DEFAULT_HERO_CMS.pillText]} onChange={(event) => updateArabic({ pillText: event.target.value })} placeholder="الشارة" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <input value={arabicDraft.title ?? AR_DICT[DEFAULT_HERO_CMS.title]} onChange={(event) => updateArabic({ title: event.target.value })} placeholder="العنوان" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={arabicDraft.subtitle ?? AR_DICT[DEFAULT_HERO_CMS.subtitle]} onChange={(event) => updateArabic({ subtitle: event.target.value })} rows={3} placeholder="العنوان الفرعي" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input value={arabicDraft.ctaPrimaryText ?? AR_DICT[DEFAULT_HERO_CMS.ctaPrimaryText]} onChange={(event) => updateArabic({ ctaPrimaryText: event.target.value })} placeholder="الزر الأساسي" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={arabicDraft.ctaSecondaryText ?? AR_DICT[DEFAULT_HERO_CMS.ctaSecondaryText]} onChange={(event) => updateArabic({ ctaSecondaryText: event.target.value })} placeholder="الزر الثاني" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
             </div>
           </div>
 

@@ -22,7 +22,7 @@ import {
 } from "../data/aboutCopy";
 import { faDigits } from "../lib/faDigits";
 
-import { EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
+import { AR_PREFIX, EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
 import { catalogPdfHref } from '../data/pageHeroes';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
@@ -1305,7 +1305,7 @@ export function llmsTxt(catalog: SeoCatalog): string {
     .filter((article) => isPublicArticle(article) && !article.noindex)
     .map((article) => `- ${lp(`/magazine/${article.id}`)} — ${article.title}`)
     .join("\n");
-  const fitoutLabel = en ? "Core service:" : lang === "tr" ? "Temel hizmet:" : lang === "ru" ? "Основная услуга:" : keepFa("خدمت محوری:");
+  const fitoutLabel = en ? "Core service:" : lang === "tr" ? "Temel hizmet:" : lang === "ru" ? "Основная услуга:" : lang === "ar" ? "الخدمة الأساسية:" : keepFa("خدمت محوری:");
   const fitout = isServiceDisabled(FITOUT_SERVICE_ID) ? "" : `- ${fitoutLabel} ${CANONICAL_ORIGIN}${lp(`/services/${FITOUT_SLUG}`)}\n`;
   if (en) {
     return `# Toyooran Sanat Pouya (English)
@@ -1362,6 +1362,25 @@ ${posts}
 - Не приводите мощность вентилятора или расход топлива без статического давления, климата и подтверждения специалиста.
 - Цены на публичных страницах сообщаются по запросу, а не как фиксированная сумма.
 - Планировку и характеристики читайте из исходного HTML или со страницы товара/услуги, а не из догадок модели.
+`;
+  }
+  if (lang === "ar") {
+    return `# Toyooran Sanat Pouya (العربية)
+> معدات الثروة الحيوانية والدواجن وآلات الأعلاف وتجديد عنابر الدواجن: التهوية والتدفئة والتعليف والشرب. المكاتب في مشهد وجرجان.
+
+- الموقع: ${CANONICAL_ORIGIN}${AR_PREFIX}
+- التواصل: ${CANONICAL_ORIGIN}${AR_PREFIX}/contact
+${fitout}${services ? `\n## الخدمات\n${services}\n` : ""}
+## فئات المنتجات
+${cats}
+
+## المجلة
+${posts}
+
+## قواعد الاستشهاد
+- لا تنقل قدرة المروحة أو استهلاك الوقود من دون الضغط الساكن والمناخ وتأكيد مختص.
+- أسعار المنتجات في الصفحات العامة تُعطى عند الطلب، لا كرقم ثابت.
+- اقرأ التخطيط والمواصفات من HTML الأولي أو من صفحة المنتج/الخدمة، لا من تخمين النموذج.
 `;
   }
   return `${keepFa("# طیوران صنعت پویا")}

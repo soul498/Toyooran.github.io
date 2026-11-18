@@ -72,7 +72,7 @@ export function rewriteRemovedProductHref(pathOrHref: string): string {
     /* keep raw */
   }
   const parts = decoded.split("/").filter(Boolean);
-  if (parts[0] === "en" || parts[0] === "tr" || parts[0] === "ru") parts.shift();
+  if (parts[0] === "en" || parts[0] === "tr" || parts[0] === "ru" || parts[0] === "ar") parts.shift();
   if (parts[0] !== "products" || parts.length < 2) return pathOrHref;
   const categoryPath = removedProductRedirect(parts[1]);
   // Only the hidden feeding-line products (Chicken / Chicken Plus / Konavi) are retargeted

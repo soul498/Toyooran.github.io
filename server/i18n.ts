@@ -1,13 +1,15 @@
 /**
- * Server side of fa / en / tr / ru. Persian (default) is untouched.
- * English pages live under /en, Turkish under /tr and Russian under /ru (see src/i18n/index.ts, docs/i18n.md).
+ * Server side of fa / en / tr / ru / ar. Persian (default) is untouched.
+ * English pages live under /en, Turkish under /tr, Russian under /ru and Arabic under /ar.
  */
 import { EN_DICT } from "../src/i18n/enDict";
 import { TR_DICT } from "../src/i18n/trDict";
 import { RU_DICT } from "../src/i18n/ruDict";
+import { AR_DICT } from "../src/i18n/arDict";
 import MAGAZINE_EN from "../src/i18n/en/magazine.json";
 import MAGAZINE_TR from "../src/i18n/tr/magazine.json";
 import MAGAZINE_RU from "../src/i18n/ru/magazine.json";
+import MAGAZINE_AR from "../src/i18n/ar/magazine.json";
 import {
   type ForeignLang,
   isFullyTranslated,
@@ -16,6 +18,7 @@ import {
   setEnDictionary,
   setTrDictionary,
   setRuDictionary,
+  setArDictionary,
   translateDeep,
   translateCmsRecord,
   translateProduct,
@@ -28,14 +31,16 @@ import type { SeoCatalog } from "../src/seo/resolveSeo";
 setEnDictionary(EN_DICT);
 setTrDictionary(TR_DICT);
 setRuDictionary(RU_DICT);
+setArDictionary(AR_DICT);
 
 const MAG: Record<ForeignLang, Record<string, Record<string, string>>> = {
   en: MAGAZINE_EN as Record<string, Record<string, string>>,
   tr: MAGAZINE_TR as Record<string, Record<string, string>>,
   ru: MAGAZINE_RU as Record<string, Record<string, string>>,
+  ar: MAGAZINE_AR as Record<string, Record<string, string>>,
 };
 
-const DATE_LOCALE: Record<ForeignLang, string> = { en: "en-GB", tr: "tr-TR", ru: "ru-RU" };
+const DATE_LOCALE: Record<ForeignLang, string> = { en: "en-GB", tr: "tr-TR", ru: "ru-RU", ar: "ar" };
 
 /** Article fields that are shown to readers / search engines (Persian → must have a translation). */
 export function articleVisibleText(article: Article): unknown {

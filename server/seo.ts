@@ -169,10 +169,13 @@ export function injectSeoTags(html: string, reqPath: string): string {
         });
   let out = ensureViewport(html);
   out = deferRenderBlockingCss(out);
-  if (lang !== "fa") {
+  const ltr = lang === "en" || lang === "tr" || lang === "ru";
+  if (ltr) {
     out = out.replace(/<html\b[^>]*>/i, `<html lang="${lang}" dir="ltr">`);
-    // Latin-script pages use the Latin cut of the brand font.
+    // Latin-script pages use the Latin cut of the brand font. Arabic stays on the Arabic/Persian cut.
     out = out.replace(/\/fonts\/estedad-(400|700)\.woff2/g, "/fonts/estedad-latin-$1.woff2");
+  } else if (lang === "ar") {
+    out = out.replace(/<html\b[^>]*>/i, '<html lang="ar" dir="rtl">');
   } else {
     out = out.replace(/<html\b[^>]*>/i, '<html lang="fa-IR" dir="rtl">');
   }
@@ -210,7 +213,7 @@ ${canonical}${neutral === "/" ? HOME_HERO_PRELOAD : ""}    <meta property="og:ti
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />
     <meta property="og:type" content="${doc.ogType}" />
     <meta property="og:site_name" content="${lang === "fa" ? "طیوران صنعت پویا" : "Toyooran Sanat Pouya"}" />
-    <meta property="og:locale" content="${lang === "ru" ? "ru_RU" : lang === "tr" ? "tr_TR" : lang === "en" ? "en_US" : "fa_IR"}" />
+    <meta property="og:locale" content="${lang === "ar" ? "ar_AR" : lang === "ru" ? "ru_RU" : lang === "tr" ? "tr_TR" : lang === "en" ? "en_US" : "fa_IR"}" />
     <meta property="og:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -235,12 +238,14 @@ function hreflangLinks(neutralPath: string, doc: { robots: string; notFound?: bo
   const en = foreignEquivalent(neutralPath, "en");
   const tr = foreignEquivalent(neutralPath, "tr");
   const ru = foreignEquivalent(neutralPath, "ru");
-  if (!en && !tr && !ru) return "";
+  const ar = foreignEquivalent(neutralPath, "ar");
+  if (!en && !tr && !ru && !ar) return "";
   const fa = canonicalPath(neutralPath);
   const lines = [`    <link rel="alternate" hreflang="fa" href="${fa}" />`];
   if (en) lines.push(`    <link rel="alternate" hreflang="en" href="${canonicalPath(en)}" />`);
   if (tr) lines.push(`    <link rel="alternate" hreflang="tr" href="${canonicalPath(tr)}" />`);
   if (ru) lines.push(`    <link rel="alternate" hreflang="ru" href="${canonicalPath(ru)}" />`);
+  if (ar) lines.push(`    <link rel="alternate" hreflang="ar" href="${canonicalPath(ar)}" />`);
   lines.push(`    <link rel="alternate" hreflang="x-default" href="${fa}" />`);
   return `${lines.join("\n")}\n`;
 }
@@ -293,7 +298,8 @@ export function llmsTxtAll(): string {
   const en = localizedCatalog(catalog, "en");
   const tr = localizedCatalog(catalog, "tr");
   const ru = localizedCatalog(catalog, "ru");
-  return `${llmsTxt(catalog)}\n${withLang("en", () => llmsTxt(en))}\n${withLang("tr", () => llmsTxt(tr))}\n${withLang("ru", () => llmsTxt(ru))}`;
+  const ar = localizedCatalog(catalog, "ar");
+  return `${llmsTxt(catalog)}\n${withLang("en", () => llmsTxt(en))}\n${withLang("tr", () => llmsTxt(tr))}\n${withLang("ru", () => llmsTxt(ru))}\n${withLang("ar", () => llmsTxt(ar))}`;
 }
 
 function localizedSitemapUrls(catalog: ReturnType<typeof loadSeoCatalog>, lang: ForeignLang) {
@@ -307,7 +313,7 @@ function localizedSitemapUrls(catalog: ReturnType<typeof loadSeoCatalog>, lang: 
 export function sitemapXml(): string {
   const catalog = loadSeoCatalog();
   // Persian URLs first (unchanged), then /en, then /tr (only pages that exist in that language).
-  const urls = [...sitemapEntries(catalog), ...localizedSitemapUrls(catalog, "en"), ...localizedSitemapUrls(catalog, "tr"), ...localizedSitemapUrls(catalog, "ru")];
+  const urls = [...sitemapEntries(catalog), ...localizedSitemapUrls(catalog, "en"), ...localizedSitemapUrls(catalog, "tr"), ...localizedSitemapUrls(catalog, "ru"), ...localizedSitemapUrls(catalog, "ar")];
   const body = urls
     .map((u) => {
       const last = u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : "";

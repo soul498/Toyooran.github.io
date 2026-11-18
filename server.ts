@@ -296,7 +296,7 @@ async function startServer() {
   // change visible to ordinary visitors immediately, independently of the admin UI.
   app.get('/api/public/cms', (req, res) => {
     const baseCatalog = loadSeoCatalog();
-    const requested = req.query.lang === 'en' || req.query.lang === 'tr' || req.query.lang === 'ru' ? req.query.lang as ForeignLang : null;
+    const requested = req.query.lang === 'en' || req.query.lang === 'tr' || req.query.lang === 'ru' || req.query.lang === 'ar' ? req.query.lang as ForeignLang : null;
     const catalog = requested ? localizedCatalog(baseCatalog, requested) : baseCatalog;
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     res.json({
@@ -313,7 +313,7 @@ async function startServer() {
   app.get('/api/magazine', (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     // ?lang=en|tr: only articles with a complete translation, translated.
-    if (req.query.lang === 'en' || req.query.lang === 'tr' || req.query.lang === 'ru') {
+    if (req.query.lang === 'en' || req.query.lang === 'tr' || req.query.lang === 'ru' || req.query.lang === 'ar') {
       const lang = req.query.lang as ForeignLang;
       const articles = loadPublicArticles().map((a) => articleFor(lang, a)).filter(Boolean);
       return res.json({ articles, topics: [...new Set(articles.map((a) => a!.topic).filter(Boolean))] });

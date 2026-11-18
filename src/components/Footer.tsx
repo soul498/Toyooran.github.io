@@ -18,7 +18,7 @@ import {
 import { rewriteDisabledHref } from '../data/disabledPages';
 import { SERVICE_PAGES, servicePagePath } from '../data/servicePages';
 
-import { getLang, hasPersian, intlLocale, t, tr, translateDeep } from '../i18n';
+import { getLang, hasPersian, hasPersianOnly, intlLocale, t, tr, translateDeep } from '../i18n';
 // The six service pages (src/data/servicePages.ts), same order as the cards.
 const FOOTER_SERVICE_LINKS = SERVICE_PAGES.map((page) => ({ to: servicePagePath(page), title: page.title }));
 
@@ -29,7 +29,7 @@ interface FooterProps {
   onOpenQuote: () => void;
   companyInfo: any;
   categories: any[];
-  layout?: { logoUrl?: string; aboutFa?: string; aboutEn?: string; aboutTr?: string; aboutRu?: string };
+  layout?: { logoUrl?: string; aboutFa?: string; aboutEn?: string; aboutTr?: string; aboutRu?: string; aboutAr?: string };
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, onOpenConsultation, onOpenQuote, companyInfo, categories, layout }) => {
@@ -48,8 +48,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
   const companyName = lang === 'fa' ? (companyInfo?.nameFa || companyInfo?.nameEn) : (companyInfo?.nameEn || companyInfo?.nameFa);
   const currentYear = new Date().getFullYear().toLocaleString(intlLocale(), { useGrouping: false });
   const aboutFallback = t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.");
-  const aboutForeign = lang === 'en' ? layout?.aboutEn : lang === 'tr' ? layout?.aboutTr : lang === 'ru' ? layout?.aboutRu : undefined;
-  const aboutText = lang === 'fa' ? (layout?.aboutFa || aboutFallback) : (aboutForeign && !hasPersian(aboutForeign) ? aboutForeign : aboutFallback);
+  const aboutForeign = lang === 'en' ? layout?.aboutEn : lang === 'tr' ? layout?.aboutTr : lang === 'ru' ? layout?.aboutRu : lang === 'ar' ? layout?.aboutAr : undefined;
+  const aboutOk = aboutForeign && (lang === 'ar' ? !hasPersianOnly(aboutForeign) : !hasPersian(aboutForeign));
+  const aboutText = lang === 'fa' ? (layout?.aboutFa || aboutFallback) : (aboutOk ? aboutForeign : aboutFallback);
 
   return (
     <footer className="relative w-full bg-[#020b18] pt-20 pb-6 overflow-hidden border-t border-white/5 z-20">

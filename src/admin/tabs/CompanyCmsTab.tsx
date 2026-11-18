@@ -18,6 +18,7 @@ export const CompanyCmsTab: React.FC = () => {
 
   const turkishDraft = (companyForm.translations?.tr || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
   const russianDraft = (companyForm.translations?.ru || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
+  const arabicDraft = (companyForm.translations?.ar || {}) as Partial<Omit<CompanyInfo, 'translations'>>;
   const updateEnglish = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
     setCompanyForm({ ...companyForm, translations: { ...companyForm.translations, en: { ...englishDraft, ...patch } } });
   };
@@ -26,6 +27,9 @@ export const CompanyCmsTab: React.FC = () => {
   };
   const updateRussian = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
     setCompanyForm({ ...companyForm, translations: { ...companyForm.translations, ru: { ...russianDraft, ...patch } } });
+  };
+  const updateArabic = (patch: Partial<Omit<CompanyInfo, 'translations'>>) => {
+    setCompanyForm({ ...companyForm, translations: { ...companyForm.translations, ar: { ...arabicDraft, ...patch } } });
   };
 
   const handleSaveAll = (e: React.FormEvent) => {
@@ -145,6 +149,20 @@ export const CompanyCmsTab: React.FC = () => {
               <input value={russianDraft.address || ''} onChange={(event) => updateRussian({ address: event.target.value })} placeholder="Адрес головного офиса" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={russianDraft.factoryAddress || ''} onChange={(event) => updateRussian({ factoryAddress: event.target.value })} placeholder="Адрес завода" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
               <input value={russianDraft.workingHours || ''} onChange={(event) => updateRussian({ workingHours: event.target.value })} placeholder="Часы работы" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white md:col-span-2" />
+            </div>
+          </div>
+
+          <div className="md:col-span-2 lg:col-span-3 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3" dir="rtl">
+            <div>
+              <h3 className="text-xs font-black text-amber-200">النص العربي للشركة</h3>
+              <p className="text-[11px] text-slate-500 mt-1">این متن‌ها فقط در نسخه /ar نشان داده می‌شوند.</p>
+            </div>
+            <input value={arabicDraft.tagline || ''} onChange={(event) => updateArabic({ tagline: event.target.value })} placeholder="شعار الشركة" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+            <textarea value={arabicDraft.subTagline || ''} onChange={(event) => updateArabic({ subTagline: event.target.value })} rows={2} placeholder="نبذة قصيرة" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input value={arabicDraft.address || ''} onChange={(event) => updateArabic({ address: event.target.value })} placeholder="عنوان المكتب الرئيسي" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={arabicDraft.factoryAddress || ''} onChange={(event) => updateArabic({ factoryAddress: event.target.value })} placeholder="عنوان المصنع" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+              <input value={arabicDraft.workingHours || ''} onChange={(event) => updateArabic({ workingHours: event.target.value })} placeholder="ساعات العمل" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white md:col-span-2" />
             </div>
           </div>
           

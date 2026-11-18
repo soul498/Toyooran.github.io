@@ -1,18 +1,19 @@
 /**
- * Languages: fa = default at the existing URLs, en under /en, tr under /tr, ru under /ru.
+ * Languages: fa = default at the existing URLs, en under /en, tr under /tr, ru under /ru, ar under /ar.
+ * Arabic is right-to-left, like Persian. English, Turkish and Russian are left-to-right.
  *
  * Translation model: every foreign string is keyed by the EXACT Persian source text it translates
  * (src/i18n/<lang>/*.json; magazine articles in magazine.json as {articleId: {fa: translation}}).
  * When the Persian text changes, its old key no longer matches, so the translation is reported as
  * missing/stale by `npm run check:i18n` and the page keeps working (Persian fallback for a UI
- * string; content pages drop out of /en, /tr or /ru until complete). See docs/i18n.md.
+ * string; content pages drop out of /en, /tr, /ru or /ar until complete). See docs/i18n.md.
  *
  * Persian pages never load a foreign dictionary. The client imports one dictionary lazily for
  * that language's URLs (src/main.tsx); the server imports them directly.
  */
 import type UI_EN from './en/ui.json';
 
-export type Lang = 'fa' | 'en' | 'tr' | 'ru';
+export type Lang = 'fa' | 'en' | 'tr' | 'ru' | 'ar';
 export type ForeignLang = Exclude<Lang, 'fa'>;
 /** Typed UI keys: a Persian UI literal without an entry in en/ui.json fails `npm run lint`. */
 export type UiKey = keyof typeof UI_EN;
@@ -20,21 +21,23 @@ export type UiKey = keyof typeof UI_EN;
 export const EN_PREFIX = '/en';
 export const TR_PREFIX = '/tr';
 export const RU_PREFIX = '/ru';
-export const LANG_PREFIX: Record<ForeignLang, string> = { en: EN_PREFIX, tr: TR_PREFIX, ru: RU_PREFIX };
+export const AR_PREFIX = '/ar';
+export const LANG_PREFIX: Record<ForeignLang, string> = { en: EN_PREFIX, tr: TR_PREFIX, ru: RU_PREFIX, ar: AR_PREFIX };
 
 const FOREIGN_PREFIXES: { lang: ForeignLang; prefix: string }[] = [
   { lang: 'en', prefix: EN_PREFIX },
   { lang: 'tr', prefix: TR_PREFIX },
   { lang: 'ru', prefix: RU_PREFIX },
+  { lang: 'ar', prefix: AR_PREFIX },
 ];
 
 let current: Lang = 'fa';
-const dictionaries: Record<ForeignLang, Record<string, string>> = { en: {}, tr: {}, ru: {} };
+const dictionaries: Record<ForeignLang, Record<string, string>> = { en: {}, tr: {}, ru: {}, ar: {} };
 let dict: Record<string, string> = {};
 /** Per-document overlay (server: one magazine article's own entries), checked before `dict`. */
 let overlay: Record<string, string> | null = null;
 
-/** Language of a pathname: /en, /tr and /ru (and their children) are foreign, everything else Persian. */
+/** Language of a pathname: /en, /tr, /ru and /ar (and their children) are foreign, everything else Persian. */
 export function pathLang(pathname: string | undefined | null): Lang {
   const p = String(pathname || '/');
   for (const { lang, prefix } of FOREIGN_PREFIXES) {
@@ -43,7 +46,7 @@ export function pathLang(pathname: string | undefined | null): Lang {
   return 'fa';
 }
 
-/** "/en/products/x", "/tr/products/x" or "/ru/products/x" → "/products/x"; a bare prefix → "/". Persian paths are unchanged. */
+/** "/en/products/x", "/tr/products/x", "/ru/products/x" or "/ar/products/x" → "/products/x"; a bare prefix → "/". Persian paths are unchanged. */
 export function stripLangPrefix(pathname: string): string {
   const lang = pathLang(pathname);
   if (lang === 'fa') return pathname || '/';
@@ -57,13 +60,19 @@ export function getLang(): Lang {
 export const isEn = (): boolean => current === 'en';
 export const isTr = (): boolean => current === 'tr';
 export const isRu = (): boolean => current === 'ru';
-/** English, Turkish and Russian pages are left-to-right. */
-export const isLtr = (): boolean => current !== 'fa';
+export const isAr = (): boolean => current === 'ar';
+/** English, Turkish and Russian are left-to-right. Persian and Arabic are right-to-left. */
+export const isLtr = (): boolean => current === 'en' || current === 'tr' || current === 'ru';
+
+/** Letters used in Persian but not in Arabic, so an Arabic field can hold Arabic script. */
+const PERSIAN_ONLY_CHARS = /[\u067E\u0686\u0698\u06AF\u06A9\u06CC]/;
+export const hasPersianOnly = (s: string): boolean => PERSIAN_ONLY_CHARS.test(s);
 
 /** BCP 47 tag for number and date display. */
 export function intlLocale(): string {
   if (current === 'tr') return 'tr-TR';
   if (current === 'ru') return 'ru-RU';
+  if (current === 'ar') return 'ar';
   if (current === 'en') return 'en-US';
   return 'fa-IR';
 }
@@ -80,6 +89,10 @@ export function setTrDictionary(entries: Record<string, string>): void {
 export function setRuDictionary(entries: Record<string, string>): void {
   dictionaries.ru = entries;
   if (current === 'ru') dict = entries;
+}
+export function setArDictionary(entries: Record<string, string>): void {
+  dictionaries.ar = entries;
+  if (current === 'ar') dict = entries;
 }
 export function setLang(lang: Lang): void {
   current = lang;
@@ -213,6 +226,7 @@ const available: Record<ForeignLang, Availability> = {
   en: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
   tr: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
   ru: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
+  ar: { articles: new Set(), products: new Set(), topics: new Set(), known: false },
 };
 export function setLangAvailability(lang: ForeignLang, a: { articles?: Iterable<string>; products?: Iterable<string>; topics?: Iterable<string> }): void {
   const slot = available[lang];

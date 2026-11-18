@@ -8,12 +8,14 @@ import { ABOUT_ACTIVITIES, ABOUT_INTRO_HEADING, ABOUT_INTRO_PARAGRAPHS } from '.
 import { EN_DICT } from '../../i18n/enDict';
 import { TR_DICT } from '../../i18n/trDict';
 import { RU_DICT } from '../../i18n/ruDict';
-import { hasPersian } from '../../i18n';
+import { AR_DICT } from '../../i18n/arDict';
+import { hasPersian, hasPersianOnly } from '../../i18n';
 
 const en = (fa?: string) => fa ? EN_DICT[fa] || '' : '';
 const trText = (fa?: string) => fa ? TR_DICT[fa] || '' : '';
 const ruText = (fa?: string) => fa ? RU_DICT[fa] || '' : '';
-const containsPersian = (value: unknown): boolean => typeof value === 'string' ? hasPersian(value) : Array.isArray(value) ? value.some(containsPersian) : Boolean(value && typeof value === 'object' && Object.values(value).some(containsPersian));
+const arText = (fa?: string) => fa ? AR_DICT[fa] || '' : '';
+const containsScript = (value: unknown, test: (s: string) => boolean): boolean => typeof value === 'string' ? test(value) : Array.isArray(value) ? value.some((item) => containsScript(item, test)) : Boolean(value && typeof value === 'object' && Object.values(value).some((item) => containsScript(item, test)));
 const PAGE_PATH: Record<CmsPageKey, string> = { services: '/services', magazine: '/magazine', about: '/about', contact: '/contact' };
 // Defaults = the approved /about copy (src/data/aboutCopy.ts). Empty CMS fields fall back to these.
 const ABOUT_FEATURES = ABOUT_ACTIVITIES;
@@ -44,9 +46,11 @@ export const PagesTab: React.FC = () => {
   const activeHeroEn = (activeHero.translations?.en || {}) as Partial<Omit<PageHeroCms, 'translations'>>;
   const activeHeroTr = (activeHero.translations?.tr || {}) as Partial<Omit<PageHeroCms, 'translations'>>;
   const activeHeroRu = (activeHero.translations?.ru || {}) as Partial<Omit<PageHeroCms, 'translations'>>;
+  const activeHeroAr = (activeHero.translations?.ar || {}) as Partial<Omit<PageHeroCms, 'translations'>>;
   const aboutEn = (draft.about.translations?.en || {}) as Partial<Omit<AboutPageCms, 'translations'>>;
   const aboutTr = (draft.about.translations?.tr || {}) as Partial<Omit<AboutPageCms, 'translations'>>;
   const aboutRu = (draft.about.translations?.ru || {}) as Partial<Omit<AboutPageCms, 'translations'>>;
+  const aboutAr = (draft.about.translations?.ar || {}) as Partial<Omit<AboutPageCms, 'translations'>>;
 
   const updateHero = (patch: Partial<PageHeroCms>) => {
     setDraft((previous) => ({
@@ -67,18 +71,22 @@ export const PagesTab: React.FC = () => {
   const updateHeroRussian = (patch: Partial<PageHeroCms>) => {
     updateHero({ translations: { ...activeHero.translations, ru: { ...activeHeroRu, ...patch } } });
   };
+  const updateHeroArabic = (patch: Partial<PageHeroCms>) => {
+    updateHero({ translations: { ...activeHero.translations, ar: { ...activeHeroAr, ...patch } } });
+  };
 
   const updateAbout = (patch: Partial<AboutPageCms>) => {
     setDraft((previous) => ({ ...previous, about: { ...previous.about, ...patch } }));
   };
 
-  const updateAboutFeature = (index: number, patch: { title?: string; description?: string }, locale?: 'en' | 'tr' | 'ru') => {
-    const base = locale === 'en' ? aboutEn : locale === 'tr' ? aboutTr : locale === 'ru' ? aboutRu : draft.about;
+  const updateAboutFeature = (index: number, patch: { title?: string; description?: string }, locale?: 'en' | 'tr' | 'ru' | 'ar') => {
+    const base = locale === 'en' ? aboutEn : locale === 'tr' ? aboutTr : locale === 'ru' ? aboutRu : locale === 'ar' ? aboutAr : draft.about;
     const features = [...(base.features || [])];
     features[index] = { ...(features[index] || {}), ...patch };
     if (locale === 'en') updateAbout({ translations: { ...draft.about.translations, en: { ...aboutEn, features } } });
     else if (locale === 'tr') updateAbout({ translations: { ...draft.about.translations, tr: { ...aboutTr, features } } });
     else if (locale === 'ru') updateAbout({ translations: { ...draft.about.translations, ru: { ...aboutRu, features } } });
+    else if (locale === 'ar') updateAbout({ translations: { ...draft.about.translations, ar: { ...aboutAr, features } } });
     else updateAbout({ features });
   };
 
@@ -87,9 +95,10 @@ export const PagesTab: React.FC = () => {
     setSaving(true);
     setSaved(false);
     setSaveError('');
-    const foreignCopy = [draft.about.translations?.en, draft.about.translations?.tr, draft.about.translations?.ru, draft.rnd.translations?.en, draft.rnd.translations?.tr, draft.rnd.translations?.ru, ...Object.values(draft.heroes as Record<string, PageHeroCms>).flatMap((hero) => [hero?.translations?.en, hero?.translations?.tr, hero?.translations?.ru])];
-    if (foreignCopy.some((value) => containsPersian(value))) {
-      setSaveError('فیلدهای نسخهٔ انگلیسی، ترکی و روسی نباید متن فارسی داشته باشند.');
+    const latinCopy = [draft.about.translations?.en, draft.about.translations?.tr, draft.about.translations?.ru, draft.rnd.translations?.en, draft.rnd.translations?.tr, draft.rnd.translations?.ru, ...Object.values(draft.heroes as Record<string, PageHeroCms>).flatMap((hero) => [hero?.translations?.en, hero?.translations?.tr, hero?.translations?.ru])];
+    const arabicCopy = [draft.about.translations?.ar, draft.rnd.translations?.ar, ...Object.values(draft.heroes as Record<string, PageHeroCms>).map((hero) => hero?.translations?.ar)];
+    if (latinCopy.some((value) => containsScript(value, hasPersian)) || arabicCopy.some((value) => containsScript(value, hasPersianOnly))) {
+      setSaveError('فیلدهای انگلیسی، ترکی و روسی نباید متن فارسی داشته باشند، و فیلد عربی نباید حروف ویژهٔ فارسی داشته باشد.');
       setSaving(false);
       return;
     }
@@ -137,7 +146,7 @@ export const PagesTab: React.FC = () => {
           <h3 className="text-sm font-black text-white">{PAGE_OPTIONS.find((item) => item.key === activePage)?.label} — هیرو صفحه</h3>
           <p className="text-[11px] text-slate-500 mt-1">{PAGE_OPTIONS.find((item) => item.key === activePage)?.description}</p>
         </div>
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
           <div className="space-y-3">
             <p className="text-xs font-bold text-amber-300">فارسی</p>
             <label className="block text-xs text-slate-300">تیتر اصلی<input value={activeHero.title ?? baseHero.title} onChange={(event) => updateHero({ title: event.target.value })} className={fieldClass} /></label>
@@ -170,6 +179,14 @@ export const PagesTab: React.FC = () => {
             <label className="block text-xs text-slate-300">Основная кнопка<input value={activeHeroRu.ctaLabel ?? ruText(baseHero.cta?.label)} onChange={(event) => updateHeroRussian({ ctaLabel: event.target.value })} className={fieldClass} /></label>
             <label className="block text-xs text-slate-300">Вторая кнопка<input value={activeHeroRu.secondaryCtaLabel ?? ruText(baseHero.secondaryCta?.label)} onChange={(event) => updateHeroRussian({ secondaryCtaLabel: event.target.value })} className={fieldClass} /></label>
           </div>
+          <div className="space-y-3" dir="rtl">
+            <p className="text-xs font-bold text-amber-200">العربية</p>
+            <label className="block text-xs text-slate-300">عنوان الصفحة<input value={activeHeroAr.title ?? arText(baseHero.title)} onChange={(event) => updateHeroArabic({ title: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">العنوان العلوي<input value={activeHeroAr.eyebrow ?? arText(baseHero.eyebrow)} onChange={(event) => updateHeroArabic({ eyebrow: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">العنوان الفرعي<textarea rows={3} value={activeHeroAr.subtitle ?? arText(baseHero.subtitle)} onChange={(event) => updateHeroArabic({ subtitle: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">الزر الأساسي<input value={activeHeroAr.ctaLabel ?? arText(baseHero.cta?.label)} onChange={(event) => updateHeroArabic({ ctaLabel: event.target.value })} className={fieldClass} /></label>
+            <label className="block text-xs text-slate-300">الزر الثاني<input value={activeHeroAr.secondaryCtaLabel ?? arText(baseHero.secondaryCta?.label)} onChange={(event) => updateHeroArabic({ secondaryCtaLabel: event.target.value })} className={fieldClass} /></label>
+          </div>
         </div>
       </section>
 
@@ -177,7 +194,7 @@ export const PagesTab: React.FC = () => {
         <section className="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-5">
           <div><h3 className="text-sm font-black text-white">بخش معرفی صفحه درباره شرکت</h3><p className="text-[11px] text-slate-500 mt-1">تصویر، متن معرفی (پاراگراف‌ها با یک خط خالی جدا می‌شوند) و شش حوزهٔ فعالیت قابل ویرایش‌اند.</p></div>
           <ImagePicker label="تصویر معرفی" value={draft.about.image || ''} onChange={(image) => updateAbout({ image })} />
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
             <div className="space-y-3">
               <p className="text-xs font-bold text-amber-300">فارسی</p>
               <label className="block text-xs text-slate-300">تیتر معرفی<input value={draft.about.heading ?? ABOUT_HEADING} onChange={(event) => updateAbout({ heading: event.target.value })} className={fieldClass} /></label>
@@ -223,6 +240,18 @@ export const PagesTab: React.FC = () => {
                   <p className="text-[11px] text-slate-500">Направление {index + 1}</p>
                   <input value={aboutRu.features?.[index]?.title ?? ruText(ABOUT_FEATURES[index][0])} onChange={(event) => updateAboutFeature(index, { title: event.target.value }, 'ru')} placeholder="Заголовок" className={compactFieldClass} />
                   <textarea rows={2} value={aboutRu.features?.[index]?.description ?? ruText(ABOUT_FEATURES[index][1])} onChange={(event) => updateAboutFeature(index, { description: event.target.value }, 'ru')} placeholder="Описание" className={compactFieldClass} />
+                </div>
+              ))}
+            </div>
+            <div className="space-y-3" dir="rtl">
+              <p className="text-xs font-bold text-amber-200">العربية</p>
+              <label className="block text-xs text-slate-300">عنوان التعريف<input value={aboutAr.heading ?? arText(ABOUT_HEADING)} onChange={(event) => updateAbout({ translations: { ...draft.about.translations, ar: { ...aboutAr, heading: event.target.value } } })} className={fieldClass} /></label>
+              <label className="block text-xs text-slate-300">نص التعريف<textarea rows={5} value={aboutAr.intro ?? ABOUT_INTRO_PARAGRAPHS.map((paragraph) => arText(paragraph)).join('\n\n')} onChange={(event) => updateAbout({ translations: { ...draft.about.translations, ar: { ...aboutAr, intro: event.target.value } } })} className={fieldClass} /></label>
+              {ABOUT_FEATURES.map((_, index) => (
+                <div key={index} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-3 space-y-2">
+                  <p className="text-[11px] text-slate-500">مجال النشاط {index + 1}</p>
+                  <input value={aboutAr.features?.[index]?.title ?? arText(ABOUT_FEATURES[index][0])} onChange={(event) => updateAboutFeature(index, { title: event.target.value }, 'ar')} placeholder="العنوان" className={compactFieldClass} />
+                  <textarea rows={2} value={aboutAr.features?.[index]?.description ?? arText(ABOUT_FEATURES[index][1])} onChange={(event) => updateAboutFeature(index, { description: event.target.value }, 'ar')} placeholder="الوصف" className={compactFieldClass} />
                 </div>
               ))}
             </div>

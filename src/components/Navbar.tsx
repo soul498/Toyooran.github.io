@@ -14,7 +14,7 @@ import {
 } from '../icons';
 import { PageSection } from '../types';
 
-import { getLang, hasPersian, isLtr, t } from '../i18n';
+import { getLang, hasPersian, hasPersianOnly, isLtr, t } from '../i18n';
 import { LangToggle } from './LangToggle';
 interface NavbarProps {
   currentSection: PageSection;
@@ -30,6 +30,7 @@ interface NavbarProps {
   navLabelsEn?: import('../types').SiteLayoutConfig['header']['navLabelsEn'];
   navLabelsTr?: import('../types').SiteLayoutConfig['header']['navLabelsTr'];
   navLabelsRu?: import('../types').SiteLayoutConfig['header']['navLabelsRu'];
+  navLabelsAr?: import('../types').SiteLayoutConfig['header']['navLabelsAr'];
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -46,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   navLabelsEn,
   navLabelsTr,
   navLabelsRu,
+  navLabelsAr,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const englishBrand = brandEn && !hasPersian(brandEn) ? brandEn : 'TSPK';
@@ -73,9 +75,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
   const navLabel = (item: typeof navItems[number]) => {
     const lang = getLang();
-    const labels = lang === 'en' ? navLabelsEn : lang === 'tr' ? navLabelsTr : lang === 'ru' ? navLabelsRu : navLabelsFa;
+    const labels = lang === 'en' ? navLabelsEn : lang === 'tr' ? navLabelsTr : lang === 'ru' ? navLabelsRu : lang === 'ar' ? navLabelsAr : navLabelsFa;
     const custom = labels?.[item.id as keyof typeof labels];
-    return custom?.trim() && (lang === 'fa' || !hasPersian(custom)) ? custom : item.label;
+    const scriptOk = lang === 'fa' || (lang === 'ar' ? !hasPersianOnly(custom) : !hasPersian(custom));
+    return custom?.trim() && scriptOk ? custom : item.label;
   };
 
   const handleNavClick = (section: PageSection) => {

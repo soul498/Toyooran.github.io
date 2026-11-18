@@ -40,6 +40,7 @@ export const ProjectsTab: React.FC = () => {
   const englishDraft = (formData.translations?.en || {}) as Partial<Omit<Project, 'translations'>>;
   const turkishDraft = (formData.translations?.tr || {}) as Partial<Omit<Project, 'translations'>>;
   const russianDraft = (formData.translations?.ru || {}) as Partial<Omit<Project, 'translations'>>;
+  const arabicDraft = (formData.translations?.ar || {}) as Partial<Omit<Project, 'translations'>>;
 
   const updateEnglish = (patch: Partial<Omit<Project, 'translations'>>) => {
     setFormData({ ...formData, translations: { ...formData.translations, en: { ...englishDraft, ...patch } } });
@@ -49,6 +50,9 @@ export const ProjectsTab: React.FC = () => {
   };
   const updateRussian = (patch: Partial<Omit<Project, 'translations'>>) => {
     setFormData({ ...formData, translations: { ...formData.translations, ru: { ...russianDraft, ...patch } } });
+  };
+  const updateArabic = (patch: Partial<Omit<Project, 'translations'>>) => {
+    setFormData({ ...formData, translations: { ...formData.translations, ar: { ...arabicDraft, ...patch } } });
   };
 
   const projectTypes = [
@@ -417,6 +421,17 @@ export const ProjectsTab: React.FC = () => {
                   <input value={russianDraft.location || ''} onChange={(event) => updateRussian({ location: event.target.value })} placeholder="Место" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white sm:col-span-2" />
                 </div>
                 <textarea rows={3} value={russianDraft.keyOutcome || ''} onChange={(event) => updateRussian({ keyOutcome: event.target.value })} placeholder="Результат" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
+              </div>
+
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3" dir="rtl">
+                <div><h4 className="text-xs font-black text-amber-200">النسخة العربية للمشروع</h4><p className="text-[11px] text-slate-500 mt-1">این متن‌ها روی مسیر /ar استفاده می‌شوند.</p></div>
+                <input value={arabicDraft.title || ''} onChange={(event) => updateArabic({ title: event.target.value })} placeholder="اسم المشروع" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input value={arabicDraft.typeTitle || ''} onChange={(event) => updateArabic({ typeTitle: event.target.value })} placeholder="نوع المشروع" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                  <input value={arabicDraft.capacity || ''} onChange={(event) => updateArabic({ capacity: event.target.value })} placeholder="السعة" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+                  <input value={arabicDraft.location || ''} onChange={(event) => updateArabic({ location: event.target.value })} placeholder="الموقع" className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white sm:col-span-2" />
+                </div>
+                <textarea rows={3} value={arabicDraft.keyOutcome || ''} onChange={(event) => updateArabic({ keyOutcome: event.target.value })} placeholder="النتيجة" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white" />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
