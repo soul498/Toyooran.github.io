@@ -13,7 +13,7 @@ const OPTIONS = [
   { id: 'en' as const, label: 'EN', hrefLang: 'en', title: 'English', prefix: EN_PREFIX },
   { id: 'tr' as const, label: 'TR', hrefLang: 'tr', title: 'Türkçe', prefix: TR_PREFIX },
   { id: 'ru' as const, label: 'RU', hrefLang: 'ru', title: 'Русский', prefix: RU_PREFIX },
-  { id: 'ar' as const, label: 'ع', hrefLang: 'ar', title: 'العربية', prefix: AR_PREFIX },
+  { id: 'ar' as const, label: 'AR', hrefLang: 'ar', title: 'العربية', prefix: AR_PREFIX },
 ];
 
 export const LangToggle: React.FC<{ className?: string }> = ({ className = '' }) => {
@@ -30,7 +30,7 @@ export const LangToggle: React.FC<{ className?: string }> = ({ className = '' })
         // Inactive buttons stay transparent so they take the header glass, not a whiter disc.
         // Width stays compact below the desktop bar; four 44px pills push the menu off small phones.
         const cls = `flex items-center justify-center h-11 min-w-8 rounded-full border px-1.5 text-[12px] font-black transition-colors duration-300 lg:min-w-11 lg:px-3 lg:text-[13px] ${active ? 'bg-[#003F86] text-white border-[#003F86]' : 'border-transparent bg-transparent text-slate-600 hover:bg-white/30 hover:text-[#003F86]'}`;
-        const style = item.id === 'fa' || item.id === 'ar' ? { fontFamily: '"Estedad", sans-serif' } : undefined;
+        const style = item.id === 'fa' ? { fontFamily: '"Estedad", sans-serif' } : undefined;
         if (active) {
           return <span key={item.id} lang={item.hrefLang} aria-current="page" title={item.title} style={style} className={cls}>{item.label}</span>;
         }
