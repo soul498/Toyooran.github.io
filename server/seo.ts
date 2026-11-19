@@ -1,7 +1,7 @@
 import { loadSeoCatalog } from "./catalog";
 import { HOME_HERO_MOBILE_PHOTO, HOME_HERO_PHOTO, sitePhotoSrc, sitePhotoSrcSet } from "../src/data/sitePhotos";
 import { localizedCatalog } from "./i18n";
-import { LANG_PREFIX, type ForeignLang, localizeHref, pathLang, stripLangPrefix, t, withLang } from "../src/i18n";
+import { LANG_PREFIX, type ForeignLang, localizeHref, pathLang, stripLangPrefix, withLang } from "../src/i18n";
 import {
   CANONICAL_ORIGIN,
   canonicalPath,
@@ -224,7 +224,7 @@ ${canonical}${neutral === "/" ? HOME_HERO_PRELOAD : ""}    <meta property="og:ti
     <meta property="og:description" content="${escapeHtml(doc.description)}" />
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />
     <meta property="og:type" content="${doc.ogType}" />
-    <meta property="og:site_name" content="${escapeHtml(t("طیوران صنعت پویا"))}" />
+    <meta property="og:site_name" content="${escapeHtml(lang === "ar" ? "طيوران صنعت بويا" : lang === "fa" ? "طیوران صنعت پویا" : "Toyooran Sanat Pouya")}" />
     <meta property="og:locale" content="${lang === "ar" ? "ar_AR" : lang === "ru" ? "ru_RU" : lang === "tr" ? "tr_TR" : lang === "en" ? "en_US" : "fa_IR"}" />
     <meta property="og:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
