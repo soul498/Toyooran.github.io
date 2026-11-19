@@ -51,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const englishBrand = brandEn && !hasPersian(brandEn) ? brandEn : 'TSPK';
-  const displayBrand = isLtr() ? englishBrand : (brandFa || t("طیوران صنعت پویا"));
+  const displayBrand = isLtr() ? englishBrand : (getLang() === 'ar' ? t("طیوران صنعت پویا") : (brandFa || t("طیوران صنعت پویا")));
 
   // Prevent scrolling when mobile menu is open
   useEffect(() => {

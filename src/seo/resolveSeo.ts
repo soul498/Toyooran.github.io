@@ -25,6 +25,11 @@ import { faDigits } from "../lib/faDigits";
 import { AR_PREFIX, EN_PREFIX, RU_PREFIX, TR_PREFIX, getLang, hasPersian, hasPersianOnly, isLtr, keepFa, lp, t, tf, tr, translateDeep } from '../i18n';
 import { catalogPdfHref } from '../data/pageHeroes';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
+
+function localizedOrgName(company: CompanyInfo): string {
+  return getLang() === "ar" ? t("طیوران صنعت پویا") : company.nameFa;
+}
+
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
 export const FITOUT_SLUG = "poultry-hall-fitout";
 
@@ -474,7 +479,7 @@ function orgSchema(company: CompanyInfo) {
   return {
     "@type": "Organization",
     "@id": `${CANONICAL_ORIGIN}/#org`,
-    name: company.nameFa,
+    name: localizedOrgName(company),
     alternateName: company.nameEn,
     url: CANONICAL_ORIGIN,
     telephone: [SALES_PHONE_E164, SALES_PHONE_ALT_E164],
@@ -780,7 +785,7 @@ function localBusinessNodes(company: CompanyInfo) {
   const locations = company.locations || [];
   return locations.map((loc) => ({
     "@type": loc.type === "factory" ? "LocalBusiness" : loc.type === "rd" ? "LocalBusiness" : "LocalBusiness",
-    name: `${company.nameFa} — ${loc.title}`,
+    name: `${localizedOrgName(company)} — ${loc.title}`,
     parentOrganization: { "@id": `${CANONICAL_ORIGIN}/#org` },
     // The 051 landline is the Mashhad office line; the Gorgan R&D unit lists the mobile only.
     telephone: loc.type === "rd" ? [SALES_PHONE_E164, SALES_PHONE_ALT_E164] : [SALES_PHONE_E164, SALES_PHONE_ALT_E164, OFFICE_PHONE_E164],
@@ -849,7 +854,7 @@ ${homeExtras(catalog)}`,
           "@type": "WebSite",
           "@id": `${CANONICAL_ORIGIN}/#website`,
           url: CANONICAL_ORIGIN,
-          name: company.nameFa,
+          name: localizedOrgName(company),
           publisher: { "@id": `${CANONICAL_ORIGIN}/#org` },
         },
       ],
@@ -1039,7 +1044,7 @@ ${catServices ? `<h2>${t("خدمات مرتبط")}</h2><ul>${catServices}</ul>` 
             image: imageAbs,
             ...(product.noBrandSchema
               ? {}
-              : { brand: { "@type": "Brand", name: company.nameFa }, manufacturer: { "@id": `${CANONICAL_ORIGIN}/#org` } }),
+              : { brand: { "@type": "Brand", name: localizedOrgName(company) }, manufacturer: { "@id": `${CANONICAL_ORIGIN}/#org` } }),
             offers: {
               "@type": "Offer",
               url: canonicalPath(publicProductPath(product)),
@@ -1148,7 +1153,7 @@ ${catServices ? `<h2>${t("خدمات مرتبط")}</h2><ul>${catServices}</ul>` 
       const relatedProducts = catalog.products.filter((p) => article.relatedProductIds?.includes(p.id)).slice(0, 4);
       const authorNode = article.authorName
         ? { "@type": "Person", name: article.authorName, jobTitle: article.authorRole }
-        : { "@type": "Organization", name: company.nameFa };
+        : { "@type": "Organization", name: localizedOrgName(company) };
       const citations = (article.sources || [])
         .filter((source) => source.name.trim())
         .map((source) => ({
@@ -1447,7 +1452,7 @@ ${posts}
 `;
   }
   if (lang === "ar") {
-    return `# Toyooran Sanat Pouya (العربية)
+    return `# طيوران صنعت بويا (العربية)
 > معدات الثروة الحيوانية والدواجن وآلات الأعلاف وتجديد عنابر الدواجن: التهوية والتدفئة والتعليف والشرب. المكاتب في مشهد وجرجان.
 
 - الموقع: ${CANONICAL_ORIGIN}${AR_PREFIX}

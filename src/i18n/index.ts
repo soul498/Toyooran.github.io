@@ -146,20 +146,23 @@ export function lookupEn(fa: string): string | undefined {
 
 /** UI string: Persian as-is on Persian pages; the active language (falls back to Persian) otherwise. */
 export function t(fa: UiKey): string {
-  if (current === 'fa') return fa as string;
-  return lookupEn(fa as string) ?? (fa as string);
+  const raw = current === 'fa' ? (fa as string) : (lookupEn(fa as string) ?? (fa as string));
+  return current === 'ar' ? displayDigits(raw) : raw;
 }
 
 /** Content string (data, CMS): same as t() but untyped. */
 export function tr(fa: string): string {
-  if (current === 'fa' || !fa || !hasPersian(fa)) return fa;
-  return lookupEn(fa) ?? fa;
+  if (!fa) return fa;
+  if (current === 'fa') return fa;
+  const raw = hasPersian(fa) ? (lookupEn(fa) ?? fa) : fa;
+  return current === 'ar' ? displayDigits(raw) : raw;
 }
 
 /** Template: tf('{n} محصول', { n: 3 }) — the template itself is the dictionary key. */
 export function tf(template: UiKey, vars: Record<string, string | number>): string {
   const base = t(template);
-  return base.replace(/\{(\w+)\}/g, (_m, k: string) => (k in vars ? String(vars[k]) : `{${k}}`));
+  const out = base.replace(/\{(\w+)\}/g, (_m, k: string) => (k in vars ? String(vars[k]) : `{${k}}`));
+  return current === 'ar' ? displayDigits(out) : out;
 }
 
 /** Marks a Persian literal that intentionally stays Persian in every language (e.g. a lead value sent to the sales team). check:i18n skips it. */
@@ -339,7 +342,43 @@ function decodeURIComponentSafe(s: string): string {
   }
 }
 
-/** Number display: Persian digits stay as authored on fa; en and tr show Latin digits. */
+/** Number display: Persian digits stay as authored on fa; en, tr and ru show Latin digits. */
 export function latinDigits(s: string): string {
   return String(s).replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+}
+
+const FA_DIGIT = '۰۱۲۳۴۵۶۷۸۹';
+const AR_DIGIT = '٠١٢٣٤٥٦٧٨٩';
+// Letters glued to a following digit (NH3, NTAC9/150D, FTP4E-350, A2) or an uppercase code
+// followed by "-" / space and digits (GH 0625, BCF-85, DSA 15, TS-100).
+const CODE_RE = /(?<![A-Za-z0-9])(?:[A-Za-z]+\d[A-Za-z0-9]*(?:[-/.][A-Za-z0-9]+)*|[A-Z]{1,}[A-Z]*[- ]\d[A-Za-z0-9]*(?:[-/][A-Za-z0-9]+)*)(?![A-Za-z0-9])/g;
+
+function toDigitScript(s: string, digits: string, fromAnyScript: boolean): string {
+  const base = fromAnyScript ? latinDigits(s) : s;
+  return base
+    .replace(/(\d),(?=\d{3}(?!\d))/g, '$1٬')
+    .replace(/(\d)\.(?=\d)/g, '$1٫')
+    .replace(/(\d)%/g, '$1٪')
+    .replace(/\d/g, (d) => digits[Number(d)]);
+}
+
+/**
+ * Visible number display for the active language: Persian digits on fa (Latin digits converted,
+ * model codes left as-is), Arabic-Indic (٠١٢٣٤٥٦٧٨٩) on ar, Latin on en/tr/ru.
+ * tel: hrefs, URLs and slugs should not go through this helper.
+ */
+export function displayDigits(text: string | number | null | undefined): string {
+  const s = text == null ? '' : String(text);
+  if (current === 'en' || current === 'tr' || current === 'ru') return latinDigits(s);
+  const arabic = current === 'ar';
+  const digits = arabic ? AR_DIGIT : FA_DIGIT;
+  if (!(arabic ? /[0-9۰-۹]/.test(s) : /[0-9]/.test(s))) return s;
+  let out = '';
+  let last = 0;
+  for (const m of s.matchAll(CODE_RE)) {
+    const i = m.index ?? 0;
+    out += toDigitScript(s.slice(last, i), digits, arabic) + m[0];
+    last = i + m[0].length;
+  }
+  return out + toDigitScript(s.slice(last), digits, arabic);
 }
