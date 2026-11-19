@@ -27,7 +27,8 @@ import { catalogPdfHref } from '../data/pageHeroes';
 export const CANONICAL_ORIGIN = "https://www.toyooran.com";
 
 function localizedOrgName(company: CompanyInfo): string {
-  return getLang() === "ar" ? t("طیوران صنعت پویا") : company.nameFa;
+  const lang = getLang();
+  return lang === "ar" || lang === "ru" ? t("طیوران صنعت پویا") : company.nameFa;
 }
 
 export const FITOUT_SERVICE_ID = "srv-turnkey-shed";
@@ -1433,7 +1434,7 @@ ${posts}
 `;
   }
   if (lang === "ru") {
-    return `# Toyooran Sanat Pouya (Русский)
+    return `# Тайуран Санат Пуя (Русский)
 > Оборудование для животноводства и птицеводства, кормовые машины и обновление птичников: вентиляция, отопление, кормушки и поилки. Офисы в Мешхеде и Горгане.
 
 - Сайт: ${CANONICAL_ORIGIN}${RU_PREFIX}

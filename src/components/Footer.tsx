@@ -45,7 +45,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onSelectCategory, on
 
   const hq = companyInfo?.locations?.find(loc => loc.type === 'headquarter');
   const lang = getLang();
-  const companyName = lang === 'fa' ? (companyInfo?.nameFa || companyInfo?.nameEn) : lang === 'ar' ? t("طیوران صنعت پویا") : (companyInfo?.nameEn || companyInfo?.nameFa);
+  const companyName = lang === 'fa' ? (companyInfo?.nameFa || companyInfo?.nameEn) : (lang === 'ar' || lang === 'ru') ? t("طیوران صنعت پویا") : (companyInfo?.nameEn || companyInfo?.nameFa);
   const currentYear = new Date().getFullYear().toLocaleString(intlLocale(), { useGrouping: false });
   const aboutFallback = t("شرکت طیوران صنعت پویا با بیش از ۵۰ سال سابقه و ۲۰۰ پروژهٔ ملی و بین‌المللی، در طراحی، تولید و اجرای تجهیزات پرورشی و کارخانه‌های خوراک دام و طیور فعالیت می‌کند.");
   const aboutForeign = lang === 'en' ? layout?.aboutEn : lang === 'tr' ? layout?.aboutTr : lang === 'ru' ? layout?.aboutRu : lang === 'ar' ? layout?.aboutAr : undefined;

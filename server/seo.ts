@@ -224,7 +224,7 @@ ${canonical}${neutral === "/" ? HOME_HERO_PRELOAD : ""}    <meta property="og:ti
     <meta property="og:description" content="${escapeHtml(doc.description)}" />
     <meta property="og:url" content="${doc.canonicalHref || CANONICAL_ORIGIN}" />
     <meta property="og:type" content="${doc.ogType}" />
-    <meta property="og:site_name" content="${escapeHtml(lang === "ar" ? "طيوران صنعت بويا" : lang === "fa" ? "طیوران صنعت پویا" : "Toyooran Sanat Pouya")}" />
+    <meta property="og:site_name" content="${escapeHtml(lang === "ar" ? "طيوران صنعت بويا" : lang === "ru" ? "Тайуран Санат Пуя" : lang === "fa" ? "طیوران صنعت پویا" : "Toyooran Sanat Pouya")}" />
     <meta property="og:locale" content="${lang === "ar" ? "ar_AR" : lang === "ru" ? "ru_RU" : lang === "tr" ? "tr_TR" : lang === "en" ? "en_US" : "fa_IR"}" />
     <meta property="og:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
     <meta name="twitter:image" content="${escapeHtml(doc.ogImage || `${CANONICAL_ORIGIN}/images/hero-final-1.jpg`)}" />
