@@ -355,6 +355,7 @@ const CODE_RE = /(?<![A-Za-z0-9])(?:[A-Za-z]+\d[A-Za-z0-9]*(?:[-/.][A-Za-z0-9]+)
 
 /** URLs, paths and file names (image src, map embeds, links) keep their Latin digits, or they break. */
 const URL_RE = /(?:https?:\/\/|www\.|data:|mailto:|tel:)[^\s)\]|"'<>]+|(?<![A-Za-z0-9_\-.])\/[A-Za-z_][A-Za-z0-9_\-./?=&%#~+:]*|[A-Za-z0-9_\-.]+\.(?:webp|avif|jpe?g|png|svg|gif|pdf|mp4|webm)(?:\?[^\s)\]|"'<>]*)?/;
+const PHONE_AR_RE = /(?<![٠-٩])[٠-٩]{2,4}(?: [٠-٩]{2,4}){1,3}(?![٠-٩])/g;
 const KEEP_RE = new RegExp(`${URL_RE.source}|${CODE_RE.source}`, 'g');
 
 function toDigitScript(s: string, digits: string, fromAnyScript: boolean): string {
@@ -376,7 +377,7 @@ export function displayDigits(text: string | number | null | undefined): string 
   if (current === 'en' || current === 'tr' || current === 'ru') return latinDigits(s);
   const arabic = current === 'ar';
   const digits = arabic ? AR_DIGIT : FA_DIGIT;
-  if (!(arabic ? /[0-9۰-۹]/.test(s) : /[0-9]/.test(s))) return s;
+  if (!(arabic ? /[0-9۰-۹٠-٩]/.test(s) : /[0-9]/.test(s))) return s;
   let out = '';
   let last = 0;
   for (const m of s.matchAll(KEEP_RE)) {
@@ -384,5 +385,8 @@ export function displayDigits(text: string | number | null | undefined): string 
     out += toDigitScript(s.slice(last, i), digits, arabic) + m[0];
     last = i + m[0].length;
   }
-  return out + toDigitScript(s.slice(last), digits, arabic);
+  out += toDigitScript(s.slice(last), digits, arabic);
+  // Arabic-Indic digits are "AN" in the bidi algorithm: the spaces inside a grouped phone number
+  // resolve as RTL even inside dir="ltr", so ٠٩١١ ٥١١ ٦٢٥٨ showed as ٦٢٥٨ ٥١١ ٠٩١١. LRMs pin the order.
+  return arabic ? out.replace(PHONE_AR_RE, (m) => `\u200E${m.replace(/ /g, '\u200E \u200E')}\u200E`) : out;
 }
