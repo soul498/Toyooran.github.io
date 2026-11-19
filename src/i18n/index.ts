@@ -353,6 +353,10 @@ const AR_DIGIT = '٠١٢٣٤٥٦٧٨٩';
 // followed by "-" / space and digits (GH 0625, BCF-85, DSA 15, TS-100).
 const CODE_RE = /(?<![A-Za-z0-9])(?:[A-Za-z]+\d[A-Za-z0-9]*(?:[-/.][A-Za-z0-9]+)*|[A-Z]{1,}[A-Z]*[- ]\d[A-Za-z0-9]*(?:[-/][A-Za-z0-9]+)*)(?![A-Za-z0-9])/g;
 
+/** URLs, paths and file names (image src, map embeds, links) keep their Latin digits, or they break. */
+const URL_RE = /(?:https?:\/\/|www\.|data:|mailto:|tel:)[^\s)\]|"'<>]+|(?<![A-Za-z0-9_\-.])\/[A-Za-z_][A-Za-z0-9_\-./?=&%#~+:]*|[A-Za-z0-9_\-.]+\.(?:webp|avif|jpe?g|png|svg|gif|pdf|mp4|webm)(?:\?[^\s)\]|"'<>]*)?/;
+const KEEP_RE = new RegExp(`${URL_RE.source}|${CODE_RE.source}`, 'g');
+
 function toDigitScript(s: string, digits: string, fromAnyScript: boolean): string {
   const base = fromAnyScript ? latinDigits(s) : s;
   return base
@@ -375,7 +379,7 @@ export function displayDigits(text: string | number | null | undefined): string 
   if (!(arabic ? /[0-9۰-۹]/.test(s) : /[0-9]/.test(s))) return s;
   let out = '';
   let last = 0;
-  for (const m of s.matchAll(CODE_RE)) {
+  for (const m of s.matchAll(KEEP_RE)) {
     const i = m.index ?? 0;
     out += toDigitScript(s.slice(last, i), digits, arabic) + m[0];
     last = i + m[0].length;
