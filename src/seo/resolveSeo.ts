@@ -17,7 +17,7 @@ import { PRODUCT_SLUG_BY_ID, isLegacyCompetitorProductSlug, productAliasTarget }
 import {
   ABOUT_ACTIVITIES, ABOUT_ACTIVITIES_HEADING, ABOUT_FLAGSHIP_CTA, ABOUT_FLAGSHIP_HEADING, ABOUT_FLAGSHIP_HREF,
   ABOUT_FLAGSHIP_TEXT, ABOUT_INTERNATIONAL_HEADING, ABOUT_INTERNATIONAL_TEXT, ABOUT_INTRO_HEADING,
-  ABOUT_INTRO_PARAGRAPHS, ABOUT_PAGE_NAME, ABOUT_SUBTITLE, ABOUT_TITLE,
+  ABOUT_H1, ABOUT_INTRO_PARAGRAPHS, ABOUT_META_DESCRIPTION, ABOUT_PAGE_NAME, ABOUT_SUBTITLE, ABOUT_TITLE,
   ABOUT_CTA_LABEL, ABOUT_CTA_TEXT, ABOUT_PROCESS_HEADING, ABOUT_PROCESS_INTRO, ABOUT_PROCESS_STEPS,
 } from "../data/aboutCopy";
 import { faDigits } from "../lib/faDigits";
@@ -473,21 +473,46 @@ function collectionDay(catalog: SeoCatalog, key: keyof NonNullable<SeoCatalog["c
   return isoDay(catalog.collectionUpdatedAt?.[key] || undefined);
 }
 
+/** Every official spelling of the brand (all five site languages), for brand-name search. */
+const BRAND_NAMES = [
+  keepFa("طیوران صنعت پویا"),
+  keepFa("طیوران صنعت"),
+  keepFa("طیوران"),
+  "Toyooran Sanat Pouya",
+  "Toyooran",
+  "TOYOORAN",
+  keepFa("طيوران صنعت بويا"),
+  keepFa("طيوران"),
+  "Тайуран Санат Пуя",
+  "Тайуран",
+];
+const SITE_LANGS = ["fa", "en", "tr", "ar", "ru"];
+const SITE_URL = `${CANONICAL_ORIGIN}/`;
+const LOGO_URL = `${CANONICAL_ORIGIN}/images/logo-new.png`;
+
+/** Brand spellings other than this page's own `name`. */
+function brandAlternateNames(name: string): string[] {
+  return BRAND_NAMES.filter((n) => n !== name);
+}
+
 function orgSchema(company: CompanyInfo) {
   const sameAs = Object.entries(company.socialLinks || {})
     .filter(([key, url]) => !["rubika", "linkedin", "youtube", "aparat"].includes(key) && Boolean(url && url.startsWith("http")))
     .map(([, url]) => url);
+  const name = localizedOrgName(company);
   return {
     "@type": "Organization",
     "@id": `${CANONICAL_ORIGIN}/#org`,
-    name: localizedOrgName(company),
-    alternateName: company.nameEn,
-    url: CANONICAL_ORIGIN,
-    telephone: [SALES_PHONE_E164, SALES_PHONE_ALT_E164],
+    name,
+    alternateName: brandAlternateNames(name),
+    url: SITE_URL,
+    logo: LOGO_URL,
+    image: LOGO_URL,
+    telephone: [SALES_PHONE_E164, SALES_PHONE_ALT_E164, OFFICE_PHONE_E164],
     contactPoint: [
-      { "@type": "ContactPoint", telephone: SALES_PHONE_E164, contactType: "sales", name: t("مشاوره، فروش و پشتیبانی"), areaServed: "IR", availableLanguage: "fa" },
-      { "@type": "ContactPoint", telephone: SALES_PHONE_ALT_E164, contactType: "sales", name: t("مشاوره، فروش و پشتیبانی"), areaServed: "IR", availableLanguage: "fa" },
-      { "@type": "ContactPoint", telephone: OFFICE_PHONE_E164, contactType: "customer service", name: t("تلفن دفتر"), areaServed: "IR", availableLanguage: "fa" },
+      { "@type": "ContactPoint", telephone: SALES_PHONE_E164, contactType: "sales", name: t("مشاوره، فروش و پشتیبانی"), areaServed: "IR", availableLanguage: SITE_LANGS },
+      { "@type": "ContactPoint", telephone: SALES_PHONE_ALT_E164, contactType: "sales", name: t("مشاوره، فروش و پشتیبانی"), areaServed: "IR", availableLanguage: SITE_LANGS },
+      { "@type": "ContactPoint", telephone: OFFICE_PHONE_E164, contactType: "customer service", name: t("تلفن دفتر"), areaServed: "IR", availableLanguage: SITE_LANGS },
     ],
     email: company.email || undefined,
     address: {
@@ -497,6 +522,19 @@ function orgSchema(company: CompanyInfo) {
       streetAddress: company.address,
     },
     sameAs,
+  };
+}
+
+function websiteSchema(company: CompanyInfo) {
+  const name = localizedOrgName(company);
+  return {
+    "@type": "WebSite",
+    "@id": `${CANONICAL_ORIGIN}/#website`,
+    url: SITE_URL,
+    name,
+    alternateName: brandAlternateNames(name),
+    inLanguage: "fa",
+    publisher: { "@id": `${CANONICAL_ORIGIN}/#org` },
   };
 }
 
@@ -783,17 +821,25 @@ ${posts ? `<h2>${t("مجله تخصصی")}</h2><ul>${posts}</ul>` : ""}`;
 }
 
 function localBusinessNodes(company: CompanyInfo) {
-  const locations = company.locations || [];
-  return locations.map((loc) => ({
-    "@type": loc.type === "factory" ? "LocalBusiness" : loc.type === "rd" ? "LocalBusiness" : "LocalBusiness",
+  const locations: { id?: string; title: string; type: string; address: string }[] = [...(company.locations || [])];
+  // The factory (Meysagh Blvd.) is named on the about page; list it too when the CMS has no factory location.
+  if (company.factoryAddress && !locations.some((loc) => loc.type === "factory")) {
+    locations.push({ id: "factory", title: t("کارخانه:").replace(/[:：]\s*$/, ""), type: "factory", address: company.factoryAddress });
+  }
+  return locations.map((loc, index) => ({
+    "@type": "LocalBusiness",
+    "@id": `${CANONICAL_ORIGIN}/#place-${loc.id || `${loc.type}-${index + 1}`}`,
     name: `${localizedOrgName(company)} — ${loc.title}`,
+    url: `${CANONICAL_ORIGIN}/contact`,
+    logo: LOGO_URL,
+    image: LOGO_URL,
     parentOrganization: { "@id": `${CANONICAL_ORIGIN}/#org` },
     // The 051 landline is the Mashhad office line; the Gorgan R&D unit lists the mobile only.
     telephone: loc.type === "rd" ? [SALES_PHONE_E164, SALES_PHONE_ALT_E164] : [SALES_PHONE_E164, SALES_PHONE_ALT_E164, OFFICE_PHONE_E164],
     address: {
       "@type": "PostalAddress",
       addressCountry: "IR",
-      ...(loc.type === "rd" ? { addressLocality: t("گرگان") } : {}),
+      addressLocality: loc.type === "rd" ? t("گرگان") : t("مشهد"),
       streetAddress: loc.address,
     },
   }));
@@ -840,6 +886,7 @@ export function resolveSeo(pathname: string, catalog: SeoCatalog): SeoDoc {
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>${t("طیوران صنعت پویا در صنعت دام و طیور فعال است: تأمین تجهیزات، ماشین‌آلات خوراک و طراحی و اجرای نوسازی سالن مرغداری. اعتبار دفاتر مشهد و واحد تحقیق و توسعه گرگان پشتوانه پروژه‌های اجرایی است.")}</p>
+<p>${tr("طیوران صنعت پویا تأمین‌کنندهٔ تجهیزات دام و طیور و مجری تجهیز مرغداری و دامداری است و دفتر مرکزی آن در مشهد قرار دارد.")}</p>
 ${contactPhonesHtml()}
 <p>${escapeHtml(company.address)}</p>
 <p>${t("واحد تحقیق و توسعه:")} ${escapeHtml(company.rdAddress || "")}</p>
@@ -851,13 +898,7 @@ ${serviceLinks ? `<h2>${t("خدمات")}</h2>
 ${homeExtras(catalog)}`,
       jsonLd: [
         orgSchema(company),
-        {
-          "@type": "WebSite",
-          "@id": `${CANONICAL_ORIGIN}/#website`,
-          url: CANONICAL_ORIGIN,
-          name: localizedOrgName(company),
-          publisher: { "@id": `${CANONICAL_ORIGIN}/#org` },
-        },
+        websiteSchema(company),
       ],
     });
   }
@@ -1255,8 +1296,8 @@ ${sourceHtml ? `<h2>${t("منابع")}</h2><ul>${sourceHtml}</ul>` : ""}
     return okDoc({
       path,
       title: tr(ABOUT_TITLE),
-      description: tr(ABOUT_SUBTITLE),
-      h1: tr(ABOUT_PAGE_NAME),
+      description: tr(ABOUT_META_DESCRIPTION),
+      h1: tr(ABOUT_H1),
       ogType: "website",
       lastmod: collectionDay(catalog, "companyInfo"),
       body: `<p>${escapeHtml(tr(ABOUT_SUBTITLE))}</p>

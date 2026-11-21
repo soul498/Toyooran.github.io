@@ -1,6 +1,6 @@
 import type React from 'react';
 import { SALES_PHONE_ALT_DISPLAY, SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from './contact';
-import { ABOUT_EYEBROW, ABOUT_PAGE_NAME, ABOUT_SUBTITLE } from './aboutCopy';
+import { ABOUT_EYEBROW, ABOUT_H1, ABOUT_PAGE_NAME, ABOUT_SUBTITLE } from './aboutCopy';
 import { getLang, hasPersian, translateDeep } from '../i18n';
 import { Building2, FileCheck, Phone, Sparkles, type IconProps } from '../icons';
 import type { CmsPageKey, PageHeroCms } from '../types';
@@ -93,8 +93,10 @@ export const pageHeroFor = (
   };
   const merged: PageHeroConfig = {
     ...hero,
-    title: cms?.title || hero.title,
+    // Foreign about pages name the company in the H1 (brand search); Persian keeps «درباره ما».
+    title: cms?.title || (normalizedPath === '/about' && lang !== 'fa' ? ABOUT_H1 : hero.title),
     subtitle: cms?.subtitle || hero.subtitle,
+    highlight: normalizedPath === '/about' && lang !== 'fa' && !cms?.title ? ABOUT_EYEBROW : hero.highlight,
     eyebrow: cms?.eyebrow || hero.eyebrow,
     cta: cms?.ctaLabel && hero.cta ? { ...hero.cta, label: cms.ctaLabel } : hero.cta,
     secondaryCta: cms?.secondaryCtaLabel && hero.secondaryCta ? { ...hero.secondaryCta, label: cms.secondaryCtaLabel } : hero.secondaryCta,

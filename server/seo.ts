@@ -244,24 +244,33 @@ ${robots}${jsonLd}`;
   return out;
 }
 
-/** hreflang fa / en / tr / x-default (= Persian) for each language the page exists in. */
-function hreflangLinks(neutralPath: string, doc: { robots: string; notFound?: boolean }): string {
-  if (doc.notFound || /noindex/.test(doc.robots)) return "";
-  const faNeutral = withLang("fa", () => equivalentPublicPath(neutralPath, loadSeoCatalog()));
-  if (!faNeutral) return "";
+type HreflangAlt = { hreflang: string; href: string };
+
+/** Equivalent URLs (fa, en, tr, ru, ar, x-default = Persian) for a Persian neutral path, or [] when it has no translation. */
+function hreflangAlternates(faNeutral: string): HreflangAlt[] {
   const en = foreignEquivalent(faNeutral, "en");
   const tr = foreignEquivalent(faNeutral, "tr");
   const ru = foreignEquivalent(faNeutral, "ru");
   const ar = foreignEquivalent(faNeutral, "ar");
-  if (!en && !tr && !ru && !ar) return "";
+  if (!en && !tr && !ru && !ar) return [];
   const fa = canonicalPath(faNeutral);
-  const lines = [`    <link rel="alternate" hreflang="fa" href="${fa}" />`];
-  if (en) lines.push(`    <link rel="alternate" hreflang="en" href="${canonicalPath(en)}" />`);
-  if (tr) lines.push(`    <link rel="alternate" hreflang="tr" href="${canonicalPath(tr)}" />`);
-  if (ru) lines.push(`    <link rel="alternate" hreflang="ru" href="${canonicalPath(ru)}" />`);
-  if (ar) lines.push(`    <link rel="alternate" hreflang="ar" href="${canonicalPath(ar)}" />`);
-  lines.push(`    <link rel="alternate" hreflang="x-default" href="${fa}" />`);
-  return `${lines.join("\n")}\n`;
+  const out: HreflangAlt[] = [{ hreflang: "fa", href: fa }];
+  if (en) out.push({ hreflang: "en", href: canonicalPath(en) });
+  if (tr) out.push({ hreflang: "tr", href: canonicalPath(tr) });
+  if (ru) out.push({ hreflang: "ru", href: canonicalPath(ru) });
+  if (ar) out.push({ hreflang: "ar", href: canonicalPath(ar) });
+  out.push({ hreflang: "x-default", href: fa });
+  return out;
+}
+
+/** hreflang fa / en / tr / ru / ar / x-default (= Persian) for each language the page exists in. */
+function hreflangLinks(neutralPath: string, doc: { robots: string; notFound?: boolean }): string {
+  if (doc.notFound || /noindex/.test(doc.robots)) return "";
+  const faNeutral = withLang("fa", () => equivalentPublicPath(neutralPath, loadSeoCatalog()));
+  if (!faNeutral) return "";
+  const alts = hreflangAlternates(faNeutral);
+  if (!alts.length) return "";
+  return `${alts.map((a) => `    <link rel="alternate" hreflang="${a.hreflang}" href="${a.href}" />`).join("\n")}\n`;
 }
 
 function robotsPrivateDisallows(): string {
@@ -326,20 +335,38 @@ function localizedSitemapUrls(catalog: ReturnType<typeof loadSeoCatalog>, lang: 
 
 export function sitemapXml(): string {
   const catalog = loadSeoCatalog();
-  // Persian URLs first (unchanged), then /en, then /tr (only pages that exist in that language).
-  const urls = [...sitemapEntries(catalog), ...localizedSitemapUrls(catalog, "en"), ...localizedSitemapUrls(catalog, "tr"), ...localizedSitemapUrls(catalog, "ru"), ...localizedSitemapUrls(catalog, "ar")];
+  // Persian URLs first (unchanged), then /en, /tr, /ru, /ar (only pages that exist in that language).
+  const fa = sitemapEntries(catalog);
+  const urls = [
+    ...fa.map((u) => ({ ...u, faNeutral: u.loc })),
+    ...(["en", "tr", "ru", "ar"] as const).flatMap((lang) =>
+      localizedSitemapUrls(catalog, lang).map((u) => ({ ...u, faNeutral: withLang("fa", () => equivalentPublicPath(u.loc.slice(LANG_PREFIX[lang].length) || "/", catalog)) })),
+    ),
+  ];
+  // Same alternate set as the page's <link rel="alternate"> tags, repeated on every member of the group.
+  const altCache = new Map<string, HreflangAlt[]>();
+  const altsFor = (faNeutral: string | null | undefined): HreflangAlt[] => {
+    if (!faNeutral) return [];
+    if (!altCache.has(faNeutral)) altCache.set(faNeutral, hreflangAlternates(faNeutral));
+    return altCache.get(faNeutral)!;
+  };
   const body = urls
     .map((u) => {
       const last = u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : "";
+      const loc = canonicalPath(u.loc);
+      const alts = altsFor(u.faNeutral);
+      const links = alts.some((a) => a.href === loc)
+        ? alts.map((a) => `\n    <xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${xmlEscape(encodeURI(a.href))}" />`).join("")
+        : "";
       return `  <url>
-    <loc>${xmlEscape(encodeURI(canonicalPath(u.loc)))}</loc>${last}
+    <loc>${xmlEscape(encodeURI(loc))}</loc>${last}${links}
     <changefreq>weekly</changefreq>
     <priority>${u.priority}</priority>
   </url>`;
     })
     .join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${body}
 </urlset>`;
 }

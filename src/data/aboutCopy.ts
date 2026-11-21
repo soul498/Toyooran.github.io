@@ -6,6 +6,9 @@
 export const ABOUT_PAGE_NAME = "درباره ما" as const;
 export const ABOUT_TITLE = "درباره ما | طیوران صنعت پویا، بیش از نیم قرن تجربه در صنایع دام، طیور و آبزیان" as const;
 export const ABOUT_SUBTITLE = "همراهی تخصص، مهندسی و تولید در توسعه زیرساخت‌های صنعت دام، طیور و آبزیان" as const;
+/** Brand-search SEO (2026-11-21): H1 for foreign about pages and the prerendered H1; the visible Persian hero stays «درباره ما». */
+export const ABOUT_H1 = "درباره ما | طیوران صنعت پویا" as const;
+export const ABOUT_META_DESCRIPTION = "طیوران صنعت پویا با بیش از نیم قرن تجربه، در مشاوره، طراحی، ساخت، تجهیز و نوسازی زیرساخت‌های صنعت دام و طیور و آبزیان فعالیت می‌کند." as const;
 export const ABOUT_EYEBROW = "طیوران صنعت پویا" as const;
 export const ABOUT_INTRO_HEADING = "معرفی" as const;
 export const ABOUT_INTRO_PARAGRAPHS = [

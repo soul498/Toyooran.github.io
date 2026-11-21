@@ -11,7 +11,7 @@ import {
   ABOUT_EYEBROW, ABOUT_FLAGSHIP_CTA, ABOUT_FLAGSHIP_HEADING, ABOUT_FLAGSHIP_HREF, ABOUT_FLAGSHIP_TEXT,
   ABOUT_INTERNATIONAL_HEADING, ABOUT_INTERNATIONAL_TEXT, ABOUT_INTRO_HEADING, ABOUT_INTRO_PARAGRAPHS,
   ABOUT_PROCESS_EYEBROW, ABOUT_PROCESS_HEADING, ABOUT_PROCESS_INTRO, ABOUT_PROCESS_STEPS, ABOUT_PROCESS_STEP_LABEL,
-  ABOUT_SUBTITLE, ABOUT_TITLE,
+  ABOUT_META_DESCRIPTION, ABOUT_SUBTITLE, ABOUT_TITLE,
 } from '../data/aboutCopy';
 import { ABOUT_PHOTOS, type SitePhoto } from '../data/sitePhotos';
 import { faDigits } from '../lib/faDigits';
@@ -91,7 +91,7 @@ export const AboutPage: React.FC = () => {
     <div className="bg-blueprint-light min-h-screen relative">
       <SEO
         title={tr(ABOUT_TITLE)}
-        description={tr(ABOUT_SUBTITLE)}
+        description={tr(ABOUT_META_DESCRIPTION)}
       />
 
       {/* Section hero is rendered by App (RouteHero) from src/data/pageHeroes.ts. */}
