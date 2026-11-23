@@ -188,7 +188,7 @@ const ProductCard: React.FC<{ spot: Spot }> = ({ spot }) => {
         <div className="flex flex-col items-stretch gap-2.5">
           <Link
             to={spot.specsHref}
-            className="group/cta inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-gradient-to-l from-[#FFC303] to-[#FFA800] px-[22px] text-[17px] font-black text-[#333333] shadow-[0_10px_24px_rgba(255,170,0,0.30)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003F84]"
+            className="group/cta inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 whitespace-normal text-center rounded-full bg-gradient-to-l from-[#FFC303] to-[#FFA800] px-[22px] text-[17px] font-black text-[#333333] shadow-[0_10px_24px_rgba(255,170,0,0.30)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003F84]"
           >
             
             {t("مشاهده مشخصات")}
@@ -198,7 +198,7 @@ const ProductCard: React.FC<{ spot: Spot }> = ({ spot }) => {
           </Link>
           <Link
             to="/contact"
-            className={`inline-flex min-h-[46px] flex-1 items-center justify-center whitespace-nowrap rounded-full border-[1.5px] px-[22px] text-[15px] font-extrabold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+            className={`inline-flex min-h-[46px] flex-1 items-center justify-center whitespace-normal text-center rounded-full border-[1.5px] px-[22px] text-[15px] font-extrabold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
               dark
                 ? 'border-white/60 text-white hover:bg-white/10 focus-visible:outline-[#FFC303]'
                 : 'border-[#003F84] bg-white text-[#003F84] hover:bg-[#F2F6FB] focus-visible:outline-[#003F84]'
