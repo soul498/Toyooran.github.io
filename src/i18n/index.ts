@@ -355,7 +355,9 @@ const CODE_RE = /(?<![A-Za-z0-9])(?:[A-Za-z]+\d[A-Za-z0-9]*(?:[-/.][A-Za-z0-9]+)
 
 /** URLs, paths and file names (image src, map embeds, links) keep their Latin digits, or they break. */
 const URL_RE = /(?:https?:\/\/|www\.|data:|mailto:|tel:)[^\s)\]|"'<>]+|(?<![A-Za-z0-9_\-.])\/[A-Za-z_][A-Za-z0-9_\-./?=&%#~+:]*|[A-Za-z0-9_\-.]+\.(?:webp|avif|jpe?g|png|svg|gif|pdf|mp4|webm)(?:\?[^\s)\]|"'<>]*)?/;
-const PHONE_AR_RE = /(?<![٠-٩])[٠-٩]{2,4}(?: [٠-٩]{2,4}){1,3}(?![٠-٩])/g;
+const PHONE_AR_RE = /(?<![٠-٩+])[٠-٩]{2,4}(?: [٠-٩]{2,4}){1,3}(?![٠-٩])/g;
+/** An ungrouped Iranian mobile (٠٩١١٥١١٦٢٥٨) is grouped first so it gets the same display. */
+const PHONE_AR_RAW_RE = /(?<![٠-٩])٠٩[٠-٩]{9}(?![٠-٩])/g;
 const KEEP_RE = new RegExp(`${URL_RE.source}|${CODE_RE.source}`, 'g');
 
 function toDigitScript(s: string, digits: string, fromAnyScript: boolean): string {
@@ -388,5 +390,13 @@ export function displayDigits(text: string | number | null | undefined): string 
   out += toDigitScript(s.slice(last), digits, arabic);
   // Arabic-Indic digits are "AN" in the bidi algorithm: the spaces inside a grouped phone number
   // resolve as RTL even inside dir="ltr", so ٠٩١١ ٥١١ ٦٢٥٨ showed as ٦٢٥٨ ٥١١ ٠٩١١. LRMs pin the order.
-  return arabic ? out.replace(PHONE_AR_RE, (m) => `\u200E${m.replace(/ /g, '\u200E \u200E')}\u200E`) : out;
+  if (!arabic) return out;
+  return out
+    .replace(PHONE_AR_RAW_RE, (m) => `${m.slice(0, 4)} ${m.slice(4, 7)} ${m.slice(7)}`)
+    .replace(PHONE_AR_RE, (m) => {
+      // Iranian local numbers (٠٩١١…, ٠٥١…) get the +٩٨ country code on the Arabic site.
+      const local = m.replace(/ /g, '').length === 11 && m.startsWith('٠') && !m.startsWith('٠٠');
+      const grouped = local ? `+٩٨ ${m.slice(1)}` : m;
+      return `\u200E${grouped.replace(/ /g, '\u200E \u200E')}\u200E`;
+    });
 }
