@@ -6,6 +6,11 @@ export interface FormSubmissionPayload {
   productName?: string;
   capacity?: string;
   location?: string;
+  country?: string;
+  province?: string;
+  city?: string;
+  email?: string;
+  lang?: string;
   message?: string;
   isDecisionMaker?: boolean;
   timing?: string;

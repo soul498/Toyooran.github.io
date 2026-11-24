@@ -14,6 +14,7 @@ import {
 } from '../../icons';
 import { useData } from '../../context/DataContext';
 import { ConsultationRequest } from '../../types';
+import { WebsiteLeadsPanel } from './WebsiteLeadsPanel';
 
 export const ConsultationsTab: React.FC = () => {
   const { consultationRequests, updateConsultationStatus, deleteConsultationRequest } = useData();
@@ -72,6 +73,8 @@ export const ConsultationsTab: React.FC = () => {
           </p>
         </div>
       </div>
+
+      <WebsiteLeadsPanel />
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col md:flex-row gap-3">

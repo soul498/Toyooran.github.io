@@ -38,7 +38,7 @@ import { CANONICAL_ORIGIN, foreignFallbackRedirect, injectSeoTags, isKnownPublic
 import { articleFor, localizedCatalog } from "./server/i18n";
 import { LANG_PREFIX, pathLang, type ForeignLang } from "./src/i18n";
 import { invalidateSeoCatalog, loadPublicArticles, loadSeoCatalog } from "./server/catalog";
-import { appendLead, leadsToCsv } from "./server/leads";
+import { appendLead, leadsToCsv, recentLeads } from "./server/leads";
 import { baleInboxWritable, enqueueConsultationNotice } from "./server/baleInbox";
 import { gzipResponses } from "./server/gzip";
 import { cmsApiRouter } from "./server/cmsApi";
@@ -332,6 +332,11 @@ async function startServer() {
         productName,
         capacity,
         location,
+        country,
+        province,
+        city,
+        email,
+        lang,
         message,
         source,
         isDecisionMaker,
@@ -339,6 +344,7 @@ async function startServer() {
         pagePath,
         conversionEvent
       } = req.body;
+      const short = (v: unknown, max: number) => (typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, max) : undefined) || undefined;
       const lead = appendLead({
         fullName,
         phoneNumber,
@@ -347,6 +353,11 @@ async function startServer() {
         productName,
         capacity,
         location,
+        country: short(country, 80),
+        province: short(province, 80),
+        city: short(city, 80),
+        email: short(email, 160),
+        lang: ["fa", "en", "tr", "ar", "ru"].includes(lang) ? lang : undefined,
         message,
         source,
         isDecisionMaker: Boolean(isDecisionMaker),
@@ -392,6 +403,10 @@ async function startServer() {
   // Health check endpoint
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+  app.get("/api/admin/leads", requireAdmin, requirePermission('consultations'), (_req, res) => {
+    res.set("Cache-Control", "no-store");
+    res.json({ leads: recentLeads(500) });
   });
   app.get("/api/admin/leads.csv", requireAdmin, (_req, res) => {
     res.set({ "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": "attachment; filename=toyooran-leads.csv" });

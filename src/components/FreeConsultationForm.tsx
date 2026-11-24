@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Send, User, Phone, FileText, Layers, CheckCircle2 } from '../icons';
 import { sendNotificationToBale } from '../utils/sendToBale';
 
-import { keepFa, t, tr } from '../i18n';
+import { getLang, keepFa, t, tr } from '../i18n';
 interface FreeConsultationFormProps {
   initialSubject?: string;
   initialProduct?: string;
@@ -20,6 +20,8 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
   className = ''
 }) => {
   const location = useLocation();
+  // Visitors on the English, Turkish, Arabic and Russian pages are usually outside Iran, so the form asks for country, province and city separately.
+  const foreign = getLang() !== 'fa';
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -27,6 +29,11 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
     // The quote handler already names the product in the message; add the product line only when it does not.
     message: initialMessage + (initialProduct && !initialMessage.includes(initialProduct) ? ` \n${t("محصول مورد نظر:")} ${initialProduct}` : ''),
     location: '',
+    country: '',
+    province: '',
+    city: '',
+    email: '',
+    companyName: '',
     capacity: '',
     isDecisionMaker: false,
     timing: '',
@@ -39,12 +46,21 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
     setLoading(true);
     const conversionEvent = 'organic_consultation_submit';
     const pagePath = location.pathname + location.search;
+    const place = foreign
+      ? [formData.city, formData.province, formData.country].map((v) => v.trim()).filter(Boolean).join(getLang() === 'ar' ? '، ' : ', ')
+      : formData.location;
     await sendNotificationToBale({
       fullName: formData.fullName,
       phoneNumber: formData.phoneNumber,
       subject: formData.subject,
       message: formData.message,
-      location: formData.location,
+      location: place,
+      country: foreign ? formData.country.trim() : undefined,
+      province: foreign ? formData.province.trim() : undefined,
+      city: foreign ? formData.city.trim() : undefined,
+      email: foreign ? formData.email.trim() : undefined,
+      companyName: foreign ? formData.companyName.trim() : undefined,
+      lang: getLang(),
       capacity: formData.capacity,
       productName: initialProduct,
       source: 'contact-form',
@@ -72,6 +88,11 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
       subject: keepFa("مرغداری گوشتی"),
       message: '',
       location: '',
+      country: '',
+      province: '',
+      city: '',
+      email: '',
+      companyName: '',
       capacity: '',
       isDecisionMaker: false,
       timing: '',
@@ -137,7 +158,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                     required
                     value={formData.phoneNumber}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                    placeholder={t("۰۹۱۲...")}
+                    placeholder={foreign ? "+XX XXX XXX XXXX" : t("۰۹۱۲...")}
                     dir="ltr"
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl pr-11 pl-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#003F86] focus:ring-4 focus:ring-[#003F86]/10 transition-all text-right font-medium"
                   />
@@ -173,7 +194,74 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
               </div>
             </div>
 
+            {foreign ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <label htmlFor="cf-country" className="text-[13px] font-bold text-slate-700 block">{t("کشور")}{" "}<span className="text-rose-500">*</span></label>
+                <input
+                  id="cf-country"
+                  type="text"
+                  required
+                  autoComplete="country-name"
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  placeholder={t("نام کشور")}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="cf-province" className="text-[13px] font-bold text-slate-700 block">{t("استان / ایالت")}</label>
+                <input
+                  id="cf-province"
+                  type="text"
+                  autoComplete="address-level1"
+                  value={formData.province}
+                  onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                  placeholder={t("نام استان یا ایالت")}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="cf-city" className="text-[13px] font-bold text-slate-700 block">{t("شهر")}</label>
+                <input
+                  id="cf-city"
+                  type="text"
+                  autoComplete="address-level2"
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  placeholder={t("نام شهر")}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="cf-companyName" className="text-[13px] font-bold text-slate-700 block">{t("نام شرکت")}</label>
+                <input
+                  id="cf-companyName"
+                  type="text"
+                  autoComplete="organization"
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                  placeholder={t("نام شرکت (اختیاری)")}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5 sm:col-span-2">
+                <label htmlFor="cf-email" className="text-[13px] font-bold text-slate-700 block">{t("ایمیل")}</label>
+                <input
+                  id="cf-email"
+                  type="email"
+                  autoComplete="email"
+                  dir="ltr"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="name@company.com"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
+                />
+              </div>
+              </div>
+            ) : null}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {foreign ? null : (
               <div className="space-y-1.5">
                 <label className="text-[13px] font-bold text-slate-700 block">{t("شهر / استان")}</label>
                 <input
@@ -184,6 +272,7 @@ export const FreeConsultationForm: React.FC<FreeConsultationFormProps> = ({
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm"
                 />
               </div>
+              )}
               <div className="space-y-1.5">
                 <label className="text-[13px] font-bold text-slate-700 block">{t("ظرفیت سالن (قطعه)")}</label>
                 <input

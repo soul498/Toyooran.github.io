@@ -22,6 +22,11 @@ export function enqueueConsultationNotice(row: {
   subject?: string;
   productName?: string;
   location?: string;
+  country?: string;
+  province?: string;
+  city?: string;
+  email?: string;
+  lang?: string;
   capacity?: string;
   timing?: string;
   isDecisionMaker?: boolean;
@@ -45,7 +50,20 @@ export function enqueueConsultationNotice(row: {
     capacity: clip(row.capacity, 80),
     timing: clip(row.timing, 80),
     isDecisionMaker: Boolean(row.isDecisionMaker),
-    message: String(row.message ?? "").trim().slice(0, 700),
+    country: clip(row.country, 80),
+    province: clip(row.province, 80),
+    city: clip(row.city, 80),
+    email: clip(row.email, 160),
+    lang: clip(row.lang, 8),
+    // The monitor prints the message as-is, so the foreign-form extras are also written into it.
+    message: [
+      String(row.message ?? "").trim().slice(0, 700),
+      row.country ? `کشور: ${clip(row.country, 80)}` : "",
+      row.province ? `استان/ایالت: ${clip(row.province, 80)}` : "",
+      row.city ? `شهر: ${clip(row.city, 80)}` : "",
+      row.email ? `ایمیل: ${clip(row.email, 160)}` : "",
+      row.lang && row.lang !== "fa" ? `زبان سایت: ${clip(row.lang, 8)}` : "",
+    ].filter(Boolean).join("\n"),
     source: clip(row.source, 80),
     pagePath: clip(row.pagePath, 200),
   };

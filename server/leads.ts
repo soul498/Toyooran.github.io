@@ -11,6 +11,11 @@ export type LeadInput = {
   productName?: string;
   capacity?: string;
   location?: string;
+  country?: string;
+  province?: string;
+  city?: string;
+  email?: string;
+  lang?: string;
   message?: string;
   source?: string;
   isDecisionMaker?: boolean;
@@ -47,7 +52,7 @@ export function leadsToCsv(): string {
     return "id,createdAt,fullName,phone,location,capacity,subject,qualified,score\n";
   }
   const lines = fs.readFileSync(LEADS_FILE, "utf8").trim().split("\n").filter(Boolean);
-  const header = "id,createdAt,fullName,phone,location,capacity,subject,qualified,score,source,pagePath,conversionEvent";
+  const header = "id,createdAt,fullName,phone,location,capacity,subject,qualified,score,source,pagePath,conversionEvent,country,province,city,email,companyName,lang,message";
   const rows = lines.map((line) => {
     const item = JSON.parse(line);
     const cells = [
@@ -63,8 +68,26 @@ export function leadsToCsv(): string {
       item.source,
       item.pagePath,
       item.conversionEvent,
+      item.country,
+      item.province,
+      item.city,
+      item.email,
+      item.companyName,
+      item.lang,
+      item.message,
     ].map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`);
     return cells.join(",");
   });
   return [header, ...rows].join("\n") + "\n";
+}
+
+/** Newest website form submissions for the admin panel (max `limit`). */
+export function recentLeads(limit = 500): Record<string, unknown>[] {
+  if (!fs.existsSync(LEADS_FILE)) return [];
+  const lines = fs.readFileSync(LEADS_FILE, "utf8").trim().split("\n").filter(Boolean);
+  const out: Record<string, unknown>[] = [];
+  for (let i = lines.length - 1; i >= 0 && out.length < limit; i--) {
+    try { out.push(JSON.parse(lines[i])); } catch { /* skip a broken line */ }
+  }
+  return out;
 }
